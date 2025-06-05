@@ -81,7 +81,7 @@ export default function Home() {
         channelKey: provider.channelKey,
         billingKeyMethod: provider.method,
         issueId: `billing-${crypto.randomUUID()}`,
-        issueName: 'Fossistant 프리미엄 구독',
+        issueName: 'Pawcus 프리미엄 구독',
         customer: {
           fullName: '홍길동',
           phoneNumber: '010-0000-0000',
