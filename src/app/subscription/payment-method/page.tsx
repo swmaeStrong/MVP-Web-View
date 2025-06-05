@@ -1,106 +1,168 @@
 'use client'
-import { useRouter } from 'next/navigation'
-import { Badge } from '../../../shadcn/ui/badge'
-import { Button } from '../../../shadcn/ui/button'
-import { Card, CardContent } from '../../../shadcn/ui/card'
+import { Badge } from '@/shadcn/ui/badge'
+import { Button } from '@/shadcn/ui/button'
+import { Card, CardContent } from '@/shadcn/ui/card'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useState } from 'react'
 
-const paymentMethods = [
-  {
-    id: 'card1',
-    brand: '신한카드',
-    last4: '1234',
-    isDefault: true,
-    type: '신용카드',
-    icon: '💳',
-    color: 'from-blue-500 to-blue-600',
-  },
-  {
-    id: 'card2',
-    brand: '국민카드',
-    last4: '5678',
-    isDefault: false,
-    type: '체크카드',
-    icon: '💰',
-    color: 'from-green-500 to-green-600',
-  },
-]
-
-export const paymentMethodPage = () => {
+export default function PaymentMethodPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const [selectedMethod, setSelectedMethod] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  // 구독 플로우에서 온 건지 확인
+  const fromSubscription = searchParams.get('from') === 'subscription'
+
+  const paymentMethods = [
+    {
+      id: 'card',
+      name: '신용/체크카드',
+      icon: '💳',
+      description: '가장 안전하고 빠른 결제',
+      gradient: 'from-blue-500 to-blue-600',
+      bgGradient: 'from-blue-50 to-blue-100',
+    },
+    {
+      id: 'paypal',
+      name: 'PayPal',
+      icon: '💰',
+      description: 'PayPal 계정으로 간편 결제',
+      gradient: 'from-yellow-500 to-orange-500',
+      bgGradient: 'from-yellow-50 to-orange-100',
+    },
+  ]
+
+  const handleMethodSelect = async () => {
+    if (!selectedMethod) return
+
+    setIsLoading(true)
+
+    try {
+      // 결제 수단 저장 시뮬레이션
+      const paymentData = {
+        method: selectedMethod,
+        createdAt: new Date().toISOString(),
+      }
+      localStorage.setItem('paymentMethods', JSON.stringify([paymentData]))
+
+      // 구독 플로우에서 왔다면 바로 결제로, 아니면 성공 페이지로
+      if (fromSubscription) {
+        router.push('/subscription/checkout')
+      } else {
+        router.push('/subscription/payment-method/success')
+      }
+    } catch (error) {
+      console.error('결제 수단 등록 중 오류:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-2 sm:p-4 lg:p-8'>
-      <div className='mx-auto max-w-7xl space-y-6 sm:space-y-8'>
-        {/* 헤더 영역 */}
-        <div className='pt-4 text-center sm:pt-8'>
-          <h1 className='mb-2 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-2xl font-bold text-transparent sm:mb-4 sm:text-3xl lg:text-4xl'>
-            💳 내 결제수단
+    <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
+      <div className='mx-auto max-w-2xl space-y-6 sm:space-y-8'>
+        {/* 헤더 */}
+        <div className='space-y-4 text-center'>
+          {fromSubscription && (
+            <div className='mb-4'>
+              <Badge className='bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg'>
+                🚀 구독 진행 중 • 2단계 중 1단계
+              </Badge>
+            </div>
+          )}
+
+          <h1 className='bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl'>
+            💳 결제 수단 선택
           </h1>
-          <p className='mb-4 px-4 text-base text-gray-600 sm:mb-8 sm:text-lg lg:text-xl'>
-            등록된 결제수단을 관리하고 새로운 카드를 추가하세요
+          <p className='text-lg text-gray-600 sm:text-xl'>
+            {fromSubscription
+              ? '구독을 위한 결제 수단을 선택해주세요'
+              : '안전하고 편리한 결제 방법을 선택하세요'}
           </p>
+
+          {fromSubscription && (
+            <div className='inline-block rounded-xl border border-green-200 bg-green-50 p-4'>
+              <div className='text-sm text-green-700'>
+                <div className='font-medium'>✨ 거의 다 완료되었어요!</div>
+                <div className='mt-1 text-xs'>
+                  결제 수단만 선택하면 바로 프리미엄을 이용할 수 있습니다
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* 결제수단 카드들 */}
-        <div className='space-y-4 sm:space-y-6'>
-          {paymentMethods.map((method, index) => (
+        {/* 진행 단계 표시 (구독 플로우에서만) */}
+        {fromSubscription && (
+          <div className='rounded-2xl bg-white p-4 shadow-lg'>
+            <div className='flex items-center justify-between text-sm'>
+              <div className='flex items-center gap-2 text-purple-600'>
+                <div className='flex h-6 w-6 items-center justify-center rounded-full bg-purple-600 text-xs font-bold text-white'>
+                  1
+                </div>
+                <span className='font-medium'>결제 수단 등록</span>
+              </div>
+              <div className='mx-4 h-1 flex-1 rounded-full bg-gray-200'>
+                <div className='h-full w-1/2 rounded-full bg-purple-600'></div>
+              </div>
+              <div className='flex items-center gap-2 text-gray-400'>
+                <div className='flex h-6 w-6 items-center justify-center rounded-full bg-gray-200 text-xs font-bold text-gray-500'>
+                  2
+                </div>
+                <span>구독 완료</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 결제 수단 선택 */}
+        <div className='grid gap-4 sm:gap-6'>
+          {paymentMethods.map(method => (
             <Card
               key={method.id}
-              className='sm:hover:shadow-3xl relative overflow-hidden rounded-2xl border-0 bg-white p-4 shadow-xl transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl sm:rounded-3xl sm:p-6 sm:shadow-2xl sm:hover:scale-[1.02]'
+              className={`relative cursor-pointer rounded-2xl border-2 transition-all duration-300 hover:shadow-xl sm:rounded-3xl ${
+                selectedMethod === method.id
+                  ? 'scale-105 border-purple-400 shadow-lg'
+                  : 'border-gray-200 hover:border-purple-300'
+              }`}
+              onClick={() => setSelectedMethod(method.id)}
             >
-              {/* 배경 그래디언트 */}
-              <div className='absolute inset-0 bg-gradient-to-br from-purple-600/5 to-blue-600/5'></div>
+              <div
+                className={`absolute inset-0 rounded-2xl bg-gradient-to-br sm:rounded-3xl ${
+                  selectedMethod === method.id
+                    ? method.bgGradient
+                    : 'from-white to-gray-50'
+                }`}
+              ></div>
 
-              <CardContent className='relative p-0'>
-                {/* 모바일: 세로 배치, 태블릿+: 가로 배치 */}
-                <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6'>
-                  {/* 카드 아이콘 */}
+              <CardContent className='relative p-6 sm:p-8'>
+                <div className='flex items-center gap-4'>
                   <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r sm:h-14 sm:w-14 sm:rounded-2xl lg:h-16 lg:w-16 ${method.color} flex-shrink-0 text-xl text-white shadow-lg sm:text-2xl`}
+                    className={`h-16 w-16 rounded-2xl bg-gradient-to-r sm:h-20 sm:w-20 ${method.gradient} flex items-center justify-center text-3xl text-white shadow-lg sm:text-4xl`}
                   >
                     {method.icon}
                   </div>
 
-                  {/* 카드 정보 */}
-                  <div className='min-w-0 flex-1'>
-                    <div className='mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3'>
-                      <h3 className='truncate text-lg font-bold text-gray-800 sm:text-xl'>
-                        {method.brand}
-                      </h3>
-                      {method.isDefault && (
-                        <Badge
-                          variant='default'
-                          className='self-start rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-2 py-1 text-xs font-semibold text-white shadow-lg sm:self-auto sm:px-3'
-                        >
-                          ⭐ 기본 카드
-                        </Badge>
-                      )}
-                    </div>
-
-                    <div className='flex flex-col gap-2 text-gray-600 sm:flex-row sm:items-center sm:gap-4'>
-                      <span className='font-mono text-base sm:text-lg'>
-                        **** **** **** {method.last4}
-                      </span>
-                      <span className='self-start rounded-full bg-gray-100 px-2 py-1 text-xs sm:self-auto sm:px-3 sm:text-sm'>
-                        {method.type}
-                      </span>
-                    </div>
+                  <div className='flex-1'>
+                    <h3 className='mb-2 text-xl font-bold text-gray-800 sm:text-2xl'>
+                      {method.name}
+                    </h3>
+                    <p className='text-sm text-gray-600 sm:text-base'>
+                      {method.description}
+                    </p>
                   </div>
 
-                  {/* 상세 버튼 */}
-                  <div className='flex sm:flex-shrink-0'>
-                    <Button
-                      size='default'
-                      variant='secondary'
-                      className='w-full rounded-xl bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-all duration-300 hover:bg-gray-200 hover:shadow-lg sm:w-auto sm:rounded-2xl sm:px-6 sm:py-3 sm:text-base'
-                      onClick={() => {
-                        router.push(
-                          `/subscription/payment-methods/${method.id}`
-                        )
-                      }}
-                    >
-                      상세 보기
-                    </Button>
+                  <div
+                    className={`flex h-6 w-6 items-center justify-center rounded-full border-2 ${
+                      selectedMethod === method.id
+                        ? 'border-purple-500 bg-purple-500'
+                        : 'border-gray-300 bg-white'
+                    }`}
+                  >
+                    {selectedMethod === method.id && (
+                      <div className='h-3 w-3 rounded-full bg-white'></div>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -108,53 +170,68 @@ export const paymentMethodPage = () => {
           ))}
         </div>
 
-        {/* 새 카드 추가 버튼 */}
-        <Card className='relative rounded-2xl border-2 border-dashed border-purple-300 bg-white/50 p-6 transition-all duration-300 hover:border-purple-400 hover:bg-white/80 sm:rounded-3xl sm:p-8'>
-          <CardContent className='flex flex-col items-center gap-4 p-0'>
-            <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-2xl text-white shadow-lg sm:h-14 sm:w-14 sm:rounded-2xl sm:text-3xl lg:h-16 lg:w-16'>
-              ➕
-            </div>
-            <div className='text-center'>
-              <h3 className='mb-2 text-lg font-bold text-gray-800 sm:text-xl'>
-                새 결제수단 추가
-              </h3>
-              <p className='mb-4 px-2 text-sm text-gray-600 sm:text-base'>
-                신용카드, 체크카드를 간편하게 등록하세요
-              </p>
-            </div>
-            <Button
-              size='lg'
-              className='w-full transform rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-3 text-base font-bold text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:from-purple-700 hover:to-blue-700 hover:shadow-xl sm:w-auto sm:rounded-2xl sm:px-8 sm:text-lg'
-              onClick={() => router.push('/subscription/payment-methods/new')}
-            >
-              💳 카드 추가하기
-            </Button>
-          </CardContent>
-        </Card>
+        {/* 계속하기 버튼 */}
+        <div className='space-y-4'>
+          <Button
+            size='lg'
+            className='w-full transform rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 py-4 text-lg font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:from-purple-700 hover:to-blue-700 hover:shadow-2xl disabled:opacity-50 disabled:hover:scale-100'
+            onClick={handleMethodSelect}
+            disabled={!selectedMethod || isLoading}
+          >
+            {isLoading ? (
+              <div className='flex items-center gap-2'>
+                <div className='h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent'></div>
+                등록 중...
+              </div>
+            ) : fromSubscription ? (
+              selectedMethod ? (
+                '계속해서 구독하기 🚀'
+              ) : (
+                '결제 수단을 선택해주세요'
+              )
+            ) : selectedMethod ? (
+              '결제 수단 등록하기'
+            ) : (
+              '결제 수단을 선택해주세요'
+            )}
+          </Button>
 
-        {/* 안내 메시지 */}
-        <div className='rounded-xl border border-purple-200 bg-gradient-to-r from-purple-100 to-blue-100 p-4 sm:rounded-2xl sm:p-6'>
-          <h3 className='mb-3 flex items-center gap-2 text-base font-semibold text-gray-800 sm:text-lg'>
-            🔒 안전한 결제 환경
-          </h3>
-          <ul className='space-y-2 text-sm text-gray-700 sm:text-base'>
-            <li className='flex items-start gap-2'>
-              <span className='mt-0.5 text-green-500'>✓</span>
-              <span>모든 카드 정보는 암호화되어 안전하게 보관됩니다</span>
-            </li>
-            <li className='flex items-start gap-2'>
-              <span className='mt-0.5 text-green-500'>✓</span>
-              <span>PCI DSS 보안 표준을 준수합니다</span>
-            </li>
-            <li className='flex items-start gap-2'>
-              <span className='mt-0.5 text-green-500'>✓</span>
-              <span>언제든지 결제수단을 변경하거나 삭제할 수 있습니다</span>
-            </li>
-          </ul>
+          {fromSubscription && (
+            <div className='text-center'>
+              <button
+                onClick={() => router.back()}
+                className='text-sm text-gray-500 transition-colors hover:text-gray-700'
+              >
+                ← 이전 단계로 돌아가기
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* 보안 정보 */}
+        <div className='rounded-2xl bg-white p-6 shadow-lg'>
+          <div className='space-y-3 text-center'>
+            <div className='text-2xl'>🔒</div>
+            <h3 className='text-lg font-bold text-gray-800'>
+              안전한 결제 보장
+            </h3>
+            <div className='grid gap-4 text-sm text-gray-600 sm:grid-cols-3'>
+              <div className='flex items-center gap-2'>
+                <span className='text-green-500'>✓</span>
+                <span>256비트 SSL 암호화</span>
+              </div>
+              <div className='flex items-center gap-2'>
+                <span className='text-green-500'>✓</span>
+                <span>개인정보 보호</span>
+              </div>
+              <div className='flex items-center gap-2'>
+                <span className='text-green-500'>✓</span>
+                <span>안전한 결제 처리</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   )
 }
-
-export default paymentMethodPage
