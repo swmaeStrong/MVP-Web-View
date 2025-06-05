@@ -4,6 +4,34 @@ import { Button } from '@/shadcn/ui/button'
 import { Card, CardContent } from '@/shadcn/ui/card'
 import { useState } from 'react'
 
+// 타입 정의
+interface Category {
+  name: string
+  time: number
+  percentage: number
+  color: string
+  icon: string
+}
+
+interface DailyData {
+  totalTime: number
+  categories: Category[]
+}
+
+interface WeeklyData {
+  weekName: string
+  totalTime: number
+  weeklyData: { date: string; categories: { name: string; time: number }[] }[]
+  categories: Category[]
+}
+
+interface MonthlyData {
+  monthName: string
+  totalTime: number
+  monthlyData: { date: string; categories: { name: string; time: number }[] }[]
+  categories: Category[]
+}
+
 // 더미 데이터 (확장된 구조)
 const dummyData = {
   daily: {
@@ -106,176 +134,353 @@ const dummyData = {
         },
       ],
     },
-  },
-  weekly: {
-    totalTime: 42.3,
-    weeklyData: [
-      {
-        date: '1/9',
-        categories: [
-          { name: '개발', time: 3.2 },
-          { name: '디자인', time: 1.5 },
-          { name: '회의', time: 1.0 },
-          { name: '기타', time: 0.3 },
-        ],
-      },
-      {
-        date: '1/10',
-        categories: [
-          { name: '개발', time: 3.8 },
-          { name: '디자인', time: 1.2 },
-          { name: '회의', time: 1.5 },
-          { name: '기타', time: 0.5 },
-        ],
-      },
-      {
-        date: '1/11',
-        categories: [
-          { name: '개발', time: 4.5 },
-          { name: '디자인', time: 2.0 },
-          { name: '회의', time: 1.0 },
-          { name: '기타', time: 0.5 },
-        ],
-      },
-      {
-        date: '1/12',
-        categories: [
-          { name: '개발', time: 2.8 },
-          { name: '디자인', time: 2.5 },
-          { name: '회의', time: 1.2 },
-          { name: '기타', time: 0.5 },
-        ],
-      },
-      {
-        date: '1/13',
-        categories: [
-          { name: '개발', time: 3.4 },
-          { name: '디자인', time: 2.0 },
-          { name: '회의', time: 1.0 },
-          { name: '기타', time: 0.4 },
-        ],
-      },
-      {
-        date: '1/14',
-        categories: [
-          { name: '개발', time: 3.8 },
-          { name: '디자인', time: 1.8 },
-          { name: '회의', time: 1.2 },
-          { name: '기타', time: 0.4 },
-        ],
-      },
-      {
-        date: '1/15',
-        categories: [
-          { name: '개발', time: 4.5 },
-          { name: '디자인', time: 2.0 },
-          { name: '회의', time: 1.5 },
-          { name: '기타', time: 0.5 },
-        ],
-      },
-    ],
-    categories: [
-      {
-        name: '개발',
-        time: 22.5,
-        percentage: 53,
-        color: 'from-purple-500 to-purple-600',
-        icon: '💻',
-      },
-      {
-        name: '디자인',
-        time: 10.2,
-        percentage: 24,
-        color: 'from-blue-500 to-blue-600',
-        icon: '🎨',
-      },
-      {
-        name: '회의',
-        time: 7.6,
-        percentage: 18,
-        color: 'from-green-500 to-green-600',
-        icon: '🤝',
-      },
-      {
-        name: '기타',
-        time: 2.0,
-        percentage: 5,
-        color: 'from-gray-500 to-gray-600',
-        icon: '📋',
-      },
-    ],
-  },
-  monthly: {
-    totalTime: 169.2,
-    monthlyData: [
-      {
-        date: '1주차',
-        categories: [
-          { name: '개발', time: 20.5 },
-          { name: '디자인', time: 9.2 },
-          { name: '회의', time: 6.8 },
-          { name: '기타', time: 1.5 },
-        ],
-      },
-      {
-        date: '2주차',
-        categories: [
-          { name: '개발', time: 22.1 },
-          { name: '디자인', time: 10.5 },
-          { name: '회의', time: 7.2 },
-          { name: '기타', time: 2.2 },
-        ],
-      },
-      {
-        date: '3주차',
-        categories: [
-          { name: '개발', time: 23.6 },
-          { name: '디자인', time: 11.0 },
-          { name: '회의', time: 8.1 },
-          { name: '기타', time: 2.3 },
-        ],
-      },
-      {
-        date: '4주차',
-        categories: [
-          { name: '개발', time: 23.5 },
-          { name: '디자인', time: 9.9 },
-          { name: '회의', time: 8.4 },
-          { name: '기타', time: 2.4 },
-        ],
-      },
-    ],
-    categories: [
-      {
-        name: '개발',
-        time: 89.7,
-        percentage: 53,
-        color: 'from-purple-500 to-purple-600',
-        icon: '💻',
-      },
-      {
-        name: '디자인',
-        time: 40.6,
-        percentage: 24,
-        color: 'from-blue-500 to-blue-600',
-        icon: '🎨',
-      },
-      {
-        name: '회의',
-        time: 30.5,
-        percentage: 18,
-        color: 'from-green-500 to-green-600',
-        icon: '🤝',
-      },
-      {
-        name: '기타',
-        time: 8.4,
-        percentage: 5,
-        color: 'from-gray-500 to-gray-600',
-        icon: '📋',
-      },
-    ],
-  },
+  } as Record<string, DailyData>,
+  weekly: [
+    {
+      weekName: '1월 1주차',
+      totalTime: 42.3,
+      weeklyData: [
+        {
+          date: '1/9',
+          categories: [
+            { name: '개발', time: 3.2 },
+            { name: '디자인', time: 1.5 },
+            { name: '회의', time: 1.0 },
+            { name: '기타', time: 0.3 },
+          ],
+        },
+        {
+          date: '1/10',
+          categories: [
+            { name: '개발', time: 3.8 },
+            { name: '디자인', time: 1.2 },
+            { name: '회의', time: 1.5 },
+            { name: '기타', time: 0.5 },
+          ],
+        },
+        {
+          date: '1/11',
+          categories: [
+            { name: '개발', time: 4.5 },
+            { name: '디자인', time: 2.0 },
+            { name: '회의', time: 1.0 },
+            { name: '기타', time: 0.5 },
+          ],
+        },
+        {
+          date: '1/12',
+          categories: [
+            { name: '개발', time: 2.8 },
+            { name: '디자인', time: 2.5 },
+            { name: '회의', time: 1.2 },
+            { name: '기타', time: 0.5 },
+          ],
+        },
+        {
+          date: '1/13',
+          categories: [
+            { name: '개발', time: 3.4 },
+            { name: '디자인', time: 2.0 },
+            { name: '회의', time: 1.0 },
+            { name: '기타', time: 0.4 },
+          ],
+        },
+        {
+          date: '1/14',
+          categories: [
+            { name: '개발', time: 3.8 },
+            { name: '디자인', time: 1.8 },
+            { name: '회의', time: 1.2 },
+            { name: '기타', time: 0.4 },
+          ],
+        },
+        {
+          date: '1/15',
+          categories: [
+            { name: '개발', time: 4.5 },
+            { name: '디자인', time: 2.0 },
+            { name: '회의', time: 1.5 },
+            { name: '기타', time: 0.5 },
+          ],
+        },
+      ],
+      categories: [
+        {
+          name: '개발',
+          time: 22.5,
+          percentage: 53,
+          color: 'from-purple-500 to-purple-600',
+          icon: '💻',
+        },
+        {
+          name: '디자인',
+          time: 10.2,
+          percentage: 24,
+          color: 'from-blue-500 to-blue-600',
+          icon: '🎨',
+        },
+        {
+          name: '회의',
+          time: 7.6,
+          percentage: 18,
+          color: 'from-green-500 to-green-600',
+          icon: '🤝',
+        },
+        {
+          name: '기타',
+          time: 2.0,
+          percentage: 5,
+          color: 'from-gray-500 to-gray-600',
+          icon: '📋',
+        },
+      ],
+    },
+    {
+      weekName: '1월 2주차',
+      totalTime: 38.7,
+      weeklyData: [
+        {
+          date: '1/16',
+          categories: [
+            { name: '개발', time: 3.0 },
+            { name: '디자인', time: 1.8 },
+            { name: '회의', time: 1.2 },
+            { name: '기타', time: 0.5 },
+          ],
+        },
+        {
+          date: '1/17',
+          categories: [
+            { name: '개발', time: 3.5 },
+            { name: '디자인', time: 1.5 },
+            { name: '회의', time: 1.8 },
+            { name: '기타', time: 0.2 },
+          ],
+        },
+        {
+          date: '1/18',
+          categories: [
+            { name: '개발', time: 4.2 },
+            { name: '디자인', time: 1.8 },
+            { name: '회의', time: 0.8 },
+            { name: '기타', time: 0.4 },
+          ],
+        },
+        {
+          date: '1/19',
+          categories: [
+            { name: '개발', time: 2.5 },
+            { name: '디자인', time: 2.2 },
+            { name: '회의', time: 1.5 },
+            { name: '기타', time: 0.8 },
+          ],
+        },
+        {
+          date: '1/20',
+          categories: [
+            { name: '개발', time: 3.2 },
+            { name: '디자인', time: 1.9 },
+            { name: '회의', time: 1.1 },
+            { name: '기타', time: 0.3 },
+          ],
+        },
+        {
+          date: '1/21',
+          categories: [
+            { name: '개발', time: 3.6 },
+            { name: '디자인', time: 1.6 },
+            { name: '회의', time: 1.0 },
+            { name: '기타', time: 0.4 },
+          ],
+        },
+        {
+          date: '1/22',
+          categories: [
+            { name: '개발', time: 4.1 },
+            { name: '디자인', time: 1.7 },
+            { name: '회의', time: 1.3 },
+            { name: '기타', time: 0.4 },
+          ],
+        },
+      ],
+      categories: [
+        {
+          name: '개발',
+          time: 20.1,
+          percentage: 52,
+          color: 'from-purple-500 to-purple-600',
+          icon: '💻',
+        },
+        {
+          name: '디자인',
+          time: 9.5,
+          percentage: 25,
+          color: 'from-blue-500 to-blue-600',
+          icon: '🎨',
+        },
+        {
+          name: '회의',
+          time: 6.7,
+          percentage: 17,
+          color: 'from-green-500 to-green-600',
+          icon: '🤝',
+        },
+        {
+          name: '기타',
+          time: 2.4,
+          percentage: 6,
+          color: 'from-gray-500 to-gray-600',
+          icon: '📋',
+        },
+      ],
+    },
+  ] as WeeklyData[],
+  monthly: [
+    {
+      monthName: '2024년 1월',
+      totalTime: 169.2,
+      monthlyData: [
+        {
+          date: '1주차',
+          categories: [
+            { name: '개발', time: 20.5 },
+            { name: '디자인', time: 9.2 },
+            { name: '회의', time: 6.8 },
+            { name: '기타', time: 1.5 },
+          ],
+        },
+        {
+          date: '2주차',
+          categories: [
+            { name: '개발', time: 22.1 },
+            { name: '디자인', time: 10.5 },
+            { name: '회의', time: 7.2 },
+            { name: '기타', time: 2.2 },
+          ],
+        },
+        {
+          date: '3주차',
+          categories: [
+            { name: '개발', time: 23.6 },
+            { name: '디자인', time: 11.0 },
+            { name: '회의', time: 8.1 },
+            { name: '기타', time: 2.3 },
+          ],
+        },
+        {
+          date: '4주차',
+          categories: [
+            { name: '개발', time: 23.5 },
+            { name: '디자인', time: 9.9 },
+            { name: '회의', time: 8.4 },
+            { name: '기타', time: 2.4 },
+          ],
+        },
+      ],
+      categories: [
+        {
+          name: '개발',
+          time: 89.7,
+          percentage: 53,
+          color: 'from-purple-500 to-purple-600',
+          icon: '💻',
+        },
+        {
+          name: '디자인',
+          time: 40.6,
+          percentage: 24,
+          color: 'from-blue-500 to-blue-600',
+          icon: '🎨',
+        },
+        {
+          name: '회의',
+          time: 30.5,
+          percentage: 18,
+          color: 'from-green-500 to-green-600',
+          icon: '🤝',
+        },
+        {
+          name: '기타',
+          time: 8.4,
+          percentage: 5,
+          color: 'from-gray-500 to-gray-600',
+          icon: '📋',
+        },
+      ],
+    },
+    {
+      monthName: '2023년 12월',
+      totalTime: 155.8,
+      monthlyData: [
+        {
+          date: '1주차',
+          categories: [
+            { name: '개발', time: 18.5 },
+            { name: '디자인', time: 8.8 },
+            { name: '회의', time: 6.2 },
+            { name: '기타', time: 1.2 },
+          ],
+        },
+        {
+          date: '2주차',
+          categories: [
+            { name: '개발', time: 20.3 },
+            { name: '디자인', time: 9.8 },
+            { name: '회의', time: 6.9 },
+            { name: '기타', time: 2.0 },
+          ],
+        },
+        {
+          date: '3주차',
+          categories: [
+            { name: '개발', time: 22.1 },
+            { name: '디자인', time: 10.2 },
+            { name: '회의', time: 7.5 },
+            { name: '기타', time: 2.1 },
+          ],
+        },
+        {
+          date: '4주차',
+          categories: [
+            { name: '개발', time: 21.8 },
+            { name: '디자인', time: 9.5 },
+            { name: '회의', time: 7.8 },
+            { name: '기타', time: 2.2 },
+          ],
+        },
+      ],
+      categories: [
+        {
+          name: '개발',
+          time: 82.7,
+          percentage: 53,
+          color: 'from-purple-500 to-purple-600',
+          icon: '💻',
+        },
+        {
+          name: '디자인',
+          time: 38.3,
+          percentage: 25,
+          color: 'from-blue-500 to-blue-600',
+          icon: '🎨',
+        },
+        {
+          name: '회의',
+          time: 28.4,
+          percentage: 18,
+          color: 'from-green-500 to-green-600',
+          icon: '🤝',
+        },
+        {
+          name: '기타',
+          time: 6.4,
+          percentage: 4,
+          color: 'from-gray-500 to-gray-600',
+          icon: '📋',
+        },
+      ],
+    },
+  ] as MonthlyData[],
 }
 
 const timeLabels = {
@@ -291,10 +496,10 @@ const colorMap: { [key: string]: string } = {
   기타: '#6b7280',
 }
 
-// 파이차트 컴포넌트
-const PieChart = ({ data }: { data: any }) => {
+// 파이차트 컴포넌트 (크기 확대)
+const PieChart = ({ data }: { data: DailyData }) => {
   const total = data.categories.reduce(
-    (sum: number, cat: any) => sum + cat.time,
+    (sum: number, cat: Category) => sum + cat.time,
     0
   )
   let currentAngle = 0
@@ -306,18 +511,18 @@ const PieChart = ({ data }: { data: any }) => {
     const endAngleRad = (endAngle * Math.PI) / 180
 
     const largeArcFlag = angle > 180 ? 1 : 0
-    const x1 = 100 + 80 * Math.cos(startAngleRad)
-    const y1 = 100 + 80 * Math.sin(startAngleRad)
-    const x2 = 100 + 80 * Math.cos(endAngleRad)
-    const y2 = 100 + 80 * Math.sin(endAngleRad)
+    const x1 = 150 + 120 * Math.cos(startAngleRad)
+    const y1 = 150 + 120 * Math.sin(startAngleRad)
+    const x2 = 150 + 120 * Math.cos(endAngleRad)
+    const y2 = 150 + 120 * Math.sin(endAngleRad)
 
-    return `M 100 100 L ${x1} ${y1} A 80 80 0 ${largeArcFlag} 1 ${x2} ${y2} Z`
+    return `M 150 150 L ${x1} ${y1} A 120 120 0 ${largeArcFlag} 1 ${x2} ${y2} Z`
   }
 
   return (
-    <div className='flex flex-col items-center gap-6 lg:flex-row'>
-      <svg width='200' height='200' viewBox='0 0 200 200' className='mx-auto'>
-        {data.categories.map((category: any, index: number) => {
+    <div className='flex flex-col items-center gap-8 lg:flex-row'>
+      <svg width='300' height='300' viewBox='0 0 300 300' className='mx-auto'>
+        {data.categories.map((category: Category, index: number) => {
           const path = createPath(category.percentage, currentAngle)
           const previousAngle = currentAngle
           currentAngle += (category.percentage / 100) * 360
@@ -328,41 +533,26 @@ const PieChart = ({ data }: { data: any }) => {
               d={path}
               fill={colorMap[category.name]}
               stroke='white'
-              strokeWidth='2'
+              strokeWidth='3'
               className='cursor-pointer transition-opacity hover:opacity-80'
             />
           )
         })}
-        {/* 중앙 텍스트 */}
-        <text
-          x='100'
-          y='95'
-          textAnchor='middle'
-          className='fill-gray-800 text-lg font-bold'
-        >
-          총 {data.totalTime}시간
-        </text>
-        <text
-          x='100'
-          y='115'
-          textAnchor='middle'
-          className='fill-gray-600 text-sm'
-        >
-          작업 시간
-        </text>
       </svg>
 
       {/* 범례 */}
-      <div className='space-y-3'>
-        {data.categories.map((category: any, index: number) => (
-          <div key={index} className='flex items-center gap-3'>
+      <div className='space-y-4'>
+        {data.categories.map((category: Category, index: number) => (
+          <div key={index} className='flex items-center gap-4'>
             <div
-              className='h-4 w-4 rounded-full'
+              className='h-5 w-5 rounded-full'
               style={{ backgroundColor: colorMap[category.name] }}
             ></div>
             <div className='flex-1'>
-              <div className='font-semibold text-gray-800'>{category.name}</div>
-              <div className='text-sm text-gray-600'>
+              <div className='text-lg font-semibold text-gray-800'>
+                {category.name}
+              </div>
+              <div className='text-base text-gray-600'>
                 {category.time}h ({category.percentage}%)
               </div>
             </div>
@@ -378,10 +568,13 @@ const BarChart = ({
   data,
   type,
 }: {
-  data: any
+  data: WeeklyData | MonthlyData
   type: 'weekly' | 'monthly'
 }) => {
-  const chartData = type === 'weekly' ? data.weeklyData : data.monthlyData
+  const chartData =
+    type === 'weekly'
+      ? (data as WeeklyData).weeklyData
+      : (data as MonthlyData).monthlyData
   const maxTotal = Math.max(
     ...chartData.map((day: any) =>
       day.categories.reduce((sum: number, cat: any) => sum + cat.time, 0)
@@ -439,7 +632,7 @@ const BarChart = ({
 
       {/* 범례 */}
       <div className='flex flex-wrap justify-center gap-4'>
-        {data.categories.map((category: any, index: number) => (
+        {data.categories.map((category: Category, index: number) => (
           <div key={index} className='flex items-center gap-2'>
             <div
               className='h-3 w-3 rounded-full'
@@ -458,13 +651,22 @@ export const statisticsPage = () => {
     'daily' | 'weekly' | 'monthly'
   >('daily')
   const [selectedDate, setSelectedDate] = useState('2024-01-15')
+  const [selectedWeekIndex, setSelectedWeekIndex] = useState(0)
+  const [selectedMonthIndex, setSelectedMonthIndex] = useState(0)
 
   const availableDates = Object.keys(dummyData.daily).sort().reverse()
-  const currentData =
-    selectedPeriod === 'daily'
-      ? dummyData.daily[selectedDate as keyof typeof dummyData.daily]
-      : dummyData[selectedPeriod]
 
+  const getCurrentData = (): DailyData | WeeklyData | MonthlyData => {
+    if (selectedPeriod === 'daily') {
+      return dummyData.daily[selectedDate as keyof typeof dummyData.daily]
+    } else if (selectedPeriod === 'weekly') {
+      return dummyData.weekly[selectedWeekIndex]
+    } else {
+      return dummyData.monthly[selectedMonthIndex]
+    }
+  }
+
+  const currentData = getCurrentData()
   const topCategory = currentData.categories[0]
 
   const getDateLabel = (dateStr: string) => {
@@ -477,6 +679,87 @@ export const statisticsPage = () => {
     if (dateStr === dayBeforeYesterday) return '엊그제'
     return dateStr
   }
+
+  const handlePreviousDate = () => {
+    if (selectedPeriod === 'daily') {
+      const currentIndex = availableDates.indexOf(selectedDate)
+      if (currentIndex < availableDates.length - 1) {
+        setSelectedDate(availableDates[currentIndex + 1])
+      }
+    } else if (selectedPeriod === 'weekly') {
+      if (selectedWeekIndex < dummyData.weekly.length - 1) {
+        setSelectedWeekIndex(selectedWeekIndex + 1)
+      }
+    } else {
+      if (selectedMonthIndex < dummyData.monthly.length - 1) {
+        setSelectedMonthIndex(selectedMonthIndex + 1)
+      }
+    }
+  }
+
+  const handleNextDate = () => {
+    if (selectedPeriod === 'daily') {
+      const currentIndex = availableDates.indexOf(selectedDate)
+      if (currentIndex > 0) {
+        setSelectedDate(availableDates[currentIndex - 1])
+      }
+    } else if (selectedPeriod === 'weekly') {
+      if (selectedWeekIndex > 0) {
+        setSelectedWeekIndex(selectedWeekIndex - 1)
+      }
+    } else {
+      if (selectedMonthIndex > 0) {
+        setSelectedMonthIndex(selectedMonthIndex - 1)
+      }
+    }
+  }
+
+  const canGoPrevious = () => {
+    if (selectedPeriod === 'daily') {
+      return availableDates.indexOf(selectedDate) < availableDates.length - 1
+    } else if (selectedPeriod === 'weekly') {
+      return selectedWeekIndex < dummyData.weekly.length - 1
+    } else {
+      return selectedMonthIndex < dummyData.monthly.length - 1
+    }
+  }
+
+  const canGoNext = () => {
+    if (selectedPeriod === 'daily') {
+      return availableDates.indexOf(selectedDate) > 0
+    } else if (selectedPeriod === 'weekly') {
+      return selectedWeekIndex > 0
+    } else {
+      return selectedMonthIndex > 0
+    }
+  }
+
+  const getPeriodLabel = () => {
+    if (selectedPeriod === 'daily') {
+      return getDateLabel(selectedDate)
+    } else if (selectedPeriod === 'weekly') {
+      return dummyData.weekly[selectedWeekIndex].weekName
+    } else {
+      return dummyData.monthly[selectedMonthIndex].monthName
+    }
+  }
+
+  // 구체적인 지표 계산
+  const getConcreteMetrics = () => {
+    const devTime =
+      currentData.categories.find((cat: Category) => cat.name === '개발')
+        ?.time || 0
+    const totalBreaks = Math.floor(currentData.totalTime * 0.15) // 15% 휴식 시간으로 가정
+    const overtimeHours = Math.max(0, currentData.totalTime - 8) // 8시간 초과 시간
+
+    return {
+      devTime: devTime.toFixed(1),
+      totalBreaks,
+      overtimeHours: overtimeHours.toFixed(1),
+    }
+  }
+
+  const metrics = getConcreteMetrics()
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
@@ -544,10 +827,7 @@ export const statisticsPage = () => {
               <CardContent className='relative space-y-4 p-0'>
                 <div className='space-y-2 text-center'>
                   <Badge className='rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg'>
-                    {selectedPeriod === 'daily'
-                      ? getDateLabel(selectedDate)
-                      : timeLabels[selectedPeriod]}{' '}
-                    총 작업 시간
+                    {getPeriodLabel()} 총 작업 시간
                   </Badge>
                   <div className='flex items-end justify-center gap-2'>
                     <span className='bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-5xl font-bold text-transparent sm:text-6xl'>
@@ -591,62 +871,85 @@ export const statisticsPage = () => {
           <Card className='relative rounded-2xl border-0 bg-white p-6 shadow-xl transition-all duration-300 hover:shadow-2xl sm:rounded-3xl sm:p-8'>
             <div className='absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-600/5 to-blue-600/5 sm:rounded-3xl'></div>
             <CardContent className='relative space-y-6 p-0'>
-              <h3 className='text-center text-lg font-bold text-gray-800 sm:text-xl'>
-                {selectedPeriod === 'daily'
-                  ? '🥧 카테고리별 시간 비율'
-                  : '📊 기간별 작업 시간'}
-              </h3>
+              <div className='flex items-center justify-between'>
+                <h3 className='text-lg font-bold text-gray-800 sm:text-xl'>
+                  {selectedPeriod === 'daily'
+                    ? '🥧 카테고리별 시간 비율'
+                    : '📊 기간별 작업 시간'}
+                </h3>
+
+                {/* 이전/다음 버튼 */}
+                <div className='flex gap-2'>
+                  <Button
+                    variant='secondary'
+                    size='sm'
+                    className='h-8 w-8 rounded-lg p-0'
+                    onClick={handlePreviousDate}
+                    disabled={!canGoPrevious()}
+                  >
+                    ←
+                  </Button>
+                  <Button
+                    variant='secondary'
+                    size='sm'
+                    className='h-8 w-8 rounded-lg p-0'
+                    onClick={handleNextDate}
+                    disabled={!canGoNext()}
+                  >
+                    →
+                  </Button>
+                </div>
+              </div>
 
               {selectedPeriod === 'daily' ? (
-                <PieChart data={currentData} />
+                <PieChart data={currentData as DailyData} />
               ) : (
-                <BarChart data={currentData} type={selectedPeriod} />
+                <BarChart
+                  data={currentData as WeeklyData | MonthlyData}
+                  type={selectedPeriod}
+                />
               )}
             </CardContent>
           </Card>
         </div>
 
-        {/* 간단한 인사이트 */}
+        {/* 구체적인 지표들 */}
         <div className='grid gap-4 sm:grid-cols-3 sm:gap-6'>
+          <Card className='relative rounded-2xl border-0 bg-white/80 p-4 shadow-lg transition-all duration-300 hover:shadow-xl sm:p-6'>
+            <div className='absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-600/10 to-purple-700/10'></div>
+            <CardContent className='relative space-y-2 p-0 text-center'>
+              <div className='text-2xl sm:text-3xl'>💻</div>
+              <div className='text-sm font-bold text-gray-800 sm:text-base'>
+                개발 작업 시간
+              </div>
+              <div className='text-lg font-semibold text-purple-600 sm:text-xl'>
+                {metrics.devTime}시간
+              </div>
+            </CardContent>
+          </Card>
+
           <Card className='relative rounded-2xl border-0 bg-white/80 p-4 shadow-lg transition-all duration-300 hover:shadow-xl sm:p-6'>
             <div className='absolute inset-0 rounded-2xl bg-gradient-to-br from-green-600/10 to-emerald-600/10'></div>
             <CardContent className='relative space-y-2 p-0 text-center'>
-              <div className='text-2xl sm:text-3xl'>⏰</div>
+              <div className='text-2xl sm:text-3xl'>☕</div>
               <div className='text-sm font-bold text-gray-800 sm:text-base'>
-                평균 집중 시간
+                예상 휴식 횟수
               </div>
               <div className='text-lg font-semibold text-green-600 sm:text-xl'>
-                {selectedPeriod === 'daily'
-                  ? '2.1h'
-                  : selectedPeriod === 'weekly'
-                    ? '6.0h'
-                    : '8.5h'}
+                {metrics.totalBreaks}회
               </div>
             </CardContent>
           </Card>
 
           <Card className='relative rounded-2xl border-0 bg-white/80 p-4 shadow-lg transition-all duration-300 hover:shadow-xl sm:p-6'>
-            <div className='absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-600/10 to-cyan-600/10'></div>
+            <div className='absolute inset-0 rounded-2xl bg-gradient-to-br from-orange-600/10 to-red-600/10'></div>
             <CardContent className='relative space-y-2 p-0 text-center'>
-              <div className='text-2xl sm:text-3xl'>🎯</div>
+              <div className='text-2xl sm:text-3xl'>⏰</div>
               <div className='text-sm font-bold text-gray-800 sm:text-base'>
-                목표 달성률
+                초과 근무 시간
               </div>
-              <div className='text-lg font-semibold text-blue-600 sm:text-xl'>
-                85%
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className='relative rounded-2xl border-0 bg-white/80 p-4 shadow-lg transition-all duration-300 hover:shadow-xl sm:p-6'>
-            <div className='absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-600/10 to-pink-600/10'></div>
-            <CardContent className='relative space-y-2 p-0 text-center'>
-              <div className='text-2xl sm:text-3xl'>📊</div>
-              <div className='text-sm font-bold text-gray-800 sm:text-base'>
-                생산성 지수
-              </div>
-              <div className='text-lg font-semibold text-purple-600 sm:text-xl'>
-                92점
+              <div className='text-lg font-semibold text-orange-600 sm:text-xl'>
+                {metrics.overtimeHours}시간
               </div>
             </CardContent>
           </Card>
