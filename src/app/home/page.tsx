@@ -1,7 +1,12 @@
 'use client'
 import * as PortOne from '@portone/browser-sdk/v2'
 import { useState } from 'react'
-import { ENV } from '../../config/env'
+import {
+  APP_URL,
+  KAKAOPAY_CHANNEL_KEY,
+  PORTONE_STORE_ID,
+  TOSS_CHANNEL_KEY,
+} from '../../shared/configs/api/url'
 
 type PaymentProvider = 'TOSS' | 'KAKAOPAY'
 
@@ -32,7 +37,7 @@ interface BillingKeyRequest {
 const PROVIDERS: Record<PaymentProvider, ProviderInfo> = {
   TOSS: {
     name: '토스페이먼츠',
-    channelKey: ENV.TOSS_CHANNEL_KEY || '',
+    channelKey: TOSS_CHANNEL_KEY || '',
     method: 'CARD' as const,
     description: '깔끔한 UI, 빠른 처리',
     icon: '💙',
@@ -40,7 +45,7 @@ const PROVIDERS: Record<PaymentProvider, ProviderInfo> = {
   },
   KAKAOPAY: {
     name: '카카오페이',
-    channelKey: ENV.KAKAOPAY_CHANNEL_KEY || '',
+    channelKey: KAKAOPAY_CHANNEL_KEY || '',
     method: 'EASY_PAY' as const,
     description: '간편결제, 카톡으로 결제',
     icon: '💛',
@@ -60,19 +65,19 @@ export default function Home() {
 
     try {
       const provider = PROVIDERS[selectedProvider]
-      console.log(ENV.PORTONE_STORE_ID)
+      console.log(PORTONE_STORE_ID)
       console.log(provider.channelKey)
       console.log(provider.method)
 
       // 환경 변수 검증
-      if (!ENV.PORTONE_STORE_ID || !provider.channelKey) {
+      if (!PORTONE_STORE_ID || !provider.channelKey) {
         setPaymentResult('환경 변수가 올바르게 설정되지 않았습니다.')
         return
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const billingKeyRequest: any = {
-        storeId: ENV.PORTONE_STORE_ID,
+        storeId: PORTONE_STORE_ID,
         channelKey: provider.channelKey,
         billingKeyMethod: provider.method,
         issueId: `billing-${crypto.randomUUID()}`,
@@ -82,17 +87,11 @@ export default function Home() {
           phoneNumber: '010-0000-0000',
           email: 'test@example.com',
         },
-        redirectUrl: `${ENV.APP_URL}/payment/complete`,
+        redirectUrl: `${APP_URL}/payment/complete`,
         ...(provider.method === 'EASY_PAY' && {
           easyPayProvider: selectedProvider,
         }),
       }
-
-      console.log('빌링키 발급 요청:', billingKeyRequest)
-      console.log(
-        '현재 환경:',
-        ENV.IS_PRODUCTION ? 'Production' : 'Development'
-      )
 
       const response = await PortOne.requestIssueBillingKey(billingKeyRequest)
 
@@ -106,7 +105,7 @@ export default function Home() {
       if (response.code != null) {
         setPaymentResult(`빌링키 발급 실패: ${response.message}`)
       } else {
-        setPaymentResult(`빌링키 발급 성공! 빌링키: ${response.billingKey}`)
+        setPaymentResult(`빌링키 발급 성공!`)
         console.log('발급된 빌링키:', response.billingKey)
       }
     } catch (error) {
@@ -124,11 +123,6 @@ export default function Home() {
           <h1 className='mb-2 text-3xl font-bold text-blue-200'>Fossistant</h1>
           <p className='text-gray-400'>오픈소스 기여 도우미</p>
           {/* 개발 환경에서만 환경 정보 표시 */}
-          {ENV.IS_DEVELOPMENT && (
-            <p className='mt-1 text-xs text-yellow-400'>
-              🛠️ 개발 환경 (StoreID: {ENV.PORTONE_STORE_ID?.slice(-8)})
-            </p>
-          )}
         </div>
 
         <div className='mb-6 rounded-xl border border-[#2d2d30] bg-[#232326] p-6'>
@@ -190,11 +184,6 @@ export default function Home() {
                         {provider.description}
                       </div>
                       {/* 개발 환경에서만 채널키 일부 표시 */}
-                      {ENV.IS_DEVELOPMENT && (
-                        <div className='mt-1 text-xs text-gray-500'>
-                          채널: {provider.channelKey.slice(-8)}
-                        </div>
-                      )}
                     </div>
                   </div>
                   {selectedProvider === key && (
@@ -238,12 +227,6 @@ export default function Home() {
           <p className='mt-2 text-yellow-400'>
             💡 간편결제로 빠르고 쉽게 구독하세요!
           </p>
-          {ENV.IS_DEVELOPMENT && (
-            <p className='mt-2 text-xs text-blue-400'>
-              🔧 개발 모드: 환경 변수 {ENV.IS_PRODUCTION ? '프로덕션' : '로컬'}{' '}
-              설정 사용
-            </p>
-          )}
         </div>
       </div>
     </div>
