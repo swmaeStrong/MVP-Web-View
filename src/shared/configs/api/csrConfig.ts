@@ -2,6 +2,7 @@ import axios from 'axios'
 
 import { STORAGE_REFRESH_KEY } from '@/shared/constants/storage'
 import { noAccessTokenCode } from '../errorCode'
+import { updateAccess } from './handleToken'
 import { BASEURL } from './url'
 
 export const API = axios.create({
@@ -43,6 +44,7 @@ export const getRccRefresh = (): string | null => {
 API.interceptors.response.use(
   response => response,
   async error => {
+    console.log(error, 'error')
     if (error.response) {
       const {
         response: {
@@ -51,18 +53,25 @@ API.interceptors.response.use(
         config,
       } = error
 
+      console.log(errorCode, 'errorCode')
       //Access token 재발급 과정
-      if (noAccessTokenCode.includes(errorCode)) {
+      if (noAccessTokenCode.includes(errorCode) || error.status === 403) {
+        console.log('noAccessTokenCode')
         const refresh = getRccRefresh()
+        console.log(refresh, 'refresh')
         if (!refresh) {
           // refresh token 없으면 접근 불가 이런 페이지로 이동
         } else {
-          // const accessToken = await updateAccess(refresh);
-          // config.headers['Authorization'] = `Bearer ${accessToken}`;
-          // return API.request(config);
+          const accessToken = await updateAccess({
+            refreshToken: refresh,
+          })
+          config.headers['Authorization'] =
+            `Bearer ${accessToken.data.accessToken}`
+          return API.request(config)
         }
       }
     }
+
     throw new Error(`${error}`)
   }
 )
