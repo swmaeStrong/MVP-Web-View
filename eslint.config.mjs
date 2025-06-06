@@ -23,6 +23,7 @@ const eslintConfig = [
           varsIgnorePattern: '^_',
         },
       ],
+      '@typescript-eslint/no-namespace': 'off',
       'prefer-const': 'warn',
       '@typescript-eslint/no-empty-function': 'off',
 
