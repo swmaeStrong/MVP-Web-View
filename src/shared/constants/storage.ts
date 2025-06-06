@@ -1,2 +1,1 @@
 export const STORAGE_ACCESS_KEY = 'SWM_JWT_ACCESS';
-export const STORAGE_REFRESH_KEY = 'SWM_JWT_REFRESH';

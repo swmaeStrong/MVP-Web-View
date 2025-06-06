@@ -5,8 +5,4 @@ declare namespace LeaderBoard {
     score: number;
     rank: number;
   }
-
-  interface TokenRequest {
-    refreshToken: string;
-  }
 }

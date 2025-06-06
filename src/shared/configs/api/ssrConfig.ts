@@ -1,20 +1,14 @@
 'use server';
 
-import {
-  STORAGE_ACCESS_KEY,
-  STORAGE_REFRESH_KEY,
-} from '@/shared/constants/storage';
+import { STORAGE_ACCESS_KEY } from '@/shared/constants/storage';
 import { cookies } from 'next/headers';
 
 /**
  * 쿠키 저장 (Access/Refresh)
  */
-export async function setRscToken(access: string, refresh?: string) {
+export async function setRscToken(access: string) {
   const cookieStore = await cookies();
   cookieStore.set(STORAGE_ACCESS_KEY, access);
-  if (refresh) {
-    cookieStore.set(STORAGE_REFRESH_KEY, refresh);
-  }
 }
 
 /**
@@ -25,22 +19,12 @@ export async function removeRscAccess() {
   cookieStore.delete(STORAGE_ACCESS_KEY);
 }
 
-export async function removeRscRefresh() {
-  const cookieStore = await cookies();
-  cookieStore.delete(STORAGE_REFRESH_KEY);
-}
-
 /**
  * 쿠키 조회
  */
 export async function getRscAccess(): Promise<string | undefined> {
   const cookieStore = await cookies();
   return cookieStore.get(STORAGE_ACCESS_KEY)?.value;
-}
-
-export async function getRscRefresh(): Promise<string | undefined> {
-  const cookieStore = await cookies();
-  return cookieStore.get(STORAGE_REFRESH_KEY)?.value;
 }
 
 /**
