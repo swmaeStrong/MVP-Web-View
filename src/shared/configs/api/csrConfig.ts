@@ -41,6 +41,14 @@ export const getRccRefresh = (): string | null => {
   return localStorage.getItem(STORAGE_REFRESH_KEY);
 };
 
+API.interceptors.request.use(config => {
+  const accessToken = getRccAccess();
+  if (accessToken) {
+    config.headers['Authorization'] = `Bearer ${accessToken}`;
+  }
+  return config;
+});
+
 API.interceptors.response.use(
   response => response,
   async error => {
