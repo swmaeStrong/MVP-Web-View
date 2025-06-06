@@ -1,37 +1,37 @@
-'use client'
-import { Badge } from '@/shadcn/ui/badge'
-import { Button } from '@/shadcn/ui/button'
-import { Card, CardContent } from '@/shadcn/ui/card'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+'use client';
+import { Badge } from '@/shadcn/ui/badge';
+import { Button } from '@/shadcn/ui/button';
+import { Card, CardContent } from '@/shadcn/ui/card';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface Subscription {
-  plan: string
-  price: number
-  startDate: string
-  paymentMethod: string
-  status: string
+  plan: string;
+  price: number;
+  startDate: string;
+  paymentMethod: string;
+  status: string;
 }
 
 export default function SubscriptionSuccessPage() {
-  const router = useRouter()
-  const [subscription, setSubscription] = useState<Subscription | null>(null)
-  const [showConfetti, setShowConfetti] = useState(true)
+  const router = useRouter();
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [showConfetti, setShowConfetti] = useState(true);
 
   useEffect(() => {
     // 구독 정보 확인
-    const savedSubscription = localStorage.getItem('subscription')
+    const savedSubscription = localStorage.getItem('subscription');
     if (!savedSubscription) {
       // 구독 정보가 없으면 구독 페이지로 리다이렉트
-      router.push('/subscription')
-      return
+      router.push('/subscription');
+      return;
     }
 
-    setSubscription(JSON.parse(savedSubscription))
+    setSubscription(JSON.parse(savedSubscription));
 
     // 3초 후 confetti 효과 제거
-    setTimeout(() => setShowConfetti(false), 3000)
-  }, [router])
+    setTimeout(() => setShowConfetti(false), 3000);
+  }, [router]);
 
   if (!subscription) {
     return (
@@ -41,7 +41,7 @@ export default function SubscriptionSuccessPage() {
           <p className='text-gray-600'>구독 정보를 확인하는 중...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -239,5 +239,5 @@ export default function SubscriptionSuccessPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

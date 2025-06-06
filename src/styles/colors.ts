@@ -14,7 +14,7 @@ export const brandColors = {
     light: 'pink-50',
     text: 'pink-700',
   },
-}
+};
 
 // 카테고리별 컬러 시스템
 export const categoryColors = {
@@ -53,7 +53,7 @@ export const categoryColors = {
     borderGradient: 'from-gray-400 to-slate-400',
     bgOpacity: 'from-gray-600/5 to-slate-600/5',
   },
-}
+};
 
 // 순위별 컬러 시스템
 export const rankColors = {
@@ -147,7 +147,7 @@ export const rankColors = {
     shadowColor: 'shadow-green-200',
     avatarClass: 'bg-green-100 text-green-800',
   },
-}
+};
 
 // 확장 순위 컬러 (11위~)
 export const extendedRankColors = {
@@ -178,7 +178,7 @@ export const extendedRankColors = {
     shadowColor: 'shadow-lime-200',
     avatarClass: 'bg-lime-100 text-lime-800',
   },
-}
+};
 
 // 상태별 컬러
 export const statusColors = {
@@ -210,7 +210,7 @@ export const statusColors = {
     textBold: 'text-gray-800',
     bg: 'bg-gray-50',
   },
-}
+};
 
 // 특별 효과 컬러
 export const specialEffects = {
@@ -230,4 +230,4 @@ export const specialEffects = {
     top3: 'text-white font-bold',
     special: 'from-purple-500 to-pink-500 text-white',
   },
-}
+};

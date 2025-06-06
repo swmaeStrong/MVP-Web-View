@@ -1,18 +1,18 @@
-'use client'
-import { Badge } from '@/shadcn/ui/badge'
-import { Button } from '@/shadcn/ui/button'
-import { Card, CardContent } from '@/shadcn/ui/card'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+'use client';
+import { Badge } from '@/shadcn/ui/badge';
+import { Button } from '@/shadcn/ui/button';
+import { Card, CardContent } from '@/shadcn/ui/card';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 
 export default function PaymentMethodPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [selectedMethod, setSelectedMethod] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [selectedMethod, setSelectedMethod] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   // 구독 플로우에서 온 건지 확인
-  const fromSubscription = searchParams.get('from') === 'subscription'
+  const fromSubscription = searchParams.get('from') === 'subscription';
 
   const paymentMethods = [
     {
@@ -31,33 +31,33 @@ export default function PaymentMethodPage() {
       gradient: 'from-yellow-500 to-orange-500',
       bgGradient: 'from-yellow-50 to-orange-100',
     },
-  ]
+  ];
 
   const handleMethodSelect = async () => {
-    if (!selectedMethod) return
+    if (!selectedMethod) return;
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       // 결제 수단 저장 시뮬레이션
       const paymentData = {
         method: selectedMethod,
         createdAt: new Date().toISOString(),
-      }
-      localStorage.setItem('paymentMethods', JSON.stringify([paymentData]))
+      };
+      localStorage.setItem('paymentMethods', JSON.stringify([paymentData]));
 
       // 구독 플로우에서 왔다면 바로 결제로, 아니면 성공 페이지로
       if (fromSubscription) {
-        router.push('/subscription/checkout')
+        router.push('/subscription/checkout');
       } else {
-        router.push('/subscription/payment-method/success')
+        router.push('/subscription/payment-method/success');
       }
     } catch (error) {
-      console.error('결제 수단 등록 중 오류:', error)
+      console.error('결제 수단 등록 중 오류:', error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
@@ -233,5 +233,5 @@ export default function PaymentMethodPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

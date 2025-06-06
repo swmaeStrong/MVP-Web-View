@@ -1,37 +1,37 @@
-'use client'
-import * as PortOne from '@portone/browser-sdk/v2'
-import { useState } from 'react'
+'use client';
+import * as PortOne from '@portone/browser-sdk/v2';
+import { useState } from 'react';
 import {
   APP_URL,
   KAKAOPAY_CHANNEL_KEY,
   PORTONE_STORE_ID,
   TOSS_CHANNEL_KEY,
-} from '../../shared/configs/api/url'
+} from '../../shared/configs/api/url';
 
-type PaymentProvider = 'TOSS' | 'KAKAOPAY'
+type PaymentProvider = 'TOSS' | 'KAKAOPAY';
 
 interface ProviderInfo {
-  name: string
-  channelKey: string
-  method: string
-  description: string
-  icon: string
-  recommended?: boolean
+  name: string;
+  channelKey: string;
+  method: string;
+  description: string;
+  icon: string;
+  recommended?: boolean;
 }
 
 interface BillingKeyRequest {
-  storeId: string
-  channelKey: string
-  billingKeyMethod: string
-  issueId: string
-  issueName: string
+  storeId: string;
+  channelKey: string;
+  billingKeyMethod: string;
+  issueId: string;
+  issueName: string;
   customer: {
-    fullName: string
-    phoneNumber: string
-    email: string
-  }
-  redirectUrl: string
-  easyPayProvider?: string
+    fullName: string;
+    phoneNumber: string;
+    email: string;
+  };
+  redirectUrl: string;
+  easyPayProvider?: string;
 }
 
 const PROVIDERS: Record<PaymentProvider, ProviderInfo> = {
@@ -51,28 +51,28 @@ const PROVIDERS: Record<PaymentProvider, ProviderInfo> = {
     icon: '💛',
     recommended: true,
   },
-}
+};
 
 export default function Home() {
-  const [isPaymentLoading, setIsPaymentLoading] = useState(false)
-  const [paymentResult, setPaymentResult] = useState<string | null>(null)
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false);
+  const [paymentResult, setPaymentResult] = useState<string | null>(null);
   const [selectedProvider, setSelectedProvider] =
-    useState<PaymentProvider>('KAKAOPAY')
+    useState<PaymentProvider>('KAKAOPAY');
 
   const handlePayment = async () => {
-    setIsPaymentLoading(true)
-    setPaymentResult(null)
+    setIsPaymentLoading(true);
+    setPaymentResult(null);
 
     try {
-      const provider = PROVIDERS[selectedProvider]
-      console.log(PORTONE_STORE_ID)
-      console.log(provider.channelKey)
-      console.log(provider.method)
+      const provider = PROVIDERS[selectedProvider];
+      console.log(PORTONE_STORE_ID);
+      console.log(provider.channelKey);
+      console.log(provider.method);
 
       // 환경 변수 검증
       if (!PORTONE_STORE_ID || !provider.channelKey) {
-        setPaymentResult('환경 변수가 올바르게 설정되지 않았습니다.')
-        return
+        setPaymentResult('환경 변수가 올바르게 설정되지 않았습니다.');
+        return;
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -91,30 +91,30 @@ export default function Home() {
         ...(provider.method === 'EASY_PAY' && {
           easyPayProvider: selectedProvider,
         }),
-      }
+      };
 
-      const response = await PortOne.requestIssueBillingKey(billingKeyRequest)
+      const response = await PortOne.requestIssueBillingKey(billingKeyRequest);
 
       if (!response) {
-        setPaymentResult('빌링키 발급 응답을 받지 못했습니다.')
-        return
+        setPaymentResult('빌링키 발급 응답을 받지 못했습니다.');
+        return;
       }
 
-      console.log('빌링키 발급 응답:', response)
+      console.log('빌링키 발급 응답:', response);
 
       if (response.code != null) {
-        setPaymentResult(`빌링키 발급 실패: ${response.message}`)
+        setPaymentResult(`빌링키 발급 실패: ${response.message}`);
       } else {
-        setPaymentResult(`빌링키 발급 성공!`)
-        console.log('발급된 빌링키:', response.billingKey)
+        setPaymentResult(`빌링키 발급 성공!`);
+        console.log('발급된 빌링키:', response.billingKey);
       }
     } catch (error) {
-      console.error('빌링키 발급 오류:', error)
-      setPaymentResult('빌링키 발급 중 오류가 발생했습니다.')
+      console.error('빌링키 발급 오류:', error);
+      setPaymentResult('빌링키 발급 중 오류가 발생했습니다.');
     } finally {
-      setIsPaymentLoading(false)
+      setIsPaymentLoading(false);
     }
-  }
+  };
 
   return (
     <div className='flex min-h-screen items-center justify-center bg-[#1C1C1E] p-6 text-white'>
@@ -230,5 +230,5 @@ export default function Home() {
         </div>
       </div>
     </div>
-  )
+  );
 }

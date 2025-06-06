@@ -1,46 +1,48 @@
-'use client'
-import { Badge } from '@/shadcn/ui/badge'
-import { Button } from '@/shadcn/ui/button'
-import { Card, CardContent } from '@/shadcn/ui/card'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+'use client';
+import { Badge } from '@/shadcn/ui/badge';
+import { Button } from '@/shadcn/ui/button';
+import { Card, CardContent } from '@/shadcn/ui/card';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface PaymentMethod {
-  method: string
-  createdAt: string
+  method: string;
+  createdAt: string;
 }
 
 interface CountdownState {
-  hours: number
-  minutes: number
-  seconds: number
+  hours: number;
+  minutes: number;
+  seconds: number;
 }
 
 export default function CheckoutPage() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null)
-  const [countdown, setCountdown] = useState<CountdownState | null>(null)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
+    null
+  );
+  const [countdown, setCountdown] = useState<CountdownState | null>(null);
 
   useEffect(() => {
     // 결제 수단 확인
-    const savedPaymentMethods = localStorage.getItem('paymentMethods')
+    const savedPaymentMethods = localStorage.getItem('paymentMethods');
     if (!savedPaymentMethods) {
       // 결제 수단이 없으면 등록 페이지로 리다이렉트
-      router.push('/subscription/payment-method?from=subscription')
-      return
+      router.push('/subscription/payment-method?from=subscription');
+      return;
     }
 
-    const methods = JSON.parse(savedPaymentMethods)
-    setPaymentMethod(methods[0])
-  }, [router])
+    const methods = JSON.parse(savedPaymentMethods);
+    setPaymentMethod(methods[0]);
+  }, [router]);
 
   const handlePayment = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       // 결제 처리 시뮬레이션
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       // 구독 정보 저장
       const subscriptionData = {
@@ -49,42 +51,42 @@ export default function CheckoutPage() {
         startDate: new Date().toISOString(),
         paymentMethod: paymentMethod?.method,
         status: 'active',
-      }
-      localStorage.setItem('subscription', JSON.stringify(subscriptionData))
+      };
+      localStorage.setItem('subscription', JSON.stringify(subscriptionData));
 
       // 성공 페이지로 이동
-      router.push('/subscription/success')
+      router.push('/subscription/success');
     } catch (error) {
-      console.error('결제 처리 중 오류:', error)
+      console.error('결제 처리 중 오류:', error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // 특별 할인 카운트다운 효과
   useEffect(() => {
-    const targetTime = new Date()
-    targetTime.setHours(23, 59, 59, 999) // 오늘 자정까지
+    const targetTime = new Date();
+    targetTime.setHours(23, 59, 59, 999); // 오늘 자정까지
 
     const timer = setInterval(() => {
-      const now = new Date()
-      const difference = targetTime.getTime() - now.getTime()
+      const now = new Date();
+      const difference = targetTime.getTime() - now.getTime();
 
       if (difference > 0) {
-        const hours = Math.floor(difference / (1000 * 60 * 60))
+        const hours = Math.floor(difference / (1000 * 60 * 60));
         const minutes = Math.floor(
           (difference % (1000 * 60 * 60)) / (1000 * 60)
-        )
-        const seconds = Math.floor((difference % (1000 * 60)) / 1000)
+        );
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-        setCountdown({ hours, minutes, seconds })
+        setCountdown({ hours, minutes, seconds });
       } else {
-        setCountdown({ hours: 0, minutes: 0, seconds: 0 })
+        setCountdown({ hours: 0, minutes: 0, seconds: 0 });
       }
-    }, 1000)
+    }, 1000);
 
-    return () => clearInterval(timer)
-  }, [])
+    return () => clearInterval(timer);
+  }, []);
 
   if (!paymentMethod) {
     return (
@@ -94,7 +96,7 @@ export default function CheckoutPage() {
           <p className='text-gray-600'>결제 정보를 확인하는 중...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -282,5 +284,5 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

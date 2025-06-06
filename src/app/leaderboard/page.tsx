@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import {
   animations,
@@ -9,20 +9,20 @@ import {
   rankColors,
   typography,
   utils,
-} from '@/styles'
-import { useEffect, useState } from 'react'
+} from '@/styles';
+import { useEffect, useState } from 'react';
 
 interface User {
-  id: number
-  name: string
-  hours: number
-  avatar: string
-  isMe: boolean
-  category: string
-  trend: 'up' | 'down' | 'same'
-  streak: number
-  todayGain: number
-  level: number
+  id: number;
+  name: string;
+  hours: number;
+  avatar: string;
+  isMe: boolean;
+  category: string;
+  trend: 'up' | 'down' | 'same';
+  streak: number;
+  todayGain: number;
+  level: number;
 }
 
 const generateUsers = (): User[] => {
@@ -37,7 +37,7 @@ const generateUsers = (): User[] => {
     '오하늘',
     '장민주',
     '윤서연',
-  ]
+  ];
   const englishNames = [
     'John Smith',
     'Emma Johnson',
@@ -49,20 +49,20 @@ const generateUsers = (): User[] => {
     'Amy Martinez',
     'James Lee',
     'Jessica Kim',
-  ]
-  const allNames = [...koreanNames, ...englishNames]
+  ];
+  const allNames = [...koreanNames, ...englishNames];
 
-  const categories = ['개발', '디자인', '회의', '기타']
-  const trends: ('up' | 'down' | 'same')[] = ['up', 'down', 'same']
+  const categories = ['개발', '디자인', '회의', '기타'];
+  const trends: ('up' | 'down' | 'same')[] = ['up', 'down', 'same'];
 
-  const users: User[] = []
+  const users: User[] = [];
 
   // 50명의 사용자 생성
   for (let i = 0; i < 50; i++) {
-    const isMe = i === 7 // 8번째 사용자를 '나'로 설정
+    const isMe = i === 7; // 8번째 사용자를 '나'로 설정
     const name = isMe
       ? '나'
-      : allNames[Math.floor(Math.random() * allNames.length)]
+      : allNames[Math.floor(Math.random() * allNames.length)];
 
     users.push({
       id: i + 1,
@@ -75,23 +75,23 @@ const generateUsers = (): User[] => {
       streak: Math.floor(Math.random() * 30) + 1, // 1~30일
       todayGain: Math.floor(Math.random() * 8) + 1, // 1~8시간
       level: Math.floor(Math.random() * 50) + 1, // 1~50레벨
-    })
+    });
   }
 
   // 시간순으로 정렬
-  return users.sort((a, b) => b.hours - a.hours)
-}
+  return users.sort((a, b) => b.hours - a.hours);
+};
 
 export default function Leaderboard() {
-  const [users, setUsers] = useState<User[]>([])
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([])
-  const [displayedUsers, setDisplayedUsers] = useState<User[]>([])
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
-  const [loadingMore, setLoadingMore] = useState(false)
-  const [hasMore, setHasMore] = useState(true)
+  const [users, setUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [displayedUsers, setDisplayedUsers] = useState<User[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
-  const categories = ['all', '개발', '디자인', '회의', '기타']
+  const categories = ['all', '개발', '디자인', '회의', '기타'];
 
   const motivationalMessages = {
     all: [
@@ -129,24 +129,24 @@ export default function Leaderboard() {
       '🎲 다양한 시도들이 경험을 쌓아가요!',
       '🌟 예상치 못한 곳에서 성장하고 있어요!',
     ],
-  }
+  };
 
   // 사용자 초기 로드
   useEffect(() => {
-    const initialUsers = generateUsers()
-    setUsers(initialUsers)
-  }, [])
+    const initialUsers = generateUsers();
+    setUsers(initialUsers);
+  }, []);
 
   // 카테고리 필터링
   useEffect(() => {
-    let filtered = users
+    let filtered = users;
     if (selectedCategory !== 'all') {
-      filtered = users.filter(user => user.category === selectedCategory)
+      filtered = users.filter(user => user.category === selectedCategory);
     }
-    setFilteredUsers(filtered)
-    setDisplayedUsers(filtered.slice(0, 20)) // 처음 20명 표시
-    setHasMore(filtered.length > 20)
-  }, [users, selectedCategory])
+    setFilteredUsers(filtered);
+    setDisplayedUsers(filtered.slice(0, 20)); // 처음 20명 표시
+    setHasMore(filtered.length > 20);
+  }, [users, selectedCategory]);
 
   // 동기부여 메시지 순환
   useEffect(() => {
@@ -154,29 +154,29 @@ export default function Leaderboard() {
       const messages =
         motivationalMessages[
           selectedCategory as keyof typeof motivationalMessages
-        ]
-      setCurrentMessageIndex(prev => (prev + 1) % messages.length)
-    }, 2500)
+        ];
+      setCurrentMessageIndex(prev => (prev + 1) % messages.length);
+    }, 2500);
 
-    return () => clearInterval(interval)
-  }, [selectedCategory])
+    return () => clearInterval(interval);
+  }, [selectedCategory]);
 
   // 더 많은 사용자 로드
   const loadMoreUsers = async () => {
-    if (loadingMore || !hasMore) return
+    if (loadingMore || !hasMore) return;
 
-    setLoadingMore(true)
+    setLoadingMore(true);
 
     // 로딩 시뮬레이션
-    await new Promise(resolve => setTimeout(resolve, 500))
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-    const currentCount = displayedUsers.length
-    const nextBatch = filteredUsers.slice(currentCount, currentCount + 20)
+    const currentCount = displayedUsers.length;
+    const nextBatch = filteredUsers.slice(currentCount, currentCount + 20);
 
-    setDisplayedUsers(prev => [...prev, ...nextBatch])
-    setHasMore(currentCount + nextBatch.length < filteredUsers.length)
-    setLoadingMore(false)
-  }
+    setDisplayedUsers(prev => [...prev, ...nextBatch]);
+    setHasMore(currentCount + nextBatch.length < filteredUsers.length);
+    setLoadingMore(false);
+  };
 
   // 스크롤 감지로 자동 로드
   useEffect(() => {
@@ -185,26 +185,26 @@ export default function Leaderboard() {
         window.innerHeight + window.scrollY >=
         document.body.offsetHeight - 1000
       ) {
-        loadMoreUsers()
+        loadMoreUsers();
       }
-    }
+    };
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [displayedUsers, filteredUsers, loadingMore, hasMore])
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [displayedUsers, filteredUsers, loadingMore, hasMore]);
 
   const getRankInfo = (index: number) => {
-    const rank = index + 1
+    const rank = index + 1;
     if (rank <= 10) {
-      return rankColors[rank as keyof typeof rankColors]
+      return rankColors[rank as keyof typeof rankColors];
     } else if (rank <= 20) {
-      return extendedRankColors.expert
+      return extendedRankColors.expert;
     } else if (rank <= 35) {
-      return extendedRankColors.challenger
+      return extendedRankColors.challenger;
     } else {
-      return extendedRankColors.rookie
+      return extendedRankColors.rookie;
     }
-  }
+  };
 
   const getTotalStats = () => ({
     totalCompetitors: filteredUsers.length,
@@ -216,13 +216,13 @@ export default function Leaderboard() {
           10
       ) / 10,
     myRank: filteredUsers.findIndex(user => user.isMe) + 1,
-  })
+  });
 
-  const stats = getTotalStats()
+  const stats = getTotalStats();
   const currentMessage =
     motivationalMessages[selectedCategory as keyof typeof motivationalMessages][
       currentMessageIndex
-    ]
+    ];
 
   return (
     <div
@@ -303,9 +303,9 @@ export default function Leaderboard() {
       {/* 카테고리 필터 */}
       <div className={utils.cn(layout.grid.categories, 'mb-8')}>
         {categories.map(category => {
-          const isSelected = selectedCategory === category
+          const isSelected = selectedCategory === category;
           const categoryColor =
-            categoryColors[category as keyof typeof categoryColors]
+            categoryColors[category as keyof typeof categoryColors];
 
           return (
             <button
@@ -325,7 +325,7 @@ export default function Leaderboard() {
                 {category === 'all' ? '전체' : category}
               </span>
             </button>
-          )
+          );
         })}
       </div>
 
@@ -338,18 +338,18 @@ export default function Leaderboard() {
         </h2>
         <div className='mx-auto grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-3'>
           {displayedUsers.slice(0, 3).map((user, index) => {
-            const rank = index + 1
-            const medals = ['🥇', '🥈', '🥉']
+            const rank = index + 1;
+            const medals = ['🥇', '🥈', '🥉'];
             const gradients = [
               'from-yellow-400 via-yellow-500 to-amber-600',
               'from-gray-300 via-gray-400 to-gray-500',
               'from-amber-600 via-amber-700 to-orange-700',
-            ]
+            ];
             const bgGradients = [
               'from-yellow-50 to-amber-100',
               'from-gray-50 to-gray-100',
               'from-orange-50 to-amber-100',
-            ]
+            ];
 
             return (
               <div
@@ -408,7 +408,7 @@ export default function Leaderboard() {
                   </div>
                 </div>
               </div>
-            )
+            );
           })}
         </div>
       </div>
@@ -421,8 +421,8 @@ export default function Leaderboard() {
           </h2>
           <div className='space-y-2'>
             {displayedUsers.slice(3).map((user, index) => {
-              const rank = index + 4
-              const rankInfo = getRankInfo(index + 3)
+              const rank = index + 4;
+              const rankInfo = getRankInfo(index + 3);
 
               return (
                 <div
@@ -486,7 +486,7 @@ export default function Leaderboard() {
                     </div>
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         </div>
@@ -515,5 +515,5 @@ export default function Leaderboard() {
         </div>
       )}
     </div>
-  )
+  );
 }

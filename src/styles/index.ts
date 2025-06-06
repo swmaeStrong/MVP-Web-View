@@ -1,7 +1,7 @@
 // 모든 스타일 시스템을 통합하여 export
-export * from './animations'
-export * from './colors'
-export * from './common'
+export * from './animations';
+export * from './colors';
+export * from './common';
 
 // 편의를 위한 통합 객체들
 import {
@@ -11,14 +11,14 @@ import {
   rankColors,
   specialEffects,
   statusColors,
-} from './colors'
+} from './colors';
 
 import {
   animations,
   customAnimations,
   enterExit,
   interactions,
-} from './animations'
+} from './animations';
 
 import {
   badges,
@@ -30,7 +30,7 @@ import {
   overlays,
   shadows,
   typography,
-} from './common'
+} from './common';
 
 // 통합 스타일 객체
 export const styles = {
@@ -72,7 +72,7 @@ export const styles = {
     badges,
     overlays,
   },
-}
+};
 
 // 자주 사용하는 조합들을 미리 정의
 export const commonCombinations = {
@@ -124,7 +124,7 @@ export const commonCombinations = {
     container: `${animations.live.container}`,
     full: `${animations.live.container}`,
   },
-}
+};
 
 // 테마별 색상 조합 (다크모드 대비)
 export const themes = {
@@ -142,7 +142,7 @@ export const themes = {
     textSecondary: 'text-gray-300',
     border: 'border-gray-700',
   },
-}
+};
 
 // 반응형 breakpoint 도우미
 export const breakpoints = {
@@ -151,7 +151,7 @@ export const breakpoints = {
   lg: '1024px',
   xl: '1280px',
   '2xl': '1536px',
-}
+};
 
 // z-index 레이어 시스템
 export const zIndex = {
@@ -165,7 +165,7 @@ export const zIndex = {
   toast: 70,
   overlay: 80,
   max: 9999,
-}
+};
 
 // 스페이싱 시스템 (Tailwind 호환)
 export const spacing = {
@@ -204,13 +204,13 @@ export const spacing = {
   72: '18rem',
   80: '20rem',
   96: '24rem',
-}
+};
 
 // 편의 함수들
 export const utils = {
   // 클래스 이름 결합 함수
   cn: (...classes: (string | undefined | null | false)[]): string => {
-    return classes.filter(Boolean).join(' ')
+    return classes.filter(Boolean).join(' ');
   },
 
   // 조건부 클래스
@@ -219,7 +219,7 @@ export const utils = {
     trueClass: string,
     falseClass?: string
   ): string => {
-    return condition ? trueClass : falseClass || ''
+    return condition ? trueClass : falseClass || '';
   },
 
   // 반응형 클래스 생성
@@ -230,11 +230,11 @@ export const utils = {
     lg?: string,
     xl?: string
   ): string => {
-    const classes = [base]
-    if (sm) classes.push(`sm:${sm}`)
-    if (md) classes.push(`md:${md}`)
-    if (lg) classes.push(`lg:${lg}`)
-    if (xl) classes.push(`xl:${xl}`)
-    return classes.join(' ')
+    const classes = [base];
+    if (sm) classes.push(`sm:${sm}`);
+    if (md) classes.push(`md:${md}`);
+    if (lg) classes.push(`lg:${lg}`);
+    if (xl) classes.push(`xl:${xl}`);
+    return classes.join(' ');
   },
-}
+};

@@ -6,40 +6,45 @@ const tools = [
   { name: 'Notion', color: 'text-gray-900', icon: '📝' },
   { name: 'IntelliJ', color: 'text-orange-600', icon: '🛠️' },
   { name: 'Figma', color: 'text-purple-600', icon: '🎨' },
-  { name: 'Chrome', color: 'text-green-600', icon: '🌐' }
+  { name: 'Chrome', color: 'text-green-600', icon: '🌐' },
 ];
 
 export default function BrandLogos() {
   return (
-    <div className="mb-20">
-      <div className="text-center mb-8">
-        <p className="text-sm text-gray-500 font-korean mb-4">
+    <div className='mb-20'>
+      <div className='mb-8 text-center'>
+        <p className='font-korean mb-4 text-sm text-gray-500'>
           이미 연동 중인 개발 도구들
         </p>
       </div>
-      
-      <div className="grid grid-cols-3 md:grid-cols-6 gap-6 items-center opacity-70 hover:opacity-100 transition-opacity duration-500">
+
+      <div className='grid grid-cols-3 items-center gap-6 opacity-70 transition-opacity duration-500 hover:opacity-100 md:grid-cols-6'>
         {tools.map((tool, index) => (
-          <div key={index} className="flex flex-col items-center justify-center group cursor-pointer p-3 rounded-lg hover:bg-gray-50 transition-all duration-300">
-            <div className="text-2xl mb-2 group-hover:scale-125 transition-transform duration-300">
+          <div
+            key={index}
+            className='group flex cursor-pointer flex-col items-center justify-center rounded-lg p-3 transition-all duration-300 hover:bg-gray-50'
+          >
+            <div className='mb-2 text-2xl transition-transform duration-300 group-hover:scale-125'>
               {tool.icon}
             </div>
-            <div className={`${tool.color} font-semibold text-sm hover:scale-105 transition-all duration-300 font-english`}>
+            <div
+              className={`${tool.color} font-english text-sm font-semibold transition-all duration-300 hover:scale-105`}
+            >
               {tool.name}
             </div>
-            
+
             {/* 호버 시 나타나는 연결 상태 */}
-            <div className="w-2 h-2 bg-green-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-1"></div>
+            <div className='mt-1 h-2 w-2 rounded-full bg-green-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
           </div>
         ))}
       </div>
-      
+
       {/* 추가 설명 텍스트 */}
-      <div className="text-center mt-8">
-        <p className="text-sm text-gray-500 font-korean">
+      <div className='mt-8 text-center'>
+        <p className='font-korean text-sm text-gray-500'>
           더 많은 도구 연동이 곧 추가될 예정입니다 ⚡
         </p>
       </div>
     </div>
   );
-} 
+}

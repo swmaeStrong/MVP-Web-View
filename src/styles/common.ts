@@ -40,7 +40,7 @@ export const layout = {
     responsiveY: 'space-y-4 sm:space-y-6 lg:space-y-8',
     responsiveX: 'space-x-2 sm:space-x-4 lg:space-x-6',
   },
-}
+};
 
 // 반응형 텍스트 크기
 export const typography = {
@@ -73,7 +73,7 @@ export const typography = {
     muted: 'text-gray-500',
     strong: 'font-semibold text-gray-900',
   },
-}
+};
 
 // 그림자 효과
 export const shadows = {
@@ -97,7 +97,7 @@ export const shadows = {
   // 반응형 그림자
   responsive: 'shadow-sm sm:shadow-md lg:shadow-lg',
   hover: 'shadow-md hover:shadow-xl',
-}
+};
 
 // 테두리 및 둥근 모서리
 export const borders = {
@@ -128,7 +128,7 @@ export const borders = {
     error: 'ring-2 ring-red-500 ring-offset-2',
     success: 'ring-2 ring-green-500 ring-offset-2',
   },
-}
+};
 
 // 버튼 스타일
 export const buttons = {
@@ -154,7 +154,7 @@ export const buttons = {
     danger: 'bg-red-600 text-white hover:bg-red-700',
     success: 'bg-green-600 text-white hover:bg-green-700',
   },
-}
+};
 
 // 카드 스타일
 export const cards = {
@@ -186,7 +186,7 @@ export const cards = {
     glow: 'hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-200',
     scale: 'hover:scale-105 transition-transform duration-200',
   },
-}
+};
 
 // 입력 필드
 export const inputs = {
@@ -207,7 +207,7 @@ export const inputs = {
     success: 'border-green-300 focus:border-green-500 focus:ring-green-500',
     disabled: 'bg-gray-100 cursor-not-allowed opacity-50',
   },
-}
+};
 
 // 배지/태그
 export const badges = {
@@ -232,7 +232,7 @@ export const badges = {
     md: 'px-2.5 py-0.5 text-xs',
     lg: 'px-3 py-1 text-sm',
   },
-}
+};
 
 // 백드롭 및 오버레이
 export const overlays = {
@@ -242,4 +242,4 @@ export const overlays = {
   dim: 'bg-black/20',
   loading:
     'fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center',
-}
+};

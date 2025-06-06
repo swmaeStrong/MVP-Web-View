@@ -1,35 +1,35 @@
-'use client'
-import { Badge } from '@/shadcn/ui/badge'
-import { Button } from '@/shadcn/ui/button'
-import { Card, CardContent } from '@/shadcn/ui/card'
-import { useState } from 'react'
+'use client';
+import { Badge } from '@/shadcn/ui/badge';
+import { Button } from '@/shadcn/ui/button';
+import { Card, CardContent } from '@/shadcn/ui/card';
+import { useState } from 'react';
 
 // 타입 정의
 interface Category {
-  name: string
-  time: number
-  percentage: number
-  color: string
-  icon: string
+  name: string;
+  time: number;
+  percentage: number;
+  color: string;
+  icon: string;
 }
 
 interface DailyData {
-  totalTime: number
-  categories: Category[]
+  totalTime: number;
+  categories: Category[];
 }
 
 interface WeeklyData {
-  weekName: string
-  totalTime: number
-  weeklyData: { date: string; categories: { name: string; time: number }[] }[]
-  categories: Category[]
+  weekName: string;
+  totalTime: number;
+  weeklyData: { date: string; categories: { name: string; time: number }[] }[];
+  categories: Category[];
 }
 
 interface MonthlyData {
-  monthName: string
-  totalTime: number
-  monthlyData: { date: string; categories: { name: string; time: number }[] }[]
-  categories: Category[]
+  monthName: string;
+  totalTime: number;
+  monthlyData: { date: string; categories: { name: string; time: number }[] }[];
+  categories: Category[];
 }
 
 // 더미 데이터 (확장된 구조)
@@ -481,51 +481,51 @@ const dummyData = {
       ],
     },
   ] as MonthlyData[],
-}
+};
 
 const timeLabels = {
   daily: '일별',
   weekly: '주별',
   monthly: '월별',
-}
+};
 
 const colorMap: { [key: string]: string } = {
   개발: '#8b5cf6',
   디자인: '#3b82f6',
   회의: '#10b981',
   기타: '#6b7280',
-}
+};
 
 // 파이차트 컴포넌트 (크기 확대)
 const PieChart = ({ data }: { data: DailyData }) => {
   const total = data.categories.reduce(
     (sum: number, cat: Category) => sum + cat.time,
     0
-  )
-  let currentAngle = 0
+  );
+  let currentAngle = 0;
 
   const createPath = (percentage: number, startAngle: number) => {
-    const angle = (percentage / 100) * 360
-    const endAngle = startAngle + angle
-    const startAngleRad = (startAngle * Math.PI) / 180
-    const endAngleRad = (endAngle * Math.PI) / 180
+    const angle = (percentage / 100) * 360;
+    const endAngle = startAngle + angle;
+    const startAngleRad = (startAngle * Math.PI) / 180;
+    const endAngleRad = (endAngle * Math.PI) / 180;
 
-    const largeArcFlag = angle > 180 ? 1 : 0
-    const x1 = 150 + 120 * Math.cos(startAngleRad)
-    const y1 = 150 + 120 * Math.sin(startAngleRad)
-    const x2 = 150 + 120 * Math.cos(endAngleRad)
-    const y2 = 150 + 120 * Math.sin(endAngleRad)
+    const largeArcFlag = angle > 180 ? 1 : 0;
+    const x1 = 150 + 120 * Math.cos(startAngleRad);
+    const y1 = 150 + 120 * Math.sin(startAngleRad);
+    const x2 = 150 + 120 * Math.cos(endAngleRad);
+    const y2 = 150 + 120 * Math.sin(endAngleRad);
 
-    return `M 150 150 L ${x1} ${y1} A 120 120 0 ${largeArcFlag} 1 ${x2} ${y2} Z`
-  }
+    return `M 150 150 L ${x1} ${y1} A 120 120 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+  };
 
   return (
     <div className='flex flex-col items-center gap-8 lg:flex-row'>
       <svg width='300' height='300' viewBox='0 0 300 300' className='mx-auto'>
         {data.categories.map((category: Category, index: number) => {
-          const path = createPath(category.percentage, currentAngle)
-          const previousAngle = currentAngle
-          currentAngle += (category.percentage / 100) * 360
+          const path = createPath(category.percentage, currentAngle);
+          const previousAngle = currentAngle;
+          currentAngle += (category.percentage / 100) * 360;
 
           return (
             <path
@@ -536,7 +536,7 @@ const PieChart = ({ data }: { data: DailyData }) => {
               strokeWidth='3'
               className='cursor-pointer transition-opacity hover:opacity-80'
             />
-          )
+          );
         })}
       </svg>
 
@@ -560,26 +560,26 @@ const PieChart = ({ data }: { data: DailyData }) => {
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
 // 막대차트 컴포넌트
 const BarChart = ({
   data,
   type,
 }: {
-  data: WeeklyData | MonthlyData
-  type: 'weekly' | 'monthly'
+  data: WeeklyData | MonthlyData;
+  type: 'weekly' | 'monthly';
 }) => {
   const chartData =
     type === 'weekly'
       ? (data as WeeklyData).weeklyData
-      : (data as MonthlyData).monthlyData
+      : (data as MonthlyData).monthlyData;
   const maxTotal = Math.max(
     ...chartData.map((day: any) =>
       day.categories.reduce((sum: number, cat: any) => sum + cat.time, 0)
     )
-  )
+  );
 
   return (
     <div className='space-y-4'>
@@ -588,8 +588,8 @@ const BarChart = ({
           const dayTotal = day.categories.reduce(
             (sum: number, cat: any) => sum + cat.time,
             0
-          )
-          let currentHeight = 0
+          );
+          let currentHeight = 0;
 
           return (
             <div
@@ -602,8 +602,8 @@ const BarChart = ({
               >
                 <div className='flex h-full flex-col-reverse'>
                   {day.categories.map((category: any, catIndex: number) => {
-                    const height = (category.time / maxTotal) * 100
-                    currentHeight += height
+                    const height = (category.time / maxTotal) * 100;
+                    currentHeight += height;
 
                     return (
                       <div
@@ -615,7 +615,7 @@ const BarChart = ({
                         }}
                         title={`${category.name}: ${category.time}시간`}
                       />
-                    )
+                    );
                   })}
                 </div>
               </div>
@@ -626,7 +626,7 @@ const BarChart = ({
                 {dayTotal.toFixed(1)}h
               </div>
             </div>
-          )
+          );
         })}
       </div>
 
@@ -643,123 +643,123 @@ const BarChart = ({
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const statisticsPage = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<
     'daily' | 'weekly' | 'monthly'
-  >('daily')
-  const [selectedDate, setSelectedDate] = useState('2024-01-15')
-  const [selectedWeekIndex, setSelectedWeekIndex] = useState(0)
-  const [selectedMonthIndex, setSelectedMonthIndex] = useState(0)
+  >('daily');
+  const [selectedDate, setSelectedDate] = useState('2024-01-15');
+  const [selectedWeekIndex, setSelectedWeekIndex] = useState(0);
+  const [selectedMonthIndex, setSelectedMonthIndex] = useState(0);
 
-  const availableDates = Object.keys(dummyData.daily).sort().reverse()
+  const availableDates = Object.keys(dummyData.daily).sort().reverse();
 
   const getCurrentData = (): DailyData | WeeklyData | MonthlyData => {
     if (selectedPeriod === 'daily') {
-      return dummyData.daily[selectedDate as keyof typeof dummyData.daily]
+      return dummyData.daily[selectedDate as keyof typeof dummyData.daily];
     } else if (selectedPeriod === 'weekly') {
-      return dummyData.weekly[selectedWeekIndex]
+      return dummyData.weekly[selectedWeekIndex];
     } else {
-      return dummyData.monthly[selectedMonthIndex]
+      return dummyData.monthly[selectedMonthIndex];
     }
-  }
+  };
 
-  const currentData = getCurrentData()
-  const topCategory = currentData.categories[0]
+  const currentData = getCurrentData();
+  const topCategory = currentData.categories[0];
 
   const getDateLabel = (dateStr: string) => {
-    const today = '2024-01-15'
-    const yesterday = '2024-01-14'
-    const dayBeforeYesterday = '2024-01-13'
+    const today = '2024-01-15';
+    const yesterday = '2024-01-14';
+    const dayBeforeYesterday = '2024-01-13';
 
-    if (dateStr === today) return '오늘'
-    if (dateStr === yesterday) return '어제'
-    if (dateStr === dayBeforeYesterday) return '엊그제'
-    return dateStr
-  }
+    if (dateStr === today) return '오늘';
+    if (dateStr === yesterday) return '어제';
+    if (dateStr === dayBeforeYesterday) return '엊그제';
+    return dateStr;
+  };
 
   const handlePreviousDate = () => {
     if (selectedPeriod === 'daily') {
-      const currentIndex = availableDates.indexOf(selectedDate)
+      const currentIndex = availableDates.indexOf(selectedDate);
       if (currentIndex < availableDates.length - 1) {
-        setSelectedDate(availableDates[currentIndex + 1])
+        setSelectedDate(availableDates[currentIndex + 1]);
       }
     } else if (selectedPeriod === 'weekly') {
       if (selectedWeekIndex < dummyData.weekly.length - 1) {
-        setSelectedWeekIndex(selectedWeekIndex + 1)
+        setSelectedWeekIndex(selectedWeekIndex + 1);
       }
     } else {
       if (selectedMonthIndex < dummyData.monthly.length - 1) {
-        setSelectedMonthIndex(selectedMonthIndex + 1)
+        setSelectedMonthIndex(selectedMonthIndex + 1);
       }
     }
-  }
+  };
 
   const handleNextDate = () => {
     if (selectedPeriod === 'daily') {
-      const currentIndex = availableDates.indexOf(selectedDate)
+      const currentIndex = availableDates.indexOf(selectedDate);
       if (currentIndex > 0) {
-        setSelectedDate(availableDates[currentIndex - 1])
+        setSelectedDate(availableDates[currentIndex - 1]);
       }
     } else if (selectedPeriod === 'weekly') {
       if (selectedWeekIndex > 0) {
-        setSelectedWeekIndex(selectedWeekIndex - 1)
+        setSelectedWeekIndex(selectedWeekIndex - 1);
       }
     } else {
       if (selectedMonthIndex > 0) {
-        setSelectedMonthIndex(selectedMonthIndex - 1)
+        setSelectedMonthIndex(selectedMonthIndex - 1);
       }
     }
-  }
+  };
 
   const canGoPrevious = () => {
     if (selectedPeriod === 'daily') {
-      return availableDates.indexOf(selectedDate) < availableDates.length - 1
+      return availableDates.indexOf(selectedDate) < availableDates.length - 1;
     } else if (selectedPeriod === 'weekly') {
-      return selectedWeekIndex < dummyData.weekly.length - 1
+      return selectedWeekIndex < dummyData.weekly.length - 1;
     } else {
-      return selectedMonthIndex < dummyData.monthly.length - 1
+      return selectedMonthIndex < dummyData.monthly.length - 1;
     }
-  }
+  };
 
   const canGoNext = () => {
     if (selectedPeriod === 'daily') {
-      return availableDates.indexOf(selectedDate) > 0
+      return availableDates.indexOf(selectedDate) > 0;
     } else if (selectedPeriod === 'weekly') {
-      return selectedWeekIndex > 0
+      return selectedWeekIndex > 0;
     } else {
-      return selectedMonthIndex > 0
+      return selectedMonthIndex > 0;
     }
-  }
+  };
 
   const getPeriodLabel = () => {
     if (selectedPeriod === 'daily') {
-      return getDateLabel(selectedDate)
+      return getDateLabel(selectedDate);
     } else if (selectedPeriod === 'weekly') {
-      return dummyData.weekly[selectedWeekIndex].weekName
+      return dummyData.weekly[selectedWeekIndex].weekName;
     } else {
-      return dummyData.monthly[selectedMonthIndex].monthName
+      return dummyData.monthly[selectedMonthIndex].monthName;
     }
-  }
+  };
 
   // 구체적인 지표 계산
   const getConcreteMetrics = () => {
     const devTime =
       currentData.categories.find((cat: Category) => cat.name === '개발')
-        ?.time || 0
-    const totalBreaks = Math.floor(currentData.totalTime * 0.15) // 15% 휴식 시간으로 가정
-    const overtimeHours = Math.max(0, currentData.totalTime - 8) // 8시간 초과 시간
+        ?.time || 0;
+    const totalBreaks = Math.floor(currentData.totalTime * 0.15); // 15% 휴식 시간으로 가정
+    const overtimeHours = Math.max(0, currentData.totalTime - 8); // 8시간 초과 시간
 
     return {
       devTime: devTime.toFixed(1),
       totalBreaks,
       overtimeHours: overtimeHours.toFixed(1),
-    }
-  }
+    };
+  };
 
-  const metrics = getConcreteMetrics()
+  const metrics = getConcreteMetrics();
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
@@ -956,7 +956,7 @@ export const statisticsPage = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default statisticsPage
+export default statisticsPage;

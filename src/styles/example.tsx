@@ -8,7 +8,7 @@ import {
   rankColors,
   typography,
   utils,
-} from './index'
+} from './index';
 
 // 사용 예제들
 export const examples = {
@@ -75,7 +75,7 @@ export const examples = {
   // 7. 순위별 컬러 사용
   rankBadge: (rank: number) => {
     const rankInfo =
-      rank <= 10 ? rankColors[rank as keyof typeof rankColors] : null
+      rank <= 10 ? rankColors[rank as keyof typeof rankColors] : null;
     return rankInfo ? (
       <div
         className={utils.cn(
@@ -88,7 +88,7 @@ export const examples = {
       >
         #{rank} {rankInfo.title}
       </div>
-    ) : null
+    ) : null;
   },
 
   // 8. 복합 레이아웃 구성
@@ -106,7 +106,7 @@ export const examples = {
       </main>
     </div>
   ),
-}
+};
 
 // 사용법 가이드
 export const usageGuide = `
@@ -134,4 +134,4 @@ export const usageGuide = `
 6. 반응형 클래스:
    utils.responsive('text-sm', 'text-base', 'text-lg')
    // 결과: 'text-sm sm:text-base md:text-lg'
-`
+`;

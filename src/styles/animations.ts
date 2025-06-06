@@ -58,7 +58,7 @@ export const animations = {
     shimmer:
       'animate-pulse bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200',
   },
-}
+};
 
 // 커스텀 CSS 애니메이션 (Tailwind config에 추가할 내용)
 export const customAnimations = {
@@ -98,7 +98,7 @@ export const customAnimations = {
     'count-up': 'count-up 0.6s ease-out',
     confetti: 'confetti 3s ease-in-out',
   },
-}
+};
 
 // 인터랙션 효과
 export const interactions = {
@@ -123,7 +123,7 @@ export const interactions = {
     success: 'bg-green-500 text-white',
     error: 'bg-red-500 text-white',
   },
-}
+};
 
 // 진입/퇴장 애니메이션
 export const enterExit = {
@@ -153,4 +153,4 @@ export const enterExit = {
     leaveFrom: 'translate-y-0 opacity-100',
     leaveTo: '-translate-y-4 opacity-0',
   },
-}
+};

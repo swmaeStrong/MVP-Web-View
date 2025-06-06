@@ -1,55 +1,55 @@
-'use client'
-import { Badge } from '@/shadcn/ui/badge'
-import { Button } from '@/shadcn/ui/button'
-import { Card, CardContent } from '@/shadcn/ui/card'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+'use client';
+import { Badge } from '@/shadcn/ui/badge';
+import { Button } from '@/shadcn/ui/button';
+import { Card, CardContent } from '@/shadcn/ui/card';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 // 결제 수단 상태를 시뮬레이션하는 더미 데이터
 const checkPaymentMethods = () => {
   // 실제로는 API 호출이나 로컬 스토리지 확인
-  const savedPaymentMethods = localStorage.getItem('paymentMethods')
-  return savedPaymentMethods ? JSON.parse(savedPaymentMethods) : []
-}
+  const savedPaymentMethods = localStorage.getItem('paymentMethods');
+  return savedPaymentMethods ? JSON.parse(savedPaymentMethods) : [];
+};
 
 export const subscriptionPage = () => {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [paymentMethods, setPaymentMethods] = useState([])
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState([]);
 
   useEffect(() => {
     // 페이지 로드 시 결제 수단 확인
-    setPaymentMethods(checkPaymentMethods())
-  }, [])
+    setPaymentMethods(checkPaymentMethods());
+  }, []);
 
   const coreFeatures = [
     '무제한 프리미엄 기능',
     '광고 없는 깔끔한 경험',
     '30일 무료 체험',
-  ]
+  ];
 
   const handleSubscribe = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       // 결제 수단 재확인
-      const currentPaymentMethods = checkPaymentMethods()
+      const currentPaymentMethods = checkPaymentMethods();
 
       if (currentPaymentMethods.length > 0) {
         // 결제 수단이 있는 경우: 바로 결제 진행
-        router.push('/subscription/checkout')
+        router.push('/subscription/checkout');
       } else {
         // 결제 수단이 없는 경우: 결제 수단 등록 페이지로 이동
-        router.push('/subscription/payment-method?from=subscription')
+        router.push('/subscription/payment-method?from=subscription');
       }
     } catch (error) {
-      console.error('구독 처리 중 오류:', error)
+      console.error('구독 처리 중 오류:', error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
-  const hasPaymentMethod = paymentMethods.length > 0
+  const hasPaymentMethod = paymentMethods.length > 0;
 
   return (
     <div className='flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 p-4'>
@@ -178,7 +178,7 @@ export const subscriptionPage = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default subscriptionPage
+export default subscriptionPage;
