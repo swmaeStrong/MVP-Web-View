@@ -3,9 +3,9 @@ import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 
-export default function PaymentMethodPage() {
+function PaymentMethodContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedMethod, setSelectedMethod] = useState('');
@@ -233,5 +233,19 @@ export default function PaymentMethodPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PaymentMethodPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className='flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50'>
+          <div className='h-12 w-12 animate-spin rounded-full border-b-2 border-purple-600'></div>
+        </div>
+      }
+    >
+      <PaymentMethodContent />
+    </Suspense>
   );
 }

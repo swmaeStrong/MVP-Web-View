@@ -646,7 +646,7 @@ const BarChart = ({
   );
 };
 
-export const statisticsPage = () => {
+const StatisticsPage = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<
     'daily' | 'weekly' | 'monthly'
   >('daily');
@@ -959,4 +959,4 @@ export const statisticsPage = () => {
   );
 };
 
-export default statisticsPage;
+export default StatisticsPage;
