@@ -4,7 +4,7 @@ import { STORAGE_ACCESS_KEY } from '@/shared/constants/storage';
 import { cookies } from 'next/headers';
 
 /**
- * 쿠키 저장 (Access/Refresh)
+ * 쿠키 저장 (Access)
  */
 export async function setRscToken(access: string) {
   const cookieStore = await cookies();
