@@ -12,7 +12,7 @@ const checkPaymentMethods = () => {
   return savedPaymentMethods ? JSON.parse(savedPaymentMethods) : [];
 };
 
-export const subscriptionPage = () => {
+const SubscriptionPage = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState([]);
@@ -181,4 +181,4 @@ export const subscriptionPage = () => {
   );
 };
 
-export default subscriptionPage;
+export default SubscriptionPage;

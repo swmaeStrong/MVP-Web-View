@@ -1,7 +1,8 @@
 import { getLeaderBoard } from '@/shared/api/get';
+import { LEADERBOARD_CATEGORIES } from '@/utils/categories';
 import { useInfiniteScroll } from './useInfiniteScroll';
 
-interface User {
+export interface User {
   id: number;
   name: string;
   hours: number;
@@ -27,16 +28,7 @@ export function useLeaderboardInfiniteScroll({
   period,
   selectedDateIndex,
 }: UseLeaderboardInfiniteScrollParams) {
-  const categories = [
-    'DEVELOPMENT',
-    'LLM',
-    'Documentation',
-    'Design',
-    'Communication',
-    'YouTube',
-    'SNS',
-    'Uncategorized',
-  ];
+  const categories = LEADERBOARD_CATEGORIES;
 
   // 선택된 날짜 인덱스를 기반으로 실제 날짜 계산
   const getDateForAPI = () => {

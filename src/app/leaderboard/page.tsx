@@ -2,6 +2,7 @@
 
 import { useLeaderboardInfiniteScroll } from '@/hooks/useLeaderboardInfiniteScroll';
 import { layout } from '@/styles';
+import { CATEGORIES, LEADERBOARD_CATEGORIES } from '@/utils/categories';
 import { useEffect, useState } from 'react';
 
 // 컴포넌트 임포트
@@ -30,7 +31,9 @@ export default function Leaderboard() {
   >('daily');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDateIndex, setSelectedDateIndex] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState('DEVELOPMENT');
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    CATEGORIES.DEVELOPMENT
+  );
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
   // 무한 스크롤 훅 사용
@@ -48,16 +51,7 @@ export default function Leaderboard() {
     selectedDateIndex,
   });
 
-  const categories = [
-    'DEVELOPMENT',
-    'LLM',
-    'Documentation',
-    'Design',
-    'Communication',
-    'YouTube',
-    'SNS',
-    'Uncategorized',
-  ];
+  const categories = LEADERBOARD_CATEGORIES;
 
   const motivationalMessages = {
     all: [
