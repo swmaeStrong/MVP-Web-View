@@ -53,7 +53,7 @@ API.interceptors.response.use(
       //Access token 재발급 과정
       if (noAccessTokenCode.includes(errorCode) || error.status === 403) {
         //TODO: 토큰 재발급 요청을 ios로 보내는 로직을 작성
-        return API.request(config);
+        //
       }
     }
 

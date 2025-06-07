@@ -22,10 +22,15 @@ export const getUserSubscriptionHistory = () =>
 // 리더보드 조회
 export const getLeaderBoard = (
   category: string,
-  type: 'daily' | 'weekly' | 'monthly' | 'all'
+  type: 'daily' | 'weekly' | 'monthly' | 'all',
+  page: number = 1,
+  size: number = 10,
+  date: string = new Date().toISOString().split('T')[0]
 ) =>
   parseApi<LeaderBoard.LeaderBoardResponse[]>(
-    API.get(`/leaderboard/${category}/${type}`)
+    API.get(
+      `/leaderboard/${category}/${type}?page=${page}&size=${size}&date=${date}`
+    )
   );
 
 // 사용 기록 조회
