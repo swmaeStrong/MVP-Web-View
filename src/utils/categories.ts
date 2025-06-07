@@ -3,7 +3,7 @@ import { categoryColors } from '@/styles/colors';
 // 🎯 leaderboard와 statistics에서 공통으로 사용하는 카테고리 정의
 export const CATEGORIES = {
   // 메인 카테고리 (영문 - leaderboard에서 주로 사용)
-  DEVELOPMENT: 'DEVELOPMENT',
+  DEVELOPMENT: 'Development',
   LLM: 'LLM',
   DOCUMENTATION: 'Documentation',
   DESIGN: 'Design',
@@ -30,18 +30,14 @@ export const getCategoryColor = (category: string): string => {
 
 // 🎭 카테고리별 아이콘 맵 (통합)
 export const CATEGORY_ICONS: { [key: string]: string } = {
-  [CATEGORIES.DEVELOPMENT]: '💻',
-  [CATEGORIES.개발]: '💻',
+  [CATEGORIES.DEVELOPMENT]: '⚡',
   [CATEGORIES.LLM]: '🤖',
   [CATEGORIES.DOCUMENTATION]: '📚',
   [CATEGORIES.DESIGN]: '🎨',
-  [CATEGORIES.디자인]: '🎨',
   [CATEGORIES.COMMUNICATION]: '💬',
-  [CATEGORIES.회의]: '💬',
   [CATEGORIES.YOUTUBE]: '📹',
   [CATEGORIES.SNS]: '📱',
-  [CATEGORIES.UNCATEGORIZED]: '📋',
-  [CATEGORIES.기타]: '📋',
+  [CATEGORIES.UNCATEGORIZED]: '🗂️',
   [CATEGORIES.ALL]: '🌟',
 };
 

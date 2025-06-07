@@ -16,6 +16,13 @@ export const brandColors = {
   },
 };
 
+export const getCategoryColor = (category: string) => {
+  return (
+    categoryColors[category as keyof typeof categoryColors] ||
+    categoryColors.all
+  );
+};
+
 // 카테고리별 컬러 시스템 - leaderboard와 statistics 통합
 export const categoryColors = {
   all: {
@@ -32,7 +39,7 @@ export const categoryColors = {
     badgeClass: 'bg-blue-100 text-blue-700 border-blue-200',
     borderGradient: 'from-blue-400 to-indigo-400',
     bgOpacity: 'from-blue-600/5 to-indigo-600/5',
-    solid: '#2563eb', // blue-600, 좀 더 차분한 블루
+    solid: '#1d4ed8', // blue-700, 더 진한 블루로 변경
   },
   LLM: {
     gradient: 'from-purple-500 via-violet-500 to-indigo-500',
@@ -88,7 +95,7 @@ export const categoryColors = {
     badgeClass: 'bg-gray-100 text-gray-700 border-gray-200',
     borderGradient: 'from-gray-400 to-slate-400',
     bgOpacity: 'from-gray-600/5 to-slate-600/5',
-    solid: '#64748b', // slate-500, 너무 칙칙하지 않은 slate
+    solid: '#71717a', // zinc-500, 더 차분한 회색으로 변경
   },
 };
 

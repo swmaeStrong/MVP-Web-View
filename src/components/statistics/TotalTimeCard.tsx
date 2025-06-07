@@ -2,134 +2,192 @@
 
 import { Badge } from '@/shadcn/ui/badge';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { formatTime, secondsToHours } from '@/utils/statisticsUtils';
-import { Clock } from 'lucide-react';
+import { StatisticsCategory } from '@/types/statistics';
 
 interface TotalTimeCardProps {
   totalTime: number; // seconds
-  periodLabel: string;
+  selectedCategory: StatisticsCategory | null; // 선택된 카테고리
 }
 
 export default function TotalTimeCard({
   totalTime,
-  periodLabel,
+  selectedCategory,
 }: TotalTimeCardProps) {
-  const hours = secondsToHours(totalTime);
+  // 시간과 분 계산
+  const getTimeDisplay = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
 
-  // 레벨 시스템
-  const getLevel = () => {
-    if (hours >= 12)
-      return {
-        level: '전설',
-        color: 'from-purple-600 to-pink-600',
-        icon: '👑',
-        message: '전설적인 집중력!',
-      };
-    if (hours >= 10)
-      return {
-        level: '마스터',
-        color: 'from-blue-600 to-purple-600',
-        icon: '🏆',
-        message: '마스터급 몰입!',
-      };
-    if (hours >= 8)
-      return {
-        level: '전문가',
-        color: 'from-green-600 to-blue-600',
-        icon: '🔥',
-        message: '프로다운 집중력!',
-      };
-    if (hours >= 6)
-      return {
-        level: '숙련자',
-        color: 'from-yellow-600 to-green-600',
-        icon: '⚡',
-        message: '훌륭한 진전!',
-      };
-    if (hours >= 4)
-      return {
-        level: '중급자',
-        color: 'from-orange-600 to-yellow-600',
-        icon: '✨',
-        message: '좋은 시작!',
-      };
-    if (hours >= 2)
-      return {
-        level: '초급자',
-        color: 'from-gray-600 to-orange-600',
-        icon: '🌱',
-        message: '시작이 중요해요!',
-      };
+    if (hours === 0) {
+      return { hours: 0, minutes, display: `${minutes}m` };
+    }
+    if (minutes === 0) {
+      return { hours, minutes: 0, display: `${hours}h` };
+    }
+    return { hours, minutes, display: `${hours}h ${minutes}m` };
+  };
+
+  // 선택된 카테고리의 시간 또는 총 시간 사용
+  const displayTime = selectedCategory ? selectedCategory.time : totalTime;
+  const timeInfo = getTimeDisplay(displayTime);
+  const totalHours = displayTime / 3600; // 진행률 계산용
+
+  // 카테고리별 레벨 시스템
+  const getCategoryLevelInfo = () => {
+    const categoryName = selectedCategory?.name || 'ALL';
+
+    // 카테고리별로 다른 레벨 구간 설정
+    const getLevelThresholds = (category: string) => {
+      switch (category) {
+        case 'DEVELOPMENT':
+        case '개발':
+          return [0, 3, 6, 10, 15, 20, 30]; // 개발은 더 높은 기준
+        case 'Design':
+        case '디자인':
+          return [0, 2, 4, 7, 12, 18, 25];
+        case 'LLM':
+          return [0, 1, 3, 6, 10, 15, 22];
+        default:
+          return [0, 2, 4, 6, 8, 12, 16]; // 기본 기준
+      }
+    };
+
+    const thresholds = getLevelThresholds(categoryName);
+    const levels = [
+      '새싹',
+      '초급자',
+      '중급자',
+      '숙련자',
+      '전문가',
+      '마스터',
+      '전설',
+    ];
+    const icons = ['🌿', '🌱', '✨', '⚡', '🔥', '🏆', '👑'];
+    const colors = [
+      'from-gray-400 to-gray-600',
+      'from-gray-600 to-orange-600',
+      'from-orange-600 to-yellow-600',
+      'from-yellow-600 to-green-600',
+      'from-green-600 to-blue-600',
+      'from-blue-600 to-purple-600',
+      'from-purple-600 to-pink-600',
+    ];
+
+    let currentLevelIndex = 0;
+    for (let i = thresholds.length - 1; i >= 0; i--) {
+      if (totalHours >= thresholds[i]) {
+        currentLevelIndex = i;
+        break;
+      }
+    }
+
+    const isMaxLevel = currentLevelIndex === levels.length - 1;
+    const nextLevelIndex = Math.min(currentLevelIndex + 1, levels.length - 1);
+    const nextTarget = thresholds[nextLevelIndex];
+    const currentTarget = thresholds[currentLevelIndex];
+
     return {
-      level: '새싹',
-      color: 'from-gray-400 to-gray-600',
-      icon: '🌿',
-      message: '조금씩 시작해보세요!',
+      level: levels[currentLevelIndex],
+      color: colors[currentLevelIndex],
+      icon: icons[currentLevelIndex],
+      categoryName,
+      nextLevel: isMaxLevel ? null : levels[nextLevelIndex],
+      nextTarget,
+      currentTarget,
+      motivationMessage: isMaxLevel
+        ? '최고 레벨 달성! 🎉'
+        : `${levels[nextLevelIndex]}까지 ${(nextTarget - totalHours).toFixed(1)}시간 남았어요!`,
+      progressPercentage: Math.min((totalHours / nextTarget) * 100, 100),
     };
   };
 
-  const levelInfo = getLevel();
+  const levelInfo = getCategoryLevelInfo();
 
   return (
-    <Card className='relative overflow-hidden border-2 bg-gradient-to-br from-purple-50 to-blue-50 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl'>
-      {/* 배경 그라데이션 */}
-      <div className='absolute inset-0 bg-gradient-to-br from-purple-600/5 to-blue-600/5'></div>
-
-      {/* 장식적 요소 */}
-      <div className='absolute -top-10 -right-10 h-20 w-20 rounded-full bg-gradient-to-br from-purple-400/20 to-blue-400/20'></div>
-      <div className='absolute -bottom-5 -left-5 h-15 w-15 rounded-full bg-gradient-to-br from-blue-400/20 to-purple-400/20'></div>
-
-      <CardContent className='relative p-6 text-center'>
-        {/* 헤더 */}
-        <div className='mb-4 flex items-center justify-center gap-2'>
-          <Clock className='h-5 w-5 text-purple-600' />
-          <Badge className='bg-gradient-to-r from-purple-600 to-blue-600 font-semibold text-white shadow-md'>
-            {periodLabel}
-          </Badge>
-        </div>
-
-        {/* 메인 시간 표시 */}
-        <div className='space-y-3'>
-          <div className='flex items-end justify-center gap-2'>
-            <span className='bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-5xl font-bold text-transparent sm:text-6xl'>
-              {hours}
-            </span>
-            <span className='mb-2 text-2xl font-medium text-gray-700 sm:text-3xl'>
-              시간
-            </span>
-          </div>
-
-          <div className='text-sm text-gray-500'>
-            정확한 시간: {formatTime(totalTime)}
-          </div>
-        </div>
-
-        {/* 레벨 시스템 */}
-        <div className='mt-6 space-y-3'>
-          <div className='flex items-center justify-center gap-2'>
-            <div className='text-3xl'>{levelInfo.icon}</div>
-            <Badge
-              className={`bg-gradient-to-r ${levelInfo.color} font-bold text-white shadow-lg`}
-            >
-              {levelInfo.level}
-            </Badge>
-          </div>
-
-          <p className='text-sm font-medium text-gray-700'>
-            {levelInfo.message}
-          </p>
-
-          {/* 진행률 바 */}
-          <div className='mx-auto max-w-xs'>
-            <div className='h-2 w-full rounded-full bg-gray-200'>
-              <div
-                className={`h-2 rounded-full bg-gradient-to-r ${levelInfo.color} transition-all duration-1000 ease-out`}
-                style={{ width: `${Math.min((hours / 12) * 100, 100)}%` }}
-              ></div>
+    <Card className='rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 shadow-sm transition-all duration-300 hover:shadow-md'>
+      <CardContent className='p-4'>
+        {/* 카테고리별 3분할 레이아웃 */}
+        <div className='flex items-center justify-between gap-4'>
+          {/* 왼쪽: 카테고리와 레벨 정보 */}
+          <div className='flex flex-1 items-center gap-2'>
+            <div className='text-2xl'>{levelInfo.icon}</div>
+            <div>
+              <div className='mb-1 flex items-center gap-2'>
+                {selectedCategory && (
+                  <div
+                    className='h-3 w-3 rounded-full'
+                    style={{ backgroundColor: selectedCategory.color }}
+                  />
+                )}
+                <Badge
+                  className={`bg-gradient-to-r ${levelInfo.color} px-3 py-1 text-sm font-bold text-white shadow-sm`}
+                >
+                  {levelInfo.level}
+                </Badge>
+              </div>
+              <div className='text-xs leading-tight text-gray-600'>
+                {selectedCategory ? selectedCategory.name : '전체 활동'}
+              </div>
             </div>
-            <div className='mt-1 flex justify-between text-xs text-gray-500'>
-              <span>0h</span>
-              <span>12h</span>
+          </div>
+
+          {/* 구분선 */}
+          <div className='h-14 w-px bg-gray-200'></div>
+
+          {/* 가운데: 예쁜 시간 표시 */}
+          <div className='flex-1 text-center'>
+            <div className='relative'>
+              <div
+                className={`bg-gradient-to-r text-3xl font-bold ${levelInfo.color} bg-clip-text text-transparent`}
+              >
+                {timeInfo.display}
+              </div>
+              <div className='absolute -top-1 -right-1 text-xs text-gray-400'>
+                ✨
+              </div>
+            </div>
+            <div className='mt-1 text-xs text-gray-500'>
+              {selectedCategory ? '카테고리 시간' : '전체 시간'}
+            </div>
+          </div>
+
+          {/* 구분선 */}
+          <div className='h-14 w-px bg-gray-200'></div>
+
+          {/* 오른쪽: 동기부여 정보 */}
+          <div className='flex-1'>
+            <div className='text-center'>
+              <div className='mb-1 text-xs text-gray-500'>다음 단계</div>
+              {levelInfo.nextLevel ? (
+                <>
+                  <div className='mb-1 text-sm font-semibold text-purple-700'>
+                    {levelInfo.nextLevel}
+                  </div>
+                  <div className='mb-2 text-xs leading-tight text-gray-600'>
+                    {levelInfo.motivationMessage}
+                  </div>
+                </>
+              ) : (
+                <div className='mb-3 text-xs font-semibold text-purple-700'>
+                  {levelInfo.motivationMessage}
+                </div>
+              )}
+
+              {/* 진행률 바 */}
+              <div className='w-full'>
+                <div className='mb-1 h-2 w-full rounded-full bg-gray-200'>
+                  <div
+                    className={`h-2 rounded-full bg-gradient-to-r ${levelInfo.color} transition-all duration-1000 ease-out`}
+                    style={{
+                      width: `${levelInfo.progressPercentage}%`,
+                    }}
+                  ></div>
+                </div>
+                <div className='flex justify-between text-xs text-gray-400'>
+                  <span>{levelInfo.currentTarget}h</span>
+                  <span>{levelInfo.nextTarget}h</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

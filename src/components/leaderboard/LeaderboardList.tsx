@@ -2,9 +2,9 @@
 
 import {
   animations,
-  categoryColors,
   commonCombinations,
   extendedRankColors,
+  getCategoryColor,
   layout,
   rankColors,
   typography,
@@ -191,7 +191,7 @@ export default function LeaderboardList({
                     {formatTime(user.hours)}
                   </div>
                   <div
-                    className={`inline-flex items-center rounded-full px-3 py-1 text-sm ${(categoryColors[user.category as keyof typeof categoryColors] || categoryColors.기타).badgeClass}`}
+                    className={`inline-flex items-center rounded-full px-3 py-1 text-sm ${getCategoryColor(user.category).badgeClass}`}
                   >
                     {user.category}
                   </div>
@@ -269,7 +269,7 @@ export default function LeaderboardList({
                     </div>
 
                     <div
-                      className={`rounded-full border px-2 py-1 text-xs ${(categoryColors[user.category as keyof typeof categoryColors] || categoryColors.기타).badgeClass}`}
+                      className={`rounded-full border px-2 py-1 text-xs ${getCategoryColor(user.category).badgeClass}`}
                     >
                       {user.category}
                     </div>

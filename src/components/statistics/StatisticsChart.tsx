@@ -50,10 +50,8 @@ export default function StatisticsChart({
   };
 
   return (
-    <Card className='relative border-2 bg-gradient-to-br from-purple-50/50 to-blue-50/50 shadow-lg transition-all duration-300 hover:shadow-xl'>
-      <div className='absolute inset-0 rounded-lg bg-gradient-to-br from-purple-600/5 to-blue-600/5'></div>
-
-      <CardContent className='relative p-6'>
+    <Card className='rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 shadow-sm transition-all duration-300 hover:shadow-md'>
+      <CardContent className='p-4'>
         {/* 차트 헤더 */}
         <div className='mb-6 flex items-center justify-between'>
           <div className='flex items-center gap-3'>

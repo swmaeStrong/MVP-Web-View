@@ -1,17 +1,20 @@
 'use client';
+
 import { useAvailableDates, useUsageStatistics } from '@/hooks/useStatistics';
-import { PeriodType } from '@/types/statistics';
+import { PeriodType, StatisticsCategory } from '@/types/statistics';
 import { getDateString } from '@/utils/statisticsUtils';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 // 컴포넌트 임포트
+import CategoryList from '@/components/statistics/CategoryList';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
-import TopCategoryCard from '@/components/statistics/TopCategoryCard';
 import TotalTimeCard from '@/components/statistics/TotalTimeCard';
 
 export default function StatisticsPage() {
-  const [selectedPeriod, setSelectedPeriod] = useState<PeriodType>('daily');
+  const [selectedPeriod] = useState<PeriodType>('daily');
   const [selectedDate, setSelectedDate] = useState(getDateString(new Date()));
+  const [selectedCategory, setSelectedCategory] =
+    useState<StatisticsCategory | null>(null);
 
   // 가용한 날짜 목록 (최근 30일)
   const availableDates = useAvailableDates();
@@ -24,21 +27,18 @@ export default function StatisticsPage() {
     error,
   } = useUsageStatistics(selectedDate);
 
-  // 기간 변경 핸들러
-  const handlePeriodChange = (period: PeriodType) => {
-    setSelectedPeriod(period);
-    // 일별이 아닌 경우 오늘로 초기화
-    if (period !== 'daily') {
-      setSelectedDate(getDateString(new Date()));
+  // 데이터가 로드되면 기본 카테고리를 top1으로 설정
+  React.useEffect(() => {
+    if (dailyData && dailyData.categories.length > 0) {
+      setSelectedCategory(dailyData.categories[0]);
     }
-  };
+  }, [dailyData, selectedDate]);
 
-  // 날짜 변경 핸들러
-  const handleDateChange = (date: string) => {
-    setSelectedDate(date);
-  };
+  // 날짜가 변경될 때마다 selectedCategory 초기화
+  React.useEffect(() => {
+    setSelectedCategory(null);
+  }, [selectedDate]);
 
-  // 이전/다음 날짜 네비게이션
   const handlePreviousDate = () => {
     const currentIndex = availableDates.indexOf(selectedDate);
     if (currentIndex < availableDates.length - 1) {
@@ -61,6 +61,10 @@ export default function StatisticsPage() {
   const canGoNext = () => {
     const currentIndex = availableDates.indexOf(selectedDate);
     return currentIndex > 0;
+  };
+
+  const handleCategorySelect = (category: StatisticsCategory | null) => {
+    setSelectedCategory(category);
   };
 
   // 로딩 상태
@@ -126,20 +130,32 @@ export default function StatisticsPage() {
             📊 작업 통계
           </h1>
           <p className='mt-2 text-gray-600'>
-            일별, 주별, 월별 작업 시간을 확인하세요
+            카테고리별 레벨과 성장을 확인하세요
           </p>
         </div>
 
         {/* 메인 콘텐츠 */}
         <div className='grid gap-6 sm:gap-8 lg:grid-cols-2'>
-          {/* 왼쪽: 총 작업시간 & 최고 카테고리 */}
-          <div className='space-y-6'>
-            <TotalTimeCard
-              totalTime={dailyData?.totalTime || 0}
-              periodLabel={selectedDate}
-            />
+          {/* 왼쪽: 총 작업시간 & 상위 카테고리 */}
+          <div className='flex flex-col space-y-3'>
+            {/* 작업시간 카드 - 컴팩트하게 */}
+            <div className='flex-shrink-0'>
+              <TotalTimeCard
+                totalTime={dailyData?.totalTime || 0}
+                selectedCategory={selectedCategory}
+              />
+            </div>
 
-            <TopCategoryCard topCategory={dailyData?.categories[0] || null} />
+            {/* 상위 6개 카테고리 목록 - 더 많은 공간 */}
+            {dailyData && dailyData.categories.length > 0 && (
+              <div className='min-h-0 flex-1'>
+                <CategoryList
+                  categories={dailyData.categories}
+                  selectedCategory={selectedCategory}
+                  onCategorySelect={handleCategorySelect}
+                />
+              </div>
+            )}
           </div>
 
           {/* 오른쪽: 차트 */}
@@ -153,135 +169,6 @@ export default function StatisticsPage() {
             currentDate={selectedDate}
           />
         </div>
-
-        {/* Top 3 카테고리 하이라이트 */}
-        {dailyData && dailyData.categories.length > 0 && (
-          <div className='space-y-6'>
-            <div className='text-center'>
-              <h2 className='mb-2 text-2xl font-bold text-gray-800'>
-                🏆 Top 6 카테고리 요약
-              </h2>
-              <p className='text-sm text-gray-600'>
-                가장 많은 시간을 투자한 상위 3개 영역입니다
-              </p>
-            </div>
-
-            <div className='grid gap-4 md:grid-cols-3'>
-              {dailyData.categories.slice(0, 3).map((category, index) => (
-                <div
-                  key={index}
-                  className={`relative overflow-hidden rounded-xl border-2 bg-gradient-to-br p-6 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl ${
-                    index === 0
-                      ? 'border-yellow-300 from-yellow-50 to-orange-50'
-                      : index === 1
-                        ? 'border-silver-300 from-gray-50 to-blue-50'
-                        : 'border-orange-300 from-orange-50 to-red-50'
-                  }`}
-                >
-                  {/* 순위 배지 */}
-                  <div className='absolute -top-2 -right-2'>
-                    <div
-                      className={`flex h-12 w-12 items-center justify-center rounded-full text-lg font-bold text-white shadow-lg ${
-                        index === 0
-                          ? 'bg-gradient-to-r from-yellow-400 to-orange-500'
-                          : index === 1
-                            ? 'bg-gradient-to-r from-gray-400 to-blue-500'
-                            : 'bg-gradient-to-r from-orange-400 to-red-500'
-                      }`}
-                    >
-                      {index + 1}
-                    </div>
-                  </div>
-
-                  <div className='text-center'>
-                    <div
-                      className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-3xl text-white shadow-lg'
-                      style={{ backgroundColor: category.color }}
-                    >
-                      {category.icon}
-                    </div>
-
-                    <h3 className='mb-2 text-lg font-bold text-gray-800'>
-                      {category.name}
-                    </h3>
-
-                    <div className='space-y-1'>
-                      <div className='text-2xl font-bold text-gray-900'>
-                        {Math.round((category.time / 3600) * 10) / 10}시간
-                      </div>
-                      <div className='text-sm text-gray-600'>
-                        전체의 {category.percentage}%
-                      </div>
-                    </div>
-
-                    {/* 프로그레스 바 */}
-                    <div className='mt-3 h-2 w-full rounded-full bg-gray-200'>
-                      <div
-                        className='h-2 rounded-full bg-gradient-to-r from-purple-500 to-blue-500'
-                        style={{ width: `${category.percentage}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* 전체 카테고리 상세 리스트 */}
-        {dailyData && dailyData.categories.length > 3 && (
-          <div className='space-y-4'>
-            <div className='text-center'>
-              <h3 className='mb-2 text-xl font-bold text-gray-800'>
-                📊 전체 카테고리 상세
-              </h3>
-              <p className='text-sm text-gray-600'>
-                모든 작업 카테고리의 상세 시간입니다
-              </p>
-            </div>
-
-            <div className='grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-              {dailyData.categories.map((category, index) => (
-                <div
-                  key={index}
-                  className='group rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:scale-102 hover:border-purple-300 hover:shadow-md'
-                >
-                  <div className='flex items-center gap-3'>
-                    <div
-                      className='flex h-10 w-10 items-center justify-center rounded-lg text-lg text-white shadow-sm transition-transform group-hover:scale-110'
-                      style={{ backgroundColor: category.color }}
-                    >
-                      {category.icon}
-                    </div>
-                    <div className='min-w-0 flex-1'>
-                      <h4 className='truncate font-semibold text-gray-800 group-hover:text-purple-700'>
-                        {category.name}
-                      </h4>
-                      <div className='flex items-center gap-2 text-sm text-gray-600'>
-                        <span className='font-medium'>
-                          {Math.round((category.time / 3600) * 10) / 10}h
-                        </span>
-                        <span className='text-xs'>•</span>
-                        <span>{category.percentage}%</span>
-                      </div>
-
-                      {/* 미니 프로그레스 바 */}
-                      <div className='mt-1 h-1 w-full rounded-full bg-gray-100'>
-                        <div
-                          className='h-1 rounded-full transition-all duration-300'
-                          style={{
-                            width: `${category.percentage}%`,
-                            backgroundColor: category.color,
-                          }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
