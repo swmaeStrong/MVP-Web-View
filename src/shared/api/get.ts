@@ -34,5 +34,9 @@ export const getLeaderBoard = (
   );
 
 // 사용 기록 조회
-export const getUsageLog = () =>
-  parseApi<UsageLog.UsageLogResponse[]>(API.get(`/usage-log`));
+export const getUsageLog = (
+  date: string = new Date().toISOString().split('T')[0]
+) =>
+  parseApi<UsageLog.UsageLogResponse[]>(
+    API.get(`/usage-log?userId=a&date=${date}`)
+  );
