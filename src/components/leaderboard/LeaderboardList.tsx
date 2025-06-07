@@ -1,15 +1,7 @@
 'use client';
 
-import {
-  animations,
-  commonCombinations,
-  extendedRankColors,
-  getCategoryColor,
-  layout,
-  rankColors,
-  typography,
-  utils,
-} from '@/styles';
+import { extendedRankColors, rankColors } from '@/styles';
+import { Crown, Medal, Trophy, Users } from 'lucide-react';
 
 interface User {
   id: number;
@@ -68,14 +60,10 @@ export default function LeaderboardList({
   // 로딩 및 에러 상태
   if (isLoading) {
     return (
-      <div className={`${layout.flex.center} mb-8`}>
-        <div
-          className={`${commonCombinations.cardCombos.glass} p-8 text-center`}
-        >
-          <div className={animations.loading.spinner + ' mx-auto mb-4'}></div>
-          <p className={typography.body.large}>
-            리더보드 데이터를 불러오는 중...
-          </p>
+      <div className='mb-8 flex justify-center'>
+        <div className='rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 p-8 text-center shadow-sm'>
+          <div className='mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-purple-600'></div>
+          <p className='text-gray-600'>리더보드 데이터를 불러오는 중...</p>
         </div>
       </div>
     );
@@ -83,19 +71,17 @@ export default function LeaderboardList({
 
   if (isError && error) {
     return (
-      <div className={`${layout.flex.center} mb-8`}>
-        <div
-          className={`${commonCombinations.cardCombos.glass} border-red-200 p-8 text-center`}
-        >
-          <p className={`${typography.body.large} mb-4 text-red-600`}>
+      <div className='mb-8 flex justify-center'>
+        <div className='rounded-lg border border-red-200 bg-gradient-to-br from-red-50/50 to-pink-50/50 p-8 text-center shadow-sm'>
+          <p className='mb-4 font-medium text-red-600'>
             ❌ {error.message || '데이터를 불러오는 중 오류가 발생했습니다.'}
           </p>
-          <p className={`${typography.special.caption} mb-4 text-gray-500`}>
+          <p className='mb-4 text-sm text-gray-500'>
             서버 요청이 중단되었습니다. 잠시 후 다시 시도해주세요.
           </p>
           <button
             onClick={() => refetch()}
-            className={commonCombinations.buttonCombos.primary}
+            className='rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:from-purple-700 hover:to-blue-700'
           >
             다시 시도
           </button>
@@ -106,11 +92,9 @@ export default function LeaderboardList({
 
   if (!users || users.length === 0) {
     return (
-      <div className={`${layout.flex.center} mb-8`}>
-        <div
-          className={`${commonCombinations.cardCombos.glass} p-8 text-center`}
-        >
-          <p className={typography.body.large}>표시할 데이터가 없습니다.</p>
+      <div className='mb-8 flex justify-center'>
+        <div className='rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 p-8 text-center shadow-sm'>
+          <p className='text-gray-600'>표시할 데이터가 없습니다.</p>
         </div>
       </div>
     );
@@ -118,82 +102,127 @@ export default function LeaderboardList({
 
   return (
     <>
-      {/* 상위 3명 - 특별 디스플레이 */}
+      {/* 상위 3명 - 화려한 특별 디스플레이 */}
       <div className='mb-8'>
-        <h2
-          className={`${typography.heading.h3} mb-6 text-center text-gray-800`}
-        >
-          🏆 TOP 3
-        </h2>
-        <div className='mx-auto grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-3'>
+        <div className='mb-6 text-center'>
+          <h2 className='mb-2 text-2xl font-bold text-gray-800'>
+            🏆 명예의 전당
+          </h2>
+          <p className='text-sm text-gray-600'>최고의 성과를 달성한 챔피언들</p>
+        </div>
+
+        <div className='mx-auto grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-3'>
           {users.slice(0, 3).map((user: User, index: number) => {
             const rank = index + 1;
-            const medals = ['🥇', '🥈', '🥉'];
-            const gradients = [
-              'from-yellow-400 via-yellow-500 to-amber-600',
-              'from-gray-300 via-gray-400 to-gray-500',
-              'from-amber-600 via-amber-700 to-orange-700',
+            const configs = [
+              {
+                medal: '🥇',
+                icon: <Crown className='h-8 w-8' />,
+                title: '1위',
+                bgGradient: 'from-purple-400 via-violet-500 to-blue-600',
+                borderGradient: 'from-purple-300 to-violet-400',
+                textGradient: 'from-purple-600 to-blue-700',
+                shadowColor: 'shadow-purple-400/40',
+                glowColor: 'ring-purple-400/30',
+                accentGradient: 'from-purple-300 via-violet-400 to-blue-500',
+              },
+              {
+                medal: '🥈',
+                icon: <Trophy className='h-7 w-7' />,
+                title: '2위',
+                bgGradient: 'from-indigo-400 via-blue-500 to-cyan-600',
+                borderGradient: 'from-indigo-300 to-blue-400',
+                textGradient: 'from-indigo-600 to-blue-700',
+                shadowColor: 'shadow-indigo-400/40',
+                glowColor: 'ring-indigo-400/30',
+                accentGradient: 'from-indigo-300 via-blue-400 to-cyan-500',
+              },
+              {
+                medal: '🥉',
+                icon: <Medal className='h-6 w-6' />,
+                title: '3위',
+                bgGradient: 'from-slate-400 via-gray-500 to-blue-600',
+                borderGradient: 'from-slate-300 to-gray-400',
+                textGradient: 'from-slate-600 to-blue-700',
+                shadowColor: 'shadow-slate-400/40',
+                glowColor: 'ring-slate-400/30',
+                accentGradient: 'from-slate-300 via-gray-400 to-blue-500',
+              },
             ];
-            const bgGradients = [
-              'from-yellow-50 to-amber-100',
-              'from-gray-50 to-gray-100',
-              'from-orange-50 to-amber-100',
-            ];
+
+            const config = configs[index];
 
             return (
               <div
-                key={user.id}
-                className={utils.cn(
-                  'relative transform rounded-xl p-6 shadow-2xl transition-all duration-300 hover:scale-105',
-                  `bg-gradient-to-br ${bgGradients[index]}`,
-                  user.isMe ? 'ring-4 ring-purple-400' : '',
-                  animations.hover.glow
-                )}
+                key={`top3-${index}-${user.id || user.name || index}`}
+                className={`group relative overflow-hidden rounded-3xl border-2 bg-gradient-to-br ${config.bgGradient} p-8 shadow-xl ${config.shadowColor} transform transition-all duration-700 hover:scale-105 hover:shadow-2xl ${user.isMe ? `ring-2 ring-white/40 ${config.glowColor}` : `ring-1 ring-white/20`}`}
+                style={{
+                  background: `linear-gradient(135deg, var(--tw-gradient-stops)), 
+                              radial-gradient(circle at 20% 50%, rgba(255,255,255,0.15) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 50%, rgba(255,255,255,0.08) 0%, transparent 50%)`,
+                  borderColor: 'rgba(255,255,255,0.2)',
+                  backdropFilter: 'blur(10px)',
+                }}
               >
-                {/* 메달 배지 */}
-                <div className='absolute -top-3 left-1/2 -translate-x-1/2 transform'>
-                  <div className={`text-4xl ${animations.pulse.bounce}`}>
-                    {medals[index]}
-                  </div>
-                </div>
+                {/* 품격있는 배경 효과 */}
+                <div className='absolute inset-0 rounded-3xl bg-gradient-to-br from-white/40 via-white/12 to-transparent'></div>
+                <div
+                  className={`absolute inset-0 rounded-3xl bg-gradient-to-tl ${config.accentGradient} opacity-12`}
+                ></div>
+                <div className='absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-white/8 to-transparent'></div>
+                <div
+                  className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${config.bgGradient} opacity-15 blur-lg`}
+                ></div>
+                <div className='absolute inset-0 rounded-3xl bg-gradient-to-t from-black/5 via-transparent to-white/10'></div>
 
-                {/* 순위 숫자 */}
-                <div className='mb-4 pt-6 text-center'>
+                {/* 세련된 빛 효과 */}
+                <div className='absolute top-6 left-6 h-1 w-4 animate-pulse rounded-full bg-white/25 opacity-70 blur-sm'></div>
+                <div className='absolute top-8 right-8 h-3 w-1 animate-pulse rounded-full bg-white/20 opacity-60 blur-sm delay-1000'></div>
+                <div className='absolute bottom-6 left-1/2 h-1 w-6 -translate-x-1/2 transform animate-pulse rounded-full bg-white/30 opacity-80 blur-sm delay-2000'></div>
+                <div className='absolute top-1/3 left-4 h-2 w-1 -translate-y-1/2 transform animate-pulse rounded-full bg-white/18 opacity-50 blur-sm delay-3000'></div>
+                <div className='absolute right-5 bottom-1/3 h-1 w-1 -translate-y-1/2 transform animate-pulse rounded-full bg-white/15 opacity-40 blur-md delay-4000'></div>
+
+                {/* 우아한 순위 표시 */}
+                <div className='relative z-10 mb-6 pt-4 text-center'>
                   <div
-                    className={`bg-gradient-to-r text-6xl font-bold ${gradients[index]} bg-clip-text text-transparent`}
+                    className={`bg-gradient-to-r text-6xl font-bold ${config.textGradient} mb-3 bg-clip-text tracking-wider text-transparent drop-shadow-lg`}
+                    style={{
+                      filter:
+                        'drop-shadow(0 0 12px rgba(255,255,255,0.6)) drop-shadow(0 0 24px rgba(255,255,255,0.3))',
+                      textShadow:
+                        '0 0 20px rgba(255,255,255,0.4), 0 0 40px rgba(255,255,255,0.2)',
+                      fontFamily: 'system-ui, -apple-system, sans-serif',
+                      letterSpacing: '0.1em',
+                    }}
                   >
                     #{rank}
                   </div>
                 </div>
 
-                {/* 사용자 정보 */}
-                <div className='mb-4 text-center'>
-                  <div
-                    className={`mx-auto mb-3 h-20 w-20 rounded-full bg-gradient-to-r ${gradients[index]} flex items-center justify-center text-2xl font-bold text-white shadow-lg`}
-                  >
-                    {user.avatar}
+                {/* 우아한 사용자 정보 */}
+                <div className='relative z-10 mb-6 text-center'>
+                  <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/95 shadow-lg ring-2 ring-white/30 backdrop-blur-sm'>
+                    <Users className='h-8 w-8 text-gray-600' />
                   </div>
-                  <h3 className={`${typography.heading.h4} mb-1 text-gray-800`}>
+                  <h3
+                    className='mb-3 text-lg font-semibold tracking-wide text-white drop-shadow-md'
+                    style={{
+                      fontFamily: 'system-ui, -apple-system, sans-serif',
+                    }}
+                  >
                     {user.name}
                   </h3>
                   {user.isMe && (
-                    <div className='inline-block rounded-full bg-gradient-to-r from-purple-500 to-blue-500 px-3 py-1 text-sm font-bold text-white'>
-                      ME
+                    <div className='inline-block rounded-full bg-white/20 px-4 py-2 text-sm font-medium text-white ring-1 ring-white/30 backdrop-blur-sm'>
+                      <span className='opacity-90'>✨ YOU ✨</span>
                     </div>
                   )}
                 </div>
 
                 {/* 시간 정보 */}
-                <div className='text-center'>
-                  <div
-                    className={`${typography.heading.h2} mb-1 text-gray-900`}
-                  >
+                <div className='relative z-10 text-center'>
+                  <div className='mb-2 text-3xl font-black text-white drop-shadow-lg'>
                     {formatTime(user.hours)}
-                  </div>
-                  <div
-                    className={`inline-flex items-center rounded-full px-3 py-1 text-sm ${getCategoryColor(user.category).badgeClass}`}
-                  >
-                    {user.category}
                   </div>
                 </div>
               </div>
@@ -202,12 +231,21 @@ export default function LeaderboardList({
         </div>
       </div>
 
-      {/* 4위 이하 - 간단한 리스트 */}
+      {/* 4위 이하 - 경쟁적인 리스트 */}
       {users.length > 3 && (
         <div className='mb-8'>
-          <h2 className={`${typography.heading.h4} mb-4 text-gray-700`}>
-            나머지 순위
-          </h2>
+          <div className='mb-4 flex items-center justify-between'>
+            <h2 className='flex items-center gap-2 text-lg font-bold text-gray-800'>
+              🔥 경쟁자들
+              <span className='text-sm font-normal text-gray-500'>
+                ({users.length - 3}명)
+              </span>
+            </h2>
+            <div className='rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-500'>
+              실시간 업데이트
+            </div>
+          </div>
+
           <div className='space-y-2'>
             {users.slice(3).map((user: User, index: number) => {
               const rank = index + 4;
@@ -215,64 +253,44 @@ export default function LeaderboardList({
 
               return (
                 <div
-                  key={user.id}
-                  className={utils.cn(
-                    'flex items-center justify-between rounded-lg border bg-white p-4 shadow-sm',
-                    animations.hover.lift,
-                    animations.transition.default,
-                    user.isMe
-                      ? 'bg-gradient-to-r from-purple-50 to-blue-50 ring-2 ring-purple-300'
-                      : ''
-                  )}
+                  key={`rank-${rank}-${user.id || user.name || index}`}
+                  className={`group flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:border-purple-200 hover:shadow-lg ${user.isMe ? 'border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 ring-2 ring-purple-300' : ''}`}
                 >
                   {/* 좌측 - 순위 & 사용자 정보 */}
                   <div className='flex items-center space-x-4'>
                     <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${rankInfo.bgColor} ${rankInfo.textColor}`}
+                      className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-bold ${rankInfo.bgColor} ${rankInfo.textColor} ${rankInfo.borderColor} transition-transform duration-200 group-hover:scale-110`}
                     >
                       {rank}
                     </div>
 
-                    <div
-                      className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white ${rankInfo.avatarClass}`}
-                    >
-                      {user.avatar}
+                    <div className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-300 bg-gradient-to-br from-gray-100 to-gray-200 transition-all duration-200 group-hover:border-purple-300 group-hover:from-purple-100 group-hover:to-blue-100'>
+                      <Users className='h-6 w-6 text-gray-600 group-hover:text-purple-600' />
                     </div>
 
                     <div className='flex-1'>
                       <div className='flex items-center space-x-2'>
-                        <h3
-                          className={`${typography.body.default} font-semibold text-gray-800`}
-                        >
+                        <h3 className='font-bold text-gray-800 transition-colors duration-200 group-hover:text-purple-700'>
                           {user.name}
                         </h3>
                         {user.isMe && (
-                          <span className='rounded-full bg-purple-100 px-2 py-1 text-xs font-bold text-purple-700'>
-                            ME
+                          <span className='animate-pulse rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-3 py-1 text-xs font-bold text-white shadow-sm'>
+                            YOU
                           </span>
                         )}
                       </div>
-                      <p
-                        className={`${typography.special.caption} ${rankInfo.textColor}`}
-                      >
-                        {rankInfo.title}
+                      <p className='text-xs text-gray-500 transition-colors duration-200 group-hover:text-purple-600'>
+                        {rank}위 도전자
                       </p>
                     </div>
                   </div>
 
-                  {/* 우측 - 시간 & 카테고리 */}
-                  <div className='flex items-center space-x-4 text-right'>
-                    <div>
-                      <div className={`${typography.heading.h5} text-gray-900`}>
-                        {formatTime(user.hours)}
-                      </div>
+                  {/* 우측 - 시간 정보 */}
+                  <div className='text-right'>
+                    <div className='text-xl font-bold text-gray-900 transition-colors duration-200 group-hover:text-purple-700'>
+                      {formatTime(user.hours)}
                     </div>
-
-                    <div
-                      className={`rounded-full border px-2 py-1 text-xs ${getCategoryColor(user.category).badgeClass}`}
-                    >
-                      {user.category}
-                    </div>
+                    <div className='text-xs text-gray-500'>작업 시간</div>
                   </div>
                 </div>
               );
@@ -283,11 +301,11 @@ export default function LeaderboardList({
 
       {/* 무한 스크롤 로딩 표시 */}
       {isFetchingNextPage && (
-        <div className={layout.flex.center}>
-          <div className={`${commonCombinations.cardCombos.glass} p-4`}>
-            <div className={animations.loading.spinner + ' mx-auto mb-2'}></div>
-            <p className={typography.body.default}>
-              더 많은 데이터를 불러오는 중...
+        <div className='flex justify-center'>
+          <div className='rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 p-4 shadow-sm'>
+            <div className='mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-purple-600'></div>
+            <p className='text-sm text-gray-600'>
+              더 많은 경쟁자들을 불러오는 중...
             </p>
           </div>
         </div>

@@ -102,7 +102,7 @@ export const categoryColors = {
 // 순위별 컬러 시스템
 export const rankColors = {
   1: {
-    title: '👑 절대강자',
+    title: '1위',
     textColor: 'text-yellow-600',
     bgColor: 'bg-yellow-50',
     borderColor: 'border-yellow-200',
@@ -111,7 +111,7 @@ export const rankColors = {
     avatarClass: 'bg-yellow-100 text-yellow-800',
   },
   2: {
-    title: '🥈 도전자',
+    title: '2위',
     textColor: 'text-gray-600',
     bgColor: 'bg-gray-50',
     borderColor: 'border-gray-200',
@@ -120,7 +120,7 @@ export const rankColors = {
     avatarClass: 'bg-gray-100 text-gray-800',
   },
   3: {
-    title: '🥉 상승세',
+    title: '3위',
     textColor: 'text-amber-600',
     bgColor: 'bg-amber-50',
     borderColor: 'border-amber-200',
@@ -129,7 +129,7 @@ export const rankColors = {
     avatarClass: 'bg-amber-100 text-amber-800',
   },
   4: {
-    title: '🔥 핫한놈',
+    title: '4위',
     textColor: 'text-red-600',
     bgColor: 'bg-red-50',
     borderColor: 'border-red-200',
@@ -138,7 +138,7 @@ export const rankColors = {
     avatarClass: 'bg-red-100 text-red-800',
   },
   5: {
-    title: '⚡ 급상승',
+    title: '5위',
     textColor: 'text-blue-600',
     bgColor: 'bg-blue-50',
     borderColor: 'border-blue-200',
@@ -147,7 +147,7 @@ export const rankColors = {
     avatarClass: 'bg-blue-100 text-blue-800',
   },
   6: {
-    title: '💎 다이아몬드',
+    title: '6위',
     textColor: 'text-cyan-600',
     bgColor: 'bg-cyan-50',
     borderColor: 'border-cyan-200',
@@ -156,7 +156,7 @@ export const rankColors = {
     avatarClass: 'bg-cyan-100 text-cyan-800',
   },
   7: {
-    title: '🎯 저격수',
+    title: '7위',
     textColor: 'text-indigo-600',
     bgColor: 'bg-indigo-50',
     borderColor: 'border-indigo-200',
@@ -165,7 +165,7 @@ export const rankColors = {
     avatarClass: 'bg-indigo-100 text-indigo-800',
   },
   8: {
-    title: '🌟 라이징스타',
+    title: '8위',
     textColor: 'text-purple-600',
     bgColor: 'bg-purple-50',
     borderColor: 'border-purple-200',
@@ -174,7 +174,7 @@ export const rankColors = {
     avatarClass: 'bg-purple-100 text-purple-800',
   },
   9: {
-    title: '⭐ 엘리트',
+    title: '9위',
     textColor: 'text-pink-600',
     bgColor: 'bg-pink-50',
     borderColor: 'border-pink-200',
@@ -183,7 +183,7 @@ export const rankColors = {
     avatarClass: 'bg-pink-100 text-pink-800',
   },
   10: {
-    title: '🎖️ 베테랑',
+    title: '10위',
     textColor: 'text-green-600',
     bgColor: 'bg-green-50',
     borderColor: 'border-green-200',
@@ -196,7 +196,7 @@ export const rankColors = {
 // 확장 순위 컬러 (11위~)
 export const extendedRankColors = {
   expert: {
-    title: '🏅 전문가',
+    title: '상위권',
     textColor: 'text-orange-600',
     bgColor: 'bg-orange-50',
     borderColor: 'border-orange-200',
@@ -205,7 +205,7 @@ export const extendedRankColors = {
     avatarClass: 'bg-orange-100 text-orange-800',
   },
   challenger: {
-    title: '🎲 도전자',
+    title: '중위권',
     textColor: 'text-teal-600',
     bgColor: 'bg-teal-50',
     borderColor: 'border-teal-200',
@@ -214,7 +214,7 @@ export const extendedRankColors = {
     avatarClass: 'bg-teal-100 text-teal-800',
   },
   rookie: {
-    title: '🌱 신예',
+    title: '참가자',
     textColor: 'text-lime-600',
     bgColor: 'bg-lime-50',
     borderColor: 'border-lime-200',

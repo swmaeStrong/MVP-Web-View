@@ -1,7 +1,5 @@
 'use client';
 
-import { animations, layout, typography } from '@/styles';
-
 interface LeaderboardHeaderProps {
   currentMessage: string;
 }
@@ -12,24 +10,16 @@ export default function LeaderboardHeader({
   return (
     <>
       {/* 헤더 */}
-      <div className={`text-center ${layout.spacing.section}`}>
-        <h1
-          className={`${typography.heading.hero} ${animations.pulse.slow} bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent`}
-        >
+      <div className='mb-8 text-center'>
+        <h1 className='bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl'>
           🏆 리더보드
         </h1>
-        <p className={`${typography.body.large} text-gray-600`}>
-          실시간으로 경쟁하며 함께 성장해요!
-        </p>
+        <p className='mt-2 text-gray-600'>실시간으로 경쟁하며 함께 성장해요!</p>
       </div>
 
       {/* 동기부여 메시지 */}
-      <div
-        className={`mb-8 rounded-2xl border border-white/20 bg-white/60 p-6 text-center shadow-lg backdrop-blur-sm`}
-      >
-        <p
-          className={`${typography.body.large} text-gray-700 ${animations.transition.smooth}`}
-        >
+      <div className='mb-8 rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 p-4 shadow-sm transition-shadow duration-200 hover:shadow-md'>
+        <p className='text-center font-medium text-gray-700'>
           {currentMessage}
         </p>
       </div>
