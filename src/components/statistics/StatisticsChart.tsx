@@ -3,8 +3,9 @@
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { DailyStatistics, PeriodType } from '@/types/statistics';
-import { BarChart3, ChevronLeft, ChevronRight, PieChart } from 'lucide-react';
-import StatisticsPieChart from './StatisticsPieChart';
+import { BarChart3, ChevronLeft, ChevronRight, Target } from 'lucide-react';
+import StatisticsBarChart from './StatisticsBarChart';
+import StatisticsRadarChart from './StatisticsRadarChart';
 
 interface StatisticsChartProps {
   selectedPeriod: PeriodType;
@@ -30,7 +31,7 @@ export default function StatisticsChart({
       case 'daily':
         const date = new Date(currentDate);
         const formattedDate = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
-        return `${formattedDate} 카테고리 분석`;
+        return `${formattedDate} Top 6 카테고리 분석`;
       case 'weekly':
         return '주별 작업 패턴';
       case 'monthly':
@@ -42,7 +43,7 @@ export default function StatisticsChart({
 
   const getChartIcon = () => {
     return selectedPeriod === 'daily' ? (
-      <PieChart className='h-5 w-5 text-purple-600' />
+      <Target className='h-5 w-5 text-purple-600' />
     ) : (
       <BarChart3 className='h-5 w-5 text-blue-600' />
     );
@@ -69,7 +70,7 @@ export default function StatisticsChart({
               size='sm'
               onClick={onPrevious}
               disabled={!canGoPrevious}
-              className='h-8 w-8 rounded-lg p-0'
+              className='h-8 w-8 rounded-lg p-0 transition-all hover:scale-105'
             >
               <ChevronLeft className='h-4 w-4' />
             </Button>
@@ -78,7 +79,7 @@ export default function StatisticsChart({
               size='sm'
               onClick={onNext}
               disabled={!canGoNext}
-              className='h-8 w-8 rounded-lg p-0'
+              className='h-8 w-8 rounded-lg p-0 transition-all hover:scale-105'
             >
               <ChevronRight className='h-4 w-4' />
             </Button>
@@ -86,40 +87,23 @@ export default function StatisticsChart({
         </div>
 
         {/* 차트 내용 */}
-        <div className='flex min-h-[400px] items-center justify-center'>
+        <div className='min-h-[400px]'>
           {selectedPeriod === 'daily' && data ? (
-            <StatisticsPieChart data={data} />
+            <StatisticsRadarChart data={data} />
           ) : selectedPeriod === 'weekly' || selectedPeriod === 'monthly' ? (
-            <div className='space-y-4 text-center text-gray-500'>
-              <div className='text-6xl'>🚧</div>
-              <div>
-                <h4 className='mb-2 text-lg font-semibold'>개발 중인 기능</h4>
-                <p className='text-sm'>
-                  {selectedPeriod === 'weekly' ? '주별' : '월별'} 차트는 곧
-                  제공됩니다!
-                </p>
-              </div>
-            </div>
+            <StatisticsBarChart period={selectedPeriod} />
           ) : (
-            <div className='space-y-4 text-center text-gray-500'>
-              <div className='text-6xl'>📊</div>
-              <div>
-                <h4 className='mb-2 text-lg font-semibold'>데이터 없음</h4>
-                <p className='text-sm'>표시할 작업 데이터가 없습니다.</p>
+            <div className='flex min-h-[400px] items-center justify-center'>
+              <div className='space-y-4 text-center text-gray-500'>
+                <div className='text-6xl'>📊</div>
+                <div>
+                  <h4 className='mb-2 text-lg font-semibold'>데이터 없음</h4>
+                  <p className='text-sm'>표시할 작업 데이터가 없습니다.</p>
+                </div>
               </div>
             </div>
           )}
         </div>
-
-        {/* 범례 또는 추가 정보 */}
-        {selectedPeriod === 'daily' && data && data.categories.length > 0 && (
-          <div className='mt-6 rounded-lg bg-gray-50 p-4'>
-            <div className='text-sm text-gray-600'>
-              💡 <strong>팁:</strong> 차트의 각 영역에 마우스를 올려보세요!
-              자세한 정보를 확인할 수 있습니다.
-            </div>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

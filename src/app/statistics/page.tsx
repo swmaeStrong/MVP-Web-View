@@ -6,7 +6,6 @@ import { useState } from 'react';
 
 // 컴포넌트 임포트
 import StatisticsChart from '@/components/statistics/StatisticsChart';
-import StatisticsPeriodSelector from '@/components/statistics/StatisticsPeriodSelector';
 import TopCategoryCard from '@/components/statistics/TopCategoryCard';
 import TotalTimeCard from '@/components/statistics/TotalTimeCard';
 
@@ -131,15 +130,6 @@ export default function StatisticsPage() {
           </p>
         </div>
 
-        {/* 기간 선택 */}
-        <StatisticsPeriodSelector
-          selectedPeriod={selectedPeriod}
-          onPeriodChange={handlePeriodChange}
-          selectedDate={selectedDate}
-          onDateChange={handleDateChange}
-          availableDates={availableDates}
-        />
-
         {/* 메인 콘텐츠 */}
         <div className='grid gap-6 sm:gap-8 lg:grid-cols-2'>
           {/* 왼쪽: 총 작업시간 & 최고 카테고리 */}
@@ -169,10 +159,10 @@ export default function StatisticsPage() {
           <div className='space-y-6'>
             <div className='text-center'>
               <h2 className='mb-2 text-2xl font-bold text-gray-800'>
-                🏆 상위 카테고리
+                🏆 Top 6 카테고리 요약
               </h2>
               <p className='text-sm text-gray-600'>
-                가장 많은 시간을 투자한 영역입니다
+                가장 많은 시간을 투자한 상위 3개 영역입니다
               </p>
             </div>
 

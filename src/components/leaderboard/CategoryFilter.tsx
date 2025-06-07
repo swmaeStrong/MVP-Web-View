@@ -46,7 +46,7 @@ export default function CategoryFilter({
           {getVisibleCategories().map((item, slotIndex) => {
             const categoryColor =
               categoryColors[item.category as keyof typeof categoryColors] ||
-              categoryColors.기타; // fallback to 기타 if category not found
+              categoryColors.Uncategorized; // fallback to 기타 if category not found
 
             return (
               <button

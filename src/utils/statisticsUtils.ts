@@ -4,33 +4,25 @@ import { DailyStatistics, StatisticsCategory } from '@/types/statistics';
 // 카테고리별 고정 색상 맵 - colors.ts와 통합
 export const categoryColorMap: { [key: string]: string } = {
   DEVELOPMENT: categoryColors.DEVELOPMENT.solid,
-  개발: categoryColors.개발.solid,
   LLM: categoryColors.LLM.solid,
   Documentation: categoryColors.Documentation.solid,
   Design: categoryColors.Design.solid,
-  디자인: categoryColors.디자인.solid,
   Communication: categoryColors.Communication.solid,
-  회의: categoryColors.회의.solid,
   YouTube: categoryColors.YouTube.solid,
   SNS: categoryColors.SNS.solid,
   Uncategorized: categoryColors.Uncategorized.solid,
-  기타: categoryColors.기타.solid,
 };
 
 // 카테고리별 아이콘 맵 - leaderboard와 통합
 export const categoryIconMap: { [key: string]: string } = {
   DEVELOPMENT: '💻',
-  개발: '💻',
   LLM: '🤖',
   Documentation: '📚',
   Design: '🎨',
-  디자인: '🎨',
   Communication: '💬',
-  회의: '💬',
   YouTube: '📹',
   SNS: '📱',
   Uncategorized: '📋',
-  기타: '📋',
 };
 
 // 초를 시간으로 변환
