@@ -187,6 +187,9 @@ export default function Leaderboard() {
         error={error}
         isFetchingNextPage={isFetchingNextPage}
         refetch={refetch}
+        selectedPeriod={selectedPeriod}
+        selectedCategory={selectedCategory}
+        selectedDateIndex={selectedDateIndex}
       />
     </div>
   );

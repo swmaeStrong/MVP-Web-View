@@ -2,6 +2,7 @@
 
 import { extendedRankColors, rankColors } from '@/styles';
 import { Crown, Medal, Trophy, Users } from 'lucide-react';
+import EmptyState from './EmptyState';
 
 interface User {
   id: number;
@@ -23,6 +24,9 @@ interface LeaderboardListProps {
   error: any;
   isFetchingNextPage: boolean;
   refetch: () => void;
+  selectedPeriod: 'daily' | 'weekly' | 'monthly';
+  selectedCategory: string;
+  selectedDateIndex: number;
 }
 
 // 초 단위를 시간, 분 형식으로 변환하는 함수
@@ -43,6 +47,9 @@ export default function LeaderboardList({
   error,
   isFetchingNextPage,
   refetch,
+  selectedPeriod,
+  selectedCategory,
+  selectedDateIndex,
 }: LeaderboardListProps) {
   const getRankInfo = (index: number) => {
     const rank = index + 1;
@@ -92,11 +99,12 @@ export default function LeaderboardList({
 
   if (!users || users.length === 0) {
     return (
-      <div className='mb-8 flex justify-center'>
-        <div className='rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 p-8 text-center shadow-sm'>
-          <p className='text-gray-600'>표시할 데이터가 없습니다.</p>
-        </div>
-      </div>
+      <EmptyState
+        selectedPeriod={selectedPeriod}
+        selectedCategory={selectedCategory}
+        selectedDateIndex={selectedDateIndex}
+        refetch={refetch}
+      />
     );
   }
 
