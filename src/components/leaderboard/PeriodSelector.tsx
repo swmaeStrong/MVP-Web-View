@@ -51,8 +51,22 @@ export default function PeriodSelector({
       );
       return `${weekStart.getMonth() + 1}월 ${Math.ceil(weekStart.getDate() / 7)}주차`;
     } else {
-      const month = new Date(currentDate);
-      month.setMonth(month.getMonth() - selectedDateIndex);
+      // 월간의 경우 해당 월의 1일로 직접 생성
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth();
+      const targetMonth = currentMonth - selectedDateIndex;
+
+      // 년도와 월 계산 (음수 월 처리)
+      let targetYear = currentYear;
+      let finalMonth = targetMonth;
+
+      while (finalMonth < 0) {
+        finalMonth += 12;
+        targetYear -= 1;
+      }
+
+      // 해당 월의 1일로 새 Date 객체 생성
+      const month = new Date(targetYear, finalMonth, 1);
       return `${month.getFullYear()}년 ${month.getMonth() + 1}월`;
     }
   };

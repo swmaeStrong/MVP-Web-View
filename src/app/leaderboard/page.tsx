@@ -30,11 +30,27 @@ export default function Leaderboard() {
     'daily' | 'weekly' | 'monthly'
   >('daily');
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDateIndex, setSelectedDateIndex] = useState(0);
+  // 각 기간별로 독립적인 날짜 인덱스 관리
+  const [dateIndices, setDateIndices] = useState({
+    daily: 0,
+    weekly: 0,
+    monthly: 0,
+  });
   const [selectedCategory, setSelectedCategory] = useState<string>(
     CATEGORIES.DEVELOPMENT
   );
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+
+  // 현재 선택된 기간의 날짜 인덱스
+  const selectedDateIndex = dateIndices[selectedPeriod];
+
+  // 날짜 인덱스 설정 함수
+  const setSelectedDateIndex = (index: number) => {
+    setDateIndices(prev => ({
+      ...prev,
+      [selectedPeriod]: index,
+    }));
+  };
 
   // 무한 스크롤 훅 사용
   const {

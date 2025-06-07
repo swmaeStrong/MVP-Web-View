@@ -102,8 +102,8 @@ export default function LeaderboardList({
 
   return (
     <>
-      {/* 상위 3명 - 화려한 특별 디스플레이 */}
-      <div className='mb-8'>
+      {/* 상위 3명 - 큰 화면에서만 특별 디스플레이, 작은 화면에서는 일반 리스트 */}
+      <div className='mb-8 hidden md:block'>
         <div className='mb-6 text-center'>
           <h2 className='mb-2 text-2xl font-bold text-gray-800'>
             🏆 명예의 전당
@@ -231,9 +231,75 @@ export default function LeaderboardList({
         </div>
       </div>
 
-      {/* 4위 이하 - 경쟁적인 리스트 */}
+      {/* 작은 화면에서 모든 사용자를 일반 리스트로 표시 */}
+      <div className='mb-8 block md:hidden'>
+        <div className='mb-4 flex items-center justify-between'>
+          <h2 className='flex items-center gap-2 text-lg font-bold text-gray-800'>
+            🏆 리더보드
+            <span className='text-sm font-normal text-gray-500'>
+              ({users.length}명)
+            </span>
+          </h2>
+          <div className='rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-500'>
+            실시간 업데이트
+          </div>
+        </div>
+
+        <div className='space-y-2'>
+          {users.map((user: User, index: number) => {
+            const rank = index + 1;
+            const rankInfo = getRankInfo(index);
+
+            return (
+              <div
+                key={`mobile-rank-${rank}-${user.id || user.name || index}`}
+                className={`group flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:border-purple-200 hover:shadow-lg ${user.isMe ? 'border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 ring-2 ring-purple-300' : ''}`}
+              >
+                {/* 좌측 - 순위 & 사용자 정보 */}
+                <div className='flex items-center space-x-4'>
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-bold ${rankInfo.bgColor} ${rankInfo.textColor} ${rankInfo.borderColor} transition-transform duration-200 group-hover:scale-110`}
+                  >
+                    {rank}
+                  </div>
+
+                  <div className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-300 bg-gradient-to-br from-gray-100 to-gray-200 transition-all duration-200 group-hover:border-purple-300 group-hover:from-purple-100 group-hover:to-blue-100'>
+                    <Users className='h-6 w-6 text-gray-600 group-hover:text-purple-600' />
+                  </div>
+
+                  <div className='flex-1'>
+                    <div className='flex items-center space-x-2'>
+                      <h3 className='font-bold text-gray-800 transition-colors duration-200 group-hover:text-purple-700'>
+                        {user.name}
+                      </h3>
+                      {user.isMe && (
+                        <span className='animate-pulse rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-3 py-1 text-xs font-bold text-white shadow-sm'>
+                          YOU
+                        </span>
+                      )}
+                    </div>
+                    <p className='text-xs text-gray-500 transition-colors duration-200 group-hover:text-purple-600'>
+                      {rank}위 도전자
+                    </p>
+                  </div>
+                </div>
+
+                {/* 우측 - 시간 정보 */}
+                <div className='text-right'>
+                  <div className='text-xl font-bold text-gray-900 transition-colors duration-200 group-hover:text-purple-700'>
+                    {formatTime(user.hours)}
+                  </div>
+                  <div className='text-xs text-gray-500'>작업 시간</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 4위 이하 - 경쟁적인 리스트 (큰 화면에서만) */}
       {users.length > 3 && (
-        <div className='mb-8'>
+        <div className='mb-8 hidden md:block'>
           <div className='mb-4 flex items-center justify-between'>
             <h2 className='flex items-center gap-2 text-lg font-bold text-gray-800'>
               🔥 경쟁자들

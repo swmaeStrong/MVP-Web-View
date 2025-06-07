@@ -46,11 +46,36 @@ export function useLeaderboardInfiniteScroll({
       );
       return targetDate.toISOString().split('T')[0];
     } else if (period === 'monthly') {
-      const targetDate = new Date(today);
-      // 월간의 경우 해당 월의 첫째 날을 계산
-      targetDate.setMonth(targetDate.getMonth() - selectedDateIndex);
-      targetDate.setDate(1);
-      return targetDate.toISOString().split('T')[0];
+      // 월간의 경우 - 문자열로 직접 계산하여 Date 객체의 문제를 완전히 회피
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth() + 1; // 1-based month (1=January, 12=December)
+
+      // 대상 월과 년도 계산
+      let targetYear = currentYear;
+      let targetMonth = currentMonth - selectedDateIndex;
+
+      // 음수 월 처리
+      while (targetMonth <= 0) {
+        targetMonth += 12;
+        targetYear -= 1;
+      }
+
+      // 문자열로 직접 생성 (Date 객체 사용하지 않음)
+      const yearStr = targetYear.toString();
+      const monthStr = targetMonth.toString().padStart(2, '0');
+      const result = `${yearStr}-${monthStr}-01`;
+
+      console.log('월간 계산:', {
+        today: today.toISOString().split('T')[0],
+        selectedDateIndex,
+        currentYear,
+        currentMonth,
+        targetYear,
+        targetMonth,
+        result,
+      });
+
+      return result;
     }
 
     // 'all'인 경우 오늘 날짜 반환
