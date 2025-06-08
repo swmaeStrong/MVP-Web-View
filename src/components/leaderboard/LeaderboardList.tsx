@@ -78,44 +78,247 @@ const formatTime = (seconds: number): string => {
   return `${h}h ${m}m`;
 };
 
-// 상위 3위 특별 스타일 가져오기
-const getTopRankStyle = (rank: number) => {
-  if (rank === 1) {
-    return {
-      icon: '/icons/rank/challenger.png',
-      title: 'CHALLENGER',
-      borderClass:
-        'border-yellow-400 bg-gradient-to-r from-yellow-50 to-blue-50',
-      glowAnimation: 'challenger-glow 2s ease-in-out infinite alternate',
-      rankBg: 'bg-gradient-to-r from-yellow-400 to-blue-500',
-      rankText: 'text-white',
-      nameColor:
-        'text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-blue-600 font-extrabold',
-    };
-  } else if (rank === 2) {
-    return {
-      icon: '/icons/rank/grandMaster.png',
-      title: 'GRANDMASTER',
-      borderClass: 'border-red-400 bg-gradient-to-r from-red-50 to-pink-50',
-      glowAnimation: 'grandmaster-glow 2.5s ease-in-out infinite alternate',
-      rankBg: 'bg-transparent border-red-500',
-      rankText: 'text-red-600 font-bold',
-      nameColor: 'text-red-600 font-extrabold',
-    };
-  } else if (rank === 3) {
-    return {
-      icon: '/icons/rank/master.png',
-      title: 'MASTER',
-      borderClass:
-        'border-purple-500 bg-gradient-to-r from-purple-50 to-violet-50',
-      glowAnimation: 'master-glow 3s ease-in-out infinite alternate',
-      rankBg: 'bg-transparent border-purple-500',
-      rankText: 'text-purple-600 font-bold',
-      nameColor: 'text-purple-600 font-extrabold',
-    };
-  }
-  return null;
+// 티어별 설정 정의
+const tierConfig = {
+  challenger: {
+    icon: '/icons/rank/challenger.png',
+    title: 'CHALLENGER',
+    borderClass: 'border-yellow-400 bg-gradient-to-r from-yellow-50 to-blue-50',
+    glowAnimation: 'challenger-glow 2s ease-in-out infinite alternate',
+    rankBg: 'bg-gradient-to-r from-yellow-400 to-blue-500',
+    rankText: 'text-white',
+    nameColor:
+      'text-transparent bg-clip-text bg-gradient-to-r from-yellow-600 to-blue-600 font-extrabold',
+  },
+  grandmaster: {
+    icon: '/icons/rank/grandMaster.png',
+    title: 'GRANDMASTER',
+    borderClass: 'border-red-400 bg-gradient-to-r from-red-50 to-pink-50',
+    glowAnimation: 'grandmaster-glow 2.5s ease-in-out infinite alternate',
+    rankBg: 'bg-transparent border-red-300',
+    rankText: 'text-red-500 font-bold',
+    nameColor: 'text-red-600 font-extrabold',
+  },
+  master: {
+    icon: '/icons/rank/master.png',
+    title: 'MASTER',
+    borderClass:
+      'border-purple-500 bg-gradient-to-r from-purple-50 to-violet-50',
+    glowAnimation: 'master-glow 3s ease-in-out infinite alternate',
+    rankBg: 'bg-transparent border-purple-300',
+    rankText: 'text-purple-500 font-bold',
+    nameColor: 'text-purple-600 font-extrabold',
+  },
+  diamond: {
+    icon: '/icons/rank/diamond.png',
+    title: 'DIAMOND',
+    borderClass: 'border-blue-300 bg-white',
+    glowAnimation: '',
+    rankBg: 'bg-transparent border-blue-300',
+    rankText: 'text-blue-500 font-bold',
+    nameColor: 'text-blue-600 font-bold',
+  },
+  emerald: {
+    icon: '/icons/rank/emerald.png',
+    title: 'EMERALD',
+    borderClass: 'border-emerald-300 bg-white',
+    glowAnimation: '',
+    rankBg: 'bg-transparent border-emerald-300',
+    rankText: 'text-emerald-500 font-bold',
+    nameColor: 'text-emerald-600 font-bold',
+  },
+  platinum: {
+    icon: '/icons/rank/platinum.png',
+    title: 'PLATINUM',
+    borderClass: 'border-slate-300 bg-white',
+    glowAnimation: '',
+    rankBg: 'bg-transparent border-slate-300',
+    rankText: 'text-slate-500 font-bold',
+    nameColor: 'text-slate-600 font-bold',
+  },
+  gold: {
+    icon: '/icons/rank/gold.png',
+    title: 'GOLD',
+    borderClass: 'border-amber-300 bg-white',
+    glowAnimation: '',
+    rankBg: 'bg-transparent border-amber-300',
+    rankText: 'text-amber-500 font-bold',
+    nameColor: 'text-amber-600 font-bold',
+  },
+  silver: {
+    icon: '/icons/rank/silver.png',
+    title: 'SILVER',
+    borderClass: 'border-gray-300 bg-white',
+    glowAnimation: '',
+    rankBg: 'bg-transparent border-gray-300',
+    rankText: 'text-gray-500 font-bold',
+    nameColor: 'text-gray-600 font-bold',
+  },
+  bronze: {
+    icon: '/icons/rank/bronze.png',
+    title: 'BRONZE',
+    borderClass: 'border-orange-300 bg-white',
+    glowAnimation: '',
+    rankBg: 'bg-transparent border-orange-300',
+    rankText: 'text-orange-500 font-bold',
+    nameColor: 'text-orange-600 font-bold',
+  },
 };
+
+// 순위에 따른 티어 계산 (100명 이상 기준)
+const getTierByRank = (rank: number, totalUsers: number) => {
+  const percentage = (rank / totalUsers) * 100;
+
+  if (percentage <= 1) return 'challenger'; // 상위 1%
+  if (percentage <= 3) return 'grandmaster'; // 상위 3%
+  if (percentage <= 5) return 'master'; // 상위 5%
+  if (percentage <= 10) return 'diamond'; // 상위 10%
+  if (percentage <= 15) return 'emerald'; // 상위 15%
+  if (percentage <= 30) return 'platinum'; // 상위 30%
+  if (percentage <= 50) return 'gold'; // 상위 50%
+  if (percentage <= 80) return 'silver'; // 상위 80%
+  return 'bronze'; // 나머지
+};
+
+// 티어별 스타일 가져오기
+const getTierStyle = (rank: number, totalUsers: number) => {
+  const tier = getTierByRank(rank, totalUsers);
+  return tierConfig[tier];
+};
+
+// TierTooltip 컴포넌트 (임시로 여기에 포함)
+import { useState } from 'react';
+
+interface TierTooltipProps {
+  tier: string;
+  icon: string;
+  title: string;
+  className?: string;
+}
+
+const tierDescriptions = {
+  challenger: {
+    description: '최상위 1%의 전설적인 사용자들',
+    requirement: '상위 1%',
+    color: 'text-yellow-600',
+    bgColor: 'bg-gradient-to-r from-yellow-50 to-blue-50',
+    borderColor: 'border-yellow-400',
+  },
+  grandmaster: {
+    description: '뛰어난 실력을 지닌 상위 랭커들',
+    requirement: '상위 3%',
+    color: 'text-red-600',
+    bgColor: 'bg-gradient-to-r from-red-50 to-pink-50',
+    borderColor: 'border-red-400',
+  },
+  master: {
+    description: '마스터급 실력의 고수들',
+    requirement: '상위 5%',
+    color: 'text-purple-600',
+    bgColor: 'bg-gradient-to-r from-purple-50 to-violet-50',
+    borderColor: 'border-purple-400',
+  },
+  diamond: {
+    description: '다이아몬드처럼 빛나는 실력자들',
+    requirement: '상위 10%',
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-400',
+  },
+  emerald: {
+    description: '꾸준한 성장을 보이는 상급자들',
+    requirement: '상위 15%',
+    color: 'text-emerald-600',
+    bgColor: 'bg-emerald-50',
+    borderColor: 'border-emerald-400',
+  },
+  platinum: {
+    description: '안정적인 실력의 플래티넘 등급',
+    requirement: '상위 30%',
+    color: 'text-slate-600',
+    bgColor: 'bg-slate-50',
+    borderColor: 'border-slate-400',
+  },
+  gold: {
+    description: '황금빛 실력을 지닌 중급자들',
+    requirement: '상위 50%',
+    color: 'text-amber-600',
+    bgColor: 'bg-amber-50',
+    borderColor: 'border-amber-400',
+  },
+  silver: {
+    description: '은빛 열정으로 노력하는 사용자들',
+    requirement: '상위 80%',
+    color: 'text-gray-600',
+    bgColor: 'bg-gray-50',
+    borderColor: 'border-gray-400',
+  },
+  bronze: {
+    description: '시작하는 모든 이들을 응원합니다',
+    requirement: '나머지',
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-50',
+    borderColor: 'border-orange-400',
+  },
+};
+
+function TierTooltip({ tier, icon, title, className = '' }: TierTooltipProps) {
+  const [isVisible, setIsVisible] = useState(false);
+  const tierInfo = tierDescriptions[tier as keyof typeof tierDescriptions];
+
+  if (!tierInfo) return null;
+
+  return (
+    <div
+      className={`relative inline-block ${className}`}
+      onMouseEnter={() => setIsVisible(true)}
+      onMouseLeave={() => setIsVisible(false)}
+    >
+      {/* 트리거 아이콘 */}
+      <div className='cursor-help'>
+        <Image
+          src={icon}
+          alt={title}
+          width={20}
+          height={20}
+          className='opacity-70 transition-opacity duration-200 hover:opacity-100'
+        />
+      </div>
+
+      {/* 툴팁 */}
+      {isVisible && (
+        <div
+          className={`absolute bottom-full left-1/2 z-50 mb-2 w-64 -translate-x-1/2 transform rounded-lg border-2 p-4 shadow-lg ${tierInfo.bgColor} ${tierInfo.borderColor}`}
+        >
+          {/* 화살표 */}
+          <div
+            className={`absolute top-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-t-4 border-r-4 border-l-4 border-transparent ${tierInfo.borderColor.replace('border-', 'border-t-')}`}
+          ></div>
+
+          <div className='mb-3 flex items-center space-x-3'>
+            <Image
+              src={icon}
+              alt={title}
+              width={32}
+              height={32}
+              className='drop-shadow-sm'
+            />
+            <div>
+              <h3 className={`text-lg font-bold ${tierInfo.color}`}>{title}</h3>
+              <p className={`text-sm font-semibold ${tierInfo.color}`}>
+                {tierInfo.requirement}
+              </p>
+            </div>
+          </div>
+
+          <p className='text-sm leading-relaxed text-gray-700'>
+            {tierInfo.description}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function LeaderboardList({
   users,
@@ -202,7 +405,7 @@ export default function LeaderboardList({
           {users.map((user: User, index: number) => {
             const rank = index + 1;
             const rankInfo = getRankInfo(index);
-            const topRankStyle = getTopRankStyle(rank);
+            const topRankStyle = getTierStyle(rank, users.length);
 
             return (
               <div
@@ -240,21 +443,15 @@ export default function LeaderboardList({
                   </div>
 
                   {/* 순위 아이콘 */}
-                  {(topRankStyle || rank > 3) && (
-                    <div className='flex h-12 w-12 items-center justify-center'>
-                      <Image
-                        src={
-                          topRankStyle
-                            ? topRankStyle.icon
-                            : '/icons/rank/bronze.png'
-                        }
-                        alt={topRankStyle ? topRankStyle.title : 'BRONZE'}
-                        width={48}
-                        height={48}
-                        className='drop-shadow-lg transition-transform duration-200 group-hover:scale-110'
-                      />
-                    </div>
-                  )}
+                  <div className='flex h-12 w-12 items-center justify-center'>
+                    <Image
+                      src={topRankStyle.icon}
+                      alt={topRankStyle.title}
+                      width={48}
+                      height={48}
+                      className='drop-shadow-lg transition-transform duration-200 group-hover:scale-110'
+                    />
+                  </div>
 
                   {/* 사용자 정보 */}
                   <div className='flex-1'>

@@ -1,6 +1,7 @@
 'use client';
 
 import { categoryColors } from '@/styles';
+import TierSystemTooltip from './TierSystemTooltip';
 
 interface CategoryFilterProps {
   categories: string[];
@@ -42,32 +43,39 @@ export default function CategoryFilter({
   return (
     <div className='mb-8 rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 p-4 shadow-sm transition-shadow duration-200 hover:shadow-md'>
       <div className='space-y-4'>
-        {/* 카테고리 버튼들 */}
-        <div className='flex justify-center'>
-          <div className='flex items-center gap-2'>
-            {getVisibleCategories().map((item, slotIndex) => {
-              const categoryColor =
-                categoryColors[item.category as keyof typeof categoryColors] ||
-                categoryColors.Uncategorized;
+        {/* 상단 영역: 티어 설명 + 카테고리 버튼들 */}
+        <div className='flex items-center justify-between'>
+          {/* 좌측: 티어 설명 */}
+          <TierSystemTooltip />
 
-              return (
-                <button
-                  key={`${item.category}-${slotIndex}`}
-                  onClick={() => setSelectedCategory(item.category)}
-                  className={
-                    item.isSelected
-                      ? `rounded-lg bg-gradient-to-r ${categoryColor.buttonGradient} scale-105 transform px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200`
-                      : Math.abs(item.position) === 1
-                        ? 'scale-95 transform rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50'
-                        : 'scale-90 transform rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-500 opacity-70 transition-all duration-200 hover:bg-gray-100'
-                  }
-                >
-                  <span className='whitespace-nowrap'>
-                    {item.category === 'all' ? '전체' : item.category}
-                  </span>
-                </button>
-              );
-            })}
+          {/* 중앙: 카테고리 버튼들 */}
+          <div className='flex flex-1 justify-center'>
+            <div className='flex items-center gap-2'>
+              {getVisibleCategories().map((item, slotIndex) => {
+                const categoryColor =
+                  categoryColors[
+                    item.category as keyof typeof categoryColors
+                  ] || categoryColors.Uncategorized;
+
+                return (
+                  <button
+                    key={`${item.category}-${slotIndex}`}
+                    onClick={() => setSelectedCategory(item.category)}
+                    className={
+                      item.isSelected
+                        ? `rounded-lg bg-gradient-to-r ${categoryColor.buttonGradient} scale-105 transform px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200`
+                        : Math.abs(item.position) === 1
+                          ? 'scale-95 transform rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50'
+                          : 'scale-90 transform rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-500 opacity-70 transition-all duration-200 hover:bg-gray-100'
+                    }
+                  >
+                    <span className='whitespace-nowrap'>
+                      {item.category === 'all' ? '전체' : item.category}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
