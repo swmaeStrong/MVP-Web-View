@@ -73,7 +73,8 @@ const tierConfig = {
   challenger: {
     icon: '/icons/rank/challenger.png',
     title: 'CHALLENGER',
-    borderClass: 'border-yellow-400 bg-gradient-to-r from-yellow-50 to-blue-50',
+    borderClass:
+      'border-yellow-400 bg-gradient-to-br from-yellow-200 via-amber-100 to-blue-200',
     glowAnimation: 'challenger-glow 2s ease-in-out infinite alternate',
     rankBg: 'bg-gradient-to-r from-yellow-400 to-blue-500',
     rankText: 'text-white',
@@ -83,30 +84,35 @@ const tierConfig = {
   grandmaster: {
     icon: '/icons/rank/grandMaster.png',
     title: 'GRANDMASTER',
-    borderClass: 'border-red-400 bg-gradient-to-r from-red-50 to-pink-50',
+    borderClass:
+      'border-red-400 bg-gradient-to-br from-red-200 via-rose-100 to-pink-200',
     glowAnimation: 'grandmaster-glow 2.5s ease-in-out infinite alternate',
-    rankBg: 'bg-transparent border-red-300',
-    rankText: 'text-red-500 font-bold',
-    nameColor: 'text-red-600 font-extrabold',
+    rankBg: 'bg-gradient-to-r from-red-400 to-rose-500',
+    rankText: 'text-white font-bold',
+    nameColor:
+      'text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-rose-600 font-extrabold',
   },
   master: {
     icon: '/icons/rank/master.png',
     title: 'MASTER',
     borderClass:
-      'border-purple-500 bg-gradient-to-r from-purple-50 to-violet-50',
+      'border-purple-500 bg-gradient-to-br from-purple-200 via-violet-100 to-indigo-200',
     glowAnimation: 'master-glow 3s ease-in-out infinite alternate',
-    rankBg: 'bg-transparent border-purple-300',
-    rankText: 'text-purple-500 font-bold',
-    nameColor: 'text-purple-600 font-extrabold',
+    rankBg: 'bg-gradient-to-r from-purple-500 to-indigo-500',
+    rankText: 'text-white font-bold',
+    nameColor:
+      'text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 font-extrabold',
   },
   diamond: {
     icon: '/icons/rank/diamond.png',
     title: 'DIAMOND',
-    borderClass: 'border-blue-300 bg-white',
-    glowAnimation: '',
-    rankBg: 'bg-transparent border-blue-300',
-    rankText: 'text-blue-500 font-bold',
-    nameColor: 'text-blue-600 font-bold',
+    borderClass:
+      'border-blue-400 bg-gradient-to-br from-blue-50 via-cyan-50 to-sky-50',
+    glowAnimation: 'diamond-glow 2s ease-in-out infinite alternate',
+    rankBg: 'bg-gradient-to-r from-blue-400 to-cyan-500',
+    rankText: 'text-white font-bold',
+    nameColor:
+      'text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600 font-bold',
   },
   emerald: {
     icon: '/icons/rank/emerald.png',
@@ -391,9 +397,6 @@ export default function LeaderboardList({
       <div className='mb-8'>
         <div className='mb-6 text-center'>
           <h2 className='mb-2 text-2xl font-bold text-gray-800'>🏆 리더보드</h2>
-          <p className='text-sm text-gray-600'>
-            실시간 순위표 ({users.length}명)
-          </p>
         </div>
 
         <div className='space-y-3'>

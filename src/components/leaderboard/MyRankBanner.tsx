@@ -9,30 +9,30 @@ const tierConfig = {
   challenger: {
     icon: '/icons/rank/challenger.png',
     title: 'Challenger',
-    bgGradient: 'from-yellow-100 via-yellow-50 to-blue-100',
+    bgGradient: 'from-yellow-200 via-amber-100 to-blue-200',
     borderColor: 'border-yellow-400',
-    shadowColor: 'shadow-yellow-200/50',
+    shadowColor: 'shadow-yellow-300/60',
   },
   grandmaster: {
     icon: '/icons/rank/grandMaster.png',
     title: 'Grandmaster',
-    bgGradient: 'from-red-100 to-red-50',
+    bgGradient: 'from-red-200 via-rose-100 to-pink-200',
     borderColor: 'border-red-400',
-    shadowColor: 'shadow-red-200/50',
+    shadowColor: 'shadow-red-300/60',
   },
   master: {
     icon: '/icons/rank/master.png',
     title: 'Master',
-    bgGradient: 'from-purple-100 to-purple-50',
-    borderColor: 'border-purple-400',
-    shadowColor: 'shadow-purple-200/50',
+    bgGradient: 'from-purple-200 via-violet-100 to-indigo-200',
+    borderColor: 'border-purple-500',
+    shadowColor: 'shadow-purple-300/60',
   },
   diamond: {
     icon: '/icons/rank/diamond.png',
     title: 'Diamond',
-    bgGradient: 'from-blue-100 to-blue-50',
-    borderColor: 'border-blue-300',
-    shadowColor: 'shadow-blue-200/50',
+    bgGradient: 'from-blue-50 via-cyan-50 to-sky-50',
+    borderColor: 'border-blue-400',
+    shadowColor: 'shadow-blue-300/60',
   },
   emerald: {
     icon: '/icons/rank/emerald.png',
@@ -170,89 +170,96 @@ export default function MyRankBanner({
   const tierInfo = getTierInfo(rank);
 
   return (
-    <div
-      className={`mb-6 rounded-xl border-2 bg-gradient-to-r ${getRankStyle(rank)} p-4 transition-all duration-300 hover:scale-[1.02]`}
-    >
-      <div className='flex items-center justify-between'>
-        <div className='flex items-center space-x-4'>
-          {/* 티어 아이콘 - 리더보드와 동일한 로직 */}
-          <div className='relative'>
-            <Image
-              src={tierInfo.icon}
-              alt={tierInfo.title}
-              width={48}
-              height={48}
-              className='drop-shadow-sm'
-            />
-            {rank && rank <= 3 && (
-              <div className='absolute -top-1 -right-1 animate-pulse'>
-                <Crown className='h-4 w-4 text-yellow-500' />
+    <>
+      <div
+        className={`mb-6 rounded-xl border-2 bg-gradient-to-r ${getRankStyle(rank)} p-4 transition-all duration-300 hover:scale-[1.02]`}
+      >
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center space-x-4'>
+            {/* 티어 아이콘 - 리더보드와 동일한 로직 */}
+            <div className='relative'>
+              <Image
+                src={tierInfo.icon}
+                alt={tierInfo.title}
+                width={48}
+                height={48}
+                className='drop-shadow-sm'
+              />
+              {rank && rank <= 3 && (
+                <div className='absolute -top-1 -right-1 animate-pulse'>
+                  <Crown className='h-4 w-4 text-yellow-500' />
+                </div>
+              )}
+            </div>
+
+            {/* 유저 정보 */}
+            <div>
+              <div className='flex items-center space-x-2'>
+                <h3 className='text-lg font-bold text-gray-800'>
+                  {myRank.nickname}
+                </h3>
+                <span className='animate-pulse rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-2 py-1 text-xs font-bold text-white'>
+                  YOU
+                </span>
               </div>
+              <div className='flex items-center space-x-2 text-sm'>
+                <span className={`font-bold ${rankDisplay.color}`}>
+                  {rankDisplay.text} place
+                </span>
+                <span className='text-gray-400'>•</span>
+                <span className='text-gray-600'>점수: {score || 0}</span>
+                <span className='text-gray-400'>•</span>
+                <span className='text-xs text-gray-600'>{tierInfo.title}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 순위 및 액션 */}
+          <div className='text-right'>
+            <div className='flex items-center space-x-2'>
+              <IconComponent className={`h-6 w-6 ${rankDisplay.color}`} />
+              <div>
+                <div className={`text-2xl font-bold ${rankDisplay.color}`}>
+                  #{rank || '?'}
+                </div>
+                <div className='text-xs text-gray-500'>순위</div>
+              </div>
+            </div>
+
+            {onScrollToMyRank && rank && (
+              <button
+                onClick={onScrollToMyRank}
+                className='mt-2 text-xs text-blue-600 underline hover:text-blue-800'
+              >
+                리더보드에서 찾기
+              </button>
             )}
           </div>
-
-          {/* 유저 정보 */}
-          <div>
-            <div className='flex items-center space-x-2'>
-              <h3 className='text-lg font-bold text-gray-800'>
-                {myRank.nickname}
-              </h3>
-              <span className='animate-pulse rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-2 py-1 text-xs font-bold text-white'>
-                YOU
-              </span>
-            </div>
-            <div className='flex items-center space-x-2 text-sm'>
-              <span className={`font-bold ${rankDisplay.color}`}>
-                {rankDisplay.text} place
-              </span>
-              <span className='text-gray-400'>•</span>
-              <span className='text-gray-600'>점수: {score || 0}</span>
-              <span className='text-gray-400'>•</span>
-              <span className='text-xs text-gray-600'>{tierInfo.title}</span>
-            </div>
-          </div>
         </div>
 
-        {/* 순위 및 액션 */}
-        <div className='text-right'>
-          <div className='flex items-center space-x-2'>
-            <IconComponent className={`h-6 w-6 ${rankDisplay.color}`} />
-            <div>
-              <div className={`text-2xl font-bold ${rankDisplay.color}`}>
-                #{rank || '?'}
+        {/* 추가 정보 */}
+        {rank && (
+          <div className='mt-3 flex items-center justify-between border-t border-gray-200/50 pt-3'>
+            <div className='flex items-center space-x-4'>
+              <div className='flex items-center space-x-1 text-xs text-gray-600'>
+                <Clock className='h-3 w-3' />
+                <span>점수: {score || 0}</span>
               </div>
-              <div className='text-xs text-gray-500'>순위</div>
+            </div>
+
+            <div className='text-xs text-gray-500'>
+              {period === 'daily' && '오늘'}
+              {period === 'weekly' && '이번 주'}
+              {period === 'monthly' && '이번 달'} 기준
             </div>
           </div>
-
-          {onScrollToMyRank && rank && (
-            <button
-              onClick={onScrollToMyRank}
-              className='mt-2 text-xs text-blue-600 underline hover:text-blue-800'
-            >
-              리더보드에서 찾기
-            </button>
-          )}
-        </div>
+        )}
       </div>
 
-      {/* 추가 정보 */}
-      {rank && (
-        <div className='mt-3 flex items-center justify-between border-t border-gray-200/50 pt-3'>
-          <div className='flex items-center space-x-4'>
-            <div className='flex items-center space-x-1 text-xs text-gray-600'>
-              <Clock className='h-3 w-3' />
-              <span>점수: {score || 0}</span>
-            </div>
-          </div>
-
-          <div className='text-xs text-gray-500'>
-            {period === 'daily' && '오늘'}
-            {period === 'weekly' && '이번 주'}
-            {period === 'monthly' && '이번 달'} 기준
-          </div>
-        </div>
-      )}
-    </div>
+      {/* 구분선 */}
+      <div className='mb-6 flex justify-center'>
+        <div className='h-px w-full max-w-md bg-gradient-to-r from-transparent via-gray-300 to-transparent'></div>
+      </div>
+    </>
   );
 }
