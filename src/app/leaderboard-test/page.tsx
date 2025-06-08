@@ -60,24 +60,27 @@ export default function LeaderboardTest() {
     rank: index + 1,
   }));
 
-  // 50번째 사용자를 현재 사용자로 설정
+  // 테스트 페이지에서는 별도의 로컬 사용자 상태 사용
+  const [testUser, setTestUser] = useState<User | null>(null);
+
+  // 50번째 사용자를 테스트 사용자로 설정 (전역 상태 변경 안함)
   useEffect(() => {
-    if (!currentUser && users.length > 49) {
-      setCurrentUser({
+    if (!testUser && users.length > 49) {
+      setTestUser({
         id: users[49].id,
         nickname: users[49].nickname,
       });
     }
-  }, [currentUser, setCurrentUser, users]);
+  }, [testUser, users]);
 
   const categories = LEADERBOARD_CATEGORIES;
 
   // 더미 스크롤 함수
   const scrollToMyRank = () => {
-    // 현재 사용자 순위로 스크롤
-    if (currentUser) {
+    // 테스트 사용자 순위로 스크롤
+    if (testUser) {
       const targetElement = document.querySelector(
-        `[data-user-id="${currentUser.id}"]`
+        `[data-user-id="${testUser.id}"]`
       );
       if (targetElement) {
         targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -87,10 +90,10 @@ export default function LeaderboardTest() {
 
   return (
     <div
-      className={`min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 ${layout.container.default} py-8`}
+      className={`min-h-screen w-full bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 ${layout.container.default} py-8`}
     >
       {/* 테스트 라벨 */}
-      <div className='mb-4 text-center'>
+      <div className='mb-4 w-full text-center'>
         <span className='inline-block rounded-full bg-red-100 px-4 py-2 text-sm font-bold text-red-600'>
           🧪 TEST MODE - 더미 데이터 사용중 (100명의 리더보드)
         </span>
@@ -129,7 +132,7 @@ export default function LeaderboardTest() {
       </div>
 
       {/* 내 순위 배너 - 더미 데이터로 50번째 사용자 표시 */}
-      {currentUser && (
+      {testUser && (
         <div className='mb-6 rounded-xl border-2 border-gray-200 bg-gradient-to-r from-gray-50 to-white p-4 shadow-lg shadow-gray-100/50 transition-all duration-300 hover:scale-[1.02]'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center space-x-4'>
@@ -145,7 +148,7 @@ export default function LeaderboardTest() {
               <div>
                 <div className='flex items-center space-x-2'>
                   <h3 className='text-lg font-bold text-gray-800'>
-                    {currentUser.nickname}
+                    {testUser.nickname}
                   </h3>
                   <span className='animate-pulse rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-2 py-1 text-xs font-bold text-white'>
                     YOU

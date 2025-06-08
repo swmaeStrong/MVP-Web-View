@@ -23,7 +23,10 @@ export const useUserStore = create<UserState>()(
     persist(
       (set, get) => ({
         // 초기 상태
-        currentUser: null,
+        currentUser: {
+          id: 'a',
+          nickname: 'admin',
+        },
 
         // Actions
         setCurrentUser: user =>

@@ -1,8 +1,80 @@
 'use client';
 
 import { useMyRank } from '@/hooks/useMyRank';
-import { Clock, Crown, TrendingUp, Users } from 'lucide-react';
+import {
+  Award,
+  ChevronUp,
+  Clock,
+  Crown,
+  Sparkles,
+  Star,
+  TrendingUp,
+  Users,
+  Zap,
+} from 'lucide-react';
 import Image from 'next/image';
+
+// 초 단위를 시간, 분 형식으로 변환하는 함수
+const formatTime = (seconds: number) => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+
+  if (hours === 0) {
+    return `${minutes}분`;
+  } else if (minutes === 0) {
+    return `${hours}시간`;
+  } else {
+    return `${hours}시간 ${minutes}분`;
+  }
+};
+
+// 파티클 애니메이션 컴포넌트
+const AnimatedParticles = ({ rank }: { rank: number | null }) => {
+  if (!rank || rank > 3) return null;
+
+  return (
+    <div className='pointer-events-none absolute inset-0 overflow-hidden'>
+      {[...Array(6)].map((_, i) => (
+        <div
+          key={i}
+          className={`absolute animate-bounce ${
+            rank === 1
+              ? 'text-yellow-400'
+              : rank === 2
+                ? 'text-gray-400'
+                : 'text-amber-500'
+          }`}
+          style={{
+            left: `${20 + i * 15}%`,
+            top: `${10 + (i % 2) * 20}%`,
+            animationDelay: `${i * 0.2}s`,
+            animationDuration: '2s',
+          }}
+        >
+          <Star className='h-3 w-3 animate-pulse' />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// 상위 랭크 글로우 효과
+const TopRankGlow = ({ rank }: { rank: number | null }) => {
+  if (!rank || rank > 3) return null;
+
+  const glowColor =
+    rank === 1
+      ? 'bg-yellow-400/20'
+      : rank === 2
+        ? 'bg-gray-400/20'
+        : 'bg-amber-400/20';
+
+  return (
+    <div
+      className={`absolute inset-0 ${glowColor} animate-pulse rounded-xl`}
+    ></div>
+  );
+};
 
 // 리더보드와 동일한 티어 설정
 const tierConfig = {
@@ -135,7 +207,10 @@ export default function MyRankBanner({
 
   if (isLoading) {
     return (
-      <div className='mb-6 rounded-xl border border-gray-200 bg-gradient-to-r from-purple-50 to-blue-50 p-4'>
+      <div
+        className='relative mb-6 rounded-xl border border-gray-200 bg-gradient-to-r from-purple-50 to-blue-50 p-4'
+        style={{ zIndex: 1 }}
+      >
         <div className='flex items-center space-x-4'>
           <div className='h-12 w-12 animate-pulse rounded-full bg-gray-300'></div>
           <div className='flex-1'>
@@ -149,7 +224,10 @@ export default function MyRankBanner({
 
   if (isError || !myRank) {
     return (
-      <div className='mb-6 rounded-xl border border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50 p-4'>
+      <div
+        className='relative mb-6 rounded-xl border border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50 p-4'
+        style={{ zIndex: 1 }}
+      >
         <div className='flex items-center space-x-3'>
           <Users className='h-8 w-8 text-orange-500' />
           <div>
@@ -172,85 +250,204 @@ export default function MyRankBanner({
   return (
     <>
       <div
-        className={`mb-6 rounded-xl border-2 bg-gradient-to-r ${getRankStyle(rank)} p-4 transition-all duration-300 hover:scale-[1.02]`}
+        className={`mb-6 rounded-xl border-2 bg-gradient-to-r ${getRankStyle(rank)} relative overflow-hidden p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl`}
+        style={{ zIndex: 1 }}
       >
-        <div className='flex items-center justify-between'>
+        {/* 배경 효과들 */}
+        <TopRankGlow rank={rank} />
+        <AnimatedParticles rank={rank} />
+
+        {/* 좌상단 장식 */}
+        <div className='absolute top-2 left-2'>
+          <Sparkles className='h-4 w-4 animate-pulse text-purple-400' />
+        </div>
+
+        {/* 우상단 순위 표시 강화 */}
+        {rank && rank <= 10 && (
+          <div className='absolute top-2 right-2 flex items-center space-x-1'>
+            <Award
+              className={`h-4 w-4 ${rank <= 3 ? 'text-yellow-500' : 'text-blue-500'}`}
+            />
+            <span className='text-xs font-bold text-gray-600'>TOP {rank}</span>
+          </div>
+        )}
+
+        <div className='relative z-10 flex items-center justify-between'>
           <div className='flex items-center space-x-4'>
-            {/* 티어 아이콘 - 리더보드와 동일한 로직 */}
-            <div className='relative'>
+            {/* 티어 아이콘 - 향상된 디자인 */}
+            <div className='group relative'>
+              <div className='absolute inset-0 rounded-full bg-white/30 blur-sm transition-all duration-300 group-hover:blur-md'></div>
               <Image
                 src={tierInfo.icon}
                 alt={tierInfo.title}
-                width={48}
-                height={48}
-                className='drop-shadow-sm'
+                width={56}
+                height={56}
+                className='relative z-10 drop-shadow-lg transition-transform duration-300 group-hover:scale-110'
               />
               {rank && rank <= 3 && (
-                <div className='absolute -top-1 -right-1 animate-pulse'>
-                  <Crown className='h-4 w-4 text-yellow-500' />
+                <div className='absolute -top-2 -right-2 animate-bounce'>
+                  <div className='rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 p-1'>
+                    <Crown className='h-5 w-5 text-white' />
+                  </div>
+                </div>
+              )}
+              {rank && rank === 1 && (
+                <div className='absolute -bottom-1 left-1/2 -translate-x-1/2 transform'>
+                  <div className='rounded-full bg-gradient-to-r from-yellow-400 to-yellow-600 px-2 py-0.5'>
+                    <span className='text-xs font-bold text-white'>
+                      CHAMPION
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* 유저 정보 */}
+            {/* 유저 정보 - 향상된 디자인 */}
             <div>
-              <div className='flex items-center space-x-2'>
-                <h3 className='text-lg font-bold text-gray-800'>
+              <div className='flex items-center space-x-3'>
+                <h3 className='text-xl font-bold tracking-wide text-gray-800'>
                   {myRank.nickname}
                 </h3>
-                <span className='animate-pulse rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-2 py-1 text-xs font-bold text-white'>
-                  YOU
-                </span>
+                <div className='flex items-center space-x-1'>
+                  <span className='animate-pulse rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-3 py-1 text-xs font-bold text-white shadow-lg'>
+                    YOU
+                  </span>
+                  {rank && rank <= 5 && (
+                    <div className='animate-bounce'>
+                      <Zap className='h-4 w-4 text-yellow-500' />
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className='flex items-center space-x-2 text-sm'>
-                <span className={`font-bold ${rankDisplay.color}`}>
-                  {rankDisplay.text} place
-                </span>
+
+              <div className='mt-2 flex items-center space-x-2 text-sm'>
+                <div
+                  className={`inline-flex items-center space-x-1 rounded-full px-2 py-1 ${
+                    rank && rank <= 3
+                      ? 'bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800'
+                      : rank && rank <= 10
+                        ? 'bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800'
+                        : 'bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  <IconComponent className={`h-3 w-3 ${rankDisplay.color}`} />
+                  <span className={`font-bold ${rankDisplay.color}`}>
+                    {rankDisplay.text} place
+                  </span>
+                </div>
+
                 <span className='text-gray-400'>•</span>
-                <span className='text-gray-600'>점수: {score || 0}</span>
+
+                <div className='inline-flex items-center space-x-1 rounded-full bg-gradient-to-r from-green-100 to-emerald-100 px-2 py-1'>
+                  <Clock className='h-3 w-3 text-green-600' />
+                  <span className='font-medium text-green-700'>
+                    {formatTime(score || 0)}
+                  </span>
+                </div>
+
                 <span className='text-gray-400'>•</span>
-                <span className='text-xs text-gray-600'>{tierInfo.title}</span>
+
+                <div className='inline-flex items-center space-x-1 rounded-full bg-gradient-to-r from-indigo-100 to-purple-100 px-2 py-1'>
+                  <Star className='h-3 w-3 text-indigo-600' />
+                  <span className='text-xs font-medium text-indigo-700'>
+                    {tierInfo.title}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* 순위 및 액션 */}
+          {/* 순위 및 액션 - 향상된 디자인 */}
           <div className='text-right'>
-            <div className='flex items-center space-x-2'>
-              <IconComponent className={`h-6 w-6 ${rankDisplay.color}`} />
-              <div>
-                <div className={`text-2xl font-bold ${rankDisplay.color}`}>
-                  #{rank || '?'}
+            <div className='flex items-center justify-end space-x-3'>
+              <div className='relative'>
+                <div
+                  className={`absolute inset-0 ${
+                    rank && rank <= 3
+                      ? 'bg-gradient-to-r from-yellow-400/20 to-orange-400/20'
+                      : rank && rank <= 10
+                        ? 'bg-gradient-to-r from-blue-400/20 to-purple-400/20'
+                        : 'bg-gray-400/10'
+                  } rounded-full blur-lg`}
+                ></div>
+
+                <div
+                  className={`relative flex h-16 w-16 items-center justify-center rounded-full ${
+                    rank && rank <= 3
+                      ? 'border-2 border-yellow-300 bg-gradient-to-r from-yellow-100 to-orange-100'
+                      : rank && rank <= 10
+                        ? 'border-2 border-blue-300 bg-gradient-to-r from-blue-100 to-purple-100'
+                        : 'border-2 border-gray-300 bg-gradient-to-r from-gray-100 to-gray-50'
+                  } shadow-lg`}
+                >
+                  <div className='text-center'>
+                    <div className={`text-2xl font-bold ${rankDisplay.color}`}>
+                      #{rank || '?'}
+                    </div>
+                  </div>
                 </div>
-                <div className='text-xs text-gray-500'>순위</div>
+
+                {rank && rank <= 3 && (
+                  <div className='absolute -top-1 -right-1 animate-spin'>
+                    <Star className='h-4 w-4 text-yellow-500' />
+                  </div>
+                )}
               </div>
+            </div>
+
+            <div className='mt-2 text-xs font-medium text-gray-600'>
+              전체 {totalUsers}명 중
             </div>
 
             {onScrollToMyRank && rank && (
               <button
                 onClick={onScrollToMyRank}
-                className='mt-2 text-xs text-blue-600 underline hover:text-blue-800'
+                className='mt-3 inline-flex items-center space-x-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-1.5 text-xs font-medium text-white shadow-md transition-all duration-200 hover:scale-105 hover:shadow-lg'
               >
-                리더보드에서 찾기
+                <ChevronUp className='h-3 w-3' />
+                <span>리더보드에서 찾기</span>
               </button>
             )}
           </div>
         </div>
 
-        {/* 추가 정보 */}
+        {/* 추가 정보 - 향상된 디자인 */}
         {rank && (
-          <div className='mt-3 flex items-center justify-between border-t border-gray-200/50 pt-3'>
-            <div className='flex items-center space-x-4'>
-              <div className='flex items-center space-x-1 text-xs text-gray-600'>
-                <Clock className='h-3 w-3' />
-                <span>점수: {score || 0}</span>
-              </div>
-            </div>
+          <div className='relative mt-4'>
+            <div className='absolute inset-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent'></div>
+            <div className='flex items-center justify-between pt-4'>
+              <div className='flex items-center space-x-6'>
+                <div className='flex items-center space-x-2 rounded-full bg-gradient-to-r from-indigo-50 to-purple-50 px-3 py-1.5'>
+                  <Clock className='h-4 w-4 text-indigo-600' />
+                  <span className='text-sm font-medium text-indigo-700'>
+                    총 활동시간: {formatTime(score || 0)}
+                  </span>
+                </div>
 
-            <div className='text-xs text-gray-500'>
-              {period === 'daily' && '오늘'}
-              {period === 'weekly' && '이번 주'}
-              {period === 'monthly' && '이번 달'} 기준
+                <div className='flex items-center space-x-2 rounded-full bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-1.5'>
+                  <TrendingUp className='h-4 w-4 text-green-600' />
+                  <span className='text-sm font-medium text-green-700'>
+                    상위 {Math.round((rank / totalUsers) * 100)}%
+                  </span>
+                </div>
+              </div>
+
+              <div className='flex items-center space-x-2 rounded-full bg-gradient-to-r from-gray-50 to-slate-50 px-3 py-1.5'>
+                <div
+                  className={`h-2 w-2 rounded-full ${
+                    period === 'daily'
+                      ? 'bg-blue-500'
+                      : period === 'weekly'
+                        ? 'bg-purple-500'
+                        : 'bg-green-500'
+                  } animate-pulse`}
+                ></div>
+                <span className='text-sm font-medium text-gray-700'>
+                  {period === 'daily' && '오늘'}
+                  {period === 'weekly' && '이번 주'}
+                  {period === 'monthly' && '이번 달'} 기준
+                </span>
+              </div>
             </div>
           </div>
         )}

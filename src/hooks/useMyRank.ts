@@ -1,7 +1,7 @@
 import { getMyRank } from '@/shared/api/get';
 import { useUserStore } from '@/stores/userStore';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useMemo } from 'react';
 
 interface UseMyRankParams {
   category: string;
@@ -14,10 +14,20 @@ export const useMyRank = ({
   date = new Date().toISOString().split('T')[0],
   enabled = true,
 }: UseMyRankParams) => {
-  const { currentUser, setCurrentUser } = useUserStore();
+  const { currentUser } = useUserStore();
 
-  // 임시로 하드코딩된 userId 사용 (실제 구현에서는 인증 시스템에서 가져와야 함)
-  const userId = currentUser?.id || 'a';
+  // userId를 안정화 - 한 번 결정되면 변경되지 않도록
+  const stableUserId = useMemo(() => {
+    return currentUser?.id || 'a';
+  }, [currentUser?.id]);
+
+  // 디버깅용 로그
+  console.log('useMyRank called with:', {
+    category,
+    userId: stableUserId,
+    date,
+    enabled,
+  });
 
   const {
     data: myRank,
@@ -26,27 +36,23 @@ export const useMyRank = ({
     error,
     refetch,
   } = useQuery({
-    queryKey: ['myRank', category, userId, date],
-    queryFn: () => getMyRank(category, userId, date),
-    enabled: enabled && !!userId,
+    queryKey: ['myRank', category, stableUserId, date],
+    queryFn: () => getMyRank(category, stableUserId, date),
+    enabled: enabled && !!stableUserId,
     staleTime: 30000, // 30초간 캐시 유지
     refetchInterval: 60000, // 1분마다 자동 갱신
+    // 중복 호출 방지
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
-  // API 응답을 User 스토어 형태로 변환
+  // API 응답을 User 스토어 형태로 변환 (상태 업데이트 제거)
   const transformedUser = myRank
     ? {
         id: myRank.userId,
         nickname: myRank.nickname,
       }
     : null;
-
-  // 현재 유저 정보가 없을 때 API 응답으로 설정
-  useEffect(() => {
-    if (transformedUser && !currentUser) {
-      setCurrentUser(transformedUser);
-    }
-  }, [transformedUser, currentUser]); // setCurrentUser는 안정적이므로 의존성에서 제거
 
   return {
     myRank,

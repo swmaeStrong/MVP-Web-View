@@ -66,7 +66,18 @@ interface LeaderboardListProps {
 }
 
 // 초 단위를 시간, 분 형식으로 변환하는 함수
-// formatTime 함수 제거 (간소화된 User 타입에서 점수만 표시)
+const formatTime = (seconds: number) => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+
+  if (hours === 0) {
+    return `${minutes}분`;
+  } else if (minutes === 0) {
+    return `${hours}시간`;
+  } else {
+    return `${hours}시간 ${minutes}분`;
+  }
+};
 
 // 티어별 설정 정의
 const tierConfig = {
@@ -487,9 +498,9 @@ export default function LeaderboardList({
                         : 'text-gray-900 group-hover:text-purple-700'
                     }`}
                   >
-                    {user.score}
+                    {formatTime(user.score)}
                   </div>
-                  <div className='text-xs text-gray-500'>점수</div>
+                  <div className='text-xs text-gray-500'>활동시간</div>
                 </div>
               </div>
             );

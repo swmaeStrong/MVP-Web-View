@@ -51,7 +51,7 @@ export default function RootLayout({
       lang='ko'
       className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable}`}
     >
-      <body className='font-sans antialiased'>
+      <body className='bg-white font-sans antialiased'>
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
