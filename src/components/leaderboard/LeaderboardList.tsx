@@ -1,7 +1,9 @@
 'use client';
 
+import { useCurrentUser, User } from '@/stores/userStore';
 import { extendedRankColors, rankColors } from '@/styles';
 import Image from 'next/image';
+import { useRef } from 'react';
 import EmptyState from './EmptyState';
 
 // CSS 애니메이션 추가
@@ -42,21 +44,17 @@ const styles = `
   }
 `;
 
-interface User {
-  id: number;
-  name: string;
-  hours: number;
-  avatar: string;
-  isMe: boolean;
-  category: string;
-  trend: 'up' | 'down' | 'same';
-  streak: number;
-  todayGain: number;
-  level: number;
-}
+// User 타입은 이제 userStore에서 import (id: string, nickname: string만 사용)
+
+// 리더보드 표시용 확장된 User 타입
+type LeaderboardUser = User & {
+  score: number;
+  rank: number;
+  isMe?: boolean; // 현재 유저 표시용 옵셔널 필드
+};
 
 interface LeaderboardListProps {
-  users: User[];
+  users: LeaderboardUser[];
   isLoading: boolean;
   isError: boolean;
   error: any;
@@ -68,15 +66,7 @@ interface LeaderboardListProps {
 }
 
 // 초 단위를 시간, 분 형식으로 변환하는 함수
-const formatTime = (seconds: number): string => {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-
-  if (h === 0 && m === 0) return '0m';
-  if (h === 0) return `${m}m`;
-  if (m === 0) return `${h}h`;
-  return `${h}h ${m}m`;
-};
+// formatTime 함수 제거 (간소화된 User 타입에서 점수만 표시)
 
 // 티어별 설정 정의
 const tierConfig = {
@@ -331,6 +321,11 @@ export default function LeaderboardList({
   selectedCategory,
   selectedDateIndex,
 }: LeaderboardListProps) {
+  const currentUser = useCurrentUser();
+
+  // 현재 유저 하이라이트를 위한 ref
+  const currentUserRef = useRef<HTMLDivElement>(null);
+
   const getRankInfo = (index: number) => {
     const rank = index + 1;
     if (rank <= 10) {
@@ -402,20 +397,24 @@ export default function LeaderboardList({
         </div>
 
         <div className='space-y-3'>
-          {users.map((user: User, index: number) => {
+          {users.map((user: LeaderboardUser, index: number) => {
             const rank = index + 1;
             const rankInfo = getRankInfo(index);
             const topRankStyle = getTierStyle(rank, users.length);
 
+            // 현재 유저인지 확인
+            const isCurrentUser = currentUser && user.id === currentUser.id;
+
             return (
               <div
-                key={`rank-${rank}-${user.id || user.name || index}`}
+                key={`rank-${rank}-${user.id || user.nickname || index}`}
+                data-user-id={user.id}
                 className={`group relative flex items-center justify-between rounded-xl border-2 bg-white p-4 shadow-lg transition-all duration-300 hover:shadow-xl ${
                   topRankStyle
                     ? `${topRankStyle.borderClass} ring-opacity-50 ring-2`
                     : 'border-gray-200 hover:border-purple-200'
                 } ${
-                  user.isMe
+                  isCurrentUser
                     ? topRankStyle
                       ? 'ring-4 ring-purple-300'
                       : 'border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 ring-2 ring-purple-300'
@@ -463,11 +462,11 @@ export default function LeaderboardList({
                             : 'text-gray-800 group-hover:text-purple-700'
                         }`}
                       >
-                        {user.name}
+                        {user.nickname}
                       </h3>
 
                       {/* 사용자 표시 */}
-                      {user.isMe && (
+                      {isCurrentUser && (
                         <span className='animate-pulse rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-3 py-1 text-xs font-bold text-white shadow-sm'>
                           YOU
                         </span>
@@ -485,9 +484,9 @@ export default function LeaderboardList({
                         : 'text-gray-900 group-hover:text-purple-700'
                     }`}
                   >
-                    {formatTime(user.hours)}
+                    {user.score}
                   </div>
-                  <div className='text-xs text-gray-500'>작업 시간</div>
+                  <div className='text-xs text-gray-500'>점수</div>
                 </div>
               </div>
             );

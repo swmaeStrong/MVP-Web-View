@@ -41,7 +41,7 @@ export default function CategoryFilter({
   };
 
   return (
-    <div className='mb-8 rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 p-4 shadow-sm transition-shadow duration-200 hover:shadow-md'>
+    <div className='rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 p-4 shadow-sm transition-shadow duration-200 hover:shadow-md'>
       <div className='space-y-4'>
         {/* 상단 영역: 티어 설명 + 카테고리 버튼들 */}
         <div className='flex items-center justify-between'>

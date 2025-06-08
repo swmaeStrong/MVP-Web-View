@@ -1,6 +1,7 @@
 'use client';
 
 import { useLeaderboardInfiniteScroll } from '@/hooks/useLeaderboardInfiniteScroll';
+import { useScrollToMyRank } from '@/hooks/useScrollToMyRank';
 import { layout } from '@/styles';
 import { CATEGORIES, LEADERBOARD_CATEGORIES } from '@/utils/categories';
 import { useEffect, useState } from 'react';
@@ -9,23 +10,24 @@ import { useEffect, useState } from 'react';
 import CategoryFilter from '@/components/leaderboard/CategoryFilter';
 import LeaderboardHeader from '@/components/leaderboard/LeaderboardHeader';
 import LeaderboardList from '@/components/leaderboard/LeaderboardList';
+import MyRankBanner from '@/components/leaderboard/MyRankBanner';
 import PeriodSelector from '@/components/leaderboard/PeriodSelector';
-import StatsSection from '@/components/leaderboard/StatsSection';
+import {
+  CompetitorStats,
+  LiveIndicator,
+} from '@/components/leaderboard/StatsSection';
 
-interface User {
-  id: number;
-  name: string;
-  hours: number;
-  avatar: string;
-  isMe: boolean;
-  category: string;
-  trend: 'up' | 'down' | 'same';
-  streak: number;
-  todayGain: number;
-  level: number;
-}
+// User 타입은 userStore에서 import
+import { User } from '@/stores/userStore';
+
+// 리더보드 표시용 확장된 User 타입
+type LeaderboardUser = User & {
+  score: number;
+  rank: number;
+};
 
 export default function Leaderboard() {
+  const { scrollToMyRank } = useScrollToMyRank();
   const [selectedPeriod, setSelectedPeriod] = useState<
     'daily' | 'weekly' | 'monthly'
   >('daily');
@@ -160,6 +162,9 @@ export default function Leaderboard() {
       {/* 헤더 & 동기부여 메시지 */}
       <LeaderboardHeader currentMessage={currentMessage} />
 
+      {/* 실시간 경쟁 표시기 - LeaderboardHeader 바로 아래로 이동 */}
+      <LiveIndicator />
+
       {/* 기간 선택 탭 */}
       <PeriodSelector
         selectedPeriod={selectedPeriod}
@@ -169,19 +174,35 @@ export default function Leaderboard() {
         currentDate={currentDate}
       />
 
-      {/* 실시간 표시기 & 경쟁 통계 */}
-      <StatsSection users={users} />
+      {/* 카테고리 필터와 총 경쟁자 정보를 같은 줄에 배치 */}
+      <div className='mb-8 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between'>
+        {/* 카테고리 필터 */}
+        <div className='flex-1'>
+          <CategoryFilter
+            categories={categories}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+          />
+        </div>
 
-      {/* 카테고리 필터 */}
-      <CategoryFilter
-        categories={categories}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
+        {/* 총 경쟁자 정보 */}
+        <div className='lg:ml-6'>
+          <CompetitorStats users={users} />
+        </div>
+      </div>
+
+      {/* 내 순위 배너 */}
+      <MyRankBanner
+        category={selectedCategory}
+        period={selectedPeriod}
+        selectedDateIndex={selectedDateIndex}
+        onScrollToMyRank={scrollToMyRank}
+        totalUsers={users.length} // 전체 사용자 수 전달
       />
 
       {/* 리더보드 리스트 */}
       <LeaderboardList
-        users={users}
+        users={users as LeaderboardUser[]}
         isLoading={isLoading}
         isError={isError}
         error={error}

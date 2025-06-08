@@ -2,18 +2,8 @@ import { getLeaderBoard } from '@/shared/api/get';
 import { LEADERBOARD_CATEGORIES } from '@/utils/categories';
 import { useInfiniteScroll } from './useInfiniteScroll';
 
-export interface User {
-  id: number;
-  name: string;
-  hours: number;
-  avatar: string;
-  isMe: boolean;
-  category: string;
-  trend: 'up' | 'down' | 'same';
-  streak: number;
-  todayGain: number;
-  level: number;
-}
+// User 타입은 userStore에서 import
+import { User } from '@/stores/userStore';
 
 type APILeaderBoardResponse = LeaderBoard.LeaderBoardResponse;
 
@@ -82,24 +72,15 @@ export function useLeaderboardInfiniteScroll({
     return today.toISOString().split('T')[0];
   };
 
-  // API 데이터를 User 형태로 변환하는 함수
+  // API 데이터를 확장된 형태로 변환하는 함수 (리더보드 표시용)
   const transformAPIUser = (
     apiUser: APILeaderBoardResponse,
     index: number
-  ): User => ({
-    id: parseInt(apiUser.userId),
-    name: apiUser.nickname,
-    hours: apiUser.score,
-    avatar: String.fromCharCode(65 + (index % 26)), // A~Z 순환
-    isMe: false, // API에서 현재 사용자 정보를 제공하면 수정
-    category:
-      category === 'all'
-        ? categories[Math.floor(Math.random() * (categories.length - 1)) + 1]
-        : category, // 카테고리는 요청 파라미터에서 결정
-    trend: 'same' as const, // API에서 트렌드 정보를 제공하면 수정
-    streak: Math.floor(Math.random() * 30) + 1, // API에서 연속 일수를 제공하면 수정
-    todayGain: Math.floor(Math.random() * 8) + 1, // API에서 오늘 증가량을 제공하면 수정
-    level: Math.floor(apiUser.score / 10) + 1, // 점수 기반으로 레벨 계산
+  ): User & { score: number; rank: number } => ({
+    id: apiUser.userId,
+    nickname: apiUser.nickname,
+    score: apiUser.score,
+    rank: apiUser.rank,
   });
 
   const queryFn = async ({ pageParam }: { pageParam: number }) => {

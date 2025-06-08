@@ -33,6 +33,15 @@ export const getLeaderBoard = (
     )
   );
 
+export const getMyRank = (
+  category: string,
+  userId: string,
+  date: string = new Date().toISOString().split('T')[0]
+) =>
+  parseApi<LeaderBoard.LeaderBoardResponse>(
+    API.get(`/leaderboard/${category}/user-info?userId=${userId}&date=${date}`)
+  );
+
 // 사용 기록 조회
 export const getUsageLog = (
   date: string = new Date().toISOString().split('T')[0]
