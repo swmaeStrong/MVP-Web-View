@@ -51,23 +51,23 @@ const tierConfig = {
   gold: {
     icon: '/icons/rank/gold.png',
     title: 'Gold',
-    bgGradient: 'from-amber-100 to-amber-50',
-    borderColor: 'border-amber-300',
-    shadowColor: 'shadow-amber-200/50',
+    bgGradient: 'from-gray-50 to-white', // 기본 스타일
+    borderColor: 'border-gray-200',
+    shadowColor: 'shadow-gray-100/50',
   },
   silver: {
     icon: '/icons/rank/silver.png',
     title: 'Silver',
-    bgGradient: 'from-gray-100 to-gray-50',
-    borderColor: 'border-gray-300',
-    shadowColor: 'shadow-gray-200/50',
+    bgGradient: 'from-gray-50 to-white', // 기본 스타일
+    borderColor: 'border-gray-200',
+    shadowColor: 'shadow-gray-100/50',
   },
   bronze: {
     icon: '/icons/rank/bronze.png',
     title: 'Bronze',
-    bgGradient: 'from-orange-100 to-orange-50',
-    borderColor: 'border-orange-300',
-    shadowColor: 'shadow-orange-200/50',
+    bgGradient: 'from-gray-50 to-white', // 기본 스타일
+    borderColor: 'border-gray-200',
+    shadowColor: 'shadow-gray-100/50',
   },
 };
 
