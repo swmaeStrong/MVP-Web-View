@@ -50,16 +50,27 @@ export const useMultiDateStatistics = (dates: string[]) => {
   });
 };
 
-// 가용한 날짜 목록 생성 (최근 30일)
+import { getKSTDate } from '@/utils/timezone';
+
+// 가용한 날짜 목록 생성 (최근 30일 - 한국 시간대 기준)
 export const useAvailableDates = () => {
   const dates: string[] = [];
-  const today = new Date();
+  const today = getKSTDate();
 
   for (let i = 0; i < 30; i++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() - i);
+    const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
     dates.push(getDateString(date));
   }
+
+  // 디버깅용 로그
+  console.log(
+    'useAvailableDates - 생성된 날짜 배열:',
+    dates.slice(0, 5),
+    '...(총',
+    dates.length,
+    '개)'
+  );
+  console.log('useAvailableDates - 오늘 날짜:', dates[0]);
 
   return dates;
 };

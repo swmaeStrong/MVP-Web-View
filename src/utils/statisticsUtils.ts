@@ -88,28 +88,14 @@ export const generateMonthlyData = (dailyDataList: DailyStatistics[]) => {
   return null;
 };
 
-// 날짜 문자열 생성 헬퍼
+import { formatKSTDateWithDay, getKSTDateStringFromDate } from './timezone';
+
+// 날짜 문자열 생성 헬퍼 (한국 시간대 기준)
 export const getDateString = (date: Date): string => {
-  return date.toISOString().split('T')[0];
+  return getKSTDateStringFromDate(date);
 };
 
-// 날짜를 포맷팅 (YYYY-MM-DD 형식을 더 읽기 쉬운 형식으로)
+// 날짜를 포맷팅 (한국 시간대 기준)
 export const getDateLabel = (dateStr: string): string => {
-  const date = new Date(dateStr);
-  const today = new Date();
-  const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
-
-  // 같은 날인지 확인하는 함수
-  const isSameDay = (d1: Date, d2: Date) => {
-    return d1.toDateString() === d2.toDateString();
-  };
-
-  if (isSameDay(date, today)) {
-    return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')} (오늘)`;
-  } else if (isSameDay(date, yesterday)) {
-    return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')} (어제)`;
-  } else {
-    const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];
-    return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')} (${dayOfWeek})`;
-  }
+  return formatKSTDateWithDay(dateStr);
 };

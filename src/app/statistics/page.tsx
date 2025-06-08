@@ -14,12 +14,22 @@ import TotalTimeCard from '@/components/statistics/TotalTimeCard';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<PeriodType>('daily');
+
+  // 가용한 날짜 목록 (최근 30일)
+  const availableDates = useAvailableDates();
+
+  // 초기 날짜 설정
   const [selectedDate, setSelectedDate] = useState(getDateString(new Date()));
   const [selectedCategory, setSelectedCategory] =
     useState<StatisticsCategory | null>(null);
 
-  // 가용한 날짜 목록 (최근 30일)
-  const availableDates = useAvailableDates();
+  // availableDates가 로드되면 오늘 날짜(첫 번째 요소)로 설정
+  React.useEffect(() => {
+    if (availableDates.length > 0) {
+      console.log('Statistics 페이지 - 오늘 날짜로 설정:', availableDates[0]);
+      setSelectedDate(availableDates[0]);
+    }
+  }, [availableDates]);
 
   // 선택된 날짜의 통계 데이터 조회
   const {

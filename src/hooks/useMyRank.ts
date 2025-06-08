@@ -1,5 +1,6 @@
 import { getMyRank } from '@/shared/api/get';
 import { useUserStore } from '@/stores/userStore';
+import { getKSTDateString } from '@/utils/timezone';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
@@ -14,7 +15,7 @@ interface UseMyRankParams {
 export const useMyRank = ({
   category,
   type,
-  date = new Date().toISOString().split('T')[0],
+  date = getKSTDateString(),
   enabled = true,
   userId: propUserId,
 }: UseMyRankParams) => {

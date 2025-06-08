@@ -1,4 +1,5 @@
 import { parseApi } from '../../utils/api-utils';
+import { getKSTDateString } from '../../utils/timezone';
 import { API } from '../configs/api';
 
 // 구독 플랜 조회
@@ -25,7 +26,7 @@ export const getLeaderBoard = (
   type: 'daily' | 'weekly' | 'monthly' | 'all',
   page: number = 1,
   size: number = 10,
-  date: string = new Date().toISOString().split('T')[0]
+  date: string = getKSTDateString()
 ) =>
   parseApi<LeaderBoard.LeaderBoardResponse[]>(
     API.get(
@@ -37,7 +38,7 @@ export const getMyRank = (
   category: string,
   userId: string,
   type: 'daily' | 'weekly' | 'monthly',
-  date: string = new Date().toISOString().split('T')[0]
+  date: string = getKSTDateString()
 ) =>
   parseApi<LeaderBoard.LeaderBoardResponse>(
     API.get(
@@ -46,15 +47,13 @@ export const getMyRank = (
   );
 
 // 사용 기록 조회
-export const getUsageLog = (
-  date: string = new Date().toISOString().split('T')[0]
-) =>
+export const getUsageLog = (date: string = getKSTDateString()) =>
   parseApi<UsageLog.UsageLogResponse[]>(
     API.get(`/usage-log?userId=a&date=${date}`)
   );
 
 export const getHourlyUsageLog = (
-  date: string = new Date().toISOString().split('T')[0],
+  date: string = getKSTDateString(),
   userId: string,
   binSize: number
 ) =>

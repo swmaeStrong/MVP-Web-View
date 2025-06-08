@@ -2,6 +2,7 @@
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
+import { getKSTDate } from '@/utils/timezone';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
@@ -39,10 +40,10 @@ export default function PaymentMethodPage() {
     setIsLoading(true);
 
     try {
-      // 결제 수단 저장 시뮬레이션
+      // 결제 수단 저장 시뮬레이션 (한국 시간대 기준)
       const paymentData = {
         method: selectedMethod,
-        createdAt: new Date().toISOString(),
+        createdAt: getKSTDate().toISOString(),
       };
       localStorage.setItem('paymentMethods', JSON.stringify([paymentData]));
 

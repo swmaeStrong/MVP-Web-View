@@ -2,6 +2,12 @@
 
 import { useMyRank } from '@/hooks/useMyRank';
 import {
+  getKSTDate,
+  getKSTDateStringFromDate,
+  getKSTMonthlyDateString,
+  getKSTWeeklyDateString,
+} from '@/utils/timezone';
+import {
   Award,
   ChevronUp,
   Clock,
@@ -175,39 +181,25 @@ export default function MyRankBanner({
   totalUsers = 1000, // 기본값 설정 (나중에 props로 받아올 수 있음)
   userId = 'a', // 기본값으로 'a' 사용
 }: MyRankBannerProps) {
-  // 날짜 계산 - 리더보드와 동일한 로직 사용
+  // 날짜 계산 - 한국 시간대 기준
   const getDateForAPI = () => {
-    const today = new Date();
+    const today = getKSTDate();
 
     if (period === 'daily') {
       // 일간: selectedDateIndex에 따라 과거 날짜로
-      const targetDate = new Date(today);
-      targetDate.setDate(targetDate.getDate() - selectedDateIndex);
-      return targetDate.toISOString().split('T')[0];
+      const targetDate = new Date(
+        today.getTime() - selectedDateIndex * 24 * 60 * 60 * 1000
+      );
+      return getKSTDateStringFromDate(targetDate);
     } else if (period === 'weekly') {
-      // 주간: 현재 주차(0)는 오늘 날짜, 이전 주차는 7일씩 빼기
-      const targetDate = new Date(today);
-      targetDate.setDate(targetDate.getDate() - selectedDateIndex * 7);
-      return targetDate.toISOString().split('T')[0];
+      // 주간: 월요일-일요일 기준으로 해당 주의 월요일 날짜
+      return getKSTWeeklyDateString(selectedDateIndex);
     } else if (period === 'monthly') {
-      // 월간의 경우 해당 월의 1일 사용
-      const currentYear = today.getFullYear();
-      const currentMonth = today.getMonth() + 1;
-
-      let targetYear = currentYear;
-      let targetMonth = currentMonth - selectedDateIndex;
-
-      while (targetMonth <= 0) {
-        targetMonth += 12;
-        targetYear -= 1;
-      }
-
-      const yearStr = targetYear.toString();
-      const monthStr = targetMonth.toString().padStart(2, '0');
-      return `${yearStr}-${monthStr}-01`;
+      // 월간의 경우 - 해당 월의 1일로 조회
+      return getKSTMonthlyDateString(selectedDateIndex);
     }
 
-    return today.toISOString().split('T')[0];
+    return getKSTDateStringFromDate(today);
   };
 
   const date = getDateForAPI();

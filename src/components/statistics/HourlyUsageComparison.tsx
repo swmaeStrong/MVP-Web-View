@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shadcn/ui/select';
+import { getKSTDateString } from '@/utils/timezone';
 import { Target } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import {
@@ -64,7 +65,7 @@ export default function HourlyUsageComparison({
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [chartType, setChartType] = useState<'bar' | 'line'>('bar');
 
-  const currentDate = date || new Date().toISOString().split('T')[0];
+  const currentDate = date || getKSTDateString();
 
   // 시간별 사용량 데이터 조회
   const {

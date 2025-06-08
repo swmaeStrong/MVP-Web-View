@@ -1,5 +1,11 @@
 import { getLeaderBoard } from '@/shared/api/get';
 import { LEADERBOARD_CATEGORIES } from '@/utils/categories';
+import {
+  getKSTDate,
+  getKSTDateStringFromDate,
+  getKSTMonthlyDateString,
+  getKSTWeeklyDateString,
+} from '@/utils/timezone';
 import { useInfiniteScroll } from './useInfiniteScroll';
 
 // User 타입은 userStore에서 import
@@ -20,55 +26,26 @@ export function useLeaderboardInfiniteScroll({
 }: UseLeaderboardInfiniteScrollParams) {
   const categories = LEADERBOARD_CATEGORIES;
 
-  // 선택된 날짜 인덱스를 기반으로 실제 날짜 계산
+  // 선택된 날짜 인덱스를 기반으로 실제 날짜 계산 (한국 시간대 기준)
   const getDateForAPI = () => {
-    const today = new Date();
+    const today = getKSTDate();
 
     if (period === 'daily') {
       // 일간: selectedDateIndex에 따라 과거 날짜로
-      const targetDate = new Date(today);
-      targetDate.setDate(targetDate.getDate() - selectedDateIndex);
-      return targetDate.toISOString().split('T')[0]; // YYYY-MM-DD 형식
+      const targetDate = new Date(
+        today.getTime() - selectedDateIndex * 24 * 60 * 60 * 1000
+      );
+      return getKSTDateStringFromDate(targetDate);
     } else if (period === 'weekly') {
-      // 주간: 현재 주차(0)는 오늘 날짜, 이전 주차는 7일씩 빼기
-      const targetDate = new Date(today);
-      targetDate.setDate(targetDate.getDate() - selectedDateIndex * 7);
-      return targetDate.toISOString().split('T')[0];
+      // 주간: 월요일-일요일 기준으로 해당 주의 월요일 날짜
+      return getKSTWeeklyDateString(selectedDateIndex);
     } else if (period === 'monthly') {
-      // 월간의 경우 - 문자열로 직접 계산하여 Date 객체의 문제를 완전히 회피
-      const currentYear = today.getFullYear();
-      const currentMonth = today.getMonth() + 1; // 1-based month (1=January, 12=December)
-
-      // 대상 월과 년도 계산
-      let targetYear = currentYear;
-      let targetMonth = currentMonth - selectedDateIndex;
-
-      // 음수 월 처리
-      while (targetMonth <= 0) {
-        targetMonth += 12;
-        targetYear -= 1;
-      }
-
-      // 문자열로 직접 생성 (Date 객체 사용하지 않음)
-      const yearStr = targetYear.toString();
-      const monthStr = targetMonth.toString().padStart(2, '0');
-      const result = `${yearStr}-${monthStr}-01`;
-
-      console.log('월간 계산:', {
-        today: today.toISOString().split('T')[0],
-        selectedDateIndex,
-        currentYear,
-        currentMonth,
-        targetYear,
-        targetMonth,
-        result,
-      });
-
-      return result;
+      // 월간의 경우 - 해당 월의 1일로 조회
+      return getKSTMonthlyDateString(selectedDateIndex);
     }
 
     // 'all'인 경우 오늘 날짜 반환
-    return today.toISOString().split('T')[0];
+    return getKSTDateStringFromDate(today);
   };
 
   // API 데이터를 확장된 형태로 변환하는 함수 (리더보드 표시용)

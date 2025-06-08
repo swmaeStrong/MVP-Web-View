@@ -3,6 +3,7 @@
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { DailyStatistics, PeriodType } from '@/types/statistics';
+import { formatKSTDate } from '@/utils/timezone';
 import { BarChart3, ChevronLeft, ChevronRight, Target } from 'lucide-react';
 import StatisticsBarChart from './StatisticsBarChart';
 import StatisticsRadarChart from './StatisticsRadarChart';
@@ -29,8 +30,8 @@ export default function StatisticsChart({
   const getChartTitle = () => {
     switch (selectedPeriod) {
       case 'daily':
-        const date = new Date(currentDate);
-        const formattedDate = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+        const date = new Date(currentDate + 'T00:00:00Z'); // UTC 기준으로 파싱
+        const formattedDate = formatKSTDate(date);
         return `${formattedDate} Top 6 카테고리 분석`;
       case 'weekly':
         return '주별 작업 패턴';

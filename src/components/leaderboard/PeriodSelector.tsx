@@ -1,5 +1,7 @@
 'use client';
 
+import { formatKSTDate, getKSTDate } from '@/utils/timezone';
+
 interface PeriodSelectorProps {
   selectedPeriod: 'daily' | 'weekly' | 'monthly';
   setSelectedPeriod: (period: 'daily' | 'weekly' | 'monthly') => void;
@@ -40,46 +42,55 @@ export default function PeriodSelector({
   };
 
   const getPeriodLabel = () => {
+    // 한국 시간대 기준으로 현재 날짜를 가져옴
+    const kstCurrentDate = getKSTDate();
+
     if (selectedPeriod === 'daily') {
-      const date = new Date(currentDate);
-      date.setDate(date.getDate() - selectedDateIndex);
-      return date.toLocaleDateString('ko-KR');
+      const targetDate = new Date(
+        kstCurrentDate.getTime() - selectedDateIndex * 24 * 60 * 60 * 1000
+      );
+      return formatKSTDate(targetDate);
     } else if (selectedPeriod === 'weekly') {
-      // 주간: 현재 주차(0)는 오늘 날짜, 이전 주차는 7일씩 빼기
-      const targetDate = new Date(currentDate);
-      targetDate.setDate(targetDate.getDate() - selectedDateIndex * 7);
+      // 주간: 날짜 범위로 표시 (예: 24-06-09 ~ 24-06-15)
+      const targetDate = new Date(
+        kstCurrentDate.getTime() - selectedDateIndex * 7 * 24 * 60 * 60 * 1000
+      );
 
-      const year = targetDate.getFullYear();
-      const month = targetDate.getMonth() + 1; // 1-based month
-      const date = targetDate.getDate();
+      // 주의 시작일 (월요일)을 계산
+      const dayOfWeek = targetDate.getUTCDay(); // 0=일요일, 1=월요일, ...
+      // 월요일을 주의 시작으로: (dayOfWeek + 6) % 7 → 월(0), 화(1), ..., 일(6)
+      const daysFromMonday = (dayOfWeek + 6) % 7;
+      const startOfWeek = new Date(
+        targetDate.getTime() - daysFromMonday * 24 * 60 * 60 * 1000
+      );
+      const endOfWeek = new Date(
+        startOfWeek.getTime() + 6 * 24 * 60 * 60 * 1000
+      );
 
-      // 해당 월의 1일을 구함
-      const firstDayOfMonth = new Date(year, targetDate.getMonth(), 1);
-      const firstDayWeekday = firstDayOfMonth.getDay(); // 0(일요일) ~ 6(토요일)
+      // 년도 뒤 2자리와 월/일 포맷
+      const formatDateShort = (date: Date) => {
+        const year = date.getUTCFullYear().toString().slice(-2);
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
 
-      // 해당 날짜가 몇 번째 주인지 계산
-      // 첫 번째 주는 1일이 포함된 주, 그 다음 주부터는 순차적으로
-      const weekNumber = Math.ceil((date + firstDayWeekday) / 7);
-
-      return `${month}월 ${weekNumber}주차`;
+      return `${formatDateShort(startOfWeek)} ~ ${formatDateShort(endOfWeek)}`;
     } else {
-      // 월간의 경우 해당 월의 1일로 직접 생성
-      const currentYear = currentDate.getFullYear();
-      const currentMonth = currentDate.getMonth();
-      const targetMonth = currentMonth - selectedDateIndex;
+      // 월간의 경우 - 한국 시간대 기준
+      const currentYear = kstCurrentDate.getUTCFullYear();
+      const currentMonth = kstCurrentDate.getUTCMonth(); // 0-based
 
-      // 년도와 월 계산 (음수 월 처리)
       let targetYear = currentYear;
-      let finalMonth = targetMonth;
+      let targetMonth = currentMonth - selectedDateIndex;
 
-      while (finalMonth < 0) {
-        finalMonth += 12;
+      // 음수 월 처리
+      while (targetMonth < 0) {
+        targetMonth += 12;
         targetYear -= 1;
       }
 
-      // 해당 월의 1일로 새 Date 객체 생성
-      const month = new Date(targetYear, finalMonth, 1);
-      return `${month.getFullYear()}년 ${month.getMonth() + 1}월`;
+      return `${targetYear}년 ${targetMonth + 1}월`;
     }
   };
 
