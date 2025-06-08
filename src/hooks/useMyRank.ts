@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 
 interface UseMyRankParams {
   category: string;
+  type: 'daily' | 'weekly' | 'monthly'; // type 파라미터 추가
   date?: string;
   enabled?: boolean;
   userId?: string; // 외부에서 userId를 받을 수 있도록
@@ -12,6 +13,7 @@ interface UseMyRankParams {
 
 export const useMyRank = ({
   category,
+  type,
   date = new Date().toISOString().split('T')[0],
   enabled = true,
   userId: propUserId,
@@ -32,6 +34,7 @@ export const useMyRank = ({
   // 현재 상태 로그
   console.log('🔍 useMyRank 호출:', {
     category,
+    type,
     finalUserId,
     currentUserId: currentUser?.id,
     date,
@@ -45,8 +48,8 @@ export const useMyRank = ({
     error,
     refetch,
   } = useQuery({
-    queryKey: ['myRank', category, finalUserId, date],
-    queryFn: () => getMyRank(category, finalUserId, date),
+    queryKey: ['myRank', category, type, finalUserId, date],
+    queryFn: () => getMyRank(category, finalUserId, type, date),
     enabled: enabled && !!finalUserId,
     staleTime: 30000, // 30초간 캐시 유지
     refetchInterval: 60000, // 1분마다 자동 갱신

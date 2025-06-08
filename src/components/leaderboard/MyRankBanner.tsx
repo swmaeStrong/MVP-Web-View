@@ -216,6 +216,7 @@ export default function MyRankBanner({
 
   const { myRank, rank, score, isLoading, isError } = useMyRank({
     category,
+    type: period, // period를 type으로 전달
     date,
     userId, // props로 받은 userId 사용
   });

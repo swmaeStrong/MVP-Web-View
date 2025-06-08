@@ -36,10 +36,13 @@ export const getLeaderBoard = (
 export const getMyRank = (
   category: string,
   userId: string,
+  type: 'daily' | 'weekly' | 'monthly',
   date: string = new Date().toISOString().split('T')[0]
 ) =>
   parseApi<LeaderBoard.LeaderBoardResponse>(
-    API.get(`/leaderboard/${category}/user-info?userId=${userId}&date=${date}`)
+    API.get(
+      `/leaderboard/${category}/user-info/${type}?userId=${userId}&date=${date}`
+    )
   );
 
 // 사용 기록 조회
@@ -48,4 +51,13 @@ export const getUsageLog = (
 ) =>
   parseApi<UsageLog.UsageLogResponse[]>(
     API.get(`/usage-log?userId=a&date=${date}`)
+  );
+
+export const getHourlyUsageLog = (
+  date: string = new Date().toISOString().split('T')[0],
+  userId: string,
+  binSize: number
+) =>
+  parseApi<UsageLog.HourlyUsageLogResponse[]>(
+    API.get(`/usage-log/hour?userId=${userId}&date=${date}&binSize=${binSize}`)
   );

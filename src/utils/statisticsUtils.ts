@@ -30,10 +30,10 @@ export const formatTime = (seconds: number): string => {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
 
-  if (hours === 0 && minutes === 0) return '0m';
-  if (hours === 0) return `${minutes}m`;
-  if (minutes === 0) return `${hours}h`;
-  return `${hours}h ${minutes}m`;
+  if (hours === 0 && minutes === 0) return '0분';
+  if (hours === 0) return `${minutes}분`;
+  if (minutes === 0) return `${hours}시간`;
+  return `${hours}시간 ${minutes}분`;
 };
 
 // 초를 소수점 시간으로 변환 (차트용)

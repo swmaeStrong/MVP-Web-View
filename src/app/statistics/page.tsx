@@ -1,12 +1,14 @@
 'use client';
 
 import { useAvailableDates, useUsageStatistics } from '@/hooks/useStatistics';
+import { useCurrentUser } from '@/stores/userStore';
 import { PeriodType, StatisticsCategory } from '@/types/statistics';
 import { getDateString } from '@/utils/statisticsUtils';
 import React, { useState } from 'react';
 
 // 컴포넌트 임포트
 import CategoryList from '@/components/statistics/CategoryList';
+import HourlyUsageComparison from '@/components/statistics/HourlyUsageComparison';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
 import TotalTimeCard from '@/components/statistics/TotalTimeCard';
 
@@ -26,6 +28,9 @@ export default function StatisticsPage() {
     isError,
     error,
   } = useUsageStatistics(selectedDate);
+
+  // 현재 사용자 정보 가져오기
+  const currentUser = useCurrentUser();
 
   // 데이터가 로드되면 기본 카테고리를 top1으로 설정
   React.useEffect(() => {
@@ -169,6 +174,13 @@ export default function StatisticsPage() {
             currentDate={selectedDate}
           />
         </div>
+
+        {/* 시간별 사용량 비교 차트 - 전체 너비 사용 */}
+        {currentUser && (
+          <div className='col-span-1 lg:col-span-2'>
+            <HourlyUsageComparison userId='a' date={selectedDate} />
+          </div>
+        )}
       </div>
     </div>
   );
