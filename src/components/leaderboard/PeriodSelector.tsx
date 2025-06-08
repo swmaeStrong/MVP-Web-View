@@ -45,11 +45,23 @@ export default function PeriodSelector({
       date.setDate(date.getDate() - selectedDateIndex);
       return date.toLocaleDateString('ko-KR');
     } else if (selectedPeriod === 'weekly') {
-      const weekStart = new Date(currentDate);
-      weekStart.setDate(
-        weekStart.getDate() - selectedDateIndex * 7 - weekStart.getDay()
-      );
-      return `${weekStart.getMonth() + 1}월 ${Math.ceil(weekStart.getDate() / 7)}주차`;
+      // 주간: 현재 주차(0)는 오늘 날짜, 이전 주차는 7일씩 빼기
+      const targetDate = new Date(currentDate);
+      targetDate.setDate(targetDate.getDate() - selectedDateIndex * 7);
+
+      const year = targetDate.getFullYear();
+      const month = targetDate.getMonth() + 1; // 1-based month
+      const date = targetDate.getDate();
+
+      // 해당 월의 1일을 구함
+      const firstDayOfMonth = new Date(year, targetDate.getMonth(), 1);
+      const firstDayWeekday = firstDayOfMonth.getDay(); // 0(일요일) ~ 6(토요일)
+
+      // 해당 날짜가 몇 번째 주인지 계산
+      // 첫 번째 주는 1일이 포함된 주, 그 다음 주부터는 순차적으로
+      const weekNumber = Math.ceil((date + firstDayWeekday) / 7);
+
+      return `${month}월 ${weekNumber}주차`;
     } else {
       // 월간의 경우 해당 월의 1일로 직접 생성
       const currentYear = currentDate.getFullYear();

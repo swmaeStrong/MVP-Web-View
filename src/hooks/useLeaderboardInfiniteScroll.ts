@@ -25,15 +25,14 @@ export function useLeaderboardInfiniteScroll({
     const today = new Date();
 
     if (period === 'daily') {
+      // 일간: selectedDateIndex에 따라 과거 날짜로
       const targetDate = new Date(today);
       targetDate.setDate(targetDate.getDate() - selectedDateIndex);
       return targetDate.toISOString().split('T')[0]; // YYYY-MM-DD 형식
     } else if (period === 'weekly') {
+      // 주간: 현재 주차(0)는 오늘 날짜, 이전 주차는 7일씩 빼기
       const targetDate = new Date(today);
-      // 주간의 경우 해당 주의 시작일 (월요일)을 계산
-      targetDate.setDate(
-        targetDate.getDate() - selectedDateIndex * 7 - targetDate.getDay() + 1
-      );
+      targetDate.setDate(targetDate.getDate() - selectedDateIndex * 7);
       return targetDate.toISOString().split('T')[0];
     } else if (period === 'monthly') {
       // 월간의 경우 - 문자열로 직접 계산하여 Date 객체의 문제를 완전히 회피

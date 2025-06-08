@@ -175,9 +175,42 @@ export default function MyRankBanner({
   totalUsers = 1000, // 기본값 설정 (나중에 props로 받아올 수 있음)
   userId = 'a', // 기본값으로 'a' 사용
 }: MyRankBannerProps) {
-  // 날짜 계산 (임시로 오늘 날짜 사용, 실제로는 selectedDateIndex 활용)
-  const today = new Date();
-  const date = today.toISOString().split('T')[0];
+  // 날짜 계산 - 리더보드와 동일한 로직 사용
+  const getDateForAPI = () => {
+    const today = new Date();
+
+    if (period === 'daily') {
+      // 일간: selectedDateIndex에 따라 과거 날짜로
+      const targetDate = new Date(today);
+      targetDate.setDate(targetDate.getDate() - selectedDateIndex);
+      return targetDate.toISOString().split('T')[0];
+    } else if (period === 'weekly') {
+      // 주간: 현재 주차(0)는 오늘 날짜, 이전 주차는 7일씩 빼기
+      const targetDate = new Date(today);
+      targetDate.setDate(targetDate.getDate() - selectedDateIndex * 7);
+      return targetDate.toISOString().split('T')[0];
+    } else if (period === 'monthly') {
+      // 월간의 경우 해당 월의 1일 사용
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth() + 1;
+
+      let targetYear = currentYear;
+      let targetMonth = currentMonth - selectedDateIndex;
+
+      while (targetMonth <= 0) {
+        targetMonth += 12;
+        targetYear -= 1;
+      }
+
+      const yearStr = targetYear.toString();
+      const monthStr = targetMonth.toString().padStart(2, '0');
+      return `${yearStr}-${monthStr}-01`;
+    }
+
+    return today.toISOString().split('T')[0];
+  };
+
+  const date = getDateForAPI();
 
   console.log('🔷 MyRankBanner props:', { category, userId, date });
 
