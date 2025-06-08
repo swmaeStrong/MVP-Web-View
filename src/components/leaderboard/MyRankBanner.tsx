@@ -164,6 +164,7 @@ interface MyRankBannerProps {
   selectedDateIndex: number;
   onScrollToMyRank?: () => void;
   totalUsers?: number; // 전체 사용자 수를 받아서 티어 계산에 사용
+  userId?: string; // 고정된 userId를 props로 받음
 }
 
 export default function MyRankBanner({
@@ -172,14 +173,18 @@ export default function MyRankBanner({
   selectedDateIndex,
   onScrollToMyRank,
   totalUsers = 1000, // 기본값 설정 (나중에 props로 받아올 수 있음)
+  userId = 'a', // 기본값으로 'a' 사용
 }: MyRankBannerProps) {
   // 날짜 계산 (임시로 오늘 날짜 사용, 실제로는 selectedDateIndex 활용)
   const today = new Date();
   const date = today.toISOString().split('T')[0];
 
+  console.log('🔷 MyRankBanner props:', { category, userId, date });
+
   const { myRank, rank, score, isLoading, isError } = useMyRank({
     category,
     date,
+    userId, // props로 받은 userId 사용
   });
 
   const getRankDisplay = (rank: number | null) => {
@@ -284,22 +289,6 @@ export default function MyRankBanner({
                 height={56}
                 className='relative z-10 drop-shadow-lg transition-transform duration-300 group-hover:scale-110'
               />
-              {rank && rank <= 3 && (
-                <div className='absolute -top-2 -right-2 animate-bounce'>
-                  <div className='rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 p-1'>
-                    <Crown className='h-5 w-5 text-white' />
-                  </div>
-                </div>
-              )}
-              {rank && rank === 1 && (
-                <div className='absolute -bottom-1 left-1/2 -translate-x-1/2 transform'>
-                  <div className='rounded-full bg-gradient-to-r from-yellow-400 to-yellow-600 px-2 py-0.5'>
-                    <span className='text-xs font-bold text-white'>
-                      CHAMPION
-                    </span>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* 유저 정보 - 향상된 디자인 */}

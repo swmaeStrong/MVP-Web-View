@@ -7,24 +7,33 @@ interface UseMyRankParams {
   category: string;
   date?: string;
   enabled?: boolean;
+  userId?: string; // 외부에서 userId를 받을 수 있도록
 }
 
 export const useMyRank = ({
   category,
   date = new Date().toISOString().split('T')[0],
   enabled = true,
+  userId: propUserId,
 }: UseMyRankParams) => {
   const { currentUser } = useUserStore();
 
-  // userId를 안정화 - 한 번 결정되면 변경되지 않도록
-  const stableUserId = useMemo(() => {
-    return currentUser?.id || 'a';
-  }, [currentUser?.id]);
+  // props로 받은 userId가 있으면 사용, 없으면 전역 상태 또는 기본값 사용
+  const finalUserId = useMemo(() => {
+    const userId = propUserId || currentUser?.id || 'a';
+    console.log('🔧 useMyRank - userId 결정:', {
+      propUserId,
+      currentUserId: currentUser?.id,
+      finalUserId: userId,
+    });
+    return userId;
+  }, [propUserId, currentUser?.id]);
 
-  // 디버깅용 로그
-  console.log('useMyRank called with:', {
+  // 현재 상태 로그
+  console.log('🔍 useMyRank 호출:', {
     category,
-    userId: stableUserId,
+    finalUserId,
+    currentUserId: currentUser?.id,
     date,
     enabled,
   });
@@ -36,9 +45,9 @@ export const useMyRank = ({
     error,
     refetch,
   } = useQuery({
-    queryKey: ['myRank', category, stableUserId, date],
-    queryFn: () => getMyRank(category, stableUserId, date),
-    enabled: enabled && !!stableUserId,
+    queryKey: ['myRank', category, finalUserId, date],
+    queryFn: () => getMyRank(category, finalUserId, date),
+    enabled: enabled && !!finalUserId,
     staleTime: 30000, // 30초간 캐시 유지
     refetchInterval: 60000, // 1분마다 자동 갱신
     // 중복 호출 방지

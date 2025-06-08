@@ -29,8 +29,13 @@ export const useUserStore = create<UserState>()(
         },
 
         // Actions
-        setCurrentUser: user =>
-          set({ currentUser: user }, false, 'setCurrentUser'),
+        setCurrentUser: user => {
+          console.log('🔴 setCurrentUser 호출:', {
+            from: get().currentUser,
+            to: user,
+          });
+          set({ currentUser: user }, false, 'setCurrentUser');
+        },
 
         clearCurrentUser: () =>
           set({ currentUser: null }, false, 'clearCurrentUser'),

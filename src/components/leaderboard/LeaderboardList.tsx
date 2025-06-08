@@ -406,10 +406,6 @@ export default function LeaderboardList({
 
       {/* 통합 리더보드 */}
       <div className='mb-8'>
-        <div className='mb-6 text-center'>
-          <h2 className='mb-2 text-2xl font-bold text-gray-800'>🏆 리더보드</h2>
-        </div>
-
         <div className='space-y-3'>
           {users.map((user: LeaderboardUser, index: number) => {
             const rank = index + 1;

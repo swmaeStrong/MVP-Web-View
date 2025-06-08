@@ -2,7 +2,6 @@
 
 import { useLeaderboardInfiniteScroll } from '@/hooks/useLeaderboardInfiniteScroll';
 import { useScrollToMyRank } from '@/hooks/useScrollToMyRank';
-import { layout } from '@/styles';
 import { CATEGORIES, LEADERBOARD_CATEGORIES } from '@/utils/categories';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -70,71 +69,72 @@ export default function Leaderboard() {
   const categories = LEADERBOARD_CATEGORIES;
 
   return (
-    <div
-      className={`min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 ${layout.container.default} py-8`}
-    >
-      {/* 테스트 모드 버튼 */}
-      <div className='mb-4 text-center'>
-        <Link href='/leaderboard-test'>
-          <button className='inline-block rounded-full bg-green-100 px-4 py-2 text-sm font-bold text-green-600 transition-colors hover:bg-green-200'>
-            🧪 더미 데이터로 테스트해보기
-          </button>
-        </Link>
-      </div>
-
-      {/* 헤더 */}
-      <LeaderboardHeader />
-
-      {/* 실시간 경쟁 표시기 - LeaderboardHeader 바로 아래로 이동 */}
-      <LiveIndicator />
-
-      {/* 기간 선택 탭 */}
-      <PeriodSelector
-        selectedPeriod={selectedPeriod}
-        setSelectedPeriod={setSelectedPeriod}
-        selectedDateIndex={selectedDateIndex}
-        setSelectedDateIndex={setSelectedDateIndex}
-        currentDate={currentDate}
-      />
-
-      {/* 티어 설명과 카테고리 필터 */}
-      <div className='relative mb-8'>
-        {/* 가장 좌측: 티어 설명 (absolute 고정) */}
-        <div className='absolute top-0 left-0 z-10'>
-          <TierSystemTooltip />
+    <div className='min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
+      <div className='mx-auto max-w-6xl space-y-6 sm:space-y-8'>
+        {/* 테스트 모드 버튼 */}
+        <div className='mb-4 text-center'>
+          <Link href='/leaderboard-test'>
+            <button className='inline-block rounded-full bg-green-100 px-4 py-2 text-sm font-bold text-green-600 transition-colors hover:bg-green-200'>
+              🧪 더미 데이터로 테스트해보기
+            </button>
+          </Link>
         </div>
 
-        {/* 카테고리 필터 (중앙 고정) */}
-        <div className='flex justify-center'>
-          <CategoryFilter
-            categories={categories}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-          />
+        {/* 헤더 */}
+        <LeaderboardHeader />
+
+        {/* 실시간 경쟁 표시기 - LeaderboardHeader 바로 아래로 이동 */}
+        <LiveIndicator />
+
+        {/* 기간 선택 탭 */}
+        <PeriodSelector
+          selectedPeriod={selectedPeriod}
+          setSelectedPeriod={setSelectedPeriod}
+          selectedDateIndex={selectedDateIndex}
+          setSelectedDateIndex={setSelectedDateIndex}
+          currentDate={currentDate}
+        />
+
+        {/* 티어 설명과 카테고리 필터 */}
+        <div className='relative mb-8'>
+          {/* 가장 좌측: 티어 설명 (absolute 고정) */}
+          <div className='absolute top-0 left-0 z-10'>
+            <TierSystemTooltip />
+          </div>
+
+          {/* 카테고리 필터 (중앙 고정) */}
+          <div className='flex justify-center'>
+            <CategoryFilter
+              categories={categories}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+            />
+          </div>
         </div>
+
+        {/* 내 순위 배너 */}
+        <MyRankBanner
+          category={selectedCategory}
+          period={selectedPeriod}
+          selectedDateIndex={selectedDateIndex}
+          onScrollToMyRank={scrollToMyRank}
+          totalUsers={users.length} // 전체 사용자 수 전달
+          userId='a' // 고정된 userId 전달로 중복 호출 방지
+        />
+
+        {/* 리더보드 리스트 */}
+        <LeaderboardList
+          users={users as LeaderboardUser[]}
+          isLoading={isLoading}
+          isError={isError}
+          error={error}
+          isFetchingNextPage={isFetchingNextPage}
+          refetch={refetch}
+          selectedPeriod={selectedPeriod}
+          selectedCategory={selectedCategory}
+          selectedDateIndex={selectedDateIndex}
+        />
       </div>
-
-      {/* 내 순위 배너 */}
-      <MyRankBanner
-        category={selectedCategory}
-        period={selectedPeriod}
-        selectedDateIndex={selectedDateIndex}
-        onScrollToMyRank={scrollToMyRank}
-        totalUsers={users.length} // 전체 사용자 수 전달
-      />
-
-      {/* 리더보드 리스트 */}
-      <LeaderboardList
-        users={users as LeaderboardUser[]}
-        isLoading={isLoading}
-        isError={isError}
-        error={error}
-        isFetchingNextPage={isFetchingNextPage}
-        refetch={refetch}
-        selectedPeriod={selectedPeriod}
-        selectedCategory={selectedCategory}
-        selectedDateIndex={selectedDateIndex}
-      />
     </div>
   );
 }
