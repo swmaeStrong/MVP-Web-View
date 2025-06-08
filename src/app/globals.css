@@ -456,3 +456,63 @@ p {
 .recharts-tooltip-cursor {
   fill: rgba(156, 163, 175, 0.1) !important;
 }
+
+/* 공사중 컴포넌트 애니메이션 */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    opacity: 0.3;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.8;
+    filter: brightness(1.4);
+  }
+}
+
+@keyframes soft-glow {
+  0%,
+  100% {
+    opacity: 0.4;
+    box-shadow: 0 0 5px currentColor;
+  }
+  50% {
+    opacity: 0.9;
+    box-shadow: 0 0 15px currentColor;
+  }
+}
+
+@keyframes main-glow {
+  0%,
+  100% {
+    filter: brightness(1) drop-shadow(0 0 2px rgba(147, 51, 234, 0.3));
+  }
+  50% {
+    filter: brightness(1.2) drop-shadow(0 0 8px rgba(147, 51, 234, 0.6));
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+.animate-glow {
+  animation: glow 2.5s ease-in-out infinite;
+}
+
+.animate-soft-glow {
+  animation: soft-glow 3s ease-in-out infinite;
+}
+
+.animate-main-glow {
+  animation: main-glow 2s ease-in-out infinite;
+}
