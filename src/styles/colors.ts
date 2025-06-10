@@ -97,6 +97,55 @@ export const categoryColors = {
     bgOpacity: 'from-gray-600/5 to-slate-600/5',
     solid: '#71717a', // zinc-500, 더 차분한 회색으로 변경
   },
+  학습: {
+    gradient: 'from-amber-500 via-yellow-500 to-orange-500',
+    buttonGradient: 'from-amber-500 to-yellow-500',
+    badgeClass: 'bg-amber-100 text-amber-700 border-amber-200',
+    borderGradient: 'from-amber-400 to-yellow-400',
+    bgOpacity: 'from-amber-600/5 to-yellow-600/5',
+  },
+  운동: {
+    gradient: 'from-red-500 via-rose-500 to-pink-500',
+    buttonGradient: 'from-red-500 to-rose-500',
+    badgeClass: 'bg-red-100 text-red-700 border-red-200',
+    borderGradient: 'from-red-400 to-rose-400',
+    bgOpacity: 'from-red-600/5 to-rose-600/5',
+  },
+  독서: {
+    gradient: 'from-brown-500 via-amber-600 to-yellow-600',
+    buttonGradient: 'from-yellow-700 to-amber-600',
+    badgeClass: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    borderGradient: 'from-yellow-500 to-amber-500',
+    bgOpacity: 'from-yellow-600/5 to-amber-600/5',
+  },
+  음악: {
+    gradient: 'from-violet-500 via-purple-500 to-fuchsia-500',
+    buttonGradient: 'from-violet-500 to-purple-500',
+    badgeClass: 'bg-violet-100 text-violet-700 border-violet-200',
+    borderGradient: 'from-violet-400 to-purple-400',
+    bgOpacity: 'from-violet-600/5 to-purple-600/5',
+  },
+  요리: {
+    gradient: 'from-orange-500 via-red-500 to-pink-500',
+    buttonGradient: 'from-orange-500 to-red-500',
+    badgeClass: 'bg-orange-100 text-orange-700 border-orange-200',
+    borderGradient: 'from-orange-400 to-red-400',
+    bgOpacity: 'from-orange-600/5 to-red-600/5',
+  },
+  여행: {
+    gradient: 'from-sky-500 via-blue-500 to-indigo-500',
+    buttonGradient: 'from-sky-500 to-blue-500',
+    badgeClass: 'bg-sky-100 text-sky-700 border-sky-200',
+    borderGradient: 'from-sky-400 to-blue-400',
+    bgOpacity: 'from-sky-600/5 to-blue-600/5',
+  },
+  게임: {
+    gradient: 'from-emerald-500 via-green-500 to-teal-500',
+    buttonGradient: 'from-emerald-500 to-green-500',
+    badgeClass: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    borderGradient: 'from-emerald-400 to-green-400',
+    bgOpacity: 'from-emerald-600/5 to-green-600/5',
+  },
 };
 
 // 순위별 컬러 시스템
