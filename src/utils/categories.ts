@@ -25,7 +25,7 @@ export const CATEGORIES = {
 // 🎨 카테고리별 색상 맵 (통합)
 export const getCategoryColor = (category: string): string => {
   const colorConfig = categoryColors[category as keyof typeof categoryColors];
-  return colorConfig?.solid || categoryColors.Uncategorized.solid;
+  return colorConfig?.gradient || categoryColors.Uncategorized.gradient;
 };
 
 // 🎭 카테고리별 아이콘 맵 (통합)
