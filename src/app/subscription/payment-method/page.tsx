@@ -4,9 +4,10 @@ import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { getKSTDate } from '@/utils/timezone';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 
-export default function PaymentMethodPage() {
+// useSearchParams를 사용하는 컴포넌트를 분리
+function PaymentMethodContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedMethod, setSelectedMethod] = useState('');
@@ -234,5 +235,36 @@ export default function PaymentMethodPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// 로딩 fallback 컴포넌트
+function PaymentMethodLoading() {
+  return (
+    <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
+      <div className='mx-auto max-w-2xl space-y-6 sm:space-y-8'>
+        <div className='space-y-4 text-center'>
+          <div className='mx-auto h-12 w-64 animate-pulse rounded-lg bg-gray-300'></div>
+          <div className='mx-auto h-6 w-96 animate-pulse rounded bg-gray-200'></div>
+        </div>
+        <div className='grid gap-4 sm:gap-6'>
+          {[1, 2].map(i => (
+            <div
+              key={i}
+              className='h-32 animate-pulse rounded-2xl bg-gray-200'
+            ></div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 메인 페이지 컴포넌트 - Suspense로 감싼 구조
+export default function PaymentMethodPage() {
+  return (
+    <Suspense fallback={<PaymentMethodLoading />}>
+      <PaymentMethodContent />
+    </Suspense>
   );
 }
