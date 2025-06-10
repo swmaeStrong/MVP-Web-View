@@ -51,6 +51,10 @@ export default function RootLayout({
       lang='ko'
       className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable}`}
     >
+      <meta
+        http-equiv='Content-Security-Policy'
+        content='upgrade-insecure-requests'
+      />
       <body className='bg-white font-sans antialiased'>
         <QueryProvider>{children}</QueryProvider>
       </body>
