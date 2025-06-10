@@ -40,6 +40,14 @@ API.interceptors.request.use(config => {
   return config;
 });
 
+FORMAPI.interceptors.request.use(config => {
+  if (process.env.NODE_ENV === 'development') {
+    config.headers['Authorization'] =
+      `Bearer ${process.env.NEXT_PUBLIC_LOCAL_ACCESS_TOKEN}`;
+  }
+  return config;
+});
+
 API.interceptors.response.use(
   response => response,
   async error => {

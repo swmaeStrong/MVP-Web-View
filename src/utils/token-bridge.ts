@@ -2,9 +2,10 @@
  * 웹뷰에서 Swift 앱으로 토큰 요청하는 유틸리티
  */
 
-import { useInitUser } from '../hooks/useInitUser';
+import { getUserInfo } from '../shared/api/get';
 import { setRccToken } from '../shared/configs/api/csrConfig';
 import { setRscToken } from '../shared/configs/api/ssrConfig';
+import { useUserStore } from '../stores/userStore';
 
 // TypeScript 타입 정의
 declare global {
@@ -20,6 +21,33 @@ declare global {
     initAccessToken?: (token: string) => void;
   }
 }
+
+/**
+ * 유저 정보 초기화 함수 (훅이 아닌 일반 함수)
+ */
+const initializeUserInfo = async () => {
+  try {
+    console.log('👤 유저 정보를 가져오는 중...');
+    const userInfo = await getUserInfo();
+
+    if (userInfo && userInfo.userId && userInfo.nickname) {
+      // 스토어 직접 접근하여 유저 정보 설정
+      useUserStore.getState().setCurrentUser({
+        id: userInfo.userId,
+        nickname: userInfo.nickname,
+      });
+
+      console.log('✅ 유저 정보 저장 완료:', userInfo);
+      return userInfo;
+    } else {
+      console.warn('⚠️ 유저 정보가 올바르지 않습니다:', userInfo);
+      return null;
+    }
+  } catch (error) {
+    console.error('❌ 유저 정보 로드 실패:', error);
+    throw error;
+  }
+};
 
 /**
  * Swift 앱에 토큰 요청
@@ -63,22 +91,21 @@ export const requestTokenFromSwift = (): Promise<string | null> => {
 
 /**
  * 전역 토큰 수신 함수 설정
- * Swift 앱에서 window.receiveToken(token) 형태로 호출 가능
+ * Swift 앱에서 window.initAccessToken(token) 형태로 호출 가능
  */
 if (typeof window !== 'undefined') {
   window.initAccessToken = async function (token: string) {
     console.log('✅ Swift에서 토큰 받음:', token);
 
     try {
-      // localStorage에 토큰 저장
+      // API 인스턴스에 토큰 설정
       setRccToken(token);
       await setRscToken(token);
 
       console.log('🔐 토큰이 저장되었습니다');
 
-      // 유저 정보 초기화
-      const { initializeUser } = useInitUser();
-      await initializeUser();
+      // 유저 정보 초기화 (일반 함수 호출)
+      await initializeUserInfo();
     } catch (error) {
       console.error('❌ 토큰 설정 또는 유저 정보 로드 실패:', error);
     }

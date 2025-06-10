@@ -24,6 +24,7 @@ const eslintConfig = [
         },
       ],
       '@typescript-eslint/no-empty-function': 'off',
+      '@typescript-eslint/no-namespace': 'off',
 
       // React 관련 규칙
       'react/no-unescaped-entities': 'off',
@@ -57,6 +58,7 @@ const eslintConfig = [
       'no-unused-vars': 'off',
       'prefer-const': 'warn',
       'no-var': 'error',
+      'no-namespace': 'off',
     },
   },
 ];
