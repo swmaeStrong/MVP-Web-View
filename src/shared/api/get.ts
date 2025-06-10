@@ -1,4 +1,5 @@
 import { parseApi } from '../../utils/api-utils';
+import { getKSTDateString } from '../../utils/timezone';
 import { API } from '../configs/api';
 
 // 구독 플랜 조회
@@ -22,12 +23,43 @@ export const getUserSubscriptionHistory = () =>
 // 리더보드 조회
 export const getLeaderBoard = (
   category: string,
-  type: 'daily' | 'weekly' | 'monthly' | 'all'
+  type: 'daily' | 'weekly' | 'monthly' | 'all',
+  page: number = 1,
+  size: number = 10,
+  date: string = getKSTDateString()
 ) =>
   parseApi<LeaderBoard.LeaderBoardResponse[]>(
-    API.get(`/leaderboard/${category}/${type}`)
+    API.get(
+      `/leaderboard/${category}/${type}?page=${page}&size=${size}&date=${date}`
+    )
+  );
+
+export const getMyRank = (
+  category: string,
+  userId: string,
+  type: 'daily' | 'weekly' | 'monthly',
+  date: string = getKSTDateString()
+) =>
+  parseApi<LeaderBoard.LeaderBoardResponse>(
+    API.get(
+      `/leaderboard/${category}/user-info/${type}?userId=${userId}&date=${date}`
+    )
   );
 
 // 사용 기록 조회
-export const getUsageLog = () =>
-  parseApi<UsageLog.UsageLogResponse[]>(API.get(`/usage-log`));
+export const getUsageLog = (date: string = getKSTDateString()) =>
+  parseApi<UsageLog.UsageLogResponse[]>(
+    API.get(`/usage-log?userId=a&date=${date}`)
+  );
+
+export const getHourlyUsageLog = (
+  date: string = getKSTDateString(),
+  userId: string,
+  binSize: number
+) =>
+  parseApi<UsageLog.HourlyUsageLogResponse[]>(
+    API.get(`/usage-log/hour?userId=${userId}&date=${date}&binSize=${binSize}`)
+  );
+
+export const getUserInfo = () =>
+  parseApi<User.UserResponse>(API.get('/user/my-info'));

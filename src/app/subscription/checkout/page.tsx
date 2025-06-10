@@ -2,6 +2,7 @@
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
+import { getKSTDate } from '@/utils/timezone';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -41,14 +42,14 @@ export default function CheckoutPage() {
     setIsLoading(true);
 
     try {
-      // 결제 처리 시뮬레이션
+      // 실제 결제 처리 로직 (2초 딜레이로 시뮬레이션)
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // 구독 정보 저장
+      // 구독 정보 저장 (한국 시간대 기준)
       const subscriptionData = {
         plan: 'premium',
         price: 1,
-        startDate: new Date().toISOString(),
+        startDate: getKSTDate().toISOString(),
         paymentMethod: paymentMethod?.method,
         status: 'active',
       };
@@ -63,13 +64,14 @@ export default function CheckoutPage() {
     }
   };
 
-  // 특별 할인 카운트다운 효과
+  // 특별 할인 카운트다운 효과 (한국 시간대 기준)
   useEffect(() => {
-    const targetTime = new Date();
-    targetTime.setHours(23, 59, 59, 999); // 오늘 자정까지
+    const kstNow = getKSTDate();
+    const targetTime = new Date(kstNow.getTime());
+    targetTime.setUTCHours(23, 59, 59, 999); // 한국 시간 기준 자정까지
 
     const timer = setInterval(() => {
-      const now = new Date();
+      const now = getKSTDate();
       const difference = targetTime.getTime() - now.getTime();
 
       if (difference > 0) {
@@ -213,7 +215,9 @@ export default function CheckoutPage() {
                   </div>
                   <div className='text-sm text-gray-600'>
                     등록일:{' '}
-                    {new Date(paymentMethod.createdAt).toLocaleDateString()}
+                    {new Date(paymentMethod.createdAt).toLocaleDateString(
+                      'ko-KR'
+                    )}
                   </div>
                 </div>
               </div>

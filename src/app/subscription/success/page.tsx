@@ -107,7 +107,9 @@ export default function SubscriptionSuccessPage() {
                 <div className='rounded-xl bg-gray-50 p-4'>
                   <div className='mb-1 text-sm text-gray-600'>구독 시작일</div>
                   <div className='font-bold text-gray-800'>
-                    {new Date(subscription.startDate).toLocaleDateString()}
+                    {new Date(subscription.startDate).toLocaleDateString(
+                      'ko-KR'
+                    )}
                   </div>
                 </div>
 
@@ -132,7 +134,7 @@ export default function SubscriptionSuccessPage() {
                   {new Date(
                     new Date(subscription.startDate).getTime() +
                       30 * 24 * 60 * 60 * 1000
-                  ).toLocaleDateString()}
+                  ).toLocaleDateString('ko-KR')}
                   까지 무료로 이용하실 수 있습니다
                 </p>
               </div>

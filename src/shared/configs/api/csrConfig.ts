@@ -1,6 +1,8 @@
 import axios from 'axios';
 
+import { requestTokenFromSwift } from '../../../utils/token-bridge';
 import { noAccessTokenCode } from '../errorCode';
+import { removeRscAccess, setRscToken } from './ssrConfig';
 import { BASEURL } from './url';
 
 export const API = axios.create({
@@ -31,9 +33,17 @@ export const getRccAccess = (): string =>
   `${API.defaults.headers['Authorization']}`;
 
 API.interceptors.request.use(config => {
-  const accessToken = getRccAccess();
-  if (accessToken) {
-    config.headers['Authorization'] = `Bearer ${accessToken}`;
+  if (process.env.NODE_ENV === 'development') {
+    config.headers['Authorization'] =
+      `Bearer ${process.env.NEXT_PUBLIC_LOCAL_ACCESS_TOKEN}`;
+  }
+  return config;
+});
+
+FORMAPI.interceptors.request.use(config => {
+  if (process.env.NODE_ENV === 'development') {
+    config.headers['Authorization'] =
+      `Bearer ${process.env.NEXT_PUBLIC_LOCAL_ACCESS_TOKEN}`;
   }
   return config;
 });
@@ -52,8 +62,12 @@ API.interceptors.response.use(
 
       //Access token 재발급 과정
       if (noAccessTokenCode.includes(errorCode) || error.status === 403) {
-        //TODO: 토큰 재발급 요청을 ios로 보내는 로직을 작성
-        return API.request(config);
+        //  accessToekn이 있는 경우에만 재발급 요청
+        if (API.defaults.headers['Authorization']) {
+          await handleAccessTokenRequest();
+          // 요청 다시 실행
+          return API.request(config);
+        }
       }
     }
 
@@ -74,10 +88,24 @@ FORMAPI.interceptors.response.use(
 
       //Access token 재발급 과정
       if (noAccessTokenCode.includes(errorCode) || error.status === 403) {
-        //TODO: 토큰 재발급 요청을 ios로 보내는 로직을 작성
-        return API.request(config);
+        await handleAccessTokenRequest();
+        // 요청 다시 실행
+        return FORMAPI.request(config);
       }
     }
     throw new Error(`${error}`);
   }
 );
+
+const handleAccessTokenRequest = async () => {
+  // 기존 accessToken 삭제
+  removeRccAccess();
+  removeRscAccess();
+
+  // 새로운 accessToken 요청
+  const newAccessToken = await requestTokenFromSwift();
+  if (newAccessToken) {
+    setRccToken(newAccessToken);
+    setRscToken(newAccessToken);
+  }
+};

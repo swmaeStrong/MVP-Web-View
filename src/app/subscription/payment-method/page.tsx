@@ -2,9 +2,11 @@
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
+import { getKSTDate } from '@/utils/timezone';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 
+// useSearchParams를 사용하는 컴포넌트를 분리
 function PaymentMethodContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -39,10 +41,10 @@ function PaymentMethodContent() {
     setIsLoading(true);
 
     try {
-      // 결제 수단 저장 시뮬레이션
+      // 결제 수단 저장 시뮬레이션 (한국 시간대 기준)
       const paymentData = {
         method: selectedMethod,
-        createdAt: new Date().toISOString(),
+        createdAt: getKSTDate().toISOString(),
       };
       localStorage.setItem('paymentMethods', JSON.stringify([paymentData]));
 
@@ -236,15 +238,32 @@ function PaymentMethodContent() {
   );
 }
 
+// 로딩 fallback 컴포넌트
+function PaymentMethodLoading() {
+  return (
+    <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
+      <div className='mx-auto max-w-2xl space-y-6 sm:space-y-8'>
+        <div className='space-y-4 text-center'>
+          <div className='mx-auto h-12 w-64 animate-pulse rounded-lg bg-gray-300'></div>
+          <div className='mx-auto h-6 w-96 animate-pulse rounded bg-gray-200'></div>
+        </div>
+        <div className='grid gap-4 sm:gap-6'>
+          {[1, 2].map(i => (
+            <div
+              key={i}
+              className='h-32 animate-pulse rounded-2xl bg-gray-200'
+            ></div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 메인 페이지 컴포넌트 - Suspense로 감싼 구조
 export default function PaymentMethodPage() {
   return (
-    <Suspense
-      fallback={
-        <div className='flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50'>
-          <div className='h-12 w-12 animate-spin rounded-full border-b-2 border-purple-600'></div>
-        </div>
-      }
-    >
+    <Suspense fallback={<PaymentMethodLoading />}>
       <PaymentMethodContent />
     </Suspense>
   );
