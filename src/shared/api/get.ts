@@ -60,3 +60,6 @@ export const getHourlyUsageLog = (
   parseApi<UsageLog.HourlyUsageLogResponse[]>(
     API.get(`/usage-log/hour?userId=${userId}&date=${date}&binSize=${binSize}`)
   );
+
+export const getUserInfo = () =>
+  parseApi<User.UserResponse>(API.get('/users/my-info'));
