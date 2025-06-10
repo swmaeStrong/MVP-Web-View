@@ -23,7 +23,7 @@ export const useMyRank = ({
 
   // props로 받은 userId가 있으면 사용, 없으면 전역 상태 또는 기본값 사용
   const finalUserId = useMemo(() => {
-    const userId = propUserId || currentUser?.id || 'a';
+    const userId = propUserId || currentUser?.id || '';
     console.log('🔧 useMyRank - userId 결정:', {
       propUserId,
       currentUserId: currentUser?.id,

@@ -62,4 +62,4 @@ export const getHourlyUsageLog = (
   );
 
 export const getUserInfo = () =>
-  parseApi<User.UserResponse>(API.get('/users/my-info'));
+  parseApi<User.UserResponse>(API.get('/user/my-info'));

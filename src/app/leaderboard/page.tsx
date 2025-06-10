@@ -16,7 +16,7 @@ import { LiveIndicator } from '@/components/leaderboard/StatsSection';
 import TierSystemTooltip from '@/components/leaderboard/TierSystemTooltip';
 
 // User 타입은 userStore에서 import
-import { User } from '@/stores/userStore';
+import { User, useUserStore } from '@/stores/userStore';
 
 // 리더보드 표시용 확장된 User 타입
 type LeaderboardUser = User & {
@@ -25,6 +25,7 @@ type LeaderboardUser = User & {
 };
 
 export default function Leaderboard() {
+  const { currentUser } = useUserStore();
   const { scrollToMyRank } = useScrollToMyRank();
   const [selectedPeriod, setSelectedPeriod] = useState<
     'daily' | 'weekly' | 'monthly'
@@ -119,7 +120,7 @@ export default function Leaderboard() {
           selectedDateIndex={selectedDateIndex}
           onScrollToMyRank={scrollToMyRank}
           totalUsers={users.length} // 전체 사용자 수 전달
-          userId='a' // 고정된 userId 전달로 중복 호출 방지
+          userId={currentUser?.id} // 고정된 userId 전달로 중복 호출 방지
         />
 
         {/* 리더보드 리스트 */}

@@ -179,7 +179,7 @@ export default function MyRankBanner({
   selectedDateIndex,
   onScrollToMyRank,
   totalUsers = 1000, // 기본값 설정 (나중에 props로 받아올 수 있음)
-  userId = 'a', // 기본값으로 'a' 사용
+  userId, //
 }: MyRankBannerProps) {
   // 날짜 계산 - 한국 시간대 기준
   const getDateForAPI = () => {

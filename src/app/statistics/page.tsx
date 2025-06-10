@@ -227,7 +227,10 @@ export default function StatisticsPage() {
         {/* 시간별 사용량 비교 차트 - 전체 너비 사용 */}
         {currentUser && (
           <div className='col-span-1 lg:col-span-2'>
-            <HourlyUsageComparison userId='a' date={selectedDate} />
+            <HourlyUsageComparison
+              userId={currentUser?.id}
+              date={selectedDate}
+            />
           </div>
         )}
       </div>
