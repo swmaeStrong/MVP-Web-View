@@ -4,4 +4,11 @@ declare namespace UsageLog {
     duration: number;
     color: string;
   }
+
+  interface HourlyUsageLogResponse {
+    hour: string;
+    category: string;
+    color: string;
+    totalDuration: number;
+  }
 }
