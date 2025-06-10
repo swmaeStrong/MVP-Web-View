@@ -51,26 +51,29 @@ export const useMultiDateStatistics = (dates: string[]) => {
 };
 
 import { getKSTDate } from '@/utils/timezone';
+import { useMemo } from 'react';
 
 // 가용한 날짜 목록 생성 (최근 30일 - 한국 시간대 기준)
 export const useAvailableDates = () => {
-  const dates: string[] = [];
-  const today = getKSTDate();
+  return useMemo(() => {
+    const dates: string[] = [];
+    const today = getKSTDate();
 
-  for (let i = 0; i < 30; i++) {
-    const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
-    dates.push(getDateString(date));
-  }
+    for (let i = 0; i < 30; i++) {
+      const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
+      dates.push(getDateString(date));
+    }
 
-  // 디버깅용 로그
-  console.log(
-    'useAvailableDates - 생성된 날짜 배열:',
-    dates.slice(0, 5),
-    '...(총',
-    dates.length,
-    '개)'
-  );
-  console.log('useAvailableDates - 오늘 날짜:', dates[0]);
+    // 디버깅용 로그
+    console.log(
+      'useAvailableDates - 생성된 날짜 배열:',
+      dates.slice(0, 5),
+      '...(총',
+      dates.length,
+      '개)'
+    );
+    console.log('useAvailableDates - 오늘 날짜:', dates[0]);
 
-  return dates;
+    return dates;
+  }, []); // 의존성이 없으므로 컴포넌트 생명주기 동안 한 번만 계산
 };

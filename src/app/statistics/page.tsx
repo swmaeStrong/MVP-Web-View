@@ -4,7 +4,7 @@ import { useAvailableDates, useUsageStatistics } from '@/hooks/useStatistics';
 import { useCurrentUser } from '@/stores/userStore';
 import { PeriodType, StatisticsCategory } from '@/types/statistics';
 import { getDateString } from '@/utils/statisticsUtils';
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 // 컴포넌트 임포트
 import CategoryList from '@/components/statistics/CategoryList';
@@ -22,6 +22,15 @@ export default function StatisticsPage() {
   const [selectedDate, setSelectedDate] = useState(getDateString(new Date()));
   const [selectedCategory, setSelectedCategory] =
     useState<StatisticsCategory | null>(null);
+
+  // availableDates 변경 모니터링
+  React.useEffect(() => {
+    console.log(
+      'availableDates 배열 변경됨:',
+      availableDates.length,
+      availableDates.slice(0, 3)
+    );
+  }, [availableDates]);
 
   // availableDates가 로드되면 오늘 날짜(첫 번째 요소)로 설정
   React.useEffect(() => {
@@ -51,32 +60,62 @@ export default function StatisticsPage() {
 
   // 날짜가 변경될 때마다 selectedCategory 초기화
   React.useEffect(() => {
+    console.log('selectedDate 변경됨:', selectedDate);
     setSelectedCategory(null);
   }, [selectedDate]);
 
-  const handlePreviousDate = () => {
+  const handlePreviousDate = useCallback(() => {
     const currentIndex = availableDates.indexOf(selectedDate);
+    console.log(
+      '이전 날짜 클릭 - 현재 인덱스:',
+      currentIndex,
+      '현재 날짜:',
+      selectedDate
+    );
     if (currentIndex < availableDates.length - 1) {
-      setSelectedDate(availableDates[currentIndex + 1]);
+      const newDate = availableDates[currentIndex + 1];
+      console.log('새로운 날짜로 변경:', newDate);
+      setSelectedDate(newDate);
+    } else {
+      console.log('이전 날짜로 갈 수 없음');
     }
-  };
+  }, [availableDates, selectedDate]);
 
-  const handleNextDate = () => {
+  const handleNextDate = useCallback(() => {
     const currentIndex = availableDates.indexOf(selectedDate);
+    console.log(
+      '다음 날짜 클릭 - 현재 인덱스:',
+      currentIndex,
+      '현재 날짜:',
+      selectedDate
+    );
     if (currentIndex > 0) {
-      setSelectedDate(availableDates[currentIndex - 1]);
+      const newDate = availableDates[currentIndex - 1];
+      console.log('새로운 날짜로 변경:', newDate);
+      setSelectedDate(newDate);
+    } else {
+      console.log('다음 날짜로 갈 수 없음');
     }
-  };
+  }, [availableDates, selectedDate]);
 
-  const canGoPrevious = () => {
+  const canGoPrevious = useMemo(() => {
     const currentIndex = availableDates.indexOf(selectedDate);
-    return currentIndex < availableDates.length - 1;
-  };
+    const canGo = currentIndex < availableDates.length - 1;
+    console.log(
+      'canGoPrevious 체크 - 인덱스:',
+      currentIndex,
+      '가능여부:',
+      canGo
+    );
+    return canGo;
+  }, [availableDates, selectedDate]);
 
-  const canGoNext = () => {
+  const canGoNext = useMemo(() => {
     const currentIndex = availableDates.indexOf(selectedDate);
-    return currentIndex > 0;
-  };
+    const canGo = currentIndex > 0;
+    console.log('canGoNext 체크 - 인덱스:', currentIndex, '가능여부:', canGo);
+    return canGo;
+  }, [availableDates, selectedDate]);
 
   const handleCategorySelect = (category: StatisticsCategory | null) => {
     setSelectedCategory(category);
@@ -179,8 +218,8 @@ export default function StatisticsPage() {
             data={dailyData || null}
             onPrevious={handlePreviousDate}
             onNext={handleNextDate}
-            canGoPrevious={canGoPrevious()}
-            canGoNext={canGoNext()}
+            canGoPrevious={canGoPrevious}
+            canGoNext={canGoNext}
             currentDate={selectedDate}
           />
         </div>
