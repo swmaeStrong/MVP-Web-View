@@ -33,9 +33,9 @@ export const getRccAccess = (): string =>
   `${API.defaults.headers['Authorization']}`;
 
 API.interceptors.request.use(config => {
-  const accessToken = getRccAccess();
-  if (accessToken) {
-    config.headers['Authorization'] = `Bearer ${accessToken}`;
+  if (process.env.NODE_ENV === 'development') {
+    config.headers['Authorization'] =
+      `Bearer ${process.env.NEXT_PUBLIC_LOCAL_ACCESS_TOKEN}`;
   }
   return config;
 });
@@ -59,7 +59,6 @@ API.interceptors.response.use(
           await handleAccessTokenRequest();
           // 요청 다시 실행
           return API.request(config);
-        } else {
         }
       }
     }
