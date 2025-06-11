@@ -126,14 +126,6 @@ export default function StatisticsPage() {
     return (
       <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
         <div className='mx-auto max-w-6xl'>
-          <div className='mb-8 text-center'>
-            <h1 className='text-3xl font-bold text-gray-900 sm:text-4xl'>
-              📊 작업 통계
-            </h1>
-            <p className='mt-2 text-gray-600'>
-              일별, 주별, 월별 작업 시간을 확인하세요
-            </p>
-          </div>
           <div className='flex h-64 items-center justify-center'>
             <div className='text-center'>
               <div className='mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-purple-600'></div>
@@ -150,14 +142,6 @@ export default function StatisticsPage() {
     return (
       <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
         <div className='mx-auto max-w-6xl'>
-          <div className='mb-8 text-center'>
-            <h1 className='text-3xl font-bold text-gray-900 sm:text-4xl'>
-              📊 작업 통계
-            </h1>
-            <p className='mt-2 text-gray-600'>
-              일별, 주별, 월별 작업 시간을 확인하세요
-            </p>
-          </div>
           <div className='flex h-64 items-center justify-center'>
             <div className='text-center text-red-600'>
               <div className='mb-4 text-4xl'>⚠️</div>
@@ -178,16 +162,6 @@ export default function StatisticsPage() {
   return (
     <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
       <div className='mx-auto max-w-6xl space-y-6 sm:space-y-8'>
-        {/* 헤더 */}
-        <div className='mb-8 text-center'>
-          <h1 className='text-3xl font-bold text-gray-900 sm:text-4xl'>
-            📊 작업 통계
-          </h1>
-          <p className='mt-2 text-gray-600'>
-            카테고리별 레벨과 성장을 확인하세요
-          </p>
-        </div>
-
         {/* 메인 콘텐츠 */}
         <div className='grid gap-6 sm:gap-8 lg:grid-cols-2'>
           {/* 왼쪽: 총 작업시간 & 상위 카테고리 */}
