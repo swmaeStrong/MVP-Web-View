@@ -99,7 +99,7 @@ if (typeof window !== 'undefined') {
 
     try {
       // API 인스턴스에 토큰 설정
-      setRccToken(token);
+      await setRccToken(token);
       await setRscToken(token);
 
       console.log('🔐 토큰이 저장되었습니다');
