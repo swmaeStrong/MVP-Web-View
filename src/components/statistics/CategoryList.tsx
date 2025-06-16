@@ -18,7 +18,7 @@ export default function CategoryList({
 }: CategoryListProps) {
   // 상위 6개만 표시
   const top6Categories = categories.slice(0, 6);
-
+  console.log(top6Categories);
   if (top6Categories.length === 0) {
     return null;
   }
