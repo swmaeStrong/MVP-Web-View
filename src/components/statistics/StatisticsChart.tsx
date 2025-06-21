@@ -99,13 +99,15 @@ export default function StatisticsChart({
           ) : selectedPeriod === 'weekly' || selectedPeriod === 'monthly' ? (
             <StatisticsBarChart period={selectedPeriod} />
           ) : (
-            <NoData
-              title='활동 데이터가 없습니다'
-              message='선택한 날짜에 기록된 활동이 없습니다.'
-              icon={PieChart}
-              showBorder={false}
-              size='md'
-            />
+            <div className='flex h-[400px] items-center justify-center'>
+              <NoData
+                title='활동 데이터가 없습니다'
+                message='선택한 날짜에 기록된 활동이 없습니다.'
+                icon={PieChart}
+                showBorder={false}
+                size='md'
+              />
+            </div>
           )}
         </div>
       </CardContent>

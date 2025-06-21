@@ -2,7 +2,6 @@
 
 import { ChartConfig, ChartContainer, ChartTooltip } from '@/shadcn/ui/chart';
 import { DailyStatistics } from '@/types/statistics';
-import { getCategoryColor } from '@/utils/categories';
 import { formatTime } from '@/utils/statisticsUtils';
 import { PieChart } from 'lucide-react';
 import {
@@ -21,12 +20,25 @@ interface StatisticsRadarChartProps {
 export default function StatisticsRadarChart({
   data,
 }: StatisticsRadarChartProps) {
-  // Top 6 카테고리만 추출
-  const top6Categories = data.categories.slice(0, 6);
+  // 6개의 고정 색상 정의
+  const categoryColors = [
+    '#8b5cf6', // 보라
+    '#06b6d4', // 청록
+    '#10b981', // 초록
+    '#f59e0b', // 노랑
+    '#ef4444', // 빨강
+    '#ec4899', // 핑크
+  ];
+
+  // Top 6 카테고리만 추출하고 색상 할당
+  const top6Categories = data.categories.slice(0, 6).map((category, index) => ({
+    ...category,
+    color: categoryColors[index] || categoryColors[0], // 색상 오버라이드
+  }));
 
   if (top6Categories.length === 0) {
     return (
-      <div className='h-[450px]'>
+      <div className='flex h-[450px] items-center justify-center'>
         <NoData
           title='분석할 카테고리가 없습니다'
           message='활동 데이터가 없어 레이더 차트를 표시할 수 없습니다.'
@@ -44,14 +56,14 @@ export default function StatisticsRadarChart({
     time: category.time,
     percentage: category.percentage,
     fullTime: formatTime(category.time),
-    fill: getCategoryColor(category.name),
+    fill: category.color, // 할당된 색상 사용
   }));
 
   // 차트 설정
   const chartConfig = top6Categories.reduce((config, category, index) => {
     config[category.name] = {
       label: category.name,
-      color: getCategoryColor(category.name),
+      color: category.color, // 할당된 색상 사용
     };
     return config;
   }, {} as ChartConfig);
@@ -72,14 +84,14 @@ export default function StatisticsRadarChart({
       </div>
 
       {/* 차트 */}
-      <div className='relative h-[400px] w-full px-4'>
+      <div className='relative h-[450px] w-full px-2'>
         <ChartContainer
           config={chartConfig}
-          className='mx-auto aspect-square max-h-[400px] max-w-[400px]'
+          className='mx-auto aspect-square max-h-[450px] max-w-[450px]'
         >
           <RadarChart
             data={chartData}
-            margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
+            margin={{ top: 60, right: 80, bottom: 60, left: 80 }}
           >
             <ChartTooltip
               content={({ active, payload }) => {
@@ -96,7 +108,10 @@ export default function StatisticsRadarChart({
                           <div
                             className='h-3 w-3 rounded-full'
                             style={{
-                              backgroundColor: getCategoryColor(categoryName),
+                              backgroundColor:
+                                top6Categories.find(
+                                  cat => cat.name === categoryName
+                                )?.color || categoryColors[0],
                             }}
                           />
                           <span
@@ -132,11 +147,21 @@ export default function StatisticsRadarChart({
             />
             <PolarAngleAxis
               dataKey='category'
-              tick={{ fontSize: 12, fill: '#111827', fontWeight: 'bold' }}
-              className='text-sm font-semibold'
-              tickFormatter={value =>
-                value.length > 8 ? value.substring(0, 6) + '...' : value
-              }
+              tick={{
+                fontSize: 10,
+                fill: '#111827',
+                fontWeight: 'bold',
+                textAnchor: 'middle',
+              }}
+              className='text-xs font-semibold'
+              tickFormatter={value => {
+                // 더 긴 텍스트도 수용할 수 있도록 조정
+                if (value.length > 10) {
+                  return value.substring(0, 8) + '...';
+                }
+                return value;
+              }}
+              axisLineType='polygon'
             />
             <PolarGrid className='stroke-gray-200' strokeDasharray='2 2' />
             <PolarRadiusAxis

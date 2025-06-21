@@ -42,11 +42,12 @@ const BIN_SIZE_OPTIONS = [
   { value: 60, label: '1시간' },
 ];
 
-// 초 단위까지 포함한 시간 포맷팅 (시간별 사용량 전용)
+// 초 단위까지 포함한 시간 포맷팅 (시간별 사용량 전용) - 소수점 제거
 const formatTimeWithSeconds = (seconds: number): string => {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
+  const totalSeconds = Math.floor(seconds); // 소수점 제거
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const secs = totalSeconds % 60;
 
   if (hours === 0 && minutes === 0 && secs === 0) return '0초';
   if (hours === 0 && minutes === 0) return `${secs}초`;
@@ -290,7 +291,7 @@ export default function HourlyUsageComparison({
 
         <CardContent className='px-2 pt-0'>
           {chartData.length === 0 ? (
-            <div className='h-[350px]'>
+            <div className='flex h-[350px] items-center justify-center'>
               <NoData
                 title='시간별 데이터가 없습니다'
                 message='선택한 날짜에 활동 기록이 없습니다.'
