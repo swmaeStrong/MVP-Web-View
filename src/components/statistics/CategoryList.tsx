@@ -3,7 +3,6 @@
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { StatisticsCategory } from '@/types/statistics';
 import { formatTime } from '@/utils/statisticsUtils';
-import { getCategoryIcon } from '../../utils/categories';
 
 interface CategoryListProps {
   categories: StatisticsCategory[];
@@ -16,15 +15,28 @@ export default function CategoryList({
   selectedCategory,
   onCategorySelect,
 }: CategoryListProps) {
-  // 상위 6개만 표시
-  const top6Categories = categories.slice(0, 6);
-  console.log(top6Categories);
+  // 6개의 고정 색상 정의
+  const categoryColors = [
+    '#8b5cf6', // 보라
+    '#06b6d4', // 청록
+    '#10b981', // 초록
+    '#f59e0b', // 노랑
+    '#ef4444', // 빨강
+    '#ec4899', // 핑크
+  ];
+
+  // 상위 6개만 표시하고 색상 할당
+  const top6Categories = categories.slice(0, 6).map((category, index) => ({
+    ...category,
+    color: categoryColors[index] || categoryColors[0], // 색상 오버라이드
+  }));
+
   if (top6Categories.length === 0) {
     return null;
   }
 
   return (
-    <Card className='rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 shadow-sm transition-all duration-300 hover:shadow-md'>
+    <Card className='rounded-lg border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:shadow-md'>
       <CardContent className='p-4'>
         <div className='mb-4 flex items-center justify-between'>
           <h4 className='text-sm font-semibold text-gray-700'>
@@ -50,68 +62,59 @@ export default function CategoryList({
               <div
                 key={index}
                 onClick={() => onCategorySelect(category)}
-                className={`group flex cursor-pointer items-center gap-3 rounded-lg border p-3 shadow-sm transition-all duration-200 ${
+                className={`group flex cursor-pointer items-center justify-between rounded-lg border p-4 shadow-sm transition-all duration-200 ${
                   isSelected
-                    ? 'scale-105 border-purple-300 bg-purple-50 shadow-md'
-                    : 'border-gray-100 bg-white hover:scale-105 hover:border-purple-200 hover:shadow-md'
+                    ? 'border-purple-300 bg-purple-50 shadow-md'
+                    : 'border-gray-100 bg-white hover:border-purple-200 hover:shadow-md'
                 }`}
               >
+                {/* 색상 인디케이터 및 카테고리 정보 */}
                 <div className='flex items-center gap-3'>
                   <div
-                    className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm text-white shadow-sm transition-transform ${
-                      isSelected ? 'scale-110' : 'group-hover:scale-110'
+                    className={`h-4 w-4 rounded-full transition-all duration-200 ${
+                      isSelected ? 'ring-2 ring-purple-300 ring-offset-1' : ''
                     }`}
-                    style={{ backgroundColor: category.color }}
-                  >
-                    {getCategoryIcon(category.name)}
-                  </div>
-                  <div
-                    className='h-2 w-2 rounded-full shadow-sm'
                     style={{ backgroundColor: category.color }}
                   />
+
+                  <div className='min-w-0 flex-1'>
+                    <div
+                      className={`truncate text-sm font-semibold transition-colors ${
+                        isSelected
+                          ? 'text-purple-800'
+                          : 'text-gray-800 group-hover:text-purple-700'
+                      }`}
+                    >
+                      {category.name}
+                    </div>
+                    <div className='mt-0.5 text-xs text-gray-500'>
+                      {category.percentage}%
+                    </div>
+                  </div>
                 </div>
 
-                <div className='min-w-0 flex-1'>
+                {/* 사용 시간 */}
+                <div className='text-right'>
                   <div
-                    className={`truncate text-sm font-semibold transition-colors ${
+                    className={`text-sm font-semibold transition-colors ${
                       isSelected
-                        ? 'text-purple-800'
-                        : 'text-gray-800 group-hover:text-purple-700'
+                        ? 'text-purple-700'
+                        : 'text-gray-700 group-hover:text-purple-600'
                     }`}
                   >
-                    {category.name}
-                  </div>
-                  <div className='flex items-center gap-2 text-sm text-gray-600'>
-                    <span className='font-medium'>
-                      {formatTime(category.time)}
-                    </span>
-                    <span className='text-xs'>•</span>
-                    <span className='font-medium'>{category.percentage}%</span>
+                    {formatTime(category.time)}
                   </div>
 
                   {/* 프로그레스 바 */}
-                  <div className='mt-1.5 h-1 w-full rounded-full bg-gray-100'>
+                  <div className='mt-1 h-1 w-16 rounded-full bg-gray-100'>
                     <div
-                      className={`h-1 rounded-full transition-all duration-300 ${
-                        isSelected ? 'shadow-sm' : ''
-                      }`}
+                      className='h-1 rounded-full transition-all duration-300'
                       style={{
                         width: `${category.percentage}%`,
                         backgroundColor: category.color,
                       }}
-                    ></div>
+                    />
                   </div>
-                </div>
-
-                {/* 순위 표시 */}
-                <div
-                  className={`flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold transition-colors ${
-                    isSelected
-                      ? 'bg-purple-200 text-purple-800'
-                      : 'bg-gray-100 text-gray-600 group-hover:bg-purple-100 group-hover:text-purple-700'
-                  }`}
-                >
-                  {index + 1}
                 </div>
               </div>
             );

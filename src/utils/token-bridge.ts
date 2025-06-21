@@ -23,11 +23,10 @@ declare global {
 }
 
 /**
- * 유저 정보 초기화 함수 (훅이 아닌 일반 함수)
+ * 유저 정보 초기화 함수
  */
 const initializeUserInfo = async () => {
   try {
-    console.log('👤 유저 정보를 가져오는 중...');
     const userInfo = await getUserInfo();
 
     if (userInfo && userInfo.userId && userInfo.nickname) {
@@ -37,14 +36,11 @@ const initializeUserInfo = async () => {
         nickname: userInfo.nickname,
       });
 
-      console.log('✅ 유저 정보 저장 완료:', userInfo);
       return userInfo;
     } else {
-      console.warn('⚠️ 유저 정보가 올바르지 않습니다:', userInfo);
       return null;
     }
   } catch (error) {
-    console.error('❌ 유저 정보 로드 실패:', error);
     throw error;
   }
 };
@@ -75,15 +71,10 @@ export const requestTokenFromSwift = (): Promise<string | null> => {
             resolve(null);
           }
         }, 5000);
-
-        console.log('✅ 토큰 요청 전송됨');
       } else {
-        // 웹뷰가 아닌 환경에서는 null 반환
-        console.log('📱 웹뷰 환경이 아님 - 토큰 요청 불가');
         resolve(null);
       }
     } catch (error) {
-      console.error('❌ 토큰 요청 에러:', error);
       resolve(null);
     }
   });
@@ -95,19 +86,13 @@ export const requestTokenFromSwift = (): Promise<string | null> => {
  */
 if (typeof window !== 'undefined') {
   window.initAccessToken = async function (token: string) {
-    console.log('✅ Swift에서 토큰 받음:', token);
-
     try {
       // API 인스턴스에 토큰 설정
       await setRccToken(token);
       await setRscToken(token);
 
-      console.log('🔐 토큰이 저장되었습니다');
-
       // 유저 정보 초기화 (일반 함수 호출)
       await initializeUserInfo();
-    } catch (error) {
-      console.error('❌ 토큰 설정 또는 유저 정보 로드 실패:', error);
-    }
+    } catch (error) {}
   };
 }

@@ -360,7 +360,7 @@ export default function LeaderboardList({
   if (isLoading) {
     return (
       <div className='mb-8 flex justify-center'>
-        <div className='rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 p-8 text-center shadow-sm'>
+        <div className='rounded-lg border border-gray-100 bg-white p-8 text-center shadow-sm'>
           <div className='mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-purple-600'></div>
           <p className='text-gray-600'>리더보드 데이터를 불러오는 중...</p>
         </div>
@@ -368,10 +368,10 @@ export default function LeaderboardList({
     );
   }
 
-  if (isError && error) {
+  if (isError) {
     return (
       <div className='mb-8 flex justify-center'>
-        <div className='rounded-lg border border-red-200 bg-gradient-to-br from-red-50/50 to-pink-50/50 p-8 text-center shadow-sm'>
+        <div className='rounded-lg border border-gray-100 bg-white p-8 text-center shadow-sm'>
           <p className='mb-4 font-medium text-red-600'>
             ❌ {error.message || '데이터를 불러오는 중 오류가 발생했습니다.'}
           </p>
@@ -391,12 +391,16 @@ export default function LeaderboardList({
 
   if (!users || users.length === 0) {
     return (
-      <EmptyState
-        selectedPeriod={selectedPeriod}
-        selectedCategory={selectedCategory}
-        selectedDateIndex={selectedDateIndex}
-        refetch={refetch}
-      />
+      <div className='mb-8 flex justify-center'>
+        <div className='rounded-lg border border-gray-100 bg-white p-8 text-center shadow-sm'>
+          <EmptyState
+            selectedPeriod={selectedPeriod}
+            selectedCategory={selectedCategory}
+            selectedDateIndex={selectedDateIndex}
+            refetch={refetch}
+          />
+        </div>
+      </div>
     );
   }
 

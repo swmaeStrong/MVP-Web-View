@@ -1,16 +1,22 @@
+import { useCallback } from 'react';
 import { getUserInfo } from '../shared/api/get';
 import { useUserStore } from '../stores/userStore';
 
 export const useInitUser = () => {
   const { setCurrentUser } = useUserStore();
 
-  const initializeUser = async () => {
+  const initializeUser = useCallback(async () => {
     try {
       console.log('👤 유저 정보를 가져오는 중...');
       const userInfo = await getUserInfo();
 
       if (userInfo && userInfo.userId && userInfo.nickname) {
         setCurrentUser({
+          id: userInfo.userId,
+          nickname: userInfo.nickname,
+        });
+
+        console.log('✅ 유저 정보 초기화 완료:', {
           id: userInfo.userId,
           nickname: userInfo.nickname,
         });
@@ -24,7 +30,7 @@ export const useInitUser = () => {
       console.error('❌ 유저 정보 로드 실패:', error);
       throw error;
     }
-  };
+  }, [setCurrentUser]);
 
   return { initializeUser };
 };

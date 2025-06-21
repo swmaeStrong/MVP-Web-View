@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
+import { devtools } from 'zustand/middleware';
 
 // 유저 타입 정의
 export interface User {
@@ -17,36 +17,27 @@ interface UserState {
   clearCurrentUser: () => void;
 }
 
-// Zustand 스토어 생성
+// Zustand 스토어 생성 (persist 제거 - 세션만 유지)
 export const useUserStore = create<UserState>()(
   devtools(
-    persist(
-      (set, get) => ({
-        // 초기 상태
-        currentUser: {
-          id: '',
-          nickname: '',
-        },
+    (set, get) => ({
+      // 초기 상태
+      currentUser: null,
 
-        // Actions
-        setCurrentUser: user => {
-          console.log('🔴 setCurrentUser 호출:', {
-            from: get().currentUser,
-            to: user,
-          });
-          set({ currentUser: user }, false, 'setCurrentUser');
-        },
+      // Actions
+      setCurrentUser: user => {
+        console.log('🔴 setCurrentUser 호출:', {
+          from: get().currentUser,
+          to: user,
+        });
+        set({ currentUser: user }, false, 'setCurrentUser');
+      },
 
-        clearCurrentUser: () =>
-          set({ currentUser: null }, false, 'clearCurrentUser'),
-      }),
-      {
-        name: 'user-store', // localStorage key
-        partialize: state => ({
-          currentUser: state.currentUser,
-        }),
-      }
-    ),
+      clearCurrentUser: () => {
+        console.log('🔴 clearCurrentUser 호출');
+        set({ currentUser: null }, false, 'clearCurrentUser');
+      },
+    }),
     {
       name: 'user-store', // devtools에서 표시될 이름
     }

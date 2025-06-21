@@ -4,17 +4,19 @@ import { useAvailableDates, useUsageStatistics } from '@/hooks/useStatistics';
 import { useCurrentUser } from '@/stores/userStore';
 import { PeriodType, StatisticsCategory } from '@/types/statistics';
 import { getDateString } from '@/utils/statisticsUtils';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // 컴포넌트 임포트
 import CategoryList from '@/components/statistics/CategoryList';
 import HourlyUsageComparison from '@/components/statistics/HourlyUsageComparison';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
 import TotalTimeCard from '@/components/statistics/TotalTimeCard';
+import { useInitUser } from '@/hooks/useInitUser';
+import ErrorState from '../../components/common/ErrorState';
+import NoData from '../../components/common/NoData';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<PeriodType>('daily');
-
   // 가용한 날짜 목록 (최근 30일)
   const availableDates = useAvailableDates();
 
@@ -22,6 +24,29 @@ export default function StatisticsPage() {
   const [selectedDate, setSelectedDate] = useState(getDateString(new Date()));
   const [selectedCategory, setSelectedCategory] =
     useState<StatisticsCategory | null>(null);
+
+  // Hook 순서를 항상 동일하게 유지
+  const currentUser = useCurrentUser();
+  const { initializeUser } = useInitUser();
+
+  // 사용자 초기화를 useEffect로 처리
+  useEffect(() => {
+    if (!currentUser) {
+      console.log('🔄 사용자 정보가 없어 초기화 시도...');
+      initializeUser().catch(error => {
+        console.error('❌ 사용자 초기화 실패:', error);
+      });
+    }
+  }, [currentUser, initializeUser]);
+
+  // 선택된 날짜의 통계 데이터 조회
+  const {
+    data: dailyData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useUsageStatistics(selectedDate, currentUser?.id || '');
 
   // availableDates 변경 모니터링
   React.useEffect(() => {
@@ -39,17 +64,6 @@ export default function StatisticsPage() {
       setSelectedDate(availableDates[0]);
     }
   }, [availableDates]);
-
-  // 선택된 날짜의 통계 데이터 조회
-  const {
-    data: dailyData,
-    isLoading,
-    isError,
-    error,
-  } = useUsageStatistics(selectedDate);
-
-  // 현재 사용자 정보 가져오기
-  const currentUser = useCurrentUser();
 
   // 데이터가 로드되면 기본 카테고리를 top1으로 설정
   React.useEffect(() => {
@@ -124,9 +138,9 @@ export default function StatisticsPage() {
   // 로딩 상태
   if (isLoading) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
+      <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
         <div className='mx-auto max-w-6xl'>
-          <div className='flex h-64 items-center justify-center'>
+          <div className='flex h-64 items-center justify-center rounded-lg bg-white shadow-sm'>
             <div className='text-center'>
               <div className='mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-purple-600'></div>
               <p className='text-gray-600'>통계 데이터를 불러오는 중...</p>
@@ -140,27 +154,25 @@ export default function StatisticsPage() {
   // 에러 상태
   if (isError) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
+      <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
         <div className='mx-auto max-w-6xl'>
-          <div className='flex h-64 items-center justify-center'>
-            <div className='text-center text-red-600'>
-              <div className='mb-4 text-4xl'>⚠️</div>
-              <h3 className='mb-2 text-lg font-semibold'>
-                데이터를 불러올 수 없습니다
-              </h3>
-              <p className='text-sm text-gray-600'>
-                {error?.message ||
-                  '서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.'}
-              </p>
-            </div>
-          </div>
+          <ErrorState
+            title='통계 데이터를 불러올 수 없습니다'
+            message={
+              error?.message ||
+              '서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.'
+            }
+            onRetry={refetch}
+            retryText='새로고침'
+            className='h-64'
+          />
         </div>
       </div>
     );
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
+    <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
       <div className='mx-auto max-w-6xl space-y-6 sm:space-y-8'>
         {/* 메인 콘텐츠 */}
         <div className='grid gap-6 sm:gap-8 lg:grid-cols-2'>
@@ -175,12 +187,21 @@ export default function StatisticsPage() {
             </div>
 
             {/* 상위 6개 카테고리 목록 - 더 많은 공간 */}
-            {dailyData && dailyData.categories.length > 0 && (
+            {dailyData && dailyData.categories.length > 0 ? (
               <div className='min-h-0 flex-1'>
                 <CategoryList
                   categories={dailyData.categories}
                   selectedCategory={selectedCategory}
                   onCategorySelect={handleCategorySelect}
+                />
+              </div>
+            ) : (
+              <div className='min-h-0 flex-1 rounded-lg border border-gray-100 bg-white shadow-sm'>
+                <NoData
+                  title='카테고리가 없습니다'
+                  message='오늘 활동한 카테고리가 없습니다.'
+                  showBorder={false}
+                  size='auto'
                 />
               </div>
             )}

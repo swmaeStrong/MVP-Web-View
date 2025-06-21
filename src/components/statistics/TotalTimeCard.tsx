@@ -104,7 +104,7 @@ export default function TotalTimeCard({
   const levelInfo = getCategoryLevelInfo();
 
   return (
-    <Card className='rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 shadow-sm transition-all duration-300 hover:shadow-md'>
+    <Card className='rounded-lg border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:shadow-md'>
       <CardContent className='p-4'>
         {/* 카테고리별 3분할 레이아웃 */}
         <div className='flex items-center justify-between gap-4'>
