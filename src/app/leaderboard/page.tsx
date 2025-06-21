@@ -3,12 +3,10 @@
 import { useLeaderboardInfiniteScroll } from '@/hooks/useLeaderboardInfiniteScroll';
 import { useScrollToMyRank } from '@/hooks/useScrollToMyRank';
 import { CATEGORIES, LEADERBOARD_CATEGORIES } from '@/utils/categories';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 // 컴포넌트 임포트
 import CategoryFilter from '@/components/leaderboard/CategoryFilter';
-import LeaderboardHeader from '@/components/leaderboard/LeaderboardHeader';
 import LeaderboardList from '@/components/leaderboard/LeaderboardList';
 import MyRankBanner from '@/components/leaderboard/MyRankBanner';
 import PeriodSelector from '@/components/leaderboard/PeriodSelector';
@@ -86,18 +84,6 @@ export default function Leaderboard() {
   return (
     <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
       <div className='mx-auto max-w-6xl space-y-6 sm:space-y-8'>
-        {/* 테스트 모드 버튼 */}
-        <div className='mb-4 text-center'>
-          <Link href='/leaderboard-test'>
-            <button className='inline-block rounded-full border border-green-200 bg-white px-4 py-2 text-sm font-bold text-green-600 shadow-md transition-colors hover:bg-green-50'>
-              🧪 더미 데이터로 테스트해보기
-            </button>
-          </Link>
-        </div>
-
-        {/* 헤더 */}
-        <LeaderboardHeader />
-
         {/* 실시간 경쟁 표시기 - LeaderboardHeader 바로 아래로 이동 */}
         <LiveIndicator />
 
