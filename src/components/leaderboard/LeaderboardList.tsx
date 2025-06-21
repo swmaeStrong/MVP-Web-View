@@ -6,40 +6,157 @@ import Image from 'next/image';
 import { useRef } from 'react';
 import EmptyState from './EmptyState';
 
-// CSS 애니메이션 추가
+// CSS 애니메이션 추가 - 내부 배경 강조만 (부드러운 전환)
 const styles = `
-  @keyframes challenger-glow {
-    0%, 100% { 
-      box-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 
-                  0 0 40px rgba(59, 130, 246, 0.4), 
-                  inset 0 0 30px rgba(255, 255, 255, 0.1); 
+  @keyframes challenger-inner-glow {
+    0% { 
+      background: linear-gradient(135deg, 
+        rgba(254, 240, 138, 0.25) 0%, 
+        rgba(252, 211, 77, 0.15) 25%, 
+        rgba(147, 197, 253, 0.15) 75%, 
+        rgba(219, 234, 254, 0.25) 100%);
+    }
+    25% { 
+      background: linear-gradient(135deg, 
+        rgba(254, 240, 138, 0.3) 0%, 
+        rgba(252, 211, 77, 0.2) 25%, 
+        rgba(147, 197, 253, 0.2) 75%, 
+        rgba(219, 234, 254, 0.3) 100%);
     }
     50% { 
-      box-shadow: 0 0 30px rgba(255, 215, 0, 0.8), 
-                  0 0 60px rgba(59, 130, 246, 0.6), 
-                  inset 0 0 40px rgba(255, 255, 255, 0.2); 
+      background: linear-gradient(135deg, 
+        rgba(254, 240, 138, 0.35) 0%, 
+        rgba(252, 211, 77, 0.25) 25%, 
+        rgba(147, 197, 253, 0.25) 75%, 
+        rgba(219, 234, 254, 0.35) 100%);
+    }
+    75% { 
+      background: linear-gradient(135deg, 
+        rgba(254, 240, 138, 0.3) 0%, 
+        rgba(252, 211, 77, 0.2) 25%, 
+        rgba(147, 197, 253, 0.2) 75%, 
+        rgba(219, 234, 254, 0.3) 100%);
+    }
+    100% { 
+      background: linear-gradient(135deg, 
+        rgba(254, 240, 138, 0.25) 0%, 
+        rgba(252, 211, 77, 0.15) 25%, 
+        rgba(147, 197, 253, 0.15) 75%, 
+        rgba(219, 234, 254, 0.25) 100%);
     }
   }
 
-  @keyframes grandmaster-glow {
-    0%, 100% { 
-      box-shadow: 0 0 15px rgba(239, 68, 68, 0.6), 
-                  0 0 30px rgba(239, 68, 68, 0.4); 
+  @keyframes grandmaster-inner-glow {
+    0% { 
+      background: linear-gradient(135deg, 
+        rgba(254, 202, 202, 0.25) 0%, 
+        rgba(252, 165, 165, 0.15) 25%, 
+        rgba(251, 207, 232, 0.15) 75%, 
+        rgba(253, 230, 138, 0.25) 100%);
+    }
+    25% { 
+      background: linear-gradient(135deg, 
+        rgba(254, 202, 202, 0.3) 0%, 
+        rgba(252, 165, 165, 0.2) 25%, 
+        rgba(251, 207, 232, 0.2) 75%, 
+        rgba(253, 230, 138, 0.3) 100%);
     }
     50% { 
-      box-shadow: 0 0 25px rgba(239, 68, 68, 0.8), 
-                  0 0 45px rgba(239, 68, 68, 0.6); 
+      background: linear-gradient(135deg, 
+        rgba(254, 202, 202, 0.35) 0%, 
+        rgba(252, 165, 165, 0.25) 25%, 
+        rgba(251, 207, 232, 0.25) 75%, 
+        rgba(253, 230, 138, 0.35) 100%);
+    }
+    75% { 
+      background: linear-gradient(135deg, 
+        rgba(254, 202, 202, 0.3) 0%, 
+        rgba(252, 165, 165, 0.2) 25%, 
+        rgba(251, 207, 232, 0.2) 75%, 
+        rgba(253, 230, 138, 0.3) 100%);
+    }
+    100% { 
+      background: linear-gradient(135deg, 
+        rgba(254, 202, 202, 0.25) 0%, 
+        rgba(252, 165, 165, 0.15) 25%, 
+        rgba(251, 207, 232, 0.15) 75%, 
+        rgba(253, 230, 138, 0.25) 100%);
     }
   }
 
-  @keyframes master-glow {
-    0%, 100% { 
-      box-shadow: 0 0 12px rgba(147, 51, 234, 0.6), 
-                  0 0 25px rgba(147, 51, 234, 0.4); 
+  @keyframes master-inner-glow {
+    0% { 
+      background: linear-gradient(135deg, 
+        rgba(221, 214, 254, 0.25) 0%, 
+        rgba(196, 181, 253, 0.15) 25%, 
+        rgba(199, 210, 254, 0.15) 75%, 
+        rgba(224, 231, 255, 0.25) 100%);
+    }
+    25% { 
+      background: linear-gradient(135deg, 
+        rgba(221, 214, 254, 0.3) 0%, 
+        rgba(196, 181, 253, 0.2) 25%, 
+        rgba(199, 210, 254, 0.2) 75%, 
+        rgba(224, 231, 255, 0.3) 100%);
     }
     50% { 
-      box-shadow: 0 0 20px rgba(147, 51, 234, 0.8), 
-                  0 0 40px rgba(147, 51, 234, 0.6); 
+      background: linear-gradient(135deg, 
+        rgba(221, 214, 254, 0.35) 0%, 
+        rgba(196, 181, 253, 0.25) 25%, 
+        rgba(199, 210, 254, 0.25) 75%, 
+        rgba(224, 231, 255, 0.35) 100%);
+    }
+    75% { 
+      background: linear-gradient(135deg, 
+        rgba(221, 214, 254, 0.3) 0%, 
+        rgba(196, 181, 253, 0.2) 25%, 
+        rgba(199, 210, 254, 0.2) 75%, 
+        rgba(224, 231, 255, 0.3) 100%);
+    }
+    100% { 
+      background: linear-gradient(135deg, 
+        rgba(221, 214, 254, 0.25) 0%, 
+        rgba(196, 181, 253, 0.15) 25%, 
+        rgba(199, 210, 254, 0.15) 75%, 
+        rgba(224, 231, 255, 0.25) 100%);
+    }
+  }
+
+  @keyframes diamond-inner-glow {
+    0% { 
+      background: linear-gradient(135deg, 
+        rgba(219, 234, 254, 0.25) 0%, 
+        rgba(147, 197, 253, 0.15) 25%, 
+        rgba(165, 243, 252, 0.15) 75%, 
+        rgba(224, 242, 254, 0.25) 100%);
+    }
+    25% { 
+      background: linear-gradient(135deg, 
+        rgba(219, 234, 254, 0.3) 0%, 
+        rgba(147, 197, 253, 0.2) 25%, 
+        rgba(165, 243, 252, 0.2) 75%, 
+        rgba(224, 242, 254, 0.3) 100%);
+    }
+    50% { 
+      background: linear-gradient(135deg, 
+        rgba(219, 234, 254, 0.35) 0%, 
+        rgba(147, 197, 253, 0.25) 25%, 
+        rgba(165, 243, 252, 0.25) 75%, 
+        rgba(224, 242, 254, 0.35) 100%);
+    }
+    75% { 
+      background: linear-gradient(135deg, 
+        rgba(219, 234, 254, 0.3) 0%, 
+        rgba(147, 197, 253, 0.2) 25%, 
+        rgba(165, 243, 252, 0.2) 75%, 
+        rgba(224, 242, 254, 0.3) 100%);
+    }
+    100% { 
+      background: linear-gradient(135deg, 
+        rgba(219, 234, 254, 0.25) 0%, 
+        rgba(147, 197, 253, 0.15) 25%, 
+        rgba(165, 243, 252, 0.15) 75%, 
+        rgba(224, 242, 254, 0.25) 100%);
     }
   }
 `;
@@ -84,9 +201,8 @@ const tierConfig = {
   challenger: {
     icon: '/icons/rank/challenger.png',
     title: 'CHALLENGER',
-    borderClass:
-      'border-yellow-400 bg-gradient-to-br from-yellow-200 via-amber-100 to-blue-200',
-    glowAnimation: 'challenger-glow 2s ease-in-out infinite alternate',
+    borderClass: 'border-yellow-300',
+    glowAnimation: 'challenger-inner-glow 6s ease-in-out infinite',
     rankBg: 'bg-gradient-to-r from-yellow-400 to-blue-500',
     rankText: 'text-white',
     nameColor:
@@ -95,9 +211,8 @@ const tierConfig = {
   grandmaster: {
     icon: '/icons/rank/grandMaster.png',
     title: 'GRANDMASTER',
-    borderClass:
-      'border-red-400 bg-gradient-to-br from-red-200 via-rose-100 to-pink-200',
-    glowAnimation: 'grandmaster-glow 2.5s ease-in-out infinite alternate',
+    borderClass: 'border-red-300',
+    glowAnimation: 'grandmaster-inner-glow 7s ease-in-out infinite',
     rankBg: 'bg-gradient-to-r from-red-400 to-rose-500',
     rankText: 'text-white font-bold',
     nameColor:
@@ -106,9 +221,8 @@ const tierConfig = {
   master: {
     icon: '/icons/rank/master.png',
     title: 'MASTER',
-    borderClass:
-      'border-purple-500 bg-gradient-to-br from-purple-200 via-violet-100 to-indigo-200',
-    glowAnimation: 'master-glow 3s ease-in-out infinite alternate',
+    borderClass: 'border-purple-300',
+    glowAnimation: 'master-inner-glow 8s ease-in-out infinite',
     rankBg: 'bg-gradient-to-r from-purple-500 to-indigo-500',
     rankText: 'text-white font-bold',
     nameColor:
@@ -117,9 +231,8 @@ const tierConfig = {
   diamond: {
     icon: '/icons/rank/diamond.png',
     title: 'DIAMOND',
-    borderClass:
-      'border-blue-400 bg-gradient-to-br from-blue-50 via-cyan-50 to-sky-50',
-    glowAnimation: 'diamond-glow 2s ease-in-out infinite alternate',
+    borderClass: 'border-blue-300',
+    glowAnimation: 'diamond-inner-glow 9s ease-in-out infinite',
     rankBg: 'bg-gradient-to-r from-blue-400 to-cyan-500',
     rankText: 'text-white font-bold',
     nameColor:
@@ -423,16 +536,18 @@ export default function LeaderboardList({
               <div
                 key={`rank-${rank}-${user.id || user.nickname || index}`}
                 data-user-id={user.id}
-                className={`group relative flex items-center justify-between rounded-xl border-2 bg-white p-4 shadow-lg transition-all duration-300 hover:shadow-xl ${
+                className={`group relative flex items-center justify-between rounded-xl border p-4 shadow-lg transition-all duration-300 hover:shadow-xl ${
                   topRankStyle
-                    ? `${topRankStyle.borderClass} ring-opacity-50 ring-2`
-                    : 'border-gray-200 hover:border-purple-200'
+                    ? `${topRankStyle.borderClass} ring-opacity-30 ring-1`
+                    : 'border-gray-100 bg-white hover:border-purple-100'
                 } ${
                   isCurrentUser
                     ? topRankStyle
-                      ? 'ring-4 ring-purple-300'
-                      : 'border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 ring-2 ring-purple-300'
-                    : ''
+                      ? 'ring-2 ring-purple-200'
+                      : 'border-purple-100 bg-gradient-to-r from-purple-50 to-blue-50 ring-1 ring-purple-200'
+                    : topRankStyle
+                      ? ''
+                      : 'bg-white'
                 }`}
                 style={
                   topRankStyle
@@ -446,7 +561,7 @@ export default function LeaderboardList({
                 <div className='flex items-center space-x-4'>
                   {/* 순위 표시 */}
                   <div
-                    className={`flex h-12 w-12 items-center justify-center rounded-full border-2 text-sm font-bold transition-transform duration-200 group-hover:scale-110 ${
+                    className={`flex h-12 w-12 items-center justify-center rounded-full border text-sm font-bold transition-transform duration-200 group-hover:scale-110 ${
                       topRankStyle
                         ? `${topRankStyle.rankBg} ${topRankStyle.rankText} border-white shadow-lg`
                         : `${rankInfo.bgColor} ${rankInfo.textColor} ${rankInfo.borderColor}`
