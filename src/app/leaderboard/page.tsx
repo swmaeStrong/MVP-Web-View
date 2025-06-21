@@ -84,12 +84,12 @@ export default function Leaderboard() {
   const categories = LEADERBOARD_CATEGORIES;
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
+    <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
       <div className='mx-auto max-w-6xl space-y-6 sm:space-y-8'>
         {/* 테스트 모드 버튼 */}
         <div className='mb-4 text-center'>
           <Link href='/leaderboard-test'>
-            <button className='inline-block rounded-full bg-green-100 px-4 py-2 text-sm font-bold text-green-600 transition-colors hover:bg-green-200'>
+            <button className='inline-block rounded-full border border-green-200 bg-white px-4 py-2 text-sm font-bold text-green-600 shadow-md transition-colors hover:bg-green-50'>
               🧪 더미 데이터로 테스트해보기
             </button>
           </Link>

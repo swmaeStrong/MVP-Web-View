@@ -199,7 +199,7 @@ export default function HourlyUsageComparison({
 
   return (
     <div className='w-full'>
-      <Card className='rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 shadow-sm'>
+      <Card className='rounded-lg border border-gray-100 bg-white shadow-sm'>
         <CardHeader className='pb-3'>
           <div className='flex items-center justify-between'>
             <div>

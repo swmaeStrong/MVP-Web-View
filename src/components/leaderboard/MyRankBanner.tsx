@@ -239,7 +239,7 @@ export default function MyRankBanner({
   if (isLoading) {
     return (
       <div
-        className='relative mb-6 rounded-xl border border-gray-200 bg-gradient-to-r from-purple-50 to-blue-50 p-4'
+        className='relative mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm'
         style={{ zIndex: 1 }}
       >
         <div className='flex items-center space-x-4'>
@@ -256,7 +256,7 @@ export default function MyRankBanner({
   if (isError || !myRank) {
     return (
       <div
-        className='relative mb-6 rounded-xl border border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50 p-4'
+        className='relative mb-6 rounded-xl border border-orange-200 bg-white p-4 shadow-sm'
         style={{ zIndex: 1 }}
       >
         <div className='flex items-center space-x-3'>

@@ -24,7 +24,7 @@ export default function CategoryList({
   }
 
   return (
-    <Card className='rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 shadow-sm transition-all duration-300 hover:shadow-md'>
+    <Card className='rounded-lg border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:shadow-md'>
       <CardContent className='p-4'>
         <div className='mb-4 flex items-center justify-between'>
           <h4 className='text-sm font-semibold text-gray-700'>

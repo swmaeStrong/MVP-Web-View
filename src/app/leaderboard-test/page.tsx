@@ -88,11 +88,11 @@ export default function LeaderboardTest() {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
+    <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
       <div className='mx-auto max-w-6xl space-y-6 sm:space-y-8'>
         {/* 테스트 라벨 */}
         <div className='mb-4 w-full text-center'>
-          <span className='inline-block rounded-full bg-red-100 px-4 py-2 text-sm font-bold text-red-600'>
+          <span className='inline-block rounded-full border border-red-200 bg-white px-4 py-2 text-sm font-bold text-red-600 shadow-sm'>
             🧪 TEST MODE - 더미 데이터 사용중 (100명의 리더보드)
           </span>
         </div>

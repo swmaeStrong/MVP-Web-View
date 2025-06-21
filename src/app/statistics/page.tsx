@@ -135,9 +135,9 @@ export default function StatisticsPage() {
   // 로딩 상태
   if (isLoading) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
+      <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
         <div className='mx-auto max-w-6xl'>
-          <div className='flex h-64 items-center justify-center'>
+          <div className='flex h-64 items-center justify-center rounded-lg bg-white shadow-sm'>
             <div className='text-center'>
               <div className='mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-purple-600'></div>
               <p className='text-gray-600'>통계 데이터를 불러오는 중...</p>
@@ -151,9 +151,9 @@ export default function StatisticsPage() {
   // 에러 상태
   if (isError) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
+      <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
         <div className='mx-auto max-w-6xl'>
-          <div className='flex h-64 items-center justify-center'>
+          <div className='flex h-64 items-center justify-center rounded-lg bg-white shadow-sm'>
             <div className='text-center text-red-600'>
               <div className='mb-4 text-4xl'>⚠️</div>
               <h3 className='mb-2 text-lg font-semibold'>
@@ -171,7 +171,7 @@ export default function StatisticsPage() {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
+    <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
       <div className='mx-auto max-w-6xl space-y-6 sm:space-y-8'>
         {/* 메인 콘텐츠 */}
         <div className='grid gap-6 sm:gap-8 lg:grid-cols-2'>
