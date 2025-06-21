@@ -201,7 +201,7 @@ const tierConfig = {
   challenger: {
     icon: '/icons/rank/challenger.png',
     title: 'CHALLENGER',
-    borderClass: 'border-yellow-300',
+    borderClass: 'border-yellow-100',
     glowAnimation: 'challenger-inner-glow 6s ease-in-out infinite',
     rankBg: 'bg-gradient-to-r from-yellow-400 to-blue-500',
     rankText: 'text-white',
@@ -211,7 +211,7 @@ const tierConfig = {
   grandmaster: {
     icon: '/icons/rank/grandMaster.png',
     title: 'GRANDMASTER',
-    borderClass: 'border-red-300',
+    borderClass: 'border-red-100',
     glowAnimation: 'grandmaster-inner-glow 7s ease-in-out infinite',
     rankBg: 'bg-gradient-to-r from-red-400 to-rose-500',
     rankText: 'text-white font-bold',
@@ -221,7 +221,7 @@ const tierConfig = {
   master: {
     icon: '/icons/rank/master.png',
     title: 'MASTER',
-    borderClass: 'border-purple-300',
+    borderClass: 'border-purple-100',
     glowAnimation: 'master-inner-glow 8s ease-in-out infinite',
     rankBg: 'bg-gradient-to-r from-purple-500 to-indigo-500',
     rankText: 'text-white font-bold',
@@ -231,7 +231,7 @@ const tierConfig = {
   diamond: {
     icon: '/icons/rank/diamond.png',
     title: 'DIAMOND',
-    borderClass: 'border-blue-300',
+    borderClass: 'border-blue-100',
     glowAnimation: 'diamond-inner-glow 9s ease-in-out infinite',
     rankBg: 'bg-gradient-to-r from-blue-400 to-cyan-500',
     rankText: 'text-white font-bold',
@@ -241,18 +241,18 @@ const tierConfig = {
   emerald: {
     icon: '/icons/rank/emerald.png',
     title: 'EMERALD',
-    borderClass: 'border-emerald-300 bg-white',
+    borderClass: 'border-emerald-100 bg-white',
     glowAnimation: '',
-    rankBg: 'bg-transparent border-emerald-300',
+    rankBg: 'bg-transparent border-emerald-100',
     rankText: 'text-emerald-500 font-bold',
     nameColor: 'text-emerald-600 font-bold',
   },
   platinum: {
     icon: '/icons/rank/platinum.png',
     title: 'PLATINUM',
-    borderClass: 'border-slate-300 bg-white',
+    borderClass: 'border-slate-100 bg-white',
     glowAnimation: '',
-    rankBg: 'bg-transparent border-slate-300',
+    rankBg: 'bg-transparent border-slate-100',
     rankText: 'text-slate-500 font-bold',
     nameColor: 'text-slate-600 font-bold',
   },
