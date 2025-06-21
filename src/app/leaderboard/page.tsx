@@ -4,7 +4,7 @@ import { useLeaderboardInfiniteScroll } from '@/hooks/useLeaderboardInfiniteScro
 import { useScrollToMyRank } from '@/hooks/useScrollToMyRank';
 import { CATEGORIES, LEADERBOARD_CATEGORIES } from '@/utils/categories';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // 컴포넌트 임포트
 import CategoryFilter from '@/components/leaderboard/CategoryFilter';
@@ -26,15 +26,21 @@ type LeaderboardUser = User & {
 };
 
 export default function Leaderboard() {
-  let currentUser = useCurrentUser();
+  // Hook 순서를 항상 동일하게 유지
+  const currentUser = useCurrentUser();
   const { initializeUser } = useInitUser();
-
-  if (!currentUser) {
-    initializeUser();
-    currentUser = useCurrentUser();
-  }
-
   const { scrollToMyRank } = useScrollToMyRank();
+
+  // 사용자 초기화를 useEffect로 처리
+  useEffect(() => {
+    if (!currentUser) {
+      console.log('🔄 사용자 정보가 없어 초기화 시도...');
+      initializeUser().catch(error => {
+        console.error('❌ 사용자 초기화 실패:', error);
+      });
+    }
+  }, [currentUser, initializeUser]);
+
   const [selectedPeriod, setSelectedPeriod] = useState<
     'daily' | 'weekly' | 'monthly'
   >('daily');

@@ -4,7 +4,7 @@ import { useAvailableDates, useUsageStatistics } from '@/hooks/useStatistics';
 import { useCurrentUser } from '@/stores/userStore';
 import { PeriodType, StatisticsCategory } from '@/types/statistics';
 import { getDateString } from '@/utils/statisticsUtils';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // 컴포넌트 임포트
 import CategoryList from '@/components/statistics/CategoryList';
@@ -23,14 +23,19 @@ export default function StatisticsPage() {
   const [selectedCategory, setSelectedCategory] =
     useState<StatisticsCategory | null>(null);
 
-  // 현재 사용자 정보 가져오기
-  let currentUser = useCurrentUser();
+  // Hook 순서를 항상 동일하게 유지
+  const currentUser = useCurrentUser();
   const { initializeUser } = useInitUser();
 
-  if (!currentUser) {
-    initializeUser();
-    currentUser = useCurrentUser();
-  }
+  // 사용자 초기화를 useEffect로 처리
+  useEffect(() => {
+    if (!currentUser) {
+      console.log('🔄 사용자 정보가 없어 초기화 시도...');
+      initializeUser().catch(error => {
+        console.error('❌ 사용자 초기화 실패:', error);
+      });
+    }
+  }, [currentUser, initializeUser]);
 
   // 선택된 날짜의 통계 데이터 조회
   const {
