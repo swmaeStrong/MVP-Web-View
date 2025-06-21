@@ -47,9 +47,12 @@ export const getMyRank = (
   );
 
 // 사용 기록 조회
-export const getUsageLog = (date: string = getKSTDateString()) =>
+export const getUsageLog = (
+  userId: string,
+  date: string = getKSTDateString()
+) =>
   parseApi<UsageLog.UsageLogResponse[]>(
-    API.get(`/usage-log?userId=a&date=${date}`)
+    API.get(`/usage-log?userId=${userId}&date=${date}`)
   );
 
 export const getHourlyUsageLog = (
