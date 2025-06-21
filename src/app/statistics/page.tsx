@@ -14,7 +14,6 @@ import TotalTimeCard from '@/components/statistics/TotalTimeCard';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<PeriodType>('daily');
-
   // 가용한 날짜 목록 (최근 30일)
   const availableDates = useAvailableDates();
 
@@ -22,6 +21,17 @@ export default function StatisticsPage() {
   const [selectedDate, setSelectedDate] = useState(getDateString(new Date()));
   const [selectedCategory, setSelectedCategory] =
     useState<StatisticsCategory | null>(null);
+
+  // 현재 사용자 정보 가져오기
+  const currentUser = useCurrentUser();
+
+  // 선택된 날짜의 통계 데이터 조회
+  const {
+    data: dailyData,
+    isLoading,
+    isError,
+    error,
+  } = useUsageStatistics(selectedDate, currentUser?.id || '');
 
   // availableDates 변경 모니터링
   React.useEffect(() => {
@@ -39,17 +49,6 @@ export default function StatisticsPage() {
       setSelectedDate(availableDates[0]);
     }
   }, [availableDates]);
-
-  // 선택된 날짜의 통계 데이터 조회
-  const {
-    data: dailyData,
-    isLoading,
-    isError,
-    error,
-  } = useUsageStatistics(selectedDate);
-
-  // 현재 사용자 정보 가져오기
-  const currentUser = useCurrentUser();
 
   // 데이터가 로드되면 기본 카테고리를 top1으로 설정
   React.useEffect(() => {
