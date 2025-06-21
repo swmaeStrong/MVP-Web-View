@@ -11,6 +11,7 @@ import CategoryList from '@/components/statistics/CategoryList';
 import HourlyUsageComparison from '@/components/statistics/HourlyUsageComparison';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
 import TotalTimeCard from '@/components/statistics/TotalTimeCard';
+import { useInitUser } from '@/hooks/useInitUser';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<PeriodType>('daily');
@@ -23,7 +24,13 @@ export default function StatisticsPage() {
     useState<StatisticsCategory | null>(null);
 
   // 현재 사용자 정보 가져오기
-  const currentUser = useCurrentUser();
+  let currentUser = useCurrentUser();
+  const { initializeUser } = useInitUser();
+
+  if (!currentUser) {
+    initializeUser();
+    currentUser = useCurrentUser();
+  }
 
   // 선택된 날짜의 통계 데이터 조회
   const {
