@@ -3,12 +3,11 @@ import * as PortOne from '@portone/browser-sdk/v2';
 import { useState } from 'react';
 import {
   APP_URL,
-  KAKAOPAY_CHANNEL_KEY,
+  KAKAO_PAY_CHANNEL_KEY,
   PORTONE_STORE_ID,
-  TOSS_CHANNEL_KEY,
 } from '../../shared/configs/api/url';
 
-type PaymentProvider = 'TOSS' | 'KAKAOPAY';
+type PaymentProvider = 'KAKAOPAY';
 
 interface ProviderInfo {
   name: string;
@@ -35,17 +34,9 @@ interface BillingKeyRequest {
 }
 
 const PROVIDERS: Record<PaymentProvider, ProviderInfo> = {
-  TOSS: {
-    name: '토스페이먼츠',
-    channelKey: TOSS_CHANNEL_KEY || '',
-    method: 'CARD' as const,
-    description: '깔끔한 UI, 빠른 처리',
-    icon: '💙',
-    recommended: true,
-  },
   KAKAOPAY: {
     name: '카카오페이',
-    channelKey: KAKAOPAY_CHANNEL_KEY || '',
+    channelKey: KAKAO_PAY_CHANNEL_KEY || '',
     method: 'EASY_PAY' as const,
     description: '간편결제, 카톡으로 결제',
     icon: '💛',
