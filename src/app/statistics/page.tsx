@@ -12,6 +12,8 @@ import HourlyUsageComparison from '@/components/statistics/HourlyUsageComparison
 import StatisticsChart from '@/components/statistics/StatisticsChart';
 import TotalTimeCard from '@/components/statistics/TotalTimeCard';
 import { useInitUser } from '@/hooks/useInitUser';
+import ErrorState from '../../components/common/ErrorState';
+import NoData from '../../components/common/NoData';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<PeriodType>('daily');
@@ -43,6 +45,7 @@ export default function StatisticsPage() {
     isLoading,
     isError,
     error,
+    refetch,
   } = useUsageStatistics(selectedDate, currentUser?.id || '');
 
   // availableDates 변경 모니터링
@@ -153,18 +156,16 @@ export default function StatisticsPage() {
     return (
       <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
         <div className='mx-auto max-w-6xl'>
-          <div className='flex h-64 items-center justify-center rounded-lg bg-white shadow-sm'>
-            <div className='text-center text-red-600'>
-              <div className='mb-4 text-4xl'>⚠️</div>
-              <h3 className='mb-2 text-lg font-semibold'>
-                데이터를 불러올 수 없습니다
-              </h3>
-              <p className='text-sm text-gray-600'>
-                {error?.message ||
-                  '서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.'}
-              </p>
-            </div>
-          </div>
+          <ErrorState
+            title='통계 데이터를 불러올 수 없습니다'
+            message={
+              error?.message ||
+              '서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.'
+            }
+            onRetry={refetch}
+            retryText='새로고침'
+            className='h-64'
+          />
         </div>
       </div>
     );
@@ -186,12 +187,21 @@ export default function StatisticsPage() {
             </div>
 
             {/* 상위 6개 카테고리 목록 - 더 많은 공간 */}
-            {dailyData && dailyData.categories.length > 0 && (
+            {dailyData && dailyData.categories.length > 0 ? (
               <div className='min-h-0 flex-1'>
                 <CategoryList
                   categories={dailyData.categories}
                   selectedCategory={selectedCategory}
                   onCategorySelect={handleCategorySelect}
+                />
+              </div>
+            ) : (
+              <div className='min-h-0 flex-1 rounded-lg border border-gray-100 bg-white shadow-sm'>
+                <NoData
+                  title='카테고리가 없습니다'
+                  message='오늘 활동한 카테고리가 없습니다.'
+                  showBorder={false}
+                  size='auto'
                 />
               </div>
             )}

@@ -4,6 +4,7 @@ import { ChartConfig, ChartContainer, ChartTooltip } from '@/shadcn/ui/chart';
 import { DailyStatistics } from '@/types/statistics';
 import { getCategoryColor } from '@/utils/categories';
 import { formatTime } from '@/utils/statisticsUtils';
+import { PieChart } from 'lucide-react';
 import {
   PolarAngleAxis,
   PolarGrid,
@@ -11,6 +12,7 @@ import {
   Radar,
   RadarChart,
 } from 'recharts';
+import NoData from '../common/NoData';
 
 interface StatisticsRadarChartProps {
   data: DailyStatistics;
@@ -24,11 +26,14 @@ export default function StatisticsRadarChart({
 
   if (top6Categories.length === 0) {
     return (
-      <div className='flex h-[450px] items-center justify-center'>
-        <div className='text-center text-gray-500'>
-          <div className='mb-3 text-4xl'>📊</div>
-          <div className='text-sm'>표시할 카테고리가 없습니다</div>
-        </div>
+      <div className='h-[450px]'>
+        <NoData
+          title='분석할 카테고리가 없습니다'
+          message='활동 데이터가 없어 레이더 차트를 표시할 수 없습니다.'
+          icon={PieChart}
+          showBorder={false}
+          size='md'
+        />
       </div>
     );
   }
@@ -54,7 +59,7 @@ export default function StatisticsRadarChart({
   return (
     <div className='space-y-6'>
       {/* 총 작업시간을 상단으로 이동 */}
-      <div className='rounded-xl border border-purple-100 bg-gradient-to-r from-purple-50 to-blue-50 p-3'>
+      <div className='rounded-xl border border-purple-100 bg-white p-3 shadow-sm'>
         <div className='flex items-center justify-between text-sm'>
           <div className='flex items-center gap-2 text-purple-700'>
             <span>⚡</span>

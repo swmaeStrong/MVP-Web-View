@@ -198,7 +198,7 @@ export default function StatisticsBarChart({
       </div>
 
       {/* 카테고리 범례 */}
-      <div className='rounded-xl border border-gray-100 bg-gradient-to-r from-gray-50 to-white p-4'>
+      <div className='rounded-xl border border-gray-100 bg-white p-4 shadow-sm'>
         <h4 className='mb-3 text-sm font-semibold text-gray-700'>
           🏷️ 카테고리 범례
         </h4>
@@ -218,7 +218,7 @@ export default function StatisticsBarChart({
       </div>
 
       {/* 기간별 통계 요약 */}
-      <div className='rounded-xl border border-gray-100 bg-gradient-to-r from-gray-50 to-white p-4'>
+      <div className='rounded-xl border border-gray-100 bg-white p-4 shadow-sm'>
         <h4 className='mb-3 text-sm font-semibold text-gray-700'>
           📈 {period === 'weekly' ? '주간' : '월간'} 요약
         </h4>
@@ -262,7 +262,7 @@ export default function StatisticsBarChart({
       </div>
 
       {/* 기간별 인사이트 */}
-      <div className='rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50 to-purple-50 p-4'>
+      <div className='rounded-xl border border-blue-100 bg-white p-4 shadow-sm'>
         <div className='mb-2 flex items-center gap-2'>
           <span className='text-lg'>💡</span>
           <h4 className='text-sm font-semibold text-gray-700'>인사이트</h4>

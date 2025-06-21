@@ -4,7 +4,14 @@ import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { DailyStatistics, PeriodType } from '@/types/statistics';
 import { formatKSTDate } from '@/utils/timezone';
-import { BarChart3, ChevronLeft, ChevronRight, Target } from 'lucide-react';
+import {
+  BarChart3,
+  ChevronLeft,
+  ChevronRight,
+  PieChart,
+  Target,
+} from 'lucide-react';
+import NoData from '../common/NoData';
 import StatisticsBarChart from './StatisticsBarChart';
 import StatisticsRadarChart from './StatisticsRadarChart';
 
@@ -87,20 +94,18 @@ export default function StatisticsChart({
 
         {/* 차트 내용 */}
         <div className='min-h-[400px]'>
-          {selectedPeriod === 'daily' && data ? (
+          {selectedPeriod === 'daily' && data && data.categories.length > 0 ? (
             <StatisticsRadarChart data={data} />
           ) : selectedPeriod === 'weekly' || selectedPeriod === 'monthly' ? (
             <StatisticsBarChart period={selectedPeriod} />
           ) : (
-            <div className='flex min-h-[400px] items-center justify-center'>
-              <div className='space-y-4 text-center text-gray-500'>
-                <div className='text-6xl'>📊</div>
-                <div>
-                  <h4 className='mb-2 text-lg font-semibold'>데이터 없음</h4>
-                  <p className='text-sm'>표시할 작업 데이터가 없습니다.</p>
-                </div>
-              </div>
-            </div>
+            <NoData
+              title='활동 데이터가 없습니다'
+              message='선택한 날짜에 기록된 활동이 없습니다.'
+              icon={PieChart}
+              showBorder={false}
+              size='md'
+            />
           )}
         </div>
       </CardContent>

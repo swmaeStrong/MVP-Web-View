@@ -27,6 +27,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import ErrorState from '../common/ErrorState';
+import NoData from '../common/NoData';
 
 interface HourlyUsageComparisonProps {
   userId: string;
@@ -72,6 +74,7 @@ export default function HourlyUsageComparison({
     data: hourlyData,
     isLoading,
     isError,
+    refetch,
   } = useHourlyUsage(currentDate, userId, selectedBinSize);
 
   // 차트 데이터 가공
@@ -169,7 +172,7 @@ export default function HourlyUsageComparison({
 
   if (isLoading) {
     return (
-      <Card className='rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 shadow-sm'>
+      <Card className='rounded-lg border border-gray-100 bg-white shadow-sm'>
         <CardContent className='p-6'>
           <div className='flex h-64 items-center justify-center'>
             <div className='text-center'>
@@ -184,14 +187,16 @@ export default function HourlyUsageComparison({
 
   if (isError || !hourlyData) {
     return (
-      <Card className='rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 shadow-sm'>
+      <Card className='rounded-lg border border-gray-100 bg-white shadow-sm'>
         <CardContent className='p-6'>
-          <div className='flex h-64 items-center justify-center'>
-            <div className='text-center text-red-600'>
-              <div className='mb-4 text-4xl'>⚠️</div>
-              <p>시간별 데이터를 불러올 수 없습니다</p>
-            </div>
-          </div>
+          <ErrorState
+            title='시간별 데이터를 불러올 수 없습니다'
+            message='네트워크 문제가 발생했습니다. 다시 시도해주세요.'
+            onRetry={refetch}
+            retryText='새로고침'
+            showBorder={false}
+            size='sm'
+          />
         </CardContent>
       </Card>
     );
@@ -284,93 +289,104 @@ export default function HourlyUsageComparison({
         </CardHeader>
 
         <CardContent className='px-2 pt-0'>
-          <ChartContainer config={chartConfig} className='h-[350px] w-full'>
-            {chartType === 'bar' ? (
-              <BarChart
-                data={chartData}
-                margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
-              >
-                <CartesianGrid strokeDasharray='3 3' />
-                <XAxis
-                  dataKey='hourDisplay'
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={value => formatTimeWithSeconds(value)}
-                />
-                <ChartTooltip content={<CustomTooltip />} />
-                <ChartLegend
-                  content={
-                    <ChartLegendContent className='font-medium text-gray-800' />
-                  }
-                />
-                <Bar
-                  dataKey='total'
-                  name='전체'
-                  fill='var(--color-total)'
-                  radius={[4, 4, 0, 0]}
-                />
-                {selectedCategory && (
+          {chartData.length === 0 ? (
+            <div className='h-[350px]'>
+              <NoData
+                title='시간별 데이터가 없습니다'
+                message='선택한 날짜에 활동 기록이 없습니다.'
+                showBorder={false}
+                size='md'
+              />
+            </div>
+          ) : (
+            <ChartContainer config={chartConfig} className='h-[350px] w-full'>
+              {chartType === 'bar' ? (
+                <BarChart
+                  data={chartData}
+                  margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+                >
+                  <CartesianGrid strokeDasharray='3 3' />
+                  <XAxis
+                    dataKey='hourDisplay'
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={value => formatTimeWithSeconds(value)}
+                  />
+                  <ChartTooltip content={<CustomTooltip />} />
+                  <ChartLegend
+                    content={
+                      <ChartLegendContent className='font-medium text-gray-800' />
+                    }
+                  />
                   <Bar
-                    dataKey='category'
-                    name={selectedCategory}
-                    fill='var(--color-category)'
+                    dataKey='total'
+                    name='전체'
+                    fill='var(--color-total)'
                     radius={[4, 4, 0, 0]}
                   />
-                )}
-              </BarChart>
-            ) : (
-              <LineChart
-                data={chartData}
-                margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
-              >
-                <CartesianGrid strokeDasharray='3 3' />
-                <XAxis
-                  dataKey='hourDisplay'
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={value => formatTimeWithSeconds(value)}
-                />
-                <ChartTooltip content={<CustomTooltip />} />
-                <ChartLegend
-                  content={
-                    <ChartLegendContent className='font-medium text-gray-800' />
-                  }
-                />
-                <Line
-                  type='monotone'
-                  dataKey='total'
-                  name='전체'
-                  stroke='var(--color-total)'
-                  strokeWidth={3}
-                  dot={false}
-                  activeDot={{ r: 4, fill: 'var(--color-total)' }}
-                />
-                {selectedCategory && (
+                  {selectedCategory && (
+                    <Bar
+                      dataKey='category'
+                      name={selectedCategory}
+                      fill='var(--color-category)'
+                      radius={[4, 4, 0, 0]}
+                    />
+                  )}
+                </BarChart>
+              ) : (
+                <LineChart
+                  data={chartData}
+                  margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+                >
+                  <CartesianGrid strokeDasharray='3 3' />
+                  <XAxis
+                    dataKey='hourDisplay'
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={value => formatTimeWithSeconds(value)}
+                  />
+                  <ChartTooltip content={<CustomTooltip />} />
+                  <ChartLegend
+                    content={
+                      <ChartLegendContent className='font-medium text-gray-800' />
+                    }
+                  />
                   <Line
                     type='monotone'
-                    dataKey='category'
-                    name={selectedCategory}
-                    stroke='var(--color-category)'
+                    dataKey='total'
+                    name='전체'
+                    stroke='var(--color-total)'
                     strokeWidth={3}
                     dot={false}
-                    activeDot={{ r: 4, fill: 'var(--color-category)' }}
+                    activeDot={{ r: 4, fill: 'var(--color-total)' }}
                   />
-                )}
-              </LineChart>
-            )}
-          </ChartContainer>
+                  {selectedCategory && (
+                    <Line
+                      type='monotone'
+                      dataKey='category'
+                      name={selectedCategory}
+                      stroke='var(--color-category)'
+                      strokeWidth={3}
+                      dot={false}
+                      activeDot={{ r: 4, fill: 'var(--color-category)' }}
+                    />
+                  )}
+                </LineChart>
+              )}
+            </ChartContainer>
+          )}
 
           {/* 요약 정보 */}
           {selectedCategory && (
