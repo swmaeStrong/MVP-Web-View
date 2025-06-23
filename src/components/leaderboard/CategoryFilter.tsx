@@ -40,7 +40,7 @@ export default function CategoryFilter({
   };
 
   return (
-    <div className='mx-auto max-w-[800px] rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 p-6 shadow-sm transition-shadow duration-200 hover:shadow-md'>
+    <div className='mx-auto max-w-[800px] rounded-lg border border-gray-100 bg-white p-6 shadow-sm transition-shadow duration-200 hover:shadow-md'>
       <div className='flex items-center justify-center'>
         {/* 카테고리 선택 버튼들 (3개 고정) */}
         <div className='flex justify-center'>
@@ -58,8 +58,8 @@ export default function CategoryFilter({
                     item.isSelected
                       ? `w-[140px] rounded-lg bg-gradient-to-r ${categoryColor.buttonGradient} scale-105 transform px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-200`
                       : item.position === -1 || item.position === 1
-                        ? 'w-[120px] scale-95 transform rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50'
-                        : 'w-[120px] rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-500 opacity-70 transition-all duration-200 hover:bg-gray-100'
+                        ? 'w-[120px] scale-95 transform rounded-lg border border-gray-400 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50'
+                        : 'w-[120px] rounded-lg border border-gray-400 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-500 opacity-70 transition-all duration-200 hover:bg-gray-100'
                   }
                 >
                   <span className='truncate whitespace-nowrap'>

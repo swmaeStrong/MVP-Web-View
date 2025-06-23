@@ -78,16 +78,12 @@ export default function LeaderboardList({
   // 빈 데이터 상태
   if (!users || users.length === 0) {
     return (
-      <div className='mb-8 flex justify-center'>
-        <div className='rounded-lg border border-gray-100 bg-white p-8 text-center shadow-sm'>
-          <EmptyState
-            selectedPeriod={selectedPeriod}
-            selectedCategory={selectedCategory}
-            selectedDateIndex={selectedDateIndex}
-            refetch={refetch}
-          />
-        </div>
-      </div>
+      <EmptyState
+        selectedPeriod={selectedPeriod}
+        selectedCategory={selectedCategory}
+        selectedDateIndex={selectedDateIndex}
+        refetch={refetch}
+      />
     );
   }
 

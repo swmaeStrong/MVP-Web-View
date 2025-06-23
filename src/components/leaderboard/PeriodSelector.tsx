@@ -95,7 +95,7 @@ export default function PeriodSelector({
   };
 
   return (
-    <div className='mb-6 rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 p-4 shadow-sm transition-shadow duration-200 hover:shadow-md'>
+    <div className='mb-6 rounded-lg border border-gray-100 bg-white p-4 shadow-sm transition-shadow duration-200 hover:shadow-md'>
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
           <div className='flex flex-col gap-2 sm:flex-row sm:gap-3'>
@@ -105,7 +105,7 @@ export default function PeriodSelector({
                 className={
                   selectedPeriod === period
                     ? 'rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:from-purple-700 hover:to-blue-700'
-                    : 'rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50'
+                    : 'rounded-lg border border-gray-400 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50'
                 }
                 onClick={() => setSelectedPeriod(period as any)}
               >
@@ -119,7 +119,7 @@ export default function PeriodSelector({
             <button
               className={
                 canGoPrevious()
-                  ? 'h-8 w-8 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 transition-all duration-200 hover:bg-gray-50'
+                  ? 'h-8 w-8 rounded-lg border border-gray-400 bg-white text-sm text-gray-600 transition-all duration-200 hover:bg-gray-50'
                   : 'h-8 w-8 cursor-not-allowed rounded-lg bg-gray-100 text-sm text-gray-400'
               }
               onClick={handlePreviousDate}
@@ -130,7 +130,7 @@ export default function PeriodSelector({
             <button
               className={
                 canGoNext()
-                  ? 'h-8 w-8 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 transition-all duration-200 hover:bg-gray-50'
+                  ? 'h-8 w-8 rounded-lg border border-gray-400 bg-white text-sm text-gray-600 transition-all duration-200 hover:bg-gray-50'
                   : 'h-8 w-8 cursor-not-allowed rounded-lg bg-gray-100 text-sm text-gray-400'
               }
               onClick={handleNextDate}
