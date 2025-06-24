@@ -172,7 +172,7 @@ export default function StatisticsPage() {
   }
 
   return (
-    <div className='min-h-screen bg-[#ECECEC] p-4 sm:p-6 lg:p-8'>
+    <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
       <div className='mx-auto max-w-6xl space-y-6 sm:space-y-8'>
         {/* 메인 콘텐츠 */}
         <div className='grid gap-6 sm:gap-8 lg:grid-cols-2'>

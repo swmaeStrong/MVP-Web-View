@@ -49,7 +49,11 @@ export default function RootLayout({
   return (
     <html
       lang='ko'
-      className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable}`}
+      className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable} ${
+        process.env.NODE_ENV === 'production'
+          ? 'bg-transparent'
+          : 'bg-[#ECECEC]'
+      }`}
     >
       <body className='font-sans antialiased'>
         <QueryProvider>{children}</QueryProvider>
