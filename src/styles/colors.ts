@@ -1,3 +1,48 @@
+// 테마 컬러 시스템 (다크모드 & 화이트모드)
+export const themeColors = {
+  dark: {
+    // 배경색
+    background: '#040404',           // bg-[#040404]
+    component: '#1C1C1C',           // 컴포넌트 bg-[#1C1C1C]
+    // 텍스트 색상
+    text: {
+      primary: 'rgb(220, 220, 220)', // 밝은 텍스트 220,220,220
+      secondary: 'rgb(153, 153, 153)', // 약간 어두운 153,153,153
+    },
+    // Tailwind 클래스명
+    classes: {
+      background: 'bg-[#040404]',
+      component: 'bg-[#1C1C1C]',
+      textPrimary: 'text-[rgb(220,220,220)]',
+      textSecondary: 'text-[rgb(153,153,153)]',
+    }
+  },
+  light: {
+    // 배경색
+    background: '#ECECEC',           // Bg-[#ECECEC] 233,233,233
+    component: 'rgb(255, 255, 255)', // 컴포넌트 bg- 255, 255, 255
+    // 텍스트 색상
+    text: {
+      primary: 'rgb(43, 43, 43)',    // 텍스트 43, 43, 43
+      secondary: 'rgb(142, 142, 142)', // 회색 텍스트 142,142,142
+    },
+    // Tailwind 클래스명
+    classes: {
+      background: 'bg-[#ECECEC]',
+      component: 'bg-white',
+      textPrimary: 'text-[rgb(43,43,43)]',
+      textSecondary: 'text-[rgb(142,142,142)]',
+    }
+  },
+  // 공통 색상
+  common: {
+    warning: 'rgb(217, 72, 48)',     // 경고 text 217,72,48
+    classes: {
+      warning: 'text-[rgb(217,72,48)]',
+    }
+  }
+};
+
 // 메인 브랜드 컬러
 export const brandColors = {
   primary: {
