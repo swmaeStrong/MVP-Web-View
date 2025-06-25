@@ -16,13 +16,6 @@ export const brandColors = {
   },
 };
 
-export const getCategoryColor = (category: string) => {
-  return (
-    categoryColors[category as keyof typeof categoryColors] ||
-    categoryColors.all
-  );
-};
-
 // 카테고리별 컬러 시스템 - leaderboard와 statistics 통합
 export const categoryColors = {
   all: {
@@ -96,55 +89,6 @@ export const categoryColors = {
     borderGradient: 'from-gray-400 to-slate-400',
     bgOpacity: 'from-gray-600/5 to-slate-600/5',
     solid: '#71717a', // zinc-500, 더 차분한 회색으로 변경
-  },
-  학습: {
-    gradient: 'from-amber-500 via-yellow-500 to-orange-500',
-    buttonGradient: 'from-amber-500 to-yellow-500',
-    badgeClass: 'bg-amber-100 text-amber-700 border-amber-200',
-    borderGradient: 'from-amber-400 to-yellow-400',
-    bgOpacity: 'from-amber-600/5 to-yellow-600/5',
-  },
-  운동: {
-    gradient: 'from-red-500 via-rose-500 to-pink-500',
-    buttonGradient: 'from-red-500 to-rose-500',
-    badgeClass: 'bg-red-100 text-red-700 border-red-200',
-    borderGradient: 'from-red-400 to-rose-400',
-    bgOpacity: 'from-red-600/5 to-rose-600/5',
-  },
-  독서: {
-    gradient: 'from-brown-500 via-amber-600 to-yellow-600',
-    buttonGradient: 'from-yellow-700 to-amber-600',
-    badgeClass: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    borderGradient: 'from-yellow-500 to-amber-500',
-    bgOpacity: 'from-yellow-600/5 to-amber-600/5',
-  },
-  음악: {
-    gradient: 'from-violet-500 via-purple-500 to-fuchsia-500',
-    buttonGradient: 'from-violet-500 to-purple-500',
-    badgeClass: 'bg-violet-100 text-violet-700 border-violet-200',
-    borderGradient: 'from-violet-400 to-purple-400',
-    bgOpacity: 'from-violet-600/5 to-purple-600/5',
-  },
-  요리: {
-    gradient: 'from-orange-500 via-red-500 to-pink-500',
-    buttonGradient: 'from-orange-500 to-red-500',
-    badgeClass: 'bg-orange-100 text-orange-700 border-orange-200',
-    borderGradient: 'from-orange-400 to-red-400',
-    bgOpacity: 'from-orange-600/5 to-red-600/5',
-  },
-  여행: {
-    gradient: 'from-sky-500 via-blue-500 to-indigo-500',
-    buttonGradient: 'from-sky-500 to-blue-500',
-    badgeClass: 'bg-sky-100 text-sky-700 border-sky-200',
-    borderGradient: 'from-sky-400 to-blue-400',
-    bgOpacity: 'from-sky-600/5 to-blue-600/5',
-  },
-  게임: {
-    gradient: 'from-emerald-500 via-green-500 to-teal-500',
-    buttonGradient: 'from-emerald-500 to-green-500',
-    badgeClass: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-    borderGradient: 'from-emerald-400 to-green-400',
-    bgOpacity: 'from-emerald-600/5 to-green-600/5',
   },
 };
 
@@ -270,57 +214,5 @@ export const extendedRankColors = {
     ringColor: 'ring-lime-400',
     shadowColor: 'shadow-lime-200',
     avatarClass: 'bg-lime-100 text-lime-800',
-  },
-};
-
-// 상태별 컬러
-export const statusColors = {
-  success: {
-    gradient: 'from-green-100 to-emerald-100',
-    border: 'border-green-200',
-    text: 'text-green-700',
-    textBold: 'text-green-800',
-    bg: 'bg-green-50',
-  },
-  warning: {
-    gradient: 'from-orange-100 to-red-100',
-    border: 'border-orange-200',
-    text: 'text-orange-700',
-    textBold: 'text-orange-800',
-    bg: 'bg-orange-50',
-  },
-  info: {
-    gradient: 'from-blue-100 to-purple-100',
-    border: 'border-blue-200',
-    text: 'text-blue-700',
-    textBold: 'text-blue-800',
-    bg: 'bg-blue-50',
-  },
-  neutral: {
-    gradient: 'from-gray-100 to-slate-100',
-    border: 'border-gray-200',
-    text: 'text-gray-700',
-    textBold: 'text-gray-800',
-    bg: 'bg-gray-50',
-  },
-};
-
-// 특별 효과 컬러
-export const specialEffects = {
-  live: {
-    ping: 'bg-red-500',
-    pulse: 'bg-green-500',
-    text: 'text-gray-600',
-  },
-  trending: {
-    up: 'text-green-600',
-    hot: 'text-red-500',
-    new: 'text-blue-600',
-  },
-  badges: {
-    king: 'from-yellow-400 to-amber-400 text-yellow-900',
-    me: 'from-purple-500 to-blue-500 text-white',
-    top3: 'text-white font-bold',
-    special: 'from-purple-500 to-pink-500 text-white',
   },
 };
