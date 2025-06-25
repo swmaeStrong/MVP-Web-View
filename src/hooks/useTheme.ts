@@ -1,79 +1,59 @@
-import {
-    addThemeChangeListener,
-    getCurrentTheme,
-    getCurrentThemeColors,
-    getThemeClass,
-    getThemeColor,
-    getThemeTextColor,
-    getWarningClass,
-    getWarningColor,
-    isDarkMode,
-    type ThemeType,
-} from '@/utils/theme-detector';
+import { useThemeStore } from '@/stores/themeStore';
+import { themeColors } from '@/styles/colors';
 import { useEffect, useState } from 'react';
 
 /**
- * 테마 관리를 위한 React Hook
- * @returns 테마 관련 상태와 유틸리티 함수들
+ * 테마 관리를 위한 통합 React Hook
+ * Zustand store를 활용하여 전역 상태 관리
  */
 export function useTheme() {
-  const [theme, setTheme] = useState<ThemeType>('light');
+  const { isDarkMode, theme, setDarkMode, toggleDarkMode } = useThemeStore();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // 클라이언트 사이드에서만 실행
     setIsClient(true);
-    setTheme(getCurrentTheme());
-
-    // 테마 변경 리스너 등록
-    const removeListener = addThemeChangeListener((isDark, newTheme) => {
-      setTheme(newTheme);
-    });
-
-    // 컴포넌트 언마운트 시 리스너 제거
-    return removeListener;
   }, []);
 
   // 현재 테마의 컬러 객체
-  const colors = getCurrentThemeColors();
+  const colors = themeColors[theme];
+
+  // 유틸리티 함수들
+  const getThemeClass = (type: keyof typeof themeColors.dark.classes) => {
+    return colors.classes[type];
+  };
+
+  const getThemeColor = (type: 'background' | 'component' | 'componentSecondary' | 'border' | 'borderLight') => {
+    return colors[type];
+  };
+
+  const getThemeTextColor = (type: 'primary' | 'secondary' | 'accent') => {
+    return colors.classes[`text${type.charAt(0).toUpperCase() + type.slice(1)}` as keyof typeof colors.classes];
+  };
+
+  const getThemeTextColorValue = (type: 'primary' | 'secondary' | 'accent') => {
+    return colors.text[type];
+  };
 
   return {
     // 상태
     theme,
-    isDark: theme === 'dark',
-    isLight: theme === 'light',
-    isClient, // SSR 대응
+    isDarkMode,
+    isLight: !isDarkMode,
+    isClient,
 
     // 컬러 객체
     colors,
 
+    // 액션
+    setDarkMode,
+    toggleDarkMode,
+
     // 유틸리티 함수들
-    getClass: getThemeClass,
-    getColor: getThemeColor,
-    getTextColor: getThemeTextColor,
-    getWarningColor,
-    getWarningClass,
-    isDarkMode,
-    getCurrentTheme,
+    getThemeClass,
+    getThemeColor,
+    getThemeTextColor,
+    getThemeTextColorValue,
+    getWarningColor: () => themeColors.common.warning,
+    getWarningClass: () => themeColors.common.classes.warning,
   };
-}
-
-/**
- * 간단한 테마 감지만 필요한 경우 사용하는 경량 Hook
- * @returns 현재 테마가 다크모드인지 여부
- */
-export function useIsDarkMode(): boolean {
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    setIsDark(isDarkMode());
-
-    const removeListener = addThemeChangeListener((isDarkMode) => {
-      setIsDark(isDarkMode);
-    });
-
-    return removeListener;
-  }, []);
-
-  return isDark;
 } 

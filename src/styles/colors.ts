@@ -4,34 +4,52 @@ export const themeColors = {
     // 배경색
     background: '#040404',           // bg-[#040404]
     component: '#1C1C1C',           // 컴포넌트 bg-[#1C1C1C]
+    componentSecondary: '#2D2D2D',  // 보조 컴포넌트 bg-[#2D2D2D]
+    // 테두리 색상
+    border: 'rgb(80, 80, 80)',      // 테두리 색상 (더 밝게)
+    borderLight: 'rgb(120, 120, 120)', // 밝은 테두리 색상 (더 밝게)
     // 텍스트 색상
     text: {
       primary: 'rgb(220, 220, 220)', // 밝은 텍스트 220,220,220
       secondary: 'rgb(153, 153, 153)', // 약간 어두운 153,153,153
+      accent: 'rgb(168, 85, 247)',   // 보라색 액센트 텍스트
     },
     // Tailwind 클래스명
     classes: {
       background: 'bg-[#040404]',
       component: 'bg-[#1C1C1C]',
+      componentSecondary: 'bg-[#2D2D2D]',
+      border: 'border-[rgb(80,80,80)]',
+      borderLight: 'border-[rgb(120,120,120)]',
       textPrimary: 'text-[rgb(220,220,220)]',
       textSecondary: 'text-[rgb(153,153,153)]',
+      textAccent: 'text-[rgb(168,85,247)]',
     }
   },
   light: {
     // 배경색
     background: '#ECECEC',           // Bg-[#ECECEC] 233,233,233
     component: 'rgb(255, 255, 255)', // 컴포넌트 bg- 255, 255, 255
+    componentSecondary: 'rgb(249, 250, 251)', // 보조 컴포넌트 bg-gray-50
+    // 테두리 색상
+    border: 'rgb(229, 231, 235)',    // 테두리 색상 gray-200
+    borderLight: 'rgb(209, 213, 219)', // 밝은 테두리 색상 gray-300
     // 텍스트 색상
     text: {
       primary: 'rgb(43, 43, 43)',    // 텍스트 43, 43, 43
       secondary: 'rgb(142, 142, 142)', // 회색 텍스트 142,142,142
+      accent: 'rgb(147, 51, 234)',   // 보라색 액센트 텍스트 purple-700
     },
     // Tailwind 클래스명
     classes: {
       background: 'bg-[#ECECEC]',
       component: 'bg-white',
+      componentSecondary: 'bg-gray-50',
+      border: 'border-gray-200',
+      borderLight: 'border-gray-300',
       textPrimary: 'text-[rgb(43,43,43)]',
       textSecondary: 'text-[rgb(142,142,142)]',
+      textAccent: 'text-purple-700',
     }
   },
   // 공통 색상
