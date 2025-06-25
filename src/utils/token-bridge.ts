@@ -5,7 +5,9 @@
 import { getUserInfo } from '../shared/api/get';
 import { setRccToken } from '../shared/configs/api/csrConfig';
 import { setRscToken } from '../shared/configs/api/ssrConfig';
+import { useThemeStore } from '../stores/themeStore';
 import { useUserStore } from '../stores/userStore';
+import { addThemeChangeListener, isDarkMode } from './theme-detector';
 
 // TypeScript 타입 정의
 declare global {
@@ -21,6 +23,25 @@ declare global {
     initAccessToken?: (token: string) => void;
   }
 }
+
+/**
+ * 테마 초기화 및 리스너 설정 함수
+ */
+const initializeTheme = () => {
+  // 현재 다크모드 상태 확인 및 저장
+  const currentIsDarkMode = isDarkMode();
+  useThemeStore.getState().setDarkMode(currentIsDarkMode);
+
+  // 테마 변경 리스너 등록
+  const removeListener = addThemeChangeListener((isDark, theme) => {
+    useThemeStore.getState().setDarkMode(isDark);
+  });
+
+  // 클린업 함수를 window 객체에 저장 (필요시 제거 가능)
+  if (typeof window !== 'undefined') {
+    (window as any).__themeListenerCleanup = removeListener;
+  }
+};
 
 /**
  * 유저 정보 초기화 함수
@@ -44,6 +65,11 @@ const initializeUserInfo = async () => {
     throw error;
   }
 };
+
+/**
+ * 테마 초기화 내보내기 (필요시 다른 곳에서 호출 가능)
+ */
+export { initializeTheme };
 
 /**
  * Swift 앱에 토큰 요청
@@ -93,6 +119,16 @@ if (typeof window !== 'undefined') {
 
       // 유저 정보 초기화 (일반 함수 호출)
       await initializeUserInfo();
+
+      // 테마 초기화 및 리스너 설정
+      initializeTheme();
     } catch (error) {}
   };
+
+  // 페이지 로드 시 테마 초기화 (토큰과 별개로 실행)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeTheme);
+  } else {
+    initializeTheme();
+  }
 }
