@@ -14,6 +14,7 @@ import {
 import NoData from '../common/NoData';
 import StatisticsBarChart from './StatisticsBarChart';
 import StatisticsRadarChart from './StatisticsRadarChart';
+import { useTheme } from '@/hooks/useTheme';
 
 interface StatisticsChartProps {
   selectedPeriod: PeriodType;
@@ -34,6 +35,7 @@ export default function StatisticsChart({
   canGoNext,
   currentDate,
 }: StatisticsChartProps) {
+  const { isDarkMode, getThemeClass } = useTheme();
   const getChartTitle = () => {
     switch (selectedPeriod) {
       case 'daily':
@@ -58,13 +60,13 @@ export default function StatisticsChart({
   };
 
   return (
-    <Card className='rounded-lg border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:shadow-md'>
+    <Card className={`rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <CardContent className='p-4'>
         {/* 차트 헤더 */}
         <div className='mb-6 flex items-center justify-between'>
           <div className='flex items-center gap-3'>
             {getChartIcon()}
-            <h3 className='text-lg font-bold text-gray-800'>
+            <h3 className={`text-lg font-bold ${getThemeClass('textPrimary')}`}>
               {getChartTitle()}
             </h3>
           </div>
@@ -76,7 +78,7 @@ export default function StatisticsChart({
               size='sm'
               onClick={onPrevious}
               disabled={!canGoPrevious}
-              className='h-8 w-8 rounded-lg p-0 transition-all hover:scale-105'
+              className={`h-8 w-8 rounded-lg p-0 transition-all hover:scale-105 ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeClass('textPrimary')}`}
             >
               <ChevronLeft className='h-4 w-4' />
             </Button>
@@ -85,7 +87,7 @@ export default function StatisticsChart({
               size='sm'
               onClick={onNext}
               disabled={!canGoNext}
-              className='h-8 w-8 rounded-lg p-0 transition-all hover:scale-105'
+              className={`h-8 w-8 rounded-lg p-0 transition-all hover:scale-105 ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeClass('textPrimary')}`}
             >
               <ChevronRight className='h-4 w-4' />
             </Button>
@@ -93,13 +95,13 @@ export default function StatisticsChart({
         </div>
 
         {/* 차트 내용 */}
-        <div className='min-h-[400px]'>
+        <div className='min-h-[550px]'>
           {selectedPeriod === 'daily' && data && data.categories.length > 0 ? (
             <StatisticsRadarChart data={data} />
           ) : selectedPeriod === 'weekly' || selectedPeriod === 'monthly' ? (
             <StatisticsBarChart period={selectedPeriod} />
           ) : (
-            <div className='flex h-[400px] items-center justify-center'>
+            <div className='flex h-[550px] items-center justify-center'>
               <NoData
                 title='활동 데이터가 없습니다'
                 message='선택한 날짜에 기록된 활동이 없습니다.'

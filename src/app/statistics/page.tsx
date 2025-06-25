@@ -5,6 +5,7 @@ import { useCurrentUser } from '@/stores/userStore';
 import { PeriodType, StatisticsCategory } from '@/types/statistics';
 import { getDateString } from '@/utils/statisticsUtils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTheme } from '@/hooks/useTheme';
 
 // 컴포넌트 임포트
 import CategoryList from '@/components/statistics/CategoryList';
@@ -28,6 +29,7 @@ export default function StatisticsPage() {
   // Hook 순서를 항상 동일하게 유지
   const currentUser = useCurrentUser();
   const { initializeUser } = useInitUser();
+  const { getThemeClass, getThemeTextColor } = useTheme();
 
   // 사용자 초기화를 useEffect로 처리
   useEffect(() => {
@@ -138,12 +140,12 @@ export default function StatisticsPage() {
   // 로딩 상태
   if (isLoading) {
     return (
-      <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
+      <div className={`min-h-screen p-4 sm:p-6 lg:p-8 ${getThemeClass('background')}`}>
         <div className='mx-auto max-w-6xl'>
-          <div className='flex h-64 items-center justify-center rounded-lg bg-white shadow-sm'>
+          <div className={`flex h-64 items-center justify-center rounded-lg shadow-sm ${getThemeClass('component')}`}>
             <div className='text-center'>
               <div className='mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-purple-600'></div>
-              <p className='text-gray-600'>통계 데이터를 불러오는 중...</p>
+              <p className={getThemeClass('textSecondary')}>통계 데이터를 불러오는 중...</p>
             </div>
           </div>
         </div>
@@ -154,7 +156,7 @@ export default function StatisticsPage() {
   // 에러 상태
   if (isError) {
     return (
-      <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
+      <div className={`min-h-screen p-4 sm:p-6 lg:p-8 ${getThemeClass('background')}`}>
         <div className='mx-auto max-w-6xl'>
           <ErrorState
             title='통계 데이터를 불러올 수 없습니다'
@@ -172,7 +174,7 @@ export default function StatisticsPage() {
   }
 
   return (
-    <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
+    <div className={`min-h-screen p-4 sm:p-6 lg:p-8 ${getThemeClass('background')}`}>
       <div className='mx-auto max-w-6xl space-y-6 sm:space-y-8'>
         {/* 메인 콘텐츠 */}
         <div className='grid gap-6 sm:gap-8 lg:grid-cols-2'>
@@ -196,7 +198,7 @@ export default function StatisticsPage() {
                 />
               </div>
             ) : (
-              <div className='min-h-0 flex-1 rounded-lg border border-gray-100 bg-white shadow-sm'>
+              <div className={`min-h-0 flex-1 rounded-lg shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
                 <NoData
                   title='카테고리가 없습니다'
                   message='오늘 활동한 카테고리가 없습니다.'

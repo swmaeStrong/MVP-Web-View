@@ -3,6 +3,7 @@
 import { Badge } from '@/shadcn/ui/badge';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { StatisticsCategory } from '@/types/statistics';
+import { useTheme } from '@/hooks/useTheme';
 
 interface TotalTimeCardProps {
   totalTime: number; // seconds
@@ -13,6 +14,7 @@ export default function TotalTimeCard({
   totalTime,
   selectedCategory,
 }: TotalTimeCardProps) {
+  const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
   // 시간과 분 계산
   const getTimeDisplay = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -104,7 +106,7 @@ export default function TotalTimeCard({
   const levelInfo = getCategoryLevelInfo();
 
   return (
-    <Card className='rounded-lg border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:shadow-md'>
+    <Card className={`rounded-lg border-2 shadow-md transition-all duration-300 hover:shadow-lg ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <CardContent className='p-4'>
         {/* 카테고리별 3분할 레이아웃 */}
         <div className='flex items-center justify-between gap-4'>
@@ -125,14 +127,14 @@ export default function TotalTimeCard({
                   {levelInfo.level}
                 </Badge>
               </div>
-              <div className='text-xs leading-tight text-gray-600'>
+              <div className={`text-xs leading-tight ${getThemeTextColor('secondary')}`}>
                 {selectedCategory ? selectedCategory.name : '전체 활동'}
               </div>
             </div>
           </div>
 
           {/* 구분선 */}
-          <div className='h-14 w-px bg-gray-200'></div>
+          <div className={`h-14 w-px ${getThemeClass('border')}`}></div>
 
           {/* 가운데: 예쁜 시간 표시 */}
           <div className='flex-1 text-center'>
@@ -142,40 +144,40 @@ export default function TotalTimeCard({
               >
                 {timeInfo.display}
               </div>
-              <div className='absolute -top-1 -right-1 text-xs text-gray-400'>
+              <div className={`absolute -top-1 -right-1 text-xs ${getThemeTextColor('secondary')}`}>
                 ✨
               </div>
             </div>
-            <div className='mt-1 text-xs text-gray-500'>
+            <div className={`mt-1 text-xs ${getThemeTextColor('secondary')}`}>
               {selectedCategory ? '카테고리 시간' : '전체 시간'}
             </div>
           </div>
 
           {/* 구분선 */}
-          <div className='h-14 w-px bg-gray-200'></div>
+          <div className={`h-14 w-px ${getThemeClass('border')}`}></div>
 
           {/* 오른쪽: 동기부여 정보 */}
           <div className='flex-1'>
             <div className='text-center'>
-              <div className='mb-1 text-xs text-gray-500'>다음 단계</div>
+              <div className={`mb-1 text-xs ${getThemeTextColor('secondary')}`}>다음 단계</div>
               {levelInfo.nextLevel ? (
                 <>
-                  <div className='mb-1 text-sm font-semibold text-purple-700'>
+                  <div className={`mb-1 text-sm font-semibold ${getThemeTextColor('accent')}`}>
                     {levelInfo.nextLevel}
                   </div>
-                  <div className='mb-2 text-xs leading-tight text-gray-600'>
+                  <div className={`mb-2 text-xs leading-tight ${getThemeTextColor('secondary')}`}>
                     {levelInfo.motivationMessage}
                   </div>
                 </>
               ) : (
-                <div className='mb-3 text-xs font-semibold text-purple-700'>
+                <div className={`mb-3 text-xs font-semibold ${getThemeTextColor('accent')}`}>
                   {levelInfo.motivationMessage}
                 </div>
               )}
 
               {/* 진행률 바 */}
               <div className='w-full'>
-                <div className='mb-1 h-2 w-full rounded-full bg-gray-200'>
+                <div className={`mb-1 h-2 w-full rounded-full ${getThemeClass('componentSecondary')}`}>
                   <div
                     className={`h-2 rounded-full bg-gradient-to-r ${levelInfo.color} transition-all duration-1000 ease-out`}
                     style={{
@@ -183,7 +185,7 @@ export default function TotalTimeCard({
                     }}
                   ></div>
                 </div>
-                <div className='flex justify-between text-xs text-gray-400'>
+                <div className={`flex justify-between text-xs ${getThemeTextColor('secondary')}`}>
                   <span>{levelInfo.currentTarget}h</span>
                   <span>{levelInfo.nextTarget}h</span>
                 </div>
