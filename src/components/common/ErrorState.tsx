@@ -2,6 +2,7 @@
 
 import { cn } from '@/shadcn/lib/utils';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ErrorStateProps {
   title?: string;
@@ -24,6 +25,7 @@ export default function ErrorState({
   retryText = '다시 시도',
   showBorder = true,
 }: ErrorStateProps) {
+  const { isDarkMode, getThemeClass } = useTheme();
   const getSizeClasses = () => {
     switch (size) {
       case 'sm':
@@ -94,7 +96,7 @@ export default function ErrorState({
       <div
         className={cn(
           'mx-auto flex max-w-md flex-col items-center text-center',
-          showBorder && 'rounded-lg border border-red-200 bg-white shadow-sm',
+          showBorder && `rounded-lg border ${isDarkMode ? 'border-red-900/50' : 'border-red-200'} shadow-sm ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`,
           sizeClasses.container
         )}
       >
@@ -102,7 +104,7 @@ export default function ErrorState({
         <div className={sizeClasses.iconSpacing}>
           <div
             className={cn(
-              'flex items-center justify-center rounded-full bg-red-50',
+              `flex items-center justify-center rounded-full ${isDarkMode ? 'bg-red-900/20' : 'bg-red-50'}`,
               sizeClasses.iconContainer
             )}
           >
@@ -115,12 +117,12 @@ export default function ErrorState({
           <h3
             className={cn(
               sizeClasses.title,
-              'font-semibold tracking-tight text-gray-800'
+              `font-semibold tracking-tight ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`
             )}
           >
             {title}
           </h3>
-          <p className={cn(sizeClasses.message, 'text-gray-500')}>{message}</p>
+          <p className={cn(sizeClasses.message, isDarkMode ? 'text-gray-400' : 'text-gray-500')}>{message}</p>
         </div>
 
         {/* 재시도 버튼 */}
