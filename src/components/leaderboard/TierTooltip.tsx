@@ -2,6 +2,8 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import { useTheme } from '@/hooks/useTheme';
+import { componentSizes, componentStates, spacing } from '@/styles/design-system';
 
 interface TierTooltipProps {
   tier: string;
@@ -82,6 +84,7 @@ export default function TierTooltip({
   title,
   className = '',
 }: TierTooltipProps) {
+  const { getThemeTextColor } = useTheme();
   const [isVisible, setIsVisible] = useState(false);
   const tierInfo = tierDescriptions[tier as keyof typeof tierDescriptions];
 
@@ -107,7 +110,7 @@ export default function TierTooltip({
       {/* 툴팁 */}
       {isVisible && (
         <div
-          className={`absolute bottom-full left-1/2 z-50 mb-2 w-64 -translate-x-1/2 transform rounded-lg border-2 p-4 shadow-lg ${tierInfo.bgColor} ${tierInfo.borderColor}`}
+          className={`absolute bottom-full left-1/2 z-50 mb-2 w-64 -translate-x-1/2 transform ${componentSizes.medium.borderRadius} ${componentSizes.medium.border} ${componentSizes.medium.padding} ${componentSizes.large.shadow} ${tierInfo.bgColor} ${tierInfo.borderColor}`}
         >
           {/* 화살표 */}
           <div
@@ -130,7 +133,7 @@ export default function TierTooltip({
             </div>
           </div>
 
-          <p className='text-sm leading-relaxed text-gray-700'>
+          <p className={`text-sm leading-relaxed ${getThemeTextColor('primary')}`}>
             {tierInfo.description}
           </p>
         </div>
