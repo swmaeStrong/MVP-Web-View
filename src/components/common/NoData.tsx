@@ -2,6 +2,7 @@
 
 import { cn } from '@/shadcn/lib/utils';
 import { Inbox } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 
 interface NoDataProps {
   title?: string;
@@ -20,6 +21,7 @@ export default function NoData({
   className,
   showBorder = true,
 }: NoDataProps) {
+  const { isDarkMode, getThemeClass } = useTheme();
   const getSizeClasses = () => {
     switch (size) {
       case 'sm':
@@ -77,7 +79,7 @@ export default function NoData({
       <div
         className={cn(
           'mx-auto flex max-w-md flex-col items-center text-center',
-          showBorder && 'rounded-lg border border-gray-200 bg-white shadow-sm',
+          showBorder && `rounded-lg border ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} shadow-sm ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`,
           sizeClasses.container
         )}
       >
@@ -85,11 +87,11 @@ export default function NoData({
         <div className={sizeClasses.iconSpacing}>
           <div
             className={cn(
-              'flex items-center justify-center rounded-full bg-gray-100',
+              `flex items-center justify-center rounded-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`,
               sizeClasses.iconContainer
             )}
           >
-            <Icon className={cn(sizeClasses.icon, 'text-gray-400')} />
+            <Icon className={cn(sizeClasses.icon, isDarkMode ? 'text-gray-500' : 'text-gray-400')} />
           </div>
         </div>
 
@@ -98,12 +100,12 @@ export default function NoData({
           <h3
             className={cn(
               sizeClasses.title,
-              'font-semibold tracking-tight text-gray-800'
+              `font-semibold tracking-tight ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`
             )}
           >
             {title}
           </h3>
-          <p className={cn(sizeClasses.message, 'text-gray-500')}>{message}</p>
+          <p className={cn(sizeClasses.message, isDarkMode ? 'text-gray-400' : 'text-gray-500')}>{message}</p>
         </div>
       </div>
     </div>

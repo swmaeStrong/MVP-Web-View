@@ -1,5 +1,6 @@
 'use client';
 
+import { useTheme } from '@/hooks/useTheme';
 import { ChartConfig, ChartContainer, ChartTooltip } from '@/shadcn/ui/chart';
 import { DailyStatistics } from '@/types/statistics';
 import { formatTime } from '@/utils/statisticsUtils';
@@ -20,6 +21,7 @@ interface StatisticsRadarChartProps {
 export default function StatisticsRadarChart({
   data,
 }: StatisticsRadarChartProps) {
+  const { isDarkMode, getThemeClass, getThemeColor, getThemeTextColor, getThemeTextColorValue } = useTheme();
   // 6개의 고정 색상 정의
   const categoryColors = [
     '#8b5cf6', // 보라
@@ -38,7 +40,7 @@ export default function StatisticsRadarChart({
 
   if (top6Categories.length === 0) {
     return (
-      <div className='flex h-[450px] items-center justify-center'>
+      <div className='flex h-[550px] items-center justify-center'>
         <NoData
           title='분석할 카테고리가 없습니다'
           message='활동 데이터가 없어 레이더 차트를 표시할 수 없습니다.'
@@ -71,23 +73,23 @@ export default function StatisticsRadarChart({
   return (
     <div className='space-y-6'>
       {/* 총 작업시간을 상단으로 이동 */}
-      <div className='rounded-xl border border-purple-100 bg-white p-3 shadow-sm'>
+      <div className={`rounded-xl border-2 p-3 shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <div className='flex items-center justify-between text-sm'>
-          <div className='flex items-center gap-2 text-purple-700'>
+          <div className={`flex items-center gap-2 ${getThemeTextColor('accent')}`}>
             <span>⚡</span>
             <span className='font-medium'>총 작업시간</span>
           </div>
-          <span className='font-bold text-purple-800'>
+          <span className={`font-bold ${getThemeTextColor('accent')}`}>
             {formatTime(top6Categories.reduce((sum, cat) => sum + cat.time, 0))}
           </span>
         </div>
       </div>
 
       {/* 차트 */}
-      <div className='relative h-[450px] w-full px-2'>
+      <div className='relative h-[550px] w-full px-2'>
         <ChartContainer
           config={chartConfig}
-          className='mx-auto aspect-square max-h-[450px] max-w-[450px]'
+          className='mx-auto aspect-square max-h-[550px] max-w-[550px]'
         >
           <RadarChart
             data={chartData}
@@ -102,7 +104,7 @@ export default function StatisticsRadarChart({
                   const percentage = data.payload.percentage;
 
                   return (
-                    <div className='rounded-xl border border-gray-200 bg-white p-3 shadow-lg'>
+                    <div className={`rounded-xl border-2 p-3 shadow-lg ${getThemeClass('border')} ${getThemeClass('component')}`}>
                       <div className='flex flex-col gap-2'>
                         <div className='flex items-center gap-2'>
                           <div
@@ -114,27 +116,19 @@ export default function StatisticsRadarChart({
                                 )?.color || categoryColors[0],
                             }}
                           />
-                          <span
-                            style={{ fontWeight: 'bold', color: '#000000' }}
-                          >
+                          <span className={`font-bold ${getThemeTextColor('primary')}`}>
                             {categoryName}
                           </span>
                         </div>
-                        <div
-                          className='ml-5 text-sm'
-                          style={{ color: '#374151' }}
-                        >
+                        <div className={`ml-5 text-sm ${getThemeTextColor('secondary')}`}>
                           시간:{' '}
-                          <span style={{ fontWeight: '600', color: '#111827' }}>
+                          <span className={`font-semibold ${getThemeTextColor('primary')}`}>
                             {formatTime(time as number)}
                           </span>
                         </div>
-                        <div
-                          className='ml-5 text-sm'
-                          style={{ color: '#374151' }}
-                        >
+                        <div className={`ml-5 text-sm ${getThemeTextColor('secondary')}`}>
                           비율:{' '}
-                          <span style={{ fontWeight: '600', color: '#111827' }}>
+                          <span className={`font-semibold ${getThemeTextColor('primary')}`}>
                             {percentage ? percentage.toFixed(1) : '0.0'}%
                           </span>
                         </div>
@@ -148,12 +142,12 @@ export default function StatisticsRadarChart({
             <PolarAngleAxis
               dataKey='category'
               tick={{
-                fontSize: 10,
-                fill: '#111827',
+                fontSize: 12,
+                fill: getThemeTextColorValue('primary'),
                 fontWeight: 'bold',
                 textAnchor: 'middle',
               }}
-              className='text-xs font-semibold'
+              className={`text-sm font-semibold ${getThemeTextColor('primary')}`}
               tickFormatter={value => {
                 // 더 긴 텍스트도 수용할 수 있도록 조정
                 if (value.length > 10) {
@@ -163,7 +157,7 @@ export default function StatisticsRadarChart({
               }}
               axisLineType='polygon'
             />
-            <PolarGrid className='stroke-gray-200' strokeDasharray='2 2' />
+            <PolarGrid stroke={getThemeColor('border')} strokeDasharray='2 2' />
             <PolarRadiusAxis
               angle={90}
               domain={[0, Math.max(...chartData.map(d => d.time))]}

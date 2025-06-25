@@ -5,31 +5,29 @@ export * from './common';
 
 // 편의를 위한 통합 객체들
 import {
-  brandColors,
-  categoryColors,
-  extendedRankColors,
-  rankColors,
-  specialEffects,
-  statusColors,
+    brandColors,
+    categoryColors,
+    extendedRankColors,
+    rankColors,
 } from './colors';
 
 import {
-  animations,
-  customAnimations,
-  enterExit,
-  interactions,
+    animations,
+    customAnimations,
+    enterExit,
+    interactions,
 } from './animations';
 
 import {
-  badges,
-  borders,
-  buttons,
-  cards,
-  inputs,
-  layout,
-  overlays,
-  shadows,
-  typography,
+    badges,
+    borders,
+    buttons,
+    cards,
+    inputs,
+    layout,
+    overlays,
+    shadows,
+    typography,
 } from './common';
 
 // 통합 스타일 객체
@@ -40,8 +38,6 @@ export const styles = {
     category: categoryColors,
     rank: rankColors,
     extendedRank: extendedRankColors,
-    status: statusColors,
-    special: specialEffects,
   },
 
   // 애니메이션 시스템

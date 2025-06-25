@@ -1,3 +1,66 @@
+// 테마 컬러 시스템 (다크모드 & 화이트모드)
+export const themeColors = {
+  dark: {
+    // 배경색
+    background: '#040404',           // bg-[#040404]
+    component: '#1C1C1C',           // 컴포넌트 bg-[#1C1C1C]
+    componentSecondary: '#2D2D2D',  // 보조 컴포넌트 bg-[#2D2D2D]
+    // 테두리 색상
+    border: 'rgb(80, 80, 80)',      // 테두리 색상 (더 밝게)
+    borderLight: 'rgb(120, 120, 120)', // 밝은 테두리 색상 (더 밝게)
+    // 텍스트 색상
+    text: {
+      primary: 'rgb(220, 220, 220)', // 밝은 텍스트 220,220,220
+      secondary: 'rgb(153, 153, 153)', // 약간 어두운 153,153,153
+      accent: 'rgb(168, 85, 247)',   // 보라색 액센트 텍스트
+    },
+    // Tailwind 클래스명
+    classes: {
+      background: 'bg-[#040404]',
+      component: 'bg-[#1C1C1C]',
+      componentSecondary: 'bg-[#2D2D2D]',
+      border: 'border-[rgb(80,80,80)]',
+      borderLight: 'border-[rgb(120,120,120)]',
+      textPrimary: 'text-[rgb(220,220,220)]',
+      textSecondary: 'text-[rgb(153,153,153)]',
+      textAccent: 'text-[rgb(168,85,247)]',
+    }
+  },
+  light: {
+    // 배경색
+    background: '#ECECEC',           // Bg-[#ECECEC] 233,233,233
+    component: 'rgb(255, 255, 255)', // 컴포넌트 bg- 255, 255, 255
+    componentSecondary: 'rgb(249, 250, 251)', // 보조 컴포넌트 bg-gray-50
+    // 테두리 색상
+    border: 'rgb(229, 231, 235)',    // 테두리 색상 gray-200
+    borderLight: 'rgb(209, 213, 219)', // 밝은 테두리 색상 gray-300
+    // 텍스트 색상
+    text: {
+      primary: 'rgb(43, 43, 43)',    // 텍스트 43, 43, 43
+      secondary: 'rgb(142, 142, 142)', // 회색 텍스트 142,142,142
+      accent: 'rgb(147, 51, 234)',   // 보라색 액센트 텍스트 purple-700
+    },
+    // Tailwind 클래스명
+    classes: {
+      background: 'bg-[#ECECEC]',
+      component: 'bg-white',
+      componentSecondary: 'bg-gray-50',
+      border: 'border-gray-200',
+      borderLight: 'border-gray-300',
+      textPrimary: 'text-[rgb(43,43,43)]',
+      textSecondary: 'text-[rgb(142,142,142)]',
+      textAccent: 'text-purple-700',
+    }
+  },
+  // 공통 색상
+  common: {
+    warning: 'rgb(217, 72, 48)',     // 경고 text 217,72,48
+    classes: {
+      warning: 'text-[rgb(217,72,48)]',
+    }
+  }
+};
+
 // 메인 브랜드 컬러
 export const brandColors = {
   primary: {
@@ -14,13 +77,6 @@ export const brandColors = {
     light: 'pink-50',
     text: 'pink-700',
   },
-};
-
-export const getCategoryColor = (category: string) => {
-  return (
-    categoryColors[category as keyof typeof categoryColors] ||
-    categoryColors.all
-  );
 };
 
 // 카테고리별 컬러 시스템 - leaderboard와 statistics 통합
@@ -96,55 +152,6 @@ export const categoryColors = {
     borderGradient: 'from-gray-400 to-slate-400',
     bgOpacity: 'from-gray-600/5 to-slate-600/5',
     solid: '#71717a', // zinc-500, 더 차분한 회색으로 변경
-  },
-  학습: {
-    gradient: 'from-amber-500 via-yellow-500 to-orange-500',
-    buttonGradient: 'from-amber-500 to-yellow-500',
-    badgeClass: 'bg-amber-100 text-amber-700 border-amber-200',
-    borderGradient: 'from-amber-400 to-yellow-400',
-    bgOpacity: 'from-amber-600/5 to-yellow-600/5',
-  },
-  운동: {
-    gradient: 'from-red-500 via-rose-500 to-pink-500',
-    buttonGradient: 'from-red-500 to-rose-500',
-    badgeClass: 'bg-red-100 text-red-700 border-red-200',
-    borderGradient: 'from-red-400 to-rose-400',
-    bgOpacity: 'from-red-600/5 to-rose-600/5',
-  },
-  독서: {
-    gradient: 'from-brown-500 via-amber-600 to-yellow-600',
-    buttonGradient: 'from-yellow-700 to-amber-600',
-    badgeClass: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    borderGradient: 'from-yellow-500 to-amber-500',
-    bgOpacity: 'from-yellow-600/5 to-amber-600/5',
-  },
-  음악: {
-    gradient: 'from-violet-500 via-purple-500 to-fuchsia-500',
-    buttonGradient: 'from-violet-500 to-purple-500',
-    badgeClass: 'bg-violet-100 text-violet-700 border-violet-200',
-    borderGradient: 'from-violet-400 to-purple-400',
-    bgOpacity: 'from-violet-600/5 to-purple-600/5',
-  },
-  요리: {
-    gradient: 'from-orange-500 via-red-500 to-pink-500',
-    buttonGradient: 'from-orange-500 to-red-500',
-    badgeClass: 'bg-orange-100 text-orange-700 border-orange-200',
-    borderGradient: 'from-orange-400 to-red-400',
-    bgOpacity: 'from-orange-600/5 to-red-600/5',
-  },
-  여행: {
-    gradient: 'from-sky-500 via-blue-500 to-indigo-500',
-    buttonGradient: 'from-sky-500 to-blue-500',
-    badgeClass: 'bg-sky-100 text-sky-700 border-sky-200',
-    borderGradient: 'from-sky-400 to-blue-400',
-    bgOpacity: 'from-sky-600/5 to-blue-600/5',
-  },
-  게임: {
-    gradient: 'from-emerald-500 via-green-500 to-teal-500',
-    buttonGradient: 'from-emerald-500 to-green-500',
-    badgeClass: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-    borderGradient: 'from-emerald-400 to-green-400',
-    bgOpacity: 'from-emerald-600/5 to-green-600/5',
   },
 };
 
@@ -270,57 +277,5 @@ export const extendedRankColors = {
     ringColor: 'ring-lime-400',
     shadowColor: 'shadow-lime-200',
     avatarClass: 'bg-lime-100 text-lime-800',
-  },
-};
-
-// 상태별 컬러
-export const statusColors = {
-  success: {
-    gradient: 'from-green-100 to-emerald-100',
-    border: 'border-green-200',
-    text: 'text-green-700',
-    textBold: 'text-green-800',
-    bg: 'bg-green-50',
-  },
-  warning: {
-    gradient: 'from-orange-100 to-red-100',
-    border: 'border-orange-200',
-    text: 'text-orange-700',
-    textBold: 'text-orange-800',
-    bg: 'bg-orange-50',
-  },
-  info: {
-    gradient: 'from-blue-100 to-purple-100',
-    border: 'border-blue-200',
-    text: 'text-blue-700',
-    textBold: 'text-blue-800',
-    bg: 'bg-blue-50',
-  },
-  neutral: {
-    gradient: 'from-gray-100 to-slate-100',
-    border: 'border-gray-200',
-    text: 'text-gray-700',
-    textBold: 'text-gray-800',
-    bg: 'bg-gray-50',
-  },
-};
-
-// 특별 효과 컬러
-export const specialEffects = {
-  live: {
-    ping: 'bg-red-500',
-    pulse: 'bg-green-500',
-    text: 'text-gray-600',
-  },
-  trending: {
-    up: 'text-green-600',
-    hot: 'text-red-500',
-    new: 'text-blue-600',
-  },
-  badges: {
-    king: 'from-yellow-400 to-amber-400 text-yellow-900',
-    me: 'from-purple-500 to-blue-500 text-white',
-    top3: 'text-white font-bold',
-    special: 'from-purple-500 to-pink-500 text-white',
   },
 };

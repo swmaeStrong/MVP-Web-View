@@ -1,6 +1,8 @@
 'use client';
 
 import { Crown, Ghost, History, MapPin, Target, Trophy } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
+import { componentSizes, componentStates, spacing } from '@/styles/design-system';
 
 interface EmptyStateProps {
   selectedPeriod: 'daily' | 'weekly' | 'monthly';
@@ -15,6 +17,7 @@ export default function EmptyState({
   selectedDateIndex,
   refetch,
 }: EmptyStateProps) {
+  const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
   const timeLabels = {
     daily: '일간',
     weekly: '주간',
@@ -108,31 +111,33 @@ export default function EmptyState({
   return (
     <div className='mb-8 flex w-full justify-center'>
       <div
-        className={`relative w-full overflow-hidden rounded-2xl border-2 ${content.borderColor} bg-gradient-to-br ${content.bgGradient} p-8 shadow-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl`}
+        className={`relative w-full overflow-hidden ${componentSizes.xlarge.borderRadius} ${componentSizes.medium.border} ${componentSizes.xlarge.padding} ${componentSizes.xlarge.shadow} ${componentStates.hoverable.transition} ${componentStates.hoverable.hover.scale} hover:shadow-2xl ${getThemeClass('borderLight')} ${getThemeClass('component')}`}
       >
         {/* 헤더 */}
         <div className='mb-6 text-center'>
           <div className='mb-4 flex justify-center'>
-            <div className='rounded-full bg-white/80 p-4 shadow-lg'>
+            <div className={`rounded-full p-4 shadow-lg ${
+              isDarkMode ? 'bg-white/10' : 'bg-white/80'
+            }`}>
               {content.icon}
             </div>
           </div>
           <h2 className={`mb-2 text-2xl font-bold ${content.accentColor}`}>
             {content.title}
           </h2>
-          <p className='text-base font-medium text-gray-600'>
+          <p className={`text-base font-medium ${getThemeTextColor('secondary')}`}>
             {content.subtitle}
           </p>
         </div>
 
         {/* 메인 내용 */}
         <div className='space-y-4 text-center'>
-          <p className='text-lg leading-relaxed text-gray-700'>
+          <p className={`text-lg leading-relaxed ${getThemeTextColor('primary')}`}>
             {content.description}
           </p>
 
-          <div className='rounded-xl border border-white/50 bg-white/70 p-4 shadow-inner'>
-            <p className={`text-base font-bold ${content.accentColor}`}>
+          <div className={`rounded-xl border p-4 shadow-inner ${getThemeClass('borderLight')} ${getThemeClass('componentSecondary')}`}>
+            <p className={`text-base font-bold ${getThemeTextColor('accent')}`}>
               {content.cta}
             </p>
           </div>

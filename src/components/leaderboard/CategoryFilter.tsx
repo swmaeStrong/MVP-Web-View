@@ -1,6 +1,8 @@
 'use client';
 
 import { categoryColors } from '@/styles';
+import { useTheme } from '@/hooks/useTheme';
+import { componentSizes, componentStates, spacing } from '@/styles/design-system';
 
 interface CategoryFilterProps {
   categories: string[];
@@ -13,6 +15,7 @@ export default function CategoryFilter({
   selectedCategory,
   setSelectedCategory,
 }: CategoryFilterProps) {
+  const { getThemeClass, getThemeTextColor } = useTheme();
   // 3개 고정 슬롯을 위한 카테고리 배열 생성
   const getVisibleCategories = () => {
     const selectedIndex = categories.indexOf(selectedCategory);
@@ -40,11 +43,11 @@ export default function CategoryFilter({
   };
 
   return (
-    <div className='mx-auto max-w-[800px] rounded-lg border border-gray-100 bg-white p-6 shadow-sm transition-shadow duration-200 hover:shadow-md'>
+    <div className={`mx-auto max-w-[800px] ${componentSizes.large.borderRadius} ${componentSizes.medium.border} ${componentSizes.large.padding} ${componentSizes.medium.shadow} ${componentStates.hoverable.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <div className='flex items-center justify-center'>
         {/* 카테고리 선택 버튼들 (3개 고정) */}
         <div className='flex justify-center'>
-          <div className='flex items-center gap-3'>
+          <div className={`flex items-center ${spacing.between.normal}`}>
             {getVisibleCategories().map((item, slotIndex) => {
               const categoryColor =
                 categoryColors[item.category as keyof typeof categoryColors] ||
@@ -58,8 +61,8 @@ export default function CategoryFilter({
                     item.isSelected
                       ? `w-[140px] rounded-lg bg-gradient-to-r ${categoryColor.buttonGradient} scale-105 transform px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all duration-200`
                       : item.position === -1 || item.position === 1
-                        ? 'w-[120px] scale-95 transform rounded-lg border border-gray-400 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50'
-                        : 'w-[120px] rounded-lg border border-gray-400 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-500 opacity-70 transition-all duration-200 hover:bg-gray-100'
+                        ? `w-[120px] scale-95 transform rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all duration-200 ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('borderLight')}`
+                        : `w-[120px] rounded-lg border-2 px-4 py-2 text-sm font-medium opacity-70 transition-all duration-200 ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`
                   }
                 >
                   <span className='truncate whitespace-nowrap'>
@@ -84,7 +87,7 @@ export default function CategoryFilter({
                 className={
                   index === selectedIndex
                     ? 'h-2 w-6 rounded-full bg-purple-500 transition-all duration-200'
-                    : 'h-1.5 w-1.5 rounded-full bg-gray-300 transition-all duration-200'
+                    : `h-1.5 w-1.5 rounded-full transition-all duration-200 ${getThemeClass('borderLight')}`
                 }
               />
             );
@@ -94,7 +97,7 @@ export default function CategoryFilter({
 
       {/* 현재 카테고리 정보 */}
       <div className='mt-3 text-center'>
-        <div className='text-sm text-gray-600'>
+        <div className={`text-sm ${getThemeTextColor('secondary')}`}>
           <span className='font-semibold text-purple-600'>
             {selectedCategory === 'all' ? '전체' : selectedCategory}
           </span>

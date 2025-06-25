@@ -4,6 +4,8 @@ import { User } from '@/stores/userStore';
 import { extendedRankColors, rankColors } from '@/styles';
 import Image from 'next/image';
 import { getTierStyle } from './tierConfig';
+import { useTheme } from '@/hooks/useTheme';
+import { componentSizes, componentStates, getPriorityStyle, getRankPriority } from '@/styles/design-system';
 
 type LeaderboardUser = User & {
   score: number;
@@ -52,44 +54,32 @@ export default function UserCard({
   totalUsers,
   isCurrentUser,
 }: UserCardProps) {
+  const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
   const rank = index + 1;
   const rankInfo = getRankInfo(index);
   const topRankStyle = getTierStyle(rank, totalUsers);
+  
+  // 디자인 시스템 적용 - 일관된 스타일
+  const priorityStyle = getPriorityStyle(rank);
+  const priorityLevel = getRankPriority(rank);
+  const cardSize = componentSizes.medium; // 모든 카드 동일한 크기
 
   return (
     <div
       key={`rank-${rank}-${user.id || user.nickname || index}`}
       data-user-id={user.id}
-      className={`group relative flex items-center justify-between rounded-xl border p-4 shadow-lg transition-all duration-300 hover:shadow-xl ${
-        topRankStyle
-          ? `${topRankStyle.borderClass} ring-opacity-30`
-          : 'border-gray-100 bg-white hover:border-purple-100'
-      } ${
+      className={`group relative flex items-center justify-between ${cardSize.borderRadius} ${cardSize.border} ${cardSize.padding} ${cardSize.shadow} ${componentStates.hoverable.transition} ${getThemeClass('border')} ${getThemeClass('component')} ${
         isCurrentUser
-          ? topRankStyle
-            ? 'ring-2 ring-purple-200'
-            : 'border-purple-100 bg-gradient-to-r from-purple-50 to-blue-50 ring-1 ring-purple-200'
-          : topRankStyle
-            ? ''
-            : 'bg-white'
+          ? `ring-2 ${isDarkMode ? 'ring-purple-400' : 'ring-purple-300'}`
+          : ''
       }`}
-      style={
-        topRankStyle
-          ? {
-              animation: topRankStyle.glowAnimation,
-            }
-          : {}
-      }
+      style={{}}
     >
       {/* 좌측 - 순위 & 특별 아이콘 & 사용자 정보 */}
       <div className='flex items-center space-x-4'>
         {/* 순위 표시 */}
         <div
-          className={`flex h-12 w-12 items-center justify-center rounded-full border text-sm font-bold transition-transform duration-200 group-hover:scale-110 ${
-            topRankStyle
-              ? `${topRankStyle.rankBg} ${topRankStyle.rankText} border-white shadow-lg`
-              : `${rankInfo.bgColor} ${rankInfo.textColor} ${rankInfo.borderColor}`
-          }`}
+          className={`flex h-12 w-12 items-center justify-center rounded-full border text-sm font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')} ${getThemeClass('border')}`}
         >
           {rank}
         </div>
@@ -97,11 +87,11 @@ export default function UserCard({
         {/* 순위 아이콘 */}
         <div className='flex h-12 w-12 items-center justify-center'>
           <Image
-            src={topRankStyle.icon}
-            alt={topRankStyle.title}
+            src={topRankStyle?.icon || '/icons/rank/bronze.png'}
+            alt={topRankStyle?.title || 'Bronze'}
             width={48}
             height={48}
-            className='drop-shadow-lg transition-transform duration-200 group-hover:scale-110'
+            className='drop-shadow-lg'
           />
         </div>
 
@@ -109,18 +99,14 @@ export default function UserCard({
         <div className='flex-1'>
           <div className='flex items-center space-x-3'>
             <h3
-              className={`text-lg font-bold transition-colors duration-200 ${
-                topRankStyle
-                  ? topRankStyle.nameColor
-                  : 'text-gray-800 group-hover:text-purple-700'
-              }`}
+              className={`text-lg font-bold ${getThemeTextColor('primary')}`}
             >
               {user.nickname}
             </h3>
 
             {/* 사용자 표시 */}
             {isCurrentUser && (
-              <span className='animate-pulse rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-3 py-1 text-xs font-bold text-white shadow-sm'>
+              <span className='rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-3 py-1 text-xs font-bold text-white shadow-sm'>
                 YOU
               </span>
             )}
@@ -131,15 +117,15 @@ export default function UserCard({
       {/* 우측 - 시간 정보 */}
       <div className='text-right'>
         <div
-          className={`text-2xl font-bold transition-colors duration-200 ${
+          className={`text-2xl font-bold ${
             topRankStyle
-              ? 'text-gray-900'
-              : 'text-gray-900 group-hover:text-purple-700'
+              ? getThemeTextColor('primary')
+              : getThemeTextColor('primary')
           }`}
         >
           {formatTime(user.score)}
         </div>
-        <div className='text-xs text-gray-500'>활동시간</div>
+        <div className={`text-xs ${getThemeTextColor('secondary')}`}>활동시간</div>
       </div>
     </div>
   );

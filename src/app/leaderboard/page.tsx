@@ -4,6 +4,7 @@ import { useLeaderboardInfiniteScroll } from '@/hooks/useLeaderboardInfiniteScro
 import { useScrollToMyRank } from '@/hooks/useScrollToMyRank';
 import { CATEGORIES, LEADERBOARD_CATEGORIES } from '@/utils/categories';
 import { useEffect, useState } from 'react';
+import { useTheme } from '@/hooks/useTheme';
 
 // 컴포넌트 임포트
 import CategoryFilter from '@/components/leaderboard/CategoryFilter';
@@ -28,6 +29,7 @@ export default function Leaderboard() {
   const currentUser = useCurrentUser();
   const { initializeUser } = useInitUser();
   const { scrollToMyRank } = useScrollToMyRank();
+  const { getThemeClass } = useTheme();
 
   // 사용자 초기화를 useEffect로 처리
   useEffect(() => {
@@ -82,7 +84,7 @@ export default function Leaderboard() {
   const categories = LEADERBOARD_CATEGORIES;
 
   return (
-    <div className='min-h-screen p-4 sm:p-6 lg:p-8'>
+    <div className={`min-h-screen p-4 sm:p-6 lg:p-8 ${getThemeClass('background')}`}>
       <div className='mx-auto max-w-6xl space-y-6 sm:space-y-8'>
         {/* 실시간 경쟁 표시기 - LeaderboardHeader 바로 아래로 이동 */}
         <LiveIndicator />

@@ -29,6 +29,7 @@ import {
 } from 'recharts';
 import ErrorState from '../common/ErrorState';
 import NoData from '../common/NoData';
+import { useTheme } from '@/hooks/useTheme';
 
 interface HourlyUsageComparisonProps {
   userId: string;
@@ -64,6 +65,7 @@ export default function HourlyUsageComparison({
   userId,
   date,
 }: HourlyUsageComparisonProps) {
+  const { isDarkMode, getThemeClass, getThemeColor, getThemeTextColor } = useTheme();
   const [selectedBinSize, setSelectedBinSize] = useState(60);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [chartType, setChartType] = useState<'bar' | 'line'>('bar');
@@ -123,23 +125,23 @@ export default function HourlyUsageComparison({
       total > 0 ? Math.round((categoryValue / total) * 100) : 0;
 
     return (
-      <div className='z-50 rounded-lg border border-gray-200 bg-white/95 p-3 shadow-xl backdrop-blur-sm'>
-        <div className='mb-2 font-medium text-gray-800'>{label}</div>
+      <div className={`z-50 rounded-lg border-2 p-3 shadow-xl backdrop-blur-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
+        <div className={`mb-2 font-medium ${getThemeTextColor('primary')}`}>{label}</div>
         {selectedCategory && (
           <div className='space-y-1 text-sm'>
-            <div className='font-medium text-purple-600'>
+            <div className={`font-medium ${getThemeTextColor('accent')}`}>
               사용 비율: {percentage}%
             </div>
-            <div className='text-gray-700'>
+            <div className={getThemeTextColor('secondary')}>
               {selectedCategory} 사용량: {formatTimeWithSeconds(categoryValue)}
             </div>
-            <div className='text-gray-700'>
+            <div className={getThemeTextColor('secondary')}>
               전체 사용량: {formatTimeWithSeconds(total)}
             </div>
           </div>
         )}
         {!selectedCategory && (
-          <div className='text-sm text-gray-700'>
+          <div className={`text-sm ${getThemeTextColor('secondary')}`}>
             전체 사용량: {formatTimeWithSeconds(total)}
           </div>
         )}
@@ -173,12 +175,12 @@ export default function HourlyUsageComparison({
 
   if (isLoading) {
     return (
-      <Card className='rounded-lg border border-gray-100 bg-white shadow-sm'>
+      <Card className={`rounded-lg border-2 shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardContent className='p-6'>
           <div className='flex h-64 items-center justify-center'>
             <div className='text-center'>
               <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-purple-600'></div>
-              <p className='text-gray-600'>시간별 데이터를 불러오는 중...</p>
+              <p className={getThemeTextColor('secondary')}>시간별 데이터를 불러오는 중...</p>
             </div>
           </div>
         </CardContent>
@@ -188,7 +190,7 @@ export default function HourlyUsageComparison({
 
   if (isError || !hourlyData) {
     return (
-      <Card className='rounded-lg border border-gray-100 bg-white shadow-sm'>
+      <Card className={`rounded-lg border-2 shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardContent className='p-6'>
           <ErrorState
             title='시간별 데이터를 불러올 수 없습니다'
@@ -205,24 +207,24 @@ export default function HourlyUsageComparison({
 
   return (
     <div className='w-full'>
-      <Card className='rounded-lg border border-gray-100 bg-white shadow-sm'>
+      <Card className={`rounded-lg border-2 shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardHeader className='pb-3'>
           <div className='flex items-center justify-between'>
             <div>
-              <CardTitle className='flex items-center gap-2 text-lg font-semibold text-gray-800'>
+              <CardTitle className={`flex items-center gap-2 text-lg font-semibold ${getThemeTextColor('primary')}`}>
                 <Target className='h-5 w-5 text-purple-600' />
                 시간별 사용량
               </CardTitle>
-              <p className='mt-1 text-sm text-gray-500'>{currentDate}</p>
+              <p className={`mt-1 text-sm ${getThemeTextColor('secondary')}`}>{currentDate}</p>
             </div>
             <div className='flex items-center gap-3'>
               {/* 차트 타입 토글 */}
-              <div className='flex items-center rounded-lg bg-gray-100 p-1'>
+              <div className={`flex items-center rounded-lg p-1 ${getThemeClass('componentSecondary')}`}>
                 <button
                   className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-200 ${
                     chartType === 'bar'
-                      ? 'bg-white text-purple-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-800'
+                      ? `${getThemeClass('component')} ${getThemeTextColor('accent')} shadow-sm`
+                      : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
                   }`}
                   onClick={() => setChartType('bar')}
                 >
@@ -231,8 +233,8 @@ export default function HourlyUsageComparison({
                 <button
                   className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-200 ${
                     chartType === 'line'
-                      ? 'bg-white text-purple-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-800'
+                      ? `${getThemeClass('component')} ${getThemeTextColor('accent')} shadow-sm`
+                      : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
                   }`}
                   onClick={() => setChartType('line')}
                 >
@@ -242,12 +244,12 @@ export default function HourlyUsageComparison({
 
               {/* 시간 단위 */}
               <div className='flex items-center gap-2'>
-                <span className='text-xs text-gray-500'>단위</span>
+                <span className={`text-xs ${getThemeTextColor('secondary')}`}>단위</span>
                 <Select
                   value={selectedBinSize.toString()}
                   onValueChange={value => setSelectedBinSize(parseInt(value))}
                 >
-                  <SelectTrigger className='h-8 w-20 border-gray-200 bg-gray-50/50 text-xs'>
+                  <SelectTrigger className={`h-8 w-20 text-xs border-2 ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -265,14 +267,14 @@ export default function HourlyUsageComparison({
 
               {/* 카테고리 선택 */}
               <div className='flex items-center gap-2'>
-                <span className='text-xs text-gray-500'>비교</span>
+                <span className={`text-xs ${getThemeTextColor('secondary')}`}>비교</span>
                 <Select
                   value={selectedCategory || 'all'}
                   onValueChange={value =>
                     setSelectedCategory(value === 'all' ? null : value)
                   }
                 >
-                  <SelectTrigger className='h-8 w-32 border-gray-200 bg-gray-50/50 text-xs'>
+                  <SelectTrigger className={`h-8 w-32 text-xs border-2 ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -306,7 +308,7 @@ export default function HourlyUsageComparison({
                   data={chartData}
                   margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
                 >
-                  <CartesianGrid strokeDasharray='3 3' />
+                  <CartesianGrid strokeDasharray='3 3' stroke={getThemeColor('border')} />
                   <XAxis
                     dataKey='hourDisplay'
                     fontSize={12}
@@ -322,7 +324,7 @@ export default function HourlyUsageComparison({
                   <ChartTooltip content={<CustomTooltip />} />
                   <ChartLegend
                     content={
-                      <ChartLegendContent className='font-medium text-gray-800' />
+                      <ChartLegendContent className={`font-medium ${getThemeTextColor('primary')}`} />
                     }
                   />
                   <Bar
@@ -345,7 +347,7 @@ export default function HourlyUsageComparison({
                   data={chartData}
                   margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
                 >
-                  <CartesianGrid strokeDasharray='3 3' />
+                  <CartesianGrid strokeDasharray='3 3' stroke={getThemeColor('border')} />
                   <XAxis
                     dataKey='hourDisplay'
                     fontSize={12}
@@ -361,7 +363,7 @@ export default function HourlyUsageComparison({
                   <ChartTooltip content={<CustomTooltip />} />
                   <ChartLegend
                     content={
-                      <ChartLegendContent className='font-medium text-gray-800' />
+                      <ChartLegendContent className={`font-medium ${getThemeTextColor('primary')}`} />
                     }
                   />
                   <Line
@@ -391,18 +393,18 @@ export default function HourlyUsageComparison({
 
           {/* 요약 정보 */}
           {selectedCategory && (
-            <div className='mt-4 grid grid-cols-2 gap-4 rounded-lg border border-gray-200 bg-white/50 p-4'>
+            <div className={`mt-4 grid grid-cols-2 gap-4 rounded-lg border-2 p-4 ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
               <div className='text-center'>
-                <div className='text-sm text-gray-600'>전체</div>
-                <div className='text-lg font-semibold text-gray-800'>
+                <div className={`text-sm ${getThemeTextColor('secondary')}`}>전체</div>
+                <div className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
                   {formatTimeWithSeconds(
                     chartData.reduce((sum, item) => sum + item.total, 0)
                   )}
                 </div>
               </div>
               <div className='text-center'>
-                <div className='text-sm text-gray-600'>{selectedCategory}</div>
-                <div className='text-lg font-semibold text-purple-600'>
+                <div className={`text-sm ${getThemeTextColor('secondary')}`}>{selectedCategory}</div>
+                <div className={`text-lg font-semibold ${getThemeTextColor('accent')}`}>
                   {formatTimeWithSeconds(
                     chartData.reduce((sum, item) => sum + item.category, 0)
                   )}

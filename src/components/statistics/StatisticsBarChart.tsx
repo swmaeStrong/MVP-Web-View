@@ -10,6 +10,7 @@ import { PeriodType } from '@/types/statistics';
 import { getCategoryColor } from '@/utils/categories';
 import { formatTime } from '@/utils/statisticsUtils';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { useTheme } from '@/hooks/useTheme';
 
 interface StatisticsBarChartProps {
   period: PeriodType;
@@ -29,6 +30,7 @@ interface ChartDataItem {
 export default function StatisticsBarChart({
   period,
 }: StatisticsBarChartProps) {
+  const { isDarkMode, getThemeClass, getThemeColor } = useTheme();
   const generateDummyData = (): ChartDataItem[] => {
     if (period === 'weekly') {
       return [
@@ -140,21 +142,21 @@ export default function StatisticsBarChart({
             data={chartData}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           >
-            <CartesianGrid strokeDasharray='3 3' className='stroke-gray-200' />
+            <CartesianGrid strokeDasharray='3 3' stroke={getThemeColor('border')} />
             <XAxis
               dataKey='name'
-              className='text-sm font-medium text-gray-600'
+              className={`text-sm font-medium ${getThemeClass('textSecondary')}`}
               tick={{ fontSize: 12 }}
             />
             <YAxis
-              className='text-sm text-gray-600'
+              className={`text-sm ${getThemeClass('textSecondary')}`}
               tick={{ fontSize: 12 }}
               tickFormatter={value => `${Math.round(value / 3600)}h`}
             />
             <ChartTooltip
               content={
                 <ChartTooltipContent
-                  className='rounded-xl border border-gray-200 bg-white/95 shadow-xl backdrop-blur-sm'
+                  className={`rounded-xl shadow-xl backdrop-blur-sm ${getThemeClass('border')} ${getThemeClass('component')}`}
                   formatter={(value, name) => [
                     <div key={name} className='flex items-center gap-2'>
                       <div
@@ -163,15 +165,15 @@ export default function StatisticsBarChart({
                           backgroundColor: getCategoryColor(name as string),
                         }}
                       />
-                      <span className='font-medium text-gray-800'>{name}</span>
-                      <span className='ml-auto font-bold text-gray-900'>
+                      <span className={`font-medium ${getThemeClass('textPrimary')}`}>{name}</span>
+                      <span className={`ml-auto font-bold ${getThemeClass('textPrimary')}`}>
                         {formatTime(value as number)}
                       </span>
                     </div>,
                     '',
                   ]}
                   labelFormatter={label => (
-                    <div className='mb-2 border-b border-gray-200 pb-2 font-semibold text-gray-800'>
+                    <div className={`mb-2 border-b pb-2 font-semibold ${getThemeClass('border')} ${getThemeClass('textPrimary')}`}>
                       📅 {label}
                     </div>
                   )}
@@ -198,8 +200,8 @@ export default function StatisticsBarChart({
       </div>
 
       {/* 카테고리 범례 */}
-      <div className='rounded-xl border border-gray-100 bg-white p-4 shadow-sm'>
-        <h4 className='mb-3 text-sm font-semibold text-gray-700'>
+      <div className={`rounded-xl p-4 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
+        <h4 className={`mb-3 text-sm font-semibold ${getThemeClass('textPrimary')}`}>
           🏷️ 카테고리 범례
         </h4>
         <div className='grid grid-cols-2 gap-3 lg:grid-cols-3'>
@@ -209,7 +211,7 @@ export default function StatisticsBarChart({
                 className='h-4 w-4 rounded-full shadow-sm'
                 style={{ backgroundColor: getCategoryColor(category) }}
               />
-              <span className='text-sm font-medium text-gray-700'>
+              <span className={`text-sm font-medium ${getThemeClass('textPrimary')}`}>
                 {category}
               </span>
             </div>
@@ -218,27 +220,27 @@ export default function StatisticsBarChart({
       </div>
 
       {/* 기간별 통계 요약 */}
-      <div className='rounded-xl border border-gray-100 bg-white p-4 shadow-sm'>
-        <h4 className='mb-3 text-sm font-semibold text-gray-700'>
+      <div className={`rounded-xl p-4 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
+        <h4 className={`mb-3 text-sm font-semibold ${getThemeClass('textPrimary')}`}>
           📈 {period === 'weekly' ? '주간' : '월간'} 요약
         </h4>
         <div className='grid grid-cols-2 gap-4 lg:grid-cols-4'>
-          <div className='rounded-lg bg-white p-3 shadow-sm'>
-            <div className='text-xs text-gray-500'>총 작업시간</div>
+          <div className={`rounded-lg p-3 shadow-sm ${getThemeClass('component')}`}>
+            <div className={`text-xs ${getThemeClass('textSecondary')}`}>총 작업시간</div>
             <div className='text-lg font-bold text-purple-600'>
               {formatTime(totalTime)}
             </div>
           </div>
-          <div className='rounded-lg bg-white p-3 shadow-sm'>
-            <div className='text-xs text-gray-500'>
+          <div className={`rounded-lg p-3 shadow-sm ${getThemeClass('component')}`}>
+            <div className={`text-xs ${getThemeClass('textSecondary')}`}>
               {period === 'weekly' ? '주' : '월'}평균
             </div>
             <div className='text-lg font-bold text-blue-600'>
               {formatTime(Math.round(totalTime / chartData.length))}
             </div>
           </div>
-          <div className='rounded-lg bg-white p-3 shadow-sm'>
-            <div className='text-xs text-gray-500'>최고 기록</div>
+          <div className={`rounded-lg p-3 shadow-sm ${getThemeClass('component')}`}>
+            <div className={`text-xs ${getThemeClass('textSecondary')}`}>최고 기록</div>
             <div className='text-lg font-bold text-green-600'>
               {formatTime(
                 Math.max(
@@ -249,8 +251,8 @@ export default function StatisticsBarChart({
               )}
             </div>
           </div>
-          <div className='rounded-lg bg-white p-3 shadow-sm'>
-            <div className='text-xs text-gray-500'>
+          <div className={`rounded-lg p-3 shadow-sm ${getThemeClass('component')}`}>
+            <div className={`text-xs ${getThemeClass('textSecondary')}`}>
               활동 {period === 'weekly' ? '주수' : '개월'}
             </div>
             <div className='text-lg font-bold text-orange-600'>
@@ -262,16 +264,16 @@ export default function StatisticsBarChart({
       </div>
 
       {/* 기간별 인사이트 */}
-      <div className='rounded-xl border border-blue-100 bg-white p-4 shadow-sm'>
+      <div className={`rounded-xl p-4 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <div className='mb-2 flex items-center gap-2'>
           <span className='text-lg'>💡</span>
-          <h4 className='text-sm font-semibold text-gray-700'>인사이트</h4>
+          <h4 className={`text-sm font-semibold ${getThemeClass('textPrimary')}`}>인사이트</h4>
         </div>
-        <div className='text-sm text-gray-600'>
+        <div className={`text-sm ${getThemeClass('textSecondary')}`}>
           {period === 'weekly' ? (
             <>
               가장 생산적인 주는{' '}
-              <strong className='text-blue-700'>
+              <strong className={getThemeClass('textAccent')}>
                 {
                   chartData.reduce(
                     (max, item, index) => {
@@ -290,13 +292,13 @@ export default function StatisticsBarChart({
                 }
               </strong>
               였습니다.
-              <strong className='text-purple-700'>DEVELOPMENT</strong>{' '}
+              <strong className={getThemeClass('textAccent')}>DEVELOPMENT</strong>{' '}
               카테고리에 가장 많은 시간을 투자했어요!
             </>
           ) : (
             <>
               가장 활발했던 달은{' '}
-              <strong className='text-blue-700'>
+              <strong className={getThemeClass('textAccent')}>
                 {
                   chartData.reduce(
                     (max, item, index) => {
@@ -315,7 +317,7 @@ export default function StatisticsBarChart({
                 }
               </strong>
               였습니다. 꾸준한 학습 패턴을{' '}
-              <strong className='text-purple-700'>유지</strong>하고 있어요!
+              <strong className={getThemeClass('textAccent')}>유지</strong>하고 있어요!
             </>
           )}
         </div>

@@ -5,6 +5,8 @@ import { useRef } from 'react';
 import EmptyState from './EmptyState';
 import UserCard from './UserCard';
 import { tierAnimationStyles } from './tierConfig';
+import { useTheme } from '@/hooks/useTheme';
+import { componentSizes, componentStates, spacing } from '@/styles/design-system';
 
 // 리더보드 표시용 확장된 User 타입
 type LeaderboardUser = User & {
@@ -37,6 +39,7 @@ export default function LeaderboardList({
   selectedDateIndex,
 }: LeaderboardListProps) {
   const currentUser = useCurrentUser();
+  const { getThemeClass, getThemeTextColor } = useTheme();
 
   // 현재 유저 하이라이트를 위한 ref
   const currentUserRef = useRef<HTMLDivElement>(null);
@@ -45,9 +48,9 @@ export default function LeaderboardList({
   if (isLoading) {
     return (
       <div className='mb-8 flex justify-center'>
-        <div className='rounded-lg border border-gray-100 bg-white p-8 text-center shadow-sm'>
+        <div className={`${componentSizes.medium.borderRadius} ${componentSizes.medium.border} ${componentSizes.xlarge.padding} text-center ${componentSizes.small.shadow} ${getThemeClass('border')} ${getThemeClass('component')}`}>
           <div className='mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-purple-600'></div>
-          <p className='text-gray-600'>리더보드 데이터를 불러오는 중...</p>
+          <p className={getThemeTextColor('secondary')}>리더보드 데이터를 불러오는 중...</p>
         </div>
       </div>
     );
@@ -57,11 +60,11 @@ export default function LeaderboardList({
   if (isError) {
     return (
       <div className='mb-8 flex justify-center'>
-        <div className='rounded-lg border border-gray-100 bg-white p-8 text-center shadow-sm'>
+        <div className={`${componentSizes.medium.borderRadius} ${componentSizes.medium.border} ${componentSizes.xlarge.padding} text-center ${componentSizes.small.shadow} ${getThemeClass('border')} ${getThemeClass('component')}`}>
           <p className='mb-4 font-medium text-red-600'>
             ❌ {error.message || '데이터를 불러오는 중 오류가 발생했습니다.'}
           </p>
-          <p className='mb-4 text-sm text-gray-500'>
+          <p className={`mb-4 text-sm ${getThemeTextColor('secondary')}`}>
             서버 요청이 중단되었습니다. 잠시 후 다시 시도해주세요.
           </p>
           <button
@@ -93,7 +96,7 @@ export default function LeaderboardList({
 
       {/* 리더보드 목록 */}
       <div className='mb-8'>
-        <div className='space-y-3'>
+        <div className={spacing.inner.normal}>
           {users.map((user: LeaderboardUser, index: number) => {
             // 현재 유저인지 확인
             const isCurrentUser = currentUser && user.id === currentUser.id;
@@ -114,9 +117,9 @@ export default function LeaderboardList({
       {/* 무한 스크롤 로딩 표시 */}
       {isFetchingNextPage && (
         <div className='flex justify-center'>
-          <div className='rounded-lg border border-gray-100 bg-gradient-to-br from-purple-50/50 to-blue-50/50 p-4 shadow-sm'>
+          <div className={`rounded-lg border-2 p-4 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
             <div className='mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-purple-600'></div>
-            <p className='text-sm text-gray-600'>
+            <p className={`text-sm ${getThemeTextColor('secondary')}`}>
               더 많은 경쟁자들을 불러오는 중...
             </p>
           </div>
