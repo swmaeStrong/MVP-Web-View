@@ -38,12 +38,31 @@ export default function StatisticsRadarChart({
     color: categoryColors[index] || categoryColors[0], // 색상 오버라이드
   }));
 
-  if (top6Categories.length === 0) {
+  // 데이터 유효성 검사
+  const totalTime = data.totalTime || 0;
+  const hasValidData = top6Categories.length > 0 && totalTime > 0;
+  const hasMinimumData = top6Categories.length >= 4; // 최소 4개 카테고리 필요
+
+  if (!hasValidData) {
     return (
       <div className='flex h-full items-center justify-center p-4'>
         <NoData
           title='분석할 카테고리가 없습니다'
           message='활동 데이터가 없어 레이더 차트를 표시할 수 없습니다.'
+          icon={PieChart}
+          showBorder={false}
+          size='medium'
+        />
+      </div>
+    );
+  }
+
+  if (!hasMinimumData) {
+    return (
+      <div className='flex h-full items-center justify-center p-4'>
+        <NoData
+          title='카테고리가 부족합니다'
+          message='의미있는 레이더 차트 분석을 위해서는 최소 4개 이상의 카테고리가 필요합니다.'
           icon={PieChart}
           showBorder={false}
           size='medium'

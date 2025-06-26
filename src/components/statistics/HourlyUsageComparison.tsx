@@ -79,9 +79,9 @@ export default function HourlyUsageComparison({
     refetch,
   } = useHourlyUsage(currentDate, userId, selectedBinSize);
 
-  // 차트 데이터 가공
-  const chartData = useMemo(() => {
-    if (!hourlyData) return [];
+  // 차트 데이터 가공 및 유효성 검사
+  const { chartData, dataValidation } = useMemo(() => {
+    if (!hourlyData) return { chartData: [], dataValidation: { isValid: false, reason: 'no-data' } };
 
     // 시간대별로 그룹화
     const hourlyMap = new Map<
@@ -102,7 +102,7 @@ export default function HourlyUsageComparison({
     });
 
     // 차트용 데이터 변환
-    return Array.from(hourlyMap.entries())
+    const processedData = Array.from(hourlyMap.entries())
       .map(([hour, data]) => ({
         hour,
         hourDisplay: hour.split('T')[1]?.substring(0, 5) || hour, // 시간 부분만 추출 (HH:MM)
@@ -111,6 +111,20 @@ export default function HourlyUsageComparison({
         ...data.categories,
       }))
       .sort((a, b) => a.hour.localeCompare(b.hour));
+
+    // 데이터 유효성 검사
+    const dataPointsCount = processedData.length;
+    const hasMinimumDataPoints = dataPointsCount >= 4; // 최소 4개 이상의 시간대 필요
+
+    let validation = { isValid: true, reason: '' };
+    
+    if (dataPointsCount === 0) {
+      validation = { isValid: false, reason: 'no-data' };
+    } else if (!hasMinimumDataPoints) {
+      validation = { isValid: false, reason: 'insufficient-points' };
+    }
+
+    return { chartData: processedData, dataValidation: validation };
   }, [hourlyData, selectedCategory]);
 
   // 커스텀 툴팁 컴포넌트
@@ -289,11 +303,19 @@ export default function HourlyUsageComparison({
         </CardHeader>
 
         <CardContent className='px-2 pt-0'>
-          {chartData.length === 0 ? (
+          {!dataValidation.isValid ? (
             <div className='flex h-[350px] items-center justify-center p-4'>
               <NoData
-                title='시간별 데이터가 없습니다'
-                message='선택한 날짜에 활동 기록이 없습니다.'
+                title={
+                  dataValidation.reason === 'no-data' 
+                    ? '시간별 데이터가 없습니다'
+                    : '시간대가 부족합니다'
+                }
+                message={
+                  dataValidation.reason === 'no-data'
+                    ? '선택한 날짜에 활동 기록이 없습니다.'
+                    : '의미있는 시간별 패턴 분석을 위해서는 최소 4개 이상의 시간대에 활동이 필요합니다.'
+                }
                 showBorder={false}
                 size='medium'
               />
