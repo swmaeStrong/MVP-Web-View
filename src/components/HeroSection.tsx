@@ -1,8 +1,12 @@
 import React from 'react';
 import { Button } from '@/shadcn/ui/button';
 import { Badge } from '@/shadcn/ui/badge';
+import { useDesignSystem } from '@/hooks/useDesignSystem';
+import { cardSystem, buttonSystem, badgeSystem, componentStates, spacing, layouts } from '@/styles/design-system';
 
 export default function HeroSection() {
+  const { getCardStyle, getButtonStyle } = useDesignSystem();
+  
   const handleCopyCommand = () => {
     const command = 'brew install productivity-tracker';
     navigator.clipboard.writeText(command);
@@ -26,14 +30,14 @@ export default function HeroSection() {
   ];
 
   return (
-    <div className='mb-20 grid grid-cols-1 items-center gap-12 lg:grid-cols-2'>
+    <div className={`${spacing.section.loose} ${layouts.grid.cols2} items-center ${spacing.between.loose}`}>
       {/* 왼쪽 콘텐츠 */}
       <div>
-        <Badge className='mb-6 cursor-pointer bg-gradient-to-r from-purple-500 to-blue-500 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-purple-600 hover:to-blue-600'>
+        <Badge className={`${badgeSystem.base} ${spacing.section.normal} ${componentStates.clickable.cursor} bg-gradient-to-r from-purple-500 to-blue-500 px-6 py-3 text-sm font-semibold text-white shadow-lg ${componentStates.clickable.transition} hover:scale-105 hover:from-purple-600 hover:to-blue-600`}>
           🚀 베타 테스터 모집 중 - 평생 특가!
         </Badge>
 
-        <h1 className='mb-6 text-4xl leading-tight font-bold text-gray-900 lg:text-5xl'>
+        <h1 className={`${spacing.section.normal} text-4xl leading-tight font-bold text-gray-900 lg:text-5xl`}>
           개발자를 위한
           <br />
           <span className='bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent'>
@@ -50,7 +54,7 @@ export default function HeroSection() {
           🏆
         </h1>
 
-        <p className='mb-8 text-lg leading-relaxed text-gray-600 lg:text-xl'>
+        <p className={`${spacing.section.relaxed} text-lg leading-relaxed text-gray-600 lg:text-xl`}>
           <strong className='text-blue-600'>IDE별 코딩 시간</strong>부터{' '}
           <strong className='text-purple-600'>시간대별 집중도 패턴</strong>까지
           완벽 분석!
@@ -69,15 +73,15 @@ export default function HeroSection() {
         </p>
 
         {/* 다운로드 버튼들 - 깔끔하게 개선 */}
-        <div className='mb-6 rounded-2xl border border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-6'>
-          <h3 className='mb-4 text-center text-lg font-bold text-gray-800'>
+        <div className={`${spacing.section.normal} ${cardSystem.base} ${cardSystem.variants.gradient} border border-gray-200 p-6`}>
+          <h3 className={`${spacing.inner.normal} text-center text-lg font-bold text-gray-800`}>
             지금 바로 시작하세요
           </h3>
 
-          <div className='mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2'>
+          <div className={`${spacing.inner.normal} ${layouts.grid.cols2} ${spacing.between.normal}`}>
             <Button
               size='lg'
-              className='h-auto bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-purple-700 hover:to-blue-700 active:scale-95'
+              className={`h-auto bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-4 text-lg font-semibold text-white shadow-lg ${componentStates.clickable.transition} hover:scale-105 hover:from-purple-700 hover:to-blue-700 active:scale-95`}
               onClick={() =>
                 window.open(
                   'https://github.com/productivity-tracker/releases/latest',
@@ -95,7 +99,7 @@ export default function HeroSection() {
             <Button
               variant='outline'
               size='lg'
-              className='h-auto border-2 border-purple-300 bg-white px-6 py-4 text-lg font-semibold text-purple-700 shadow-lg transition-all duration-200 hover:scale-105 hover:bg-purple-50 active:scale-95'
+              className={`h-auto border-2 border-purple-300 bg-white px-6 py-4 text-lg font-semibold text-purple-700 shadow-lg ${componentStates.clickable.transition} hover:scale-105 hover:bg-purple-50 active:scale-95`}
               onClick={handleCopyCommand}
             >
               <div className='flex flex-col items-center'>

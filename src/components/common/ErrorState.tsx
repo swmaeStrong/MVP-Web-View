@@ -3,11 +3,13 @@
 import { cn } from '@/shadcn/lib/utils';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
+import { useDesignSystem, type ComponentSize } from '@/hooks/useDesignSystem';
+import { cardSystem, buttonSystem, componentSizes, componentStates } from '@/styles/design-system';
 
 interface ErrorStateProps {
   title?: string;
   message?: string;
-  size?: 'sm' | 'md' | 'lg' | 'auto';
+  size?: ComponentSize;
   icon?: React.ComponentType<{ className?: string }>;
   className?: string;
   onRetry?: () => void;
@@ -18,73 +20,20 @@ interface ErrorStateProps {
 export default function ErrorState({
   title = '오류가 발생했습니다',
   message = '문제가 발생했습니다. 다시 시도해주세요.',
-  size = 'auto',
+  size = 'medium',
   icon: Icon = AlertTriangle,
   className,
   onRetry,
   retryText = '다시 시도',
   showBorder = true,
 }: ErrorStateProps) {
-  const { isDarkMode, getThemeClass } = useTheme();
-  const getSizeClasses = () => {
-    switch (size) {
-      case 'sm':
-        return {
-          container: 'p-4',
-          icon: 'h-8 w-8',
-          iconContainer: 'p-2',
-          title: 'text-sm',
-          message: 'text-xs',
-          button: 'h-8 px-3 text-xs',
-          buttonIcon: 'h-3 w-3',
-          spacing: 'space-y-1',
-          iconSpacing: 'mb-2',
-          buttonSpacing: 'mt-3',
-        };
-      case 'md':
-        return {
-          container: 'p-6',
-          icon: 'h-12 w-12',
-          iconContainer: 'p-3',
-          title: 'text-base',
-          message: 'text-sm',
-          button: 'h-10 px-4 text-sm',
-          buttonIcon: 'h-4 w-4',
-          spacing: 'space-y-2',
-          iconSpacing: 'mb-3',
-          buttonSpacing: 'mt-4',
-        };
-      case 'lg':
-        return {
-          container: 'p-8',
-          icon: 'h-16 w-16',
-          iconContainer: 'p-4',
-          title: 'text-xl',
-          message: 'text-base',
-          button: 'h-11 px-6 text-base',
-          buttonIcon: 'h-5 w-5',
-          spacing: 'space-y-3',
-          iconSpacing: 'mb-4',
-          buttonSpacing: 'mt-6',
-        };
-      case 'auto':
-        return {
-          container: 'p-4 sm:p-6 lg:p-8',
-          icon: 'h-8 w-8 sm:h-12 sm:w-12 lg:h-16 lg:w-16',
-          iconContainer: 'p-2 sm:p-3 lg:p-4',
-          title: 'text-sm sm:text-base lg:text-xl',
-          message: 'text-xs sm:text-sm lg:text-base',
-          button:
-            'h-8 px-3 text-xs sm:h-10 sm:px-4 sm:text-sm lg:h-11 lg:px-6 lg:text-base',
-          buttonIcon: 'h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5',
-          spacing: 'space-y-1 sm:space-y-2 lg:space-y-3',
-          iconSpacing: 'mb-2 sm:mb-3 lg:mb-4',
-          buttonSpacing: 'mt-3 sm:mt-4 lg:mt-6',
-        };
-    }
-  };
+  const { getThemeClass } = useTheme();
+  const { getCardStyle, getButtonStyle, spacing } = useDesignSystem();
 
-  const sizeClasses = getSizeClasses();
+  // 디자인 시스템에 맞춘 스타일 적용
+  const cardStyle = getCardStyle(size, 'default');
+  const sizeStyles = componentSizes[size];
+  const buttonStyle = getButtonStyle('small', 'secondary');
 
   return (
     <div
@@ -96,50 +45,74 @@ export default function ErrorState({
       <div
         className={cn(
           'mx-auto flex max-w-md flex-col items-center text-center',
-          showBorder && `rounded-lg border ${isDarkMode ? 'border-red-900/50' : 'border-red-200'} shadow-sm ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`,
-          sizeClasses.container
+          showBorder && [
+            cardSystem.base,
+            cardSystem.variants.default,
+            getThemeClass('component'),
+            sizeStyles.borderRadius,
+            sizeStyles.padding,
+            sizeStyles.shadow,
+            'border-red-200 dark:border-red-900/50'
+          ],
+          !showBorder && sizeStyles.padding,
+          componentStates.default.transition
         )}
       >
         {/* 아이콘 */}
-        <div className={sizeClasses.iconSpacing}>
+        <div className={cn(spacing.inner.normal)}>
           <div
             className={cn(
-              `flex items-center justify-center rounded-full ${isDarkMode ? 'bg-red-900/20' : 'bg-red-50'}`,
-              sizeClasses.iconContainer
+              'flex items-center justify-center rounded-full',
+              'bg-red-50 dark:bg-red-900/20',
+              sizeStyles.padding
             )}
           >
-            <Icon className={cn(sizeClasses.icon, 'text-red-500')} />
+            <Icon 
+              className={cn(
+                sizeStyles.text === 'text-sm' ? 'h-8 w-8' :
+                sizeStyles.text === 'text-base' ? 'h-12 w-12' :
+                sizeStyles.text === 'text-lg' ? 'h-16 w-16' : 'h-20 w-20',
+                'text-red-500'
+              )} 
+            />
           </div>
         </div>
 
         {/* 텍스트 */}
-        <div className={sizeClasses.spacing}>
+        <div className={spacing.inner.tight}>
           <h3
             className={cn(
-              sizeClasses.title,
-              `font-semibold tracking-tight ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`
+              sizeStyles.text,
+              'font-semibold tracking-tight',
+              getThemeClass('textPrimary')
             )}
           >
             {title}
           </h3>
-          <p className={cn(sizeClasses.message, isDarkMode ? 'text-gray-400' : 'text-gray-500')}>{message}</p>
+          <p className={cn(
+            sizeStyles.text === 'text-sm' ? 'text-xs' :
+            sizeStyles.text === 'text-base' ? 'text-sm' :
+            sizeStyles.text === 'text-lg' ? 'text-base' : 'text-lg',
+            getThemeClass('textSecondary')
+          )}>
+            {message}
+          </p>
         </div>
 
         {/* 재시도 버튼 */}
         {onRetry && (
-          <div className={sizeClasses.buttonSpacing}>
+          <div className="mt-4">
             <button
               onClick={onRetry}
               className={cn(
-                'inline-flex items-center justify-center gap-2 rounded-md',
-                'bg-red-500 text-white hover:bg-red-600',
-                'focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:outline-none',
-                'disabled:pointer-events-none disabled:opacity-50',
-                'transition-colors',
-                sizeClasses.button
+                buttonSystem.base,
+                buttonSystem.variants.destructive,
+                buttonSystem.sizes.sm,
+                componentStates.clickable.transition,
+                componentStates.clickable.cursor
               )}
             >
-              <RefreshCw className={sizeClasses.buttonIcon} />
+              <RefreshCw className="h-4 w-4" />
               {retryText}
             </button>
           </div>
