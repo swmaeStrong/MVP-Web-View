@@ -1,6 +1,7 @@
 'use client';
 
 import { useHourlyUsage } from '@/hooks/useHourlyUsage';
+import { useTheme } from '@/hooks/useTheme';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import {
   ChartContainer,
@@ -16,7 +17,6 @@ import {
   SelectValue,
 } from '@/shadcn/ui/select';
 import { getKSTDateString } from '@/utils/timezone';
-import { Target } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import {
   Bar,
@@ -29,7 +29,6 @@ import {
 } from 'recharts';
 import ErrorState from '../common/ErrorState';
 import NoData from '../common/NoData';
-import { useTheme } from '@/hooks/useTheme';
 
 interface HourlyUsageComparisonProps {
   userId: string;
@@ -198,7 +197,7 @@ export default function HourlyUsageComparison({
             onRetry={refetch}
             retryText='새로고침'
             showBorder={false}
-            size='sm'
+            size='small'
           />
         </CardContent>
       </Card>
@@ -212,10 +211,8 @@ export default function HourlyUsageComparison({
           <div className='flex items-center justify-between'>
             <div>
               <CardTitle className={`flex items-center gap-2 text-lg font-semibold ${getThemeTextColor('primary')}`}>
-                <Target className='h-5 w-5 text-purple-600' />
                 시간별 사용량
               </CardTitle>
-              <p className={`mt-1 text-sm ${getThemeTextColor('secondary')}`}>{currentDate}</p>
             </div>
             <div className='flex items-center gap-3'>
               {/* 차트 타입 토글 */}
@@ -293,12 +290,12 @@ export default function HourlyUsageComparison({
 
         <CardContent className='px-2 pt-0'>
           {chartData.length === 0 ? (
-            <div className='flex h-[350px] items-center justify-center'>
+            <div className='flex h-[350px] items-center justify-center p-4'>
               <NoData
                 title='시간별 데이터가 없습니다'
                 message='선택한 날짜에 활동 기록이 없습니다.'
                 showBorder={false}
-                size='md'
+                size='medium'
               />
             </div>
           ) : (

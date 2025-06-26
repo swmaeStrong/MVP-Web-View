@@ -2,8 +2,10 @@
 
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { StatisticsCategory } from '@/types/statistics';
-import { formatTime } from '@/utils/statisticsUtils';
 import { useTheme } from '@/hooks/useTheme';
+import { useDesignSystem } from '@/hooks/useDesignSystem';
+import { cardSystem, componentStates, spacing, layouts, buttonSystem } from '@/styles/design-system';
+import NoData from '@/components/common/NoData';
 
 interface CategoryListProps {
   categories: StatisticsCategory[];
@@ -16,7 +18,12 @@ export default function CategoryList({
   selectedCategory,
   onCategorySelect,
 }: CategoryListProps) {
-  const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
+  const { getThemeClass, getThemeTextColor } = useTheme();
+  const { getCardStyle, getButtonStyle } = useDesignSystem();
+  
+  // 디자인 시스템 스타일 적용
+  const cardStyles = getCardStyle('medium', 'hoverable');
+  const buttonStyles = getButtonStyle('small', 'ghost');
   // 6개의 고정 색상 정의
   const categoryColors = [
     '#8b5cf6', // 보라
@@ -34,93 +41,84 @@ export default function CategoryList({
   }));
 
   if (top6Categories.length === 0) {
-    return null;
+    return (
+      <NoData 
+        title="카테고리 데이터 없음"
+        message="분석할 카테고리 데이터가 없습니다."
+        size="medium"
+        showBorder={false}
+      />
+    );
   }
 
   return (
-    <Card className={`rounded-lg border-2 shadow-md transition-all duration-300 hover:shadow-lg ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <CardContent className='p-4'>
-        <div className='mb-4 flex items-center justify-between'>
-          <h4 className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
-            상위 6개 카테고리
-          </h4>
-          <button
-            onClick={() => onCategorySelect(null)}
-            className={`rounded px-2 py-1 text-xs transition-all ${
-              selectedCategory === null
-                ? `${getThemeClass('componentSecondary')} font-semibold ${getThemeTextColor('accent')}`
-                : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('accent')}`
-            }`}
-          >
-            전체
-          </button>
-        </div>
+    <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${componentStates.default.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <CardContent className={`${cardSystem.content} ${spacing.inner.normal}`}>
+        {/* ActivityList + TotalTimeCard와 동일한 높이를 위한 고정 높이 */}
+        <div className="h-[542px] flex flex-col">
+          {/* 헤더 */}
+          <div className="flex items-center justify-between mb-4">
+            <h4 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
+              카테고리 분석
+            </h4>
+            <button
+              onClick={() => onCategorySelect(null)}
+              className={`${buttonSystem.base} ${buttonSystem.sizes.sm} ${
+                selectedCategory === null
+                  ? `${buttonSystem.variants.secondary} ${getThemeTextColor('accent')}`
+                  : `${buttonSystem.variants.ghost} ${getThemeTextColor('secondary')} hover:${getThemeTextColor('accent')}`
+              } ${componentStates.clickable.transition}`}
+            >
+              전체
+            </button>
+          </div>
 
-        <div className='grid grid-cols-1 gap-3 lg:grid-cols-2'>
-          {top6Categories.map((category, index) => {
-            const isSelected = selectedCategory?.name === category.name;
+          {/* 카테고리 리스트 - 스크롤 가능 */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="space-y-2">
+              {top6Categories.slice(0, 4).map((category, index) => {
+                const isSelected = selectedCategory?.name === category.name;
 
-            return (
-              <div
-                key={index}
-                onClick={() => onCategorySelect(category)}
-                className={`group flex cursor-pointer items-center justify-between rounded-lg border-2 p-4 shadow-sm transition-all duration-200 ${
-                  isSelected
-                    ? `${getThemeClass('borderLight')} ${getThemeClass('componentSecondary')} shadow-md`
-                    : `${getThemeClass('border')} ${getThemeClass('component')} hover:${getThemeClass('borderLight')} hover:shadow-md`
-                }`}
-              >
-                {/* 색상 인디케이터 및 카테고리 정보 */}
-                <div className='flex items-center gap-3'>
+                return (
                   <div
-                    className={`h-4 w-4 rounded-full transition-all duration-200 ${
-                      isSelected ? 'ring-2 ring-purple-300 ring-offset-1' : ''
-                    }`}
-                    style={{ backgroundColor: category.color }}
-                  />
-
-                  <div className='min-w-0 flex-1'>
-                    <div
-                      className={`truncate text-sm font-semibold transition-colors ${
-                        isSelected
-                          ? getThemeTextColor('accent')
-                          : `${getThemeTextColor('primary')} group-hover:${getThemeTextColor('accent')}`
-                      }`}
-                    >
-                      {category.name}
-                    </div>
-                    <div className={`mt-0.5 text-xs ${getThemeTextColor('secondary')}`}>
-                      {category.percentage}%
-                    </div>
-                  </div>
-                </div>
-
-                {/* 사용 시간 */}
-                <div className='text-right'>
-                  <div
-                    className={`text-sm font-semibold transition-colors ${
+                    key={index}
+                    onClick={() => onCategorySelect(category)}
+                    className={`group flex items-center justify-between p-2 rounded transition-colors cursor-pointer ${
                       isSelected
-                        ? getThemeTextColor('accent')
-                        : `${getThemeTextColor('primary')} group-hover:${getThemeTextColor('accent')}`
+                        ? `${getThemeClass('componentSecondary')} ${getThemeClass('borderLight')}`
+                        : `hover:${getThemeClass('componentSecondary')}`
                     }`}
                   >
-                    {formatTime(category.time)}
-                  </div>
+                    {/* 왼쪽: 색상 + 이름 */}
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <div
+                        className={`h-2 w-2 rounded-full flex-shrink-0 ${
+                          isSelected ? 'ring-1 ring-purple-300' : ''
+                        }`}
+                        style={{ backgroundColor: category.color }}
+                      />
+                      <div
+                        className={`truncate text-sm font-medium ${
+                          isSelected
+                            ? getThemeTextColor('accent')
+                            : getThemeTextColor('primary')
+                        }`}
+                      >
+                        {category.name}
+                      </div>
+                    </div>
 
-                  {/* 프로그레스 바 */}
-                  <div className={`mt-1 h-1 w-16 rounded-full ${getThemeClass('componentSecondary')}`}>
-                    <div
-                      className='h-1 rounded-full transition-all duration-300'
-                      style={{
-                        width: `${category.percentage}%`,
-                        backgroundColor: category.color,
-                      }}
-                    />
+                    {/* 오른쪽: 퍼센티지만 표시 */}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className={`text-sm font-semibold ${getThemeTextColor('secondary')}`}>
+                        {category.percentage}%
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            );
-          })}
+                );
+              })}
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>

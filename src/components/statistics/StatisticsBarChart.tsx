@@ -1,5 +1,6 @@
 'use client';
 
+import { useTheme } from '@/hooks/useTheme';
 import {
   ChartConfig,
   ChartContainer,
@@ -10,7 +11,6 @@ import { PeriodType } from '@/types/statistics';
 import { getCategoryColor } from '@/utils/categories';
 import { formatTime } from '@/utils/statisticsUtils';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
-import { useTheme } from '@/hooks/useTheme';
 
 interface StatisticsBarChartProps {
   period: PeriodType;
@@ -226,10 +226,6 @@ export default function StatisticsBarChart({
         </h4>
         <div className='grid grid-cols-2 gap-4 lg:grid-cols-4'>
           <div className={`rounded-lg p-3 shadow-sm ${getThemeClass('component')}`}>
-            <div className={`text-xs ${getThemeClass('textSecondary')}`}>총 작업시간</div>
-            <div className='text-lg font-bold text-purple-600'>
-              {formatTime(totalTime)}
-            </div>
           </div>
           <div className={`rounded-lg p-3 shadow-sm ${getThemeClass('component')}`}>
             <div className={`text-xs ${getThemeClass('textSecondary')}`}>

@@ -1,20 +1,20 @@
 'use client';
 
 import { useAvailableDates, useUsageStatistics } from '@/hooks/useStatistics';
+import { useTheme } from '@/hooks/useTheme';
 import { useCurrentUser } from '@/stores/userStore';
 import { PeriodType, StatisticsCategory } from '@/types/statistics';
 import { getDateString } from '@/utils/statisticsUtils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useTheme } from '@/hooks/useTheme';
 
 // 컴포넌트 임포트
-import CategoryList from '@/components/statistics/CategoryList';
+import ActivityList from '@/components/statistics/ActivityList';
 import HourlyUsageComparison from '@/components/statistics/HourlyUsageComparison';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
+import TimelineChart from '@/components/statistics/TimelineChart';
 import TotalTimeCard from '@/components/statistics/TotalTimeCard';
 import { useInitUser } from '@/hooks/useInitUser';
 import ErrorState from '../../components/common/ErrorState';
-import NoData from '../../components/common/NoData';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<PeriodType>('daily');
@@ -137,6 +137,79 @@ export default function StatisticsPage() {
     setSelectedCategory(category);
   };
 
+  // 타임라인 샘플 데이터 생성
+  const timelineSchedules = useMemo(() => {
+    // 항상 샘플 데이터를 보여주도록 변경
+    interface ScheduleItem {
+      id: string;
+      title: string;
+      startTime: string;
+      endTime: string;
+      type: 'primary' | 'secondary';
+    }
+    
+    const schedules: ScheduleItem[] = [
+      {
+        id: 'timeline-1',
+        title: '개발 작업',
+        startTime: '09:00',
+        endTime: '12:00',
+        type: 'primary'
+      },
+      {
+        id: 'timeline-2',
+        title: '회의',
+        startTime: '14:00',
+        endTime: '15:30',
+        type: 'secondary'
+      },
+      {
+        id: 'timeline-3',
+        title: '코드 리뷰',
+        startTime: '16:00',
+        endTime: '17:00',
+        type: 'secondary'
+      },
+      {
+        id: 'timeline-4',
+        title: '프로젝트 설계',
+        startTime: '10:30',
+        endTime: '11:30',
+        type: 'primary'
+      },
+      {
+        id: 'timeline-5',
+        title: '문서 작성',
+        startTime: '19:00',
+        endTime: '21:00',
+        type: 'primary'
+      },
+      {
+        id: 'timeline-6',
+        title: '팀 스탠드업',
+        startTime: '08:30',
+        endTime: '09:00',
+        type: 'secondary'
+      },
+      {
+        id: 'timeline-7',
+        title: '버그 수정',
+        startTime: '13:00',
+        endTime: '13:45',
+        type: 'primary'
+      },
+      {
+        id: 'timeline-8',
+        title: '학습',
+        startTime: '22:00',
+        endTime: '23:30',
+        type: 'secondary'
+      }
+    ];
+
+    return schedules;
+  }, []);
+
   // 로딩 상태
   if (isLoading) {
     return (
@@ -177,36 +250,20 @@ export default function StatisticsPage() {
     <div className={`min-h-screen p-4 sm:p-6 lg:p-8 ${getThemeClass('background')}`}>
       <div className='mx-auto max-w-6xl space-y-6 sm:space-y-8'>
         {/* 메인 콘텐츠 */}
-        <div className='grid gap-6 sm:gap-8 lg:grid-cols-2'>
+        <div className='grid gap-6 sm:gap-8 lg:grid-cols-2 min-h-[600px]'>
           {/* 왼쪽: 총 작업시간 & 상위 카테고리 */}
           <div className='flex flex-col space-y-3'>
             {/* 작업시간 카드 - 컴팩트하게 */}
             <div className='flex-shrink-0'>
-              <TotalTimeCard
-                totalTime={dailyData?.totalTime || 0}
-                selectedCategory={selectedCategory}
+            <TotalTimeCard
+              totalTime={dailyData?.totalTime || 0}
               />
             </div>
 
-            {/* 상위 6개 카테고리 목록 - 더 많은 공간 */}
-            {dailyData && dailyData.categories.length > 0 ? (
-              <div className='min-h-0 flex-1'>
-                <CategoryList
-                  categories={dailyData.categories}
-                  selectedCategory={selectedCategory}
-                  onCategorySelect={handleCategorySelect}
-                />
-              </div>
-            ) : (
-              <div className={`min-h-0 flex-1 rounded-lg shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
-                <NoData
-                  title='카테고리가 없습니다'
-                  message='오늘 활동한 카테고리가 없습니다.'
-                  showBorder={false}
-                  size='auto'
-                />
-              </div>
-            )}
+            {/* Activity 목록 */}
+            <div className='flex-1'>
+              <ActivityList />
+            </div>
           </div>
 
           {/* 오른쪽: 차트 */}
@@ -218,6 +275,13 @@ export default function StatisticsPage() {
             canGoPrevious={canGoPrevious}
             canGoNext={canGoNext}
             currentDate={selectedDate}
+          />
+        </div>
+
+        {/* 타임라인 차트 - 전체 너비 사용 */}
+        <div className='col-span-1 lg:col-span-2'>
+          <TimelineChart 
+            schedules={timelineSchedules}
           />
         </div>
 

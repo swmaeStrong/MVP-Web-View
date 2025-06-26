@@ -40,13 +40,13 @@ export default function StatisticsRadarChart({
 
   if (top6Categories.length === 0) {
     return (
-      <div className='flex h-[550px] items-center justify-center'>
+      <div className='flex h-full items-center justify-center p-4'>
         <NoData
           title='분석할 카테고리가 없습니다'
           message='활동 데이터가 없어 레이더 차트를 표시할 수 없습니다.'
           icon={PieChart}
           showBorder={false}
-          size='md'
+          size='medium'
         />
       </div>
     );
@@ -71,29 +71,16 @@ export default function StatisticsRadarChart({
   }, {} as ChartConfig);
 
   return (
-    <div className='space-y-6'>
-      {/* 총 작업시간을 상단으로 이동 */}
-      <div className={`rounded-xl border-2 p-3 shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
-        <div className='flex items-center justify-between text-sm'>
-          <div className={`flex items-center gap-2 ${getThemeTextColor('accent')}`}>
-            <span>⚡</span>
-            <span className='font-medium'>총 작업시간</span>
-          </div>
-          <span className={`font-bold ${getThemeTextColor('accent')}`}>
-            {formatTime(top6Categories.reduce((sum, cat) => sum + cat.time, 0))}
-          </span>
-        </div>
-      </div>
-
+    <div className='h-full flex items-center justify-center'>
       {/* 차트 */}
-      <div className='relative h-[550px] w-full px-2'>
+      <div className='relative w-full h-full flex items-center justify-center'>
         <ChartContainer
           config={chartConfig}
-          className='mx-auto aspect-square max-h-[550px] max-w-[550px]'
+          className='mx-auto aspect-square h-full max-h-[480px] max-w-[480px]'
         >
           <RadarChart
             data={chartData}
-            margin={{ top: 60, right: 80, bottom: 60, left: 80 }}
+            margin={{ top: 40, right: 60, bottom: 40, left: 60 }}
           >
             <ChartTooltip
               content={({ active, payload }) => {

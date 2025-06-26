@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/shadcn/ui/button';
-import { Card, CardContent } from '@/shadcn/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import { DailyStatistics, PeriodType } from '@/types/statistics';
 import { formatKSTDate } from '@/utils/timezone';
 import {
@@ -60,15 +60,13 @@ export default function StatisticsChart({
   };
 
   return (
-    <Card className={`rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <CardContent className='p-4'>
-        {/* 차트 헤더 */}
-        <div className='mb-6 flex items-center justify-between'>
-          <div className='flex items-center gap-3'>
-            {getChartIcon()}
-            <h3 className={`text-lg font-bold ${getThemeClass('textPrimary')}`}>
+    <Card className={`h-full rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <CardHeader className='pb-3'>
+        <div className='flex items-center justify-between'>
+          <div>
+            <CardTitle className={`text-lg font-semibold ${getThemeClass('textPrimary')}`}>
               {getChartTitle()}
-            </h3>
+            </CardTitle>
           </div>
 
           {/* 네비게이션 버튼 */}
@@ -78,7 +76,7 @@ export default function StatisticsChart({
               size='sm'
               onClick={onPrevious}
               disabled={!canGoPrevious}
-              className={`h-8 w-8 rounded-lg p-0 transition-all hover:scale-105 ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeClass('textPrimary')}`}
+              className={`h-8 w-8 rounded-lg p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeClass('textPrimary')} hover:border-purple-300 hover:bg-purple-50 dark:hover:border-purple-600 dark:hover:bg-purple-900/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:border-current disabled:hover:bg-current`}
             >
               <ChevronLeft className='h-4 w-4' />
             </Button>
@@ -87,31 +85,30 @@ export default function StatisticsChart({
               size='sm'
               onClick={onNext}
               disabled={!canGoNext}
-              className={`h-8 w-8 rounded-lg p-0 transition-all hover:scale-105 ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeClass('textPrimary')}`}
+              className={`h-8 w-8 rounded-lg p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeClass('textPrimary')} hover:border-purple-300 hover:bg-purple-50 dark:hover:border-purple-600 dark:hover:bg-purple-900/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:border-current disabled:hover:bg-current`}
             >
               <ChevronRight className='h-4 w-4' />
             </Button>
           </div>
         </div>
+      </CardHeader>
 
-        {/* 차트 내용 */}
-        <div className='min-h-[550px]'>
+      <CardContent className='flex-1 min-h-0 p-4 pt-0'>
           {selectedPeriod === 'daily' && data && data.categories.length > 0 ? (
             <StatisticsRadarChart data={data} />
           ) : selectedPeriod === 'weekly' || selectedPeriod === 'monthly' ? (
             <StatisticsBarChart period={selectedPeriod} />
           ) : (
-            <div className='flex h-[550px] items-center justify-center'>
+            <div className='flex h-full items-center justify-center p-4'>
               <NoData
                 title='활동 데이터가 없습니다'
                 message='선택한 날짜에 기록된 활동이 없습니다.'
                 icon={PieChart}
                 showBorder={false}
-                size='md'
+                size='large'
               />
             </div>
           )}
-        </div>
       </CardContent>
     </Card>
   );
