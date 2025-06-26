@@ -2,7 +2,7 @@
 export const themeColors = {
   dark: {
     // 배경색
-    background: '#040404',           // bg-[#040404]
+    background: '#383838',           // bg-[#383838]
     component: '#1C1C1C',           // 컴포넌트 bg-[#1C1C1C]
     componentSecondary: '#2D2D2D',  // 보조 컴포넌트 bg-[#2D2D2D]
     // 테두리 색상
@@ -16,7 +16,7 @@ export const themeColors = {
     },
     // Tailwind 클래스명
     classes: {
-      background: 'bg-[#040404]',
+      background: 'bg-[#383838]',
       component: 'bg-[#1C1C1C]',
       componentSecondary: 'bg-[#2D2D2D]',
       border: 'border-[rgb(80,80,80)]',

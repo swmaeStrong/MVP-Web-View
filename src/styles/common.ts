@@ -130,12 +130,13 @@ export const borders = {
   },
 };
 
-// 버튼 스타일
+// 버튼 스타일 (design-system.ts의 buttonSystem 사용 권장)
+// 레거시 지원을 위해 유지하되, 새로운 컴포넌트는 design-system.ts 사용
 export const buttons = {
-  // 기본 버튼
+  // 기본 버튼 (design-system.ts로 이동됨)
   base: 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200',
 
-  // 크기별
+  // 크기별 (design-system.ts의 buttonSystem.sizes 사용 권장)
   size: {
     xs: 'px-2.5 py-1.5 text-xs',
     sm: 'px-3 py-2 text-sm',
@@ -144,7 +145,7 @@ export const buttons = {
     xl: 'px-6 py-3 text-base',
   },
 
-  // 스타일별
+  // 스타일별 (design-system.ts의 buttonSystem.variants 사용 권장)
   variant: {
     primary:
       'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700',
@@ -156,12 +157,13 @@ export const buttons = {
   },
 };
 
-// 카드 스타일
+// 카드 스타일 (design-system.ts의 cardSystem 사용 권장)
+// 레거시 지원을 위해 유지하되, 새로운 컴포넌트는 design-system.ts 사용
 export const cards = {
-  // 기본 카드
+  // 기본 카드 (design-system.ts로 이동됨)
   base: 'bg-white rounded-lg shadow-md overflow-hidden',
 
-  // 카드 변형
+  // 카드 변형 (design-system.ts의 cardSystem.variants 사용 권장)
   variant: {
     default: 'bg-white border border-gray-200 rounded-lg shadow-sm',
     elevated: 'bg-white rounded-lg shadow-lg',
@@ -180,7 +182,7 @@ export const cards = {
     responsive: 'p-4 sm:p-6 lg:p-8',
   },
 
-  // 호버 효과
+  // 호버 효과 (design-system.ts의 cardSystem.hover 사용 권장)
   hover: {
     lift: 'hover:shadow-xl hover:-translate-y-1 transition-all duration-200',
     glow: 'hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-200',
@@ -209,12 +211,13 @@ export const inputs = {
   },
 };
 
-// 배지/태그
+// 배지/태그 (design-system.ts의 badgeSystem 사용 권장)
+// 레거시 지원을 위해 유지하되, 새로운 컴포넌트는 design-system.ts 사용
 export const badges = {
-  // 기본 스타일
+  // 기본 스타일 (design-system.ts로 이동됨)
   base: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
 
-  // 색상별
+  // 색상별 (design-system.ts의 badgeSystem.colors 사용 권장)
   color: {
     gray: 'bg-gray-100 text-gray-800',
     red: 'bg-red-100 text-red-800',

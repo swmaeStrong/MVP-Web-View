@@ -2,6 +2,7 @@
 export * from './animations';
 export * from './colors';
 export * from './common';
+export * from './design-system';
 
 // 편의를 위한 통합 객체들
 import {
@@ -9,6 +10,7 @@ import {
     categoryColors,
     extendedRankColors,
     rankColors,
+    themeColors,
 } from './colors';
 
 import {
@@ -30,7 +32,15 @@ import {
     typography,
 } from './common';
 
-// 통합 스타일 객체
+import {
+    buttonSystem,
+    cardSystem,
+    badgeSystem,
+    componentSizes,
+    componentStates,
+} from './design-system';
+
+// 통합 스타일 객체 (새로운 구조)
 export const styles = {
   // 색상 시스템
   colors: {
@@ -38,6 +48,26 @@ export const styles = {
     category: categoryColors,
     rank: rankColors,
     extendedRank: extendedRankColors,
+    theme: themeColors,
+  },
+
+  // 통합된 컴포넌트 시스템 (우선 사용 권장)
+  components: {
+    button: buttonSystem,
+    card: cardSystem,
+    badge: badgeSystem,
+    // 레거시 지원
+    buttons,
+    cards,
+    badges,
+    inputs,
+    overlays,
+  },
+
+  // 디자인 시스템
+  design: {
+    sizes: componentSizes,
+    states: componentStates,
   },
 
   // 애니메이션 시스템
@@ -58,15 +88,6 @@ export const styles = {
   effects: {
     shadows,
     borders,
-  },
-
-  // 컴포넌트 스타일
-  components: {
-    buttons,
-    cards,
-    inputs,
-    badges,
-    overlays,
   },
 };
 
