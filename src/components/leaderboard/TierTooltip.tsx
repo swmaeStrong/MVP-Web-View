@@ -96,13 +96,13 @@ export default function TierTooltip({
       onMouseEnter={() => setIsVisible(true)}
       onMouseLeave={() => setIsVisible(false)}
     >
-      {/* 트리거 아이콘 */}
+      {/* 트리거 아이콘 - 컴팩트 */}
       <div className='cursor-help'>
         <Image
           src={icon}
           alt={title}
-          width={20}
-          height={20}
+          width={14}
+          height={14}
           className='opacity-70 transition-opacity duration-200 hover:opacity-100'
         />
       </div>
@@ -110,30 +110,30 @@ export default function TierTooltip({
       {/* 툴팁 */}
       {isVisible && (
         <div
-          className={`absolute bottom-full left-1/2 z-50 mb-2 w-64 -translate-x-1/2 transform ${componentSizes.medium.borderRadius} ${componentSizes.medium.border} ${componentSizes.medium.padding} ${componentSizes.large.shadow} ${tierInfo.bgColor} ${tierInfo.borderColor}`}
+          className={`absolute bottom-full left-1/2 z-50 mb-2 w-40 -translate-x-1/2 transform rounded-lg border p-3 shadow-lg ${tierInfo.bgColor} ${tierInfo.borderColor}`}
         >
           {/* 화살표 */}
           <div
             className={`absolute top-full left-1/2 h-0 w-0 -translate-x-1/2 transform border-t-4 border-r-4 border-l-4 border-transparent ${tierInfo.borderColor.replace('border-', 'border-t-')}`}
           ></div>
 
-          <div className='mb-3 flex items-center space-x-3'>
+          <div className='mb-2 flex items-center space-x-2'>
             <Image
               src={icon}
               alt={title}
-              width={32}
-              height={32}
-              className='drop-shadow-sm'
+              width={20}
+              height={20}
+              className='drop-shadow-sm flex-shrink-0'
             />
-            <div>
-              <h3 className={`text-lg font-bold ${tierInfo.color}`}>{title}</h3>
-              <p className={`text-sm font-semibold ${tierInfo.color}`}>
+            <div className='min-w-0'>
+              <h3 className={`text-sm font-bold ${tierInfo.color} truncate`}>{title}</h3>
+              <p className={`text-xs font-semibold ${tierInfo.color}`}>
                 {tierInfo.requirement}
               </p>
             </div>
           </div>
 
-          <p className={`text-sm leading-relaxed ${getThemeTextColor('primary')}`}>
+          <p className={`text-xs leading-tight ${getThemeTextColor('primary')}`}>
             {tierInfo.description}
           </p>
         </div>
