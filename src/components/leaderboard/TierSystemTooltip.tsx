@@ -41,63 +41,54 @@ export default function TierSystemTooltip() {
       tier: 'CHALLENGER',
       percentage: '상위 1%',
       color: 'text-yellow-600',
-      description: '최고의 전설들',
       icon: '/icons/rank/challenger.png',
     },
     {
       tier: 'GRANDMASTER',
       percentage: '상위 3%',
       color: 'text-red-600',
-      description: '뛰어난 상위 랭커들',
       icon: '/icons/rank/grandMaster.png',
     },
     {
       tier: 'MASTER',
       percentage: '상위 5%',
       color: 'text-purple-600',
-      description: '마스터급 고수들',
       icon: '/icons/rank/master.png',
     },
     {
       tier: 'DIAMOND',
       percentage: '상위 10%',
       color: 'text-blue-600',
-      description: '빛나는 실력자들',
       icon: '/icons/rank/diamond.png',
     },
     {
       tier: 'EMERALD',
       percentage: '상위 15%',
       color: 'text-emerald-600',
-      description: '꾸준한 상급자들',
       icon: '/icons/rank/emerald.png',
     },
     {
       tier: 'PLATINUM',
       percentage: '상위 30%',
       color: 'text-slate-600',
-      description: '안정적인 실력',
       icon: '/icons/rank/platinum.png',
     },
     {
       tier: 'GOLD',
       percentage: '상위 50%',
       color: 'text-amber-600',
-      description: '황금빛 중급자들',
       icon: '/icons/rank/gold.png',
     },
     {
       tier: 'SILVER',
       percentage: '상위 80%',
       color: 'text-gray-600',
-      description: '은빛 열정',
       icon: '/icons/rank/silver.png',
     },
     {
       tier: 'BRONZE',
       percentage: '나머지',
       color: 'text-orange-600',
-      description: '시작하는 모든 이들',
       icon: '/icons/rank/bronze.png',
     },
   ];
@@ -110,20 +101,20 @@ export default function TierSystemTooltip() {
       onMouseLeave={() => setIsVisible(false)}
       style={{ zIndex: 99998 }}
     >
-      {/* 트리거 버튼 */}
+      {/* 트리거 버튼 - 컴팩트 */}
       <button
-        className={`flex w-[120px] cursor-help items-center justify-center space-x-2 ${componentSizes.small.borderRadius} ${componentSizes.small.border} px-3 py-2 ${componentStates.hoverable.transition} ${getThemeClass('border')} ${getThemeClass('component')} hover:${getThemeClass('componentSecondary')} hover:${getThemeClass('borderLight')}`}
+        className={`flex w-16 cursor-help items-center justify-center space-x-1 rounded-lg border px-2 py-1.5 ${componentStates.hoverable.transition} ${getThemeClass('border')} ${getThemeClass('component')} hover:${getThemeClass('componentSecondary')} hover:${getThemeClass('borderLight')}`}
         style={{ zIndex: 99998 }}
       >
-        <Info className={`h-4 w-4 ${getThemeTextColor('secondary')}`} />
-        <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>티어 설명</span>
+        <Info className={`h-3 w-3 ${getThemeTextColor('secondary')}`} />
+        <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>티어</span>
       </button>
 
       {/* 툴팁 */}
       {isVisible && (
         <div
           ref={tooltipRef}
-          className={`absolute top-full ${tooltipPosition.left} mt-2 w-[480px] ${componentSizes.medium.borderRadius} ${componentSizes.medium.border} ${componentSizes.large.padding} ${componentSizes.xlarge.shadow} ${getThemeClass('borderLight')} ${getThemeClass('component')}`}
+          className={`absolute top-full ${tooltipPosition.left} mt-2 w-[280px] rounded-lg border p-3 shadow-xl ${getThemeClass('borderLight')} ${getThemeClass('component')}`}
           style={{ zIndex: 99999 }}
         >
           {/* 화살표 - 항상 위쪽을 가리킴 */}
@@ -137,46 +128,42 @@ export default function TierSystemTooltip() {
             }}
           ></div>
 
-          <div className='mb-4'>
-            <h3 className={`mb-2 text-lg font-bold ${getThemeTextColor('primary')}`}>
+          <div className='mb-3'>
+            <h3 className={`mb-1 text-sm font-bold ${getThemeTextColor('primary')}`}>
               🏆 티어 시스템
             </h3>
-            <p className={`text-sm ${getThemeTextColor('secondary')}`}>
-              참가자가 100명 이하일 경우 특정 상위 티어는 존재하지 않을 수
-              있습니다.
+            <p className={`text-xs ${getThemeTextColor('secondary')} leading-tight`}>
+              참가자가 100명 이하일 경우 특정 상위 티어는 존재하지 않을 수 있습니다.
             </p>
           </div>
 
-          {/* 3열 그리드 레이아웃 */}
-          <div className='grid grid-cols-3 gap-3'>
+          {/* 컴팩트 그리드 레이아웃 */}
+          <div className='grid grid-cols-3 gap-1.5'>
             {tierSystemInfo.map((tier, index) => (
               <div
                 key={tier.tier}
-                className={`flex flex-col items-center space-y-2 rounded-lg border p-3 text-center ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}
+                className={`flex flex-col items-center space-y-1 rounded-md border p-1.5 text-center ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}
               >
                 <Image
                   src={tier.icon}
                   alt={tier.tier}
-                  width={24}
-                  height={24}
+                  width={14}
+                  height={14}
                   className='drop-shadow-sm'
                 />
                 <div className='w-full'>
-                  <div className={`text-xs font-bold ${tier.color} mb-1`}>
+                  <div className={`text-xs font-bold ${tier.color} mb-0.5 leading-tight truncate`}>
                     {tier.tier}
                   </div>
-                  <div className={`mb-1 text-xs font-semibold ${getThemeTextColor('primary')}`}>
+                  <div className={`text-xs font-semibold ${getThemeTextColor('primary')}`}>
                     {tier.percentage}
                   </div>
-                  <p className={`text-xs leading-tight ${getThemeTextColor('secondary')}`}>
-                    {tier.description}
-                  </p>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className={`mt-4 pt-3 ${getThemeClass('borderLight')}`} style={{borderTopWidth: '1px'}}>
+          <div className={`mt-2 pt-2 ${getThemeClass('borderLight')}`} style={{borderTopWidth: '1px'}}>
             <p className={`text-center text-xs ${getThemeTextColor('secondary')}`}>
               순위에 따라 자동으로 티어가 부여됩니다
             </p>

@@ -95,8 +95,8 @@ export default function LeaderboardList({
       <style>{tierAnimationStyles}</style>
 
       {/* 리더보드 목록 */}
-      <div className='mb-8'>
-        <div className={spacing.inner.normal}>
+      <div className='mb-6'>
+        <div className='space-y-2 lg:space-y-3'>
           {users.map((user: LeaderboardUser, index: number) => {
             // 현재 유저인지 확인
             const isCurrentUser = currentUser && user.id === currentUser.id;

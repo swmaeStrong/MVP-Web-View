@@ -68,7 +68,7 @@ export default function UserCard({
     <div
       key={`rank-${rank}-${user.id || user.nickname || index}`}
       data-user-id={user.id}
-      className={`group relative flex items-center justify-between ${cardSize.borderRadius} ${cardSize.border} ${cardSize.padding} ${cardSize.shadow} ${componentStates.hoverable.transition} ${getThemeClass('border')} ${getThemeClass('component')} ${
+      className={`group relative flex items-center justify-between rounded-lg border p-3 lg:p-4 shadow-sm ${componentStates.hoverable.transition} ${getThemeClass('border')} ${getThemeClass('component')} ${
         isCurrentUser
           ? `ring-2 ${isDarkMode ? 'ring-purple-400' : 'ring-purple-300'}`
           : ''
@@ -76,37 +76,37 @@ export default function UserCard({
       style={{}}
     >
       {/* 좌측 - 순위 & 특별 아이콘 & 사용자 정보 */}
-      <div className='flex items-center space-x-4'>
-        {/* 순위 표시 */}
+      <div className='flex items-center space-x-2 lg:space-x-3'>
+        {/* 순위 표시 - 컴팩트 사이즈 */}
         <div
-          className={`flex h-12 w-12 items-center justify-center rounded-full border text-sm font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')} ${getThemeClass('border')}`}
+          className={`flex h-7 w-7 lg:h-10 lg:w-10 items-center justify-center rounded-full border text-xs lg:text-sm font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')} ${getThemeClass('border')}`}
         >
           {rank}
         </div>
 
-        {/* 순위 아이콘 */}
-        <div className='flex h-12 w-12 items-center justify-center'>
+        {/* 순위 아이콘 - 컴팩트 사이즈 */}
+        <div className='flex h-7 w-7 lg:h-10 lg:w-10 items-center justify-center'>
           <Image
             src={topRankStyle?.icon || '/icons/rank/bronze.png'}
             alt={topRankStyle?.title || 'Bronze'}
-            width={48}
-            height={48}
-            className='drop-shadow-lg'
+            width={28}
+            height={28}
+            className='drop-shadow-lg lg:w-10 lg:h-10'
           />
         </div>
 
         {/* 사용자 정보 */}
-        <div className='flex-1'>
-          <div className='flex items-center space-x-3'>
+        <div className='flex-1 min-w-0'>
+          <div className='flex items-center space-x-2'>
             <h3
-              className={`text-lg font-bold ${getThemeTextColor('primary')}`}
+              className={`text-sm lg:text-base font-bold truncate ${getThemeTextColor('primary')}`}
             >
               {user.nickname}
             </h3>
 
-            {/* 사용자 표시 */}
+            {/* 사용자 표시 - 컴팩트 */}
             {isCurrentUser && (
-              <span className='rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-3 py-1 text-xs font-bold text-white shadow-sm'>
+              <span className='rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-2 py-0.5 text-xs font-bold text-white shadow-sm'>
                 YOU
               </span>
             )}
@@ -115,9 +115,9 @@ export default function UserCard({
       </div>
 
       {/* 우측 - 시간 정보 */}
-      <div className='text-right'>
+      <div className='text-right flex-shrink-0'>
         <div
-          className={`text-2xl font-bold ${
+          className={`text-sm lg:text-xl font-bold ${
             topRankStyle
               ? getThemeTextColor('primary')
               : getThemeTextColor('primary')

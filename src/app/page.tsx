@@ -7,7 +7,7 @@ export default function HomePage() {
     <div className='min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-cyan-50'>
       <Navigation />
 
-      <div className='mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8'></div>
+      <div className='mx-auto max-w-7xl px-4 py-12 lg:px-8'></div>
     </div>
   );
 }

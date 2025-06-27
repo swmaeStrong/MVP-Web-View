@@ -249,181 +249,65 @@ export default function MyRankBanner({
   return (
     <>
       <div
-        className={`${spacing.section.normal} ${componentSizes.xlarge.borderRadius} ${componentSizes.large.border} relative overflow-hidden ${componentSizes.large.padding} ${componentStates.hoverable.transition} ${getRankStyle(rank)}`}
+        className={`mb-3 lg:mb-4 rounded-lg border p-3 lg:p-4 ${getRankStyle(rank)}`}
         style={{ zIndex: 1 }}
       >
-        {/* 배경 효과들 */}
-        <TopRankGlow rank={rank} isDarkMode={isDarkMode} />
-        <AnimatedParticles rank={rank} isDarkMode={isDarkMode} />
 
-        {/* 좌상단 장식 제거 */}
-
-        {/* 우상단 순위 표시 강화 */}
-        {rank && rank <= 10 && (
-          <div className='absolute top-2 right-2 flex items-center space-x-1'>
-            <Award
-              className={`h-4 w-4 ${rank <= 3 ? 'text-yellow-500' : 'text-blue-500'}`}
+        {/* 미니멀 내 순위 정보 */}
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center space-x-3'>
+            {/* 티어 아이콘 - 심플 */}
+            <Image
+              src={tierInfo.icon}
+              alt={tierInfo.title}
+              width={32}
+              height={32}
+              className='drop-shadow-sm lg:w-10 lg:h-10'
             />
-            <span className={`text-xs font-bold ${getThemeTextColor('secondary')}`}>TOP {rank}</span>
-          </div>
-        )}
 
-        <div className='relative z-10 flex items-center justify-between'>
-          <div className='flex items-center space-x-4'>
-            {/* 티어 아이콘 - 향상된 디자인 */}
-            <div className='group relative'>
-              <div className={`absolute inset-0 rounded-full blur-sm transition-all duration-300 group-hover:blur-md ${
-                isDarkMode ? 'bg-white/10' : 'bg-white/30'
-              }`}></div>
-              <Image
-                src={tierInfo.icon}
-                alt={tierInfo.title}
-                width={56}
-                height={56}
-                className='relative z-10 drop-shadow-lg'
-              />
-            </div>
-
-            {/* 유저 정보 - 향상된 디자인 */}
+            {/* 핵심 정보만 */}
             <div>
-              <div className='flex items-center space-x-3'>
-                <h3 className={`text-xl font-bold tracking-wide ${getThemeTextColor('primary')}`}>
+              <div className='flex items-center space-x-2'>
+                <h3 className={`text-sm lg:text-base font-bold ${getThemeTextColor('primary')}`}>
                   {myRank.nickname}
                 </h3>
-                <div className='flex items-center space-x-1'>
-                  <span className={`rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-3 py-1 text-xs font-bold text-white shadow-lg`}>
-                    YOU
-                  </span>
-                </div>
+                <span className='rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-2 py-0.5 text-xs font-bold text-white'>
+                  YOU
+                </span>
               </div>
-
-              <div className='mt-2 flex items-center space-x-2 text-sm'>
-                <div
-                  className={`inline-flex items-center space-x-1 rounded-full px-2 py-1 ${getThemeClass('componentSecondary')}`}
-                >
-                  <IconComponent className={`h-3 w-3 ${getThemeTextColor('accent')}`} />
-                  <span className={`font-bold ${getThemeTextColor('primary')}`}>
-                    {rankDisplay.text} place
-                  </span>
-                </div>
-
-                <span className={getThemeTextColor('secondary')}>•</span>
-
-                <div className={`inline-flex items-center space-x-1 rounded-full px-2 py-1 ${getThemeClass('componentSecondary')}`}>
-                  <Clock className={`h-3 w-3 ${getThemeTextColor('accent')}`} />
-                  <span className={`font-medium ${getThemeTextColor('primary')}`}>
-                    {formatTime(score || 0)}
-                  </span>
-                </div>
-
-                <span className={getThemeTextColor('secondary')}>•</span>
-
-                <div className={`inline-flex items-center space-x-1 rounded-full px-2 py-1 ${getThemeClass('componentSecondary')}`}>
-                  <Star className={`h-3 w-3 ${getThemeTextColor('accent')}`} />
-                  <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
-                    {tierInfo.title}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* 순위 및 액션 - 향상된 디자인 */}
-          <div className='text-right'>
-            <div className='flex items-center justify-end space-x-3'>
-              <div className='relative'>
-                <div
-                  className={`absolute inset-0 ${
-                    rank && rank <= 3
-                      ? 'bg-gradient-to-r from-yellow-400/20 to-orange-400/20'
-                      : rank && rank <= 10
-                        ? 'bg-gradient-to-r from-blue-400/20 to-purple-400/20'
-                        : isDarkMode ? 'bg-gray-600/10' : 'bg-gray-400/10'
-                  } rounded-full blur-lg`}
-                ></div>
-
-                <div
-                  className={`relative flex h-16 w-16 items-center justify-center rounded-full border-2 ${getThemeClass('border')} ${getThemeClass('componentSecondary')} shadow-lg`}
-                >
-                  <div className='text-center'>
-                    <div className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-                      #{rank || '?'}
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            <div className={`mt-2 text-xs font-medium ${getThemeTextColor('secondary')}`}>
-              전체 {totalUsers}명 중
-            </div>
-
-            {onScrollToMyRank && rank && (
-              <button
-                onClick={onScrollToMyRank}
-                className='mt-3 inline-flex items-center space-x-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-1.5 text-xs font-medium text-white shadow-md transition-all duration-200'
-              >
-                <ChevronUp className='h-3 w-3' />
-                <span>리더보드에서 찾기</span>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* 추가 정보 - 향상된 디자인 */}
-        {rank && (
-          <div className='relative mt-4'>
-            <div 
-              className='absolute inset-0 h-px'
-              style={{
-                background: isDarkMode 
-                  ? 'linear-gradient(to right, transparent, rgb(120, 120, 120), transparent)' 
-                  : 'linear-gradient(to right, transparent, rgb(209, 213, 219), transparent)'
-              }}
-            ></div>
-            <div className='flex items-center justify-between pt-4'>
-              <div className='flex items-center space-x-6'>
-                <div className={`flex items-center space-x-2 rounded-full px-3 py-1.5 ${getThemeClass('componentSecondary')}`}>
-                  <Clock className={`h-4 w-4 ${getThemeTextColor('accent')}`} />
-                  <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                    총 활동시간: {formatTime(score || 0)}
-                  </span>
-                </div>
-
-                <div className={`flex items-center space-x-2 rounded-full px-3 py-1.5 ${getThemeClass('componentSecondary')}`}>
-                  <TrendingUp className={`h-4 w-4 ${getThemeTextColor('accent')}`} />
-                  <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                    상위 {Math.round((rank / totalUsers) * 100)}%
-                  </span>
-                </div>
-              </div>
-
-              <div className={`flex items-center space-x-2 rounded-full px-3 py-1.5 ${getThemeClass('componentSecondary')}`}>
-                <div
-                  className={`h-2 w-2 rounded-full ${
-                    period === 'daily'
-                      ? 'bg-blue-500'
-                      : period === 'weekly'
-                        ? 'bg-purple-500'
-                        : 'bg-green-500'
-                  }`}
-                ></div>
-                <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                  {period === 'daily' && '오늘'}
-                  {period === 'weekly' && '이번 주'}
-                  {period === 'monthly' && '이번 달'} 기준
+              <div className='flex items-center space-x-2 mt-0.5'>
+                <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
+                  {formatTime(score || 0)}
+                </span>
+                <span className={`text-xs ${getThemeTextColor('secondary')}`}>•</span>
+                <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                  상위 {Math.round(((rank || 0) / totalUsers) * 100)}%
                 </span>
               </div>
             </div>
           </div>
-        )}
+
+          {/* 순위 숫자 - 심플 */}
+          <div className='text-right'>
+            <div className={`text-xl lg:text-2xl font-bold ${getThemeTextColor('primary')}`}>
+              #{rank || '?'}
+            </div>
+            {onScrollToMyRank && rank && (
+              <button
+                onClick={onScrollToMyRank}
+                className='mt-1 text-xs text-blue-500 hover:text-blue-600 transition-colors'
+              >
+                내 리더보드에서 찾기
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* 구분선 */}
-      <div className='mb-6 flex justify-center'>
+      {/* 미니멀 구분선 */}
+      <div className='mb-2 lg:mb-3'>
         <div 
-          className='h-px w-full max-w-md'
+          className='h-px w-full'
           style={{
             background: isDarkMode 
               ? 'linear-gradient(to right, transparent, rgb(120, 120, 120), transparent)' 

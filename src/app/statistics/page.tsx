@@ -247,10 +247,10 @@ export default function StatisticsPage() {
   }
 
   return (
-    <div className={`min-h-screen p-4 sm:p-6 lg:p-8 ${getThemeClass('background')}`}>
-      <div className='mx-auto max-w-6xl space-y-6 sm:space-y-8'>
+    <div className={`min-h-screen p-3 sm:p-4 lg:p-6 ${getThemeClass('background')}`}>
+      <div className='mx-auto max-w-6xl space-y-4 sm:space-y-6'>
         {/* 메인 콘텐츠 */}
-        <div className='grid gap-6 sm:gap-8 lg:grid-cols-2 min-h-[600px]'>
+        <div className='grid gap-4 sm:gap-6 lg:grid-cols-2 min-h-[500px]'>
           {/* 왼쪽: 총 작업시간 & 상위 카테고리 */}
           <div className='flex flex-col space-y-3'>
             {/* 작업시간 카드 - 컴팩트하게 */}
