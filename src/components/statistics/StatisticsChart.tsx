@@ -61,7 +61,7 @@ export default function StatisticsChart({
 
   return (
     <Card className={`h-full rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <CardHeader className='pb-3'>
+      <CardHeader className='pb-2'>
         <div className='flex items-center justify-between'>
           <div>
             <CardTitle className={`text-lg font-semibold ${getThemeClass('textPrimary')}`}>
@@ -93,7 +93,7 @@ export default function StatisticsChart({
         </div>
       </CardHeader>
 
-      <CardContent className='flex-1 min-h-0 p-4 pt-0'>
+      <CardContent className='flex-1 min-h-0 p-2 pt-0'>
           {selectedPeriod === 'daily' && data && data.categories.length > 0 ? (
             <StatisticsRadarChart data={data} />
           ) : selectedPeriod === 'weekly' || selectedPeriod === 'monthly' ? (

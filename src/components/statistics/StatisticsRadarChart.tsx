@@ -91,15 +91,15 @@ export default function StatisticsRadarChart({
 
   return (
     <div className='h-full flex items-center justify-center'>
-      {/* 차트 */}
+      {/* 차트 - 반응형 개선 */}
       <div className='relative w-full h-full flex items-center justify-center'>
         <ChartContainer
           config={chartConfig}
-          className='mx-auto aspect-square h-full max-h-[480px] max-w-[480px]'
+          className='mx-auto aspect-square w-full h-full min-h-[180px] max-h-[350px] min-w-[180px] max-w-[350px]'
         >
           <RadarChart
             data={chartData}
-            margin={{ top: 40, right: 60, bottom: 40, left: 60 }}
+            margin={{ top: 10, right: 20, bottom: 10, left: 20 }}
           >
             <ChartTooltip
               content={({ active, payload }) => {
@@ -148,16 +148,16 @@ export default function StatisticsRadarChart({
             <PolarAngleAxis
               dataKey='category'
               tick={{
-                fontSize: 12,
+                fontSize: 10,
                 fill: getThemeTextColorValue('primary'),
                 fontWeight: 'bold',
                 textAnchor: 'middle',
               }}
-              className={`text-sm font-semibold ${getThemeTextColor('primary')}`}
+              className={`text-xs lg:text-sm font-semibold ${getThemeTextColor('primary')}`}
               tickFormatter={value => {
-                // 더 긴 텍스트도 수용할 수 있도록 조정
-                if (value.length > 10) {
-                  return value.substring(0, 8) + '...';
+                // 작은 화면에서 더 짧게 자르기
+                if (value.length > 6) {
+                  return value.substring(0, 4) + '...';
                 }
                 return value;
               }}
@@ -175,8 +175,8 @@ export default function StatisticsRadarChart({
               stroke='url(#gradientRadar)'
               fill='url(#gradientRadar)'
               fillOpacity={0.1}
-              strokeWidth={3}
-              dot={{ fill: '#8b5cf6', strokeWidth: 2, r: 6 }}
+              strokeWidth={2}
+              dot={{ fill: '#8b5cf6', strokeWidth: 1, r: 3 }}
             />
             <defs>
               <linearGradient

@@ -62,14 +62,14 @@ export default function TimelineChart({ schedules, date }: TimelineChartProps) {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className={cn(cardSystem.content, 'pb-6')}>
-        <div className="relative overflow-x-auto">
-          <div className="min-w-[900px]">
+      <CardContent className={cn(cardSystem.content, 'pb-4')}>
+        <div className="relative">
+          <div className="w-full">
             {/* 타임라인 바 */}
-            <div className="relative mb-6">
+            <div className="relative mb-2">
               {/* 배경 바 */}
               <div className={cn(
-                'w-full h-16 relative overflow-hidden',
+                'w-full h-12 lg:h-16 relative overflow-hidden',
                 getThemeClass('componentSecondary'),
                 'border border-solid',
                 getThemeClass('border'),
@@ -103,7 +103,7 @@ export default function TimelineChart({ schedules, date }: TimelineChartProps) {
                     <div
                       key={schedule.id}
                       className={cn(
-                        'absolute h-16 transition-all duration-200 cursor-pointer group',
+                        'absolute h-12 lg:h-16 transition-all duration-200 cursor-pointer group',
                         'top-0 z-10',
                         // 퍼플 테마 색상 사용 - 보조 활동은 더 밝은 색상으로 구분
                         schedule.type === 'primary'
@@ -119,9 +119,9 @@ export default function TimelineChart({ schedules, date }: TimelineChartProps) {
                       }}
                       title={`${schedule.title || '활동'} (${schedule.startTime}-${schedule.endTime})`}
                     >
-                      {/* 호버 시 상세 정보 */}
+                      {/* 호버 시 상세 정보 - 모바일에서는 숨김 */}
                       <div className={cn(
-                        'absolute -top-14 left-1/2 transform -translate-x-1/2 px-3 py-2 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-30',
+                        'hidden lg:block absolute -top-14 left-1/2 transform -translate-x-1/2 px-3 py-2 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-30',
                         getThemeClass('component'),
                         'border shadow-lg rounded-lg',
                         getThemeClass('border')
@@ -142,12 +142,15 @@ export default function TimelineChart({ schedules, date }: TimelineChartProps) {
             {/* 시간 라벨 (하단) */}
             <div className="relative">
               <div className="flex justify-between">
-                {timeHours.map((hour) => (
+                {timeHours.map((hour, index) => (
                   <div
                     key={hour}
                     className={cn(
-                      'text-center text-sm font-medium',
-                      getThemeTextColor('secondary')
+                      'text-center text-xs lg:text-sm font-medium',
+                      getThemeTextColor('secondary'),
+                      // 작은 화면에서는 홀수 시간만 표시
+                      'lg:block',
+                      index % 2 === 0 ? 'block' : 'hidden'
                     )}
                   >
                     {hour.toString().padStart(2, '0')}:00
@@ -159,7 +162,7 @@ export default function TimelineChart({ schedules, date }: TimelineChartProps) {
 
           {/* 범례 */}
           <div className={cn(
-            'mt-8 flex flex-wrap gap-6 p-4',
+            'mt-4 flex flex-wrap gap-4 p-3',
             getThemeClass('componentSecondary'),
             'border border-solid rounded-lg',
             getThemeClass('border')
