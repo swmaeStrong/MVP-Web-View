@@ -5,10 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import { DailyStatistics, PeriodType } from '@/types/statistics';
 import { formatKSTDate } from '@/utils/timezone';
 import {
+  Activity,
   BarChart3,
   ChevronLeft,
   ChevronRight,
-  PieChart,
   Target,
 } from 'lucide-react';
 import NoData from '../common/NoData';
@@ -103,7 +103,7 @@ export default function StatisticsChart({
               <NoData
                 title='활동 데이터가 없습니다'
                 message='선택한 날짜에 기록된 활동이 없습니다.'
-                icon={PieChart}
+                icon={Activity}
                 showBorder={false}
                 size='large'
               />

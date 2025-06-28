@@ -4,7 +4,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { ChartConfig, ChartContainer, ChartTooltip } from '@/shadcn/ui/chart';
 import { DailyStatistics } from '@/types/statistics';
 import { formatTime } from '@/utils/statisticsUtils';
-import { PieChart } from 'lucide-react';
+import { Activity } from 'lucide-react';
 import {
   PolarAngleAxis,
   PolarGrid,
@@ -49,7 +49,7 @@ export default function StatisticsRadarChart({
         <NoData
           title='분석할 카테고리가 없습니다'
           message='활동 데이터가 없어 레이더 차트를 표시할 수 없습니다.'
-          icon={PieChart}
+          icon={Activity}
           showBorder={false}
           size='medium'
         />
@@ -63,7 +63,7 @@ export default function StatisticsRadarChart({
         <NoData
           title='카테고리가 부족합니다'
           message='의미있는 레이더 차트 분석을 위해서는 최소 4개 이상의 카테고리가 필요합니다.'
-          icon={PieChart}
+          icon={Activity}
           showBorder={false}
           size='medium'
         />

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import { cardSystem, componentStates, spacing } from '@/styles/design-system';
 import React, { useMemo } from 'react';
 import NoData from '../common/NoData';
-import { Clock } from 'lucide-react';
+import { Activity } from 'lucide-react';
 
 interface ScheduleItem {
   id: string;
@@ -237,7 +237,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
             <NoData
               title="타임라인 데이터가 없습니다"
               message="오늘 하루 동안의 활동 기록이 없습니다. 사용률 추적을 시작해보세요."
-              icon={Clock}
+              icon={Activity}
               showBorder={false}
               size="medium"
             />

@@ -29,6 +29,7 @@ import {
 } from 'recharts';
 import ErrorState from '../common/ErrorState';
 import NoData from '../common/NoData';
+import { Activity } from 'lucide-react';
 
 interface HourlyUsageComparisonProps {
   userId: string;
@@ -321,6 +322,7 @@ export default function HourlyUsageComparison({
                     ? '선택한 날짜에 활동 기록이 없습니다.'
                     : '의미있는 시간별 패턴 분석을 위해서는 최소 4개 이상의 시간대에 활동이 필요합니다.'
                 }
+                icon={Activity}
                 showBorder={false}
                 size='medium'
               />
