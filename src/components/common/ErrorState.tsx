@@ -99,7 +99,7 @@ export default function ErrorState({
           </p>
         </div>
 
-        {/* 재시도 버튼 */}
+        {/* 재시도 버튼 - 필요한 경우에만 표시 */}
         {onRetry && (
           <div className="mt-4">
             <button

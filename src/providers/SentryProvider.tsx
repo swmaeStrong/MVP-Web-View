@@ -3,10 +3,7 @@
 import * as Sentry from '@sentry/nextjs';
 import { ErrorBoundary as SentryErrorBoundaryComponent } from '@sentry/nextjs';
 import React from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
-import { Button } from '@/shadcn/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
-import { useDesignSystem } from '@/hooks/useDesignSystem';
+import ErrorState from '@/components/common/ErrorState';
 
 interface SentryProviderProps {
   children: React.ReactNode;
@@ -20,72 +17,33 @@ interface ErrorFallbackProps {
   resetError: () => void;
 }
 
-const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetError }) => {
-  const { getCardStyle } = useDesignSystem();
-  const cardStyle = getCardStyle('large', 'default');
-
-  const handleReport = () => {
-    Sentry.showReportDialog({
-      eventId: Sentry.lastEventId(),
-    });
-  };
+const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({ error }) => {
+  // 개발 모드에서만 상세 에러 정보 표시
+  const errorMessage = process.env.NODE_ENV === 'development' 
+    ? `예상치 못한 오류가 발생했습니다.\n\n오류 메시지: ${error.message}`
+    : '예상치 못한 오류가 발생했습니다. 불편을 드려 죄송합니다.';
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className={cardStyle.combined}>
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <AlertTriangle className="h-16 w-16 text-red-500" />
-          </div>
-          <CardTitle className="text-2xl font-bold text-red-600">
-            문제가 발생했습니다
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4 text-center">
-          <p className="text-gray-600 dark:text-gray-400">
-            예상치 못한 오류가 발생했습니다. 불편을 드려 죄송합니다.
-          </p>
-          
-          {process.env.NODE_ENV === 'development' && (
-            <details className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg text-left">
-              <summary className="cursor-pointer font-medium text-sm">
-                개발자 정보 (개발 모드에서만 표시)
-              </summary>
-              <pre className="mt-2 text-xs overflow-auto">
-                {error.message}
-                {'\n\n'}
-                {error.stack}
-              </pre>
-            </details>
-          )}
-          
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
-            <Button 
-              onClick={resetError}
-              variant="default"
-              className="flex items-center gap-2"
-            >
-              <RefreshCw className="h-4 w-4" />
-              다시 시도
-            </Button>
-            
-            <Button 
-              onClick={handleReport}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              문제 신고
-            </Button>
-            
-            <Button 
-              onClick={() => window.location.href = '/'}
-              variant="outline"
-            >
-              홈으로 돌아가기
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex flex-col items-center space-y-4">
+        <ErrorState
+          title="문제가 발생했습니다"
+          message={errorMessage}
+          size="large"
+          showBorder={true}
+        />
+        
+        {process.env.NODE_ENV === 'development' && (
+          <details className="max-w-2xl w-full p-4 bg-gray-100 dark:bg-gray-800 rounded-lg text-left">
+            <summary className="cursor-pointer font-medium text-sm mb-2">
+              스택 트레이스 (개발 모드)
+            </summary>
+            <pre className="text-xs overflow-auto whitespace-pre-wrap">
+              {error.stack}
+            </pre>
+          </details>
+        )}
+      </div>
     </div>
   );
 };
