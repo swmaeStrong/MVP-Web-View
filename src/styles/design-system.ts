@@ -1,46 +1,133 @@
 // 통합 디자인 시스템 정의
 // 모든 컴포넌트에서 일관된 스타일을 위한 중앙화된 설정
+// shadcn/ui 컴포넌트와 커스텀 컴포넌트의 스타일을 통합 관리
 
-// 컴포넌트 크기 분류
+// 버튼 통합 스타일 시스템 (shadcn/ui와 통합)
+export const buttonSystem = {
+  // 기본 스타일
+  base: 'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50',
+  
+  // 크기별 스타일
+  sizes: {
+    sm: 'h-8 rounded-md gap-1.5 px-3',
+    default: 'h-9 px-4 py-2',
+    lg: 'h-10 rounded-md px-6',
+    icon: 'size-9',
+  },
+  
+  // 변형별 스타일
+  variants: {
+    default: 'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90',
+    destructive: 'bg-destructive text-white shadow-xs hover:bg-destructive/90',
+    outline: 'border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground',
+    secondary: 'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
+    ghost: 'hover:bg-accent hover:text-accent-foreground',
+    link: 'text-primary underline-offset-4 hover:underline',
+  }
+} as const;
+
+// 카드 통합 스타일 시스템 (shadcn/ui와 통합)
+export const cardSystem = {
+  // 기본 스타일
+  base: 'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm',
+  
+  // 헤더 스타일
+  header: 'grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6',
+  
+  // 콘텐츠 스타일
+  content: 'px-6',
+  
+  // 푸터 스타일
+  footer: 'flex items-center px-6',
+  
+  // 제목 스타일
+  title: 'leading-none font-semibold',
+  
+  // 설명 스타일
+  description: 'text-muted-foreground text-sm',
+  
+  // 변형별 스타일
+  variants: {
+    default: 'bg-white border border-gray-200 shadow-sm',
+    elevated: 'bg-white shadow-lg',
+    glass: 'bg-white/80 backdrop-blur-sm border border-white/20',
+    gradient: 'bg-gradient-to-br from-white to-gray-50 shadow-md',
+  },
+  
+  // 호버 효과
+  hover: {
+    lift: 'hover:shadow-xl hover:-translate-y-1 transition-all duration-200',
+    glow: 'hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-200',
+    scale: 'hover:scale-105 transition-transform duration-200',
+  }
+} as const;
+
+// 배지 통합 스타일 시스템 (shadcn/ui와 통합)
+export const badgeSystem = {
+  // 기본 스타일
+  base: 'inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0',
+  
+  // 변형별 스타일
+  variants: {
+    default: 'border-transparent bg-primary text-primary-foreground',
+    secondary: 'border-transparent bg-secondary text-secondary-foreground',
+    destructive: 'border-transparent bg-destructive text-white',
+    outline: 'text-foreground',
+  },
+  
+  // 색상별 스타일 (기존 유지)
+  colors: {
+    gray: 'bg-gray-100 text-gray-800',
+    red: 'bg-red-100 text-red-800',
+    yellow: 'bg-yellow-100 text-yellow-800',
+    green: 'bg-green-100 text-green-800',
+    blue: 'bg-blue-100 text-blue-800',
+    indigo: 'bg-indigo-100 text-indigo-800',
+    purple: 'bg-purple-100 text-purple-800',
+    pink: 'bg-pink-100 text-pink-800',
+  }
+} as const;
+
+// 컴포넌트 크기 분류 (간소화)
 export const componentSizes = {
-  // 작은 컴포넌트 (버튼, 칩, 아이콘 등)
+  // 작은 컴포넌트
   small: {
-    border: 'border',           // 1px
-    borderRadius: 'rounded-lg', // 8px
-    padding: 'p-2',            // 8px
-    gap: 'gap-2',              // 8px
-    text: 'text-sm',           // 14px
-    shadow: 'shadow-sm',       // 작은 그림자
+    border: 'border',
+    borderRadius: 'rounded-lg',
+    padding: 'p-2',
+    gap: 'gap-2',
+    text: 'text-sm',
+    shadow: 'shadow-sm',
   },
   
-  // 중간 컴포넌트 (카드, 입력 필드 등)
+  // 중간 컴포넌트
   medium: {
-    border: 'border-2',         // 2px
-    borderRadius: 'rounded-xl', // 12px
-    padding: 'p-4',            // 16px
-    gap: 'gap-4',              // 16px
-    text: 'text-base',         // 16px
-    shadow: 'shadow-md',       // 중간 그림자
+    border: 'border-2',
+    borderRadius: 'rounded-xl',
+    padding: 'p-4',
+    gap: 'gap-4',
+    text: 'text-base',
+    shadow: 'shadow-md',
   },
   
-  // 큰 컴포넌트 (섹션, 메인 카드 등)
+  // 큰 컴포넌트
   large: {
-    border: 'border-2',         // 2px
-    borderRadius: 'rounded-2xl', // 16px
-    padding: 'p-6',            // 24px
-    gap: 'gap-6',              // 24px
-    text: 'text-lg',           // 18px
-    shadow: 'shadow-lg',       // 큰 그림자
+    border: 'border-2',
+    borderRadius: 'rounded-2xl',
+    padding: 'p-6',
+    gap: 'gap-6',
+    text: 'text-lg',
+    shadow: 'shadow-lg',
   },
   
-  // 특대 컴포넌트 (히어로 섹션, 메인 배너 등)
+  // 특대 컴포넌트
   xlarge: {
-    border: 'border-2',         // 2px
-    borderRadius: 'rounded-3xl', // 24px
-    padding: 'p-8',            // 32px
-    gap: 'gap-8',              // 32px
-    text: 'text-xl',           // 20px
-    shadow: 'shadow-xl',       // 특대 그림자
+    border: 'border-2',
+    borderRadius: 'rounded-3xl',
+    padding: 'p-8',
+    gap: 'gap-8',
+    text: 'text-xl',
+    shadow: 'shadow-xl',
   }
 } as const;
 

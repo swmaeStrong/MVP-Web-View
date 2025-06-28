@@ -1,4 +1,5 @@
 import { QueryProvider } from '@/providers/QueryProvider';
+import { SentryProvider } from '@/providers/SentryProvider';
 import type { Metadata } from 'next';
 import { Inter, Noto_Sans_KR, Poppins } from 'next/font/google';
 import './globals.css';
@@ -56,7 +57,9 @@ export default function RootLayout({
       }`}
     >
       <body className='font-sans antialiased'>
-        <QueryProvider>{children}</QueryProvider>
+        <SentryProvider>
+          <QueryProvider>{children}</QueryProvider>
+        </SentryProvider>
       </body>
     </html>
   );

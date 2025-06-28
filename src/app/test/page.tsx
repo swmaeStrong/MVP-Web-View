@@ -10,12 +10,12 @@ const TestPage = () => {
         title='오류가 발생했습니다'
         message='문제가 발생했습니다. 다시 시도해주세요.'
         className='relative'
-        size='lg'
+        size='large'
       />
       <NoData
         title='데이터가 없습니다'
         message='표시할 데이터가 없습니다.'
-        size='sm'
+        size='small'
       />
     </div>
   );

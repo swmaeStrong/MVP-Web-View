@@ -1,6 +1,7 @@
 'use client';
 
 import { useHourlyUsage } from '@/hooks/useHourlyUsage';
+import { useTheme } from '@/hooks/useTheme';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import {
   ChartContainer,
@@ -16,7 +17,6 @@ import {
   SelectValue,
 } from '@/shadcn/ui/select';
 import { getKSTDateString } from '@/utils/timezone';
-import { Target } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import {
   Bar,
@@ -29,7 +29,7 @@ import {
 } from 'recharts';
 import ErrorState from '../common/ErrorState';
 import NoData from '../common/NoData';
-import { useTheme } from '@/hooks/useTheme';
+import { Activity } from 'lucide-react';
 
 interface HourlyUsageComparisonProps {
   userId: string;
@@ -80,9 +80,9 @@ export default function HourlyUsageComparison({
     refetch,
   } = useHourlyUsage(currentDate, userId, selectedBinSize);
 
-  // 차트 데이터 가공
-  const chartData = useMemo(() => {
-    if (!hourlyData) return [];
+  // 차트 데이터 가공 및 유효성 검사
+  const { chartData, dataValidation } = useMemo(() => {
+    if (!hourlyData) return { chartData: [], dataValidation: { isValid: false, reason: 'no-data' } };
 
     // 시간대별로 그룹화
     const hourlyMap = new Map<
@@ -103,7 +103,7 @@ export default function HourlyUsageComparison({
     });
 
     // 차트용 데이터 변환
-    return Array.from(hourlyMap.entries())
+    const processedData = Array.from(hourlyMap.entries())
       .map(([hour, data]) => ({
         hour,
         hourDisplay: hour.split('T')[1]?.substring(0, 5) || hour, // 시간 부분만 추출 (HH:MM)
@@ -112,6 +112,20 @@ export default function HourlyUsageComparison({
         ...data.categories,
       }))
       .sort((a, b) => a.hour.localeCompare(b.hour));
+
+    // 데이터 유효성 검사
+    const dataPointsCount = processedData.length;
+    const hasMinimumDataPoints = dataPointsCount >= 4; // 최소 4개 이상의 시간대 필요
+
+    let validation = { isValid: true, reason: '' };
+    
+    if (dataPointsCount === 0) {
+      validation = { isValid: false, reason: 'no-data' };
+    } else if (!hasMinimumDataPoints) {
+      validation = { isValid: false, reason: 'insufficient-points' };
+    }
+
+    return { chartData: processedData, dataValidation: validation };
   }, [hourlyData, selectedCategory]);
 
   // 커스텀 툴팁 컴포넌트
@@ -198,7 +212,7 @@ export default function HourlyUsageComparison({
             onRetry={refetch}
             retryText='새로고침'
             showBorder={false}
-            size='sm'
+            size='small'
           />
         </CardContent>
       </Card>
@@ -209,16 +223,65 @@ export default function HourlyUsageComparison({
     <div className='w-full'>
       <Card className={`rounded-lg border-2 shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardHeader className='pb-3'>
-          <div className='flex items-center justify-between'>
-            <div>
+          <div className='space-y-3'>
+            {/* 상단: 제목과 단위/비교 선택 */}
+            <div className='flex items-center justify-between'>
               <CardTitle className={`flex items-center gap-2 text-lg font-semibold ${getThemeTextColor('primary')}`}>
-                <Target className='h-5 w-5 text-purple-600' />
                 시간별 사용량
               </CardTitle>
-              <p className={`mt-1 text-sm ${getThemeTextColor('secondary')}`}>{currentDate}</p>
+              
+              {/* 단위와 비교 선택 */}
+              <div className='flex items-center gap-3'>
+              {/* 시간 단위 */}
+              <div className='flex items-center gap-1 lg:gap-2'>
+                <span className={`text-xs ${getThemeTextColor('secondary')}`}>단위</span>
+                <Select
+                  value={selectedBinSize.toString()}
+                  onValueChange={value => setSelectedBinSize(parseInt(value))}
+                >
+                  <SelectTrigger className={`h-8 w-[70px] lg:w-[80px] text-xs border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('componentSecondary')}`}>
+                    <SelectValue placeholder="선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {BIN_SIZE_OPTIONS.map(option => (
+                      <SelectItem
+                        key={option.value}
+                        value={option.value.toString()}
+                      >
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 카테고리 선택 */}
+              <div className='flex items-center gap-1 lg:gap-2'>
+                <span className={`text-xs ${getThemeTextColor('secondary')}`}>비교</span>
+                <Select
+                  value={selectedCategory || 'all'}
+                  onValueChange={value =>
+                    setSelectedCategory(value === 'all' ? null : value)
+                  }
+                >
+                  <SelectTrigger className={`h-8 w-[100px] lg:w-[140px] text-xs border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('componentSecondary')}`}>
+                    <SelectValue placeholder="전체" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='all'>전체</SelectItem>
+                    {availableCategories.map(category => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              </div>
             </div>
-            <div className='flex items-center gap-3'>
-              {/* 차트 타입 토글 */}
+            
+            {/* 하단: 차트 타입 토글 */}
+            <div className='flex items-center'>
               <div className={`flex items-center rounded-lg p-1 ${getThemeClass('componentSecondary')}`}>
                 <button
                   className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-200 ${
@@ -241,85 +304,50 @@ export default function HourlyUsageComparison({
                   📈 선형
                 </button>
               </div>
-
-              {/* 시간 단위 */}
-              <div className='flex items-center gap-2'>
-                <span className={`text-xs ${getThemeTextColor('secondary')}`}>단위</span>
-                <Select
-                  value={selectedBinSize.toString()}
-                  onValueChange={value => setSelectedBinSize(parseInt(value))}
-                >
-                  <SelectTrigger className={`h-8 w-20 text-xs border-2 ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {BIN_SIZE_OPTIONS.map(option => (
-                      <SelectItem
-                        key={option.value}
-                        value={option.value.toString()}
-                      >
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* 카테고리 선택 */}
-              <div className='flex items-center gap-2'>
-                <span className={`text-xs ${getThemeTextColor('secondary')}`}>비교</span>
-                <Select
-                  value={selectedCategory || 'all'}
-                  onValueChange={value =>
-                    setSelectedCategory(value === 'all' ? null : value)
-                  }
-                >
-                  <SelectTrigger className={`h-8 w-32 text-xs border-2 ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='all'>전체</SelectItem>
-                    {availableCategories.map(category => (
-                      <SelectItem key={category} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
           </div>
         </CardHeader>
 
         <CardContent className='px-2 pt-0'>
-          {chartData.length === 0 ? (
-            <div className='flex h-[350px] items-center justify-center'>
+          {!dataValidation.isValid ? (
+            <div className='flex h-[350px] items-center justify-center p-4'>
               <NoData
-                title='시간별 데이터가 없습니다'
-                message='선택한 날짜에 활동 기록이 없습니다.'
+                title={
+                  dataValidation.reason === 'no-data' 
+                    ? '시간별 데이터가 없습니다'
+                    : '시간대가 부족합니다'
+                }
+                message={
+                  dataValidation.reason === 'no-data'
+                    ? '선택한 날짜에 활동 기록이 없습니다.'
+                    : '의미있는 시간별 패턴 분석을 위해서는 최소 4개 이상의 시간대에 활동이 필요합니다.'
+                }
+                icon={Activity}
                 showBorder={false}
-                size='md'
+                size='medium'
               />
             </div>
           ) : (
-            <ChartContainer config={chartConfig} className='h-[350px] w-full'>
+            <ChartContainer config={chartConfig} className='h-[300px] lg:h-[350px] w-full'>
               {chartType === 'bar' ? (
                 <BarChart
                   data={chartData}
-                  margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+                  margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
                 >
                   <CartesianGrid strokeDasharray='3 3' stroke={getThemeColor('border')} />
                   <XAxis
                     dataKey='hourDisplay'
-                    fontSize={12}
+                    fontSize={10}
                     tickLine={false}
                     axisLine={false}
+                    height={40}
                   />
                   <YAxis
-                    fontSize={12}
+                    fontSize={10}
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={value => formatTimeWithSeconds(value)}
+                    width={45}
                   />
                   <ChartTooltip content={<CustomTooltip />} />
                   <ChartLegend
@@ -345,20 +373,22 @@ export default function HourlyUsageComparison({
               ) : (
                 <LineChart
                   data={chartData}
-                  margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+                  margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
                 >
                   <CartesianGrid strokeDasharray='3 3' stroke={getThemeColor('border')} />
                   <XAxis
                     dataKey='hourDisplay'
-                    fontSize={12}
+                    fontSize={10}
                     tickLine={false}
                     axisLine={false}
+                    height={40}
                   />
                   <YAxis
-                    fontSize={12}
+                    fontSize={10}
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={value => formatTimeWithSeconds(value)}
+                    width={45}
                   />
                   <ChartTooltip content={<CustomTooltip />} />
                   <ChartLegend
@@ -393,18 +423,18 @@ export default function HourlyUsageComparison({
 
           {/* 요약 정보 */}
           {selectedCategory && (
-            <div className={`mt-4 grid grid-cols-2 gap-4 rounded-lg border-2 p-4 ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
+            <div className={`mt-4 grid grid-cols-2 gap-2 lg:gap-4 rounded-lg border-2 p-3 lg:p-4 ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
               <div className='text-center'>
-                <div className={`text-sm ${getThemeTextColor('secondary')}`}>전체</div>
-                <div className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
+                <div className={`text-xs lg:text-sm ${getThemeTextColor('secondary')}`}>전체</div>
+                <div className={`text-sm lg:text-lg font-semibold ${getThemeTextColor('primary')}`}>
                   {formatTimeWithSeconds(
                     chartData.reduce((sum, item) => sum + item.total, 0)
                   )}
                 </div>
               </div>
               <div className='text-center'>
-                <div className={`text-sm ${getThemeTextColor('secondary')}`}>{selectedCategory}</div>
-                <div className={`text-lg font-semibold ${getThemeTextColor('accent')}`}>
+                <div className={`text-xs lg:text-sm ${getThemeTextColor('secondary')}`}>{selectedCategory}</div>
+                <div className={`text-sm lg:text-lg font-semibold ${getThemeTextColor('accent')}`}>
                   {formatTimeWithSeconds(
                     chartData.reduce((sum, item) => sum + item.category, 0)
                   )}

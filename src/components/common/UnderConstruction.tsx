@@ -1,11 +1,13 @@
 'use client';
 
 import { Construction, Hammer, Sparkles, Star, Wrench } from 'lucide-react';
+import { useDesignSystem, type ComponentSize } from '@/hooks/useDesignSystem';
+import { cardSystem, componentStates, spacing, componentSizes } from '@/styles/design-system';
 
 interface UnderConstructionProps {
   title?: string;
   message?: string;
-  size?: 'small' | 'medium' | 'large';
+  size?: ComponentSize;
   showAnimation?: boolean;
 }
 
@@ -68,38 +70,16 @@ export default function UnderConstruction({
   size = 'medium',
   showAnimation = true,
 }: UnderConstructionProps) {
-  const getSizeClasses = () => {
-    switch (size) {
-      case 'small':
-        return {
-          container: 'p-4',
-          icon: 'h-8 w-8',
-          title: 'text-lg',
-          message: 'text-sm',
-        };
-      case 'large':
-        return {
-          container: 'p-8',
-          icon: 'h-16 w-16',
-          title: 'text-2xl',
-          message: 'text-base',
-        };
-      default: // medium
-        return {
-          container: 'p-6',
-          icon: 'h-12 w-12',
-          title: 'text-xl',
-          message: 'text-sm',
-        };
-    }
-  };
-
-  const sizeClasses = getSizeClasses();
+  const { getCardStyle } = useDesignSystem();
+  
+  // 디자인 시스템 스타일 적용
+  const cardStyles = getCardStyle(size, 'hoverable');
+  const sizeStyles = componentSizes[size];
 
   return (
     <div className='w-full'>
       <div
-        className={`relative overflow-hidden rounded-xl border border-purple-200 bg-gradient-to-br from-purple-50/80 via-pink-50/60 to-blue-50/80 shadow-lg shadow-purple-100/50 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${sizeClasses.container} `}
+        className={`relative overflow-hidden ${cardSystem.base} ${cardSystem.variants.glass} border-purple-200 bg-gradient-to-br from-purple-50/80 via-pink-50/60 to-blue-50/80 shadow-lg shadow-purple-100/50 backdrop-blur-sm ${componentStates.hoverable.transition} ${cardSystem.hover.lift} ${sizeStyles.padding}`}
       >
         {/* 배경 효과 */}
         {showAnimation && <StaticIcons />}
@@ -118,7 +98,11 @@ export default function UnderConstruction({
               {/* 메인 아이콘 */}
               <div className='relative flex items-center justify-center rounded-full border-2 border-purple-200 bg-gradient-to-br from-purple-100 to-pink-100 p-3'>
                 <Construction
-                  className={`${sizeClasses.icon} text-purple-600`}
+                  className={`${
+                    sizeStyles.text === 'text-sm' ? 'h-8 w-8' :
+                    sizeStyles.text === 'text-base' ? 'h-12 w-12' :
+                    'h-16 w-16'
+                  } text-purple-600`}
                 />
               </div>
 
@@ -137,14 +121,14 @@ export default function UnderConstruction({
           </div>
 
           {/* 텍스트 섹션 */}
-          <div className='space-y-2'>
+          <div className={spacing.inner.tight}>
             <h3
-              className={`${sizeClasses.title} font-bold tracking-wide text-gray-800`}
+              className={`${sizeStyles.text === 'text-sm' ? 'text-lg' : sizeStyles.text === 'text-base' ? 'text-xl' : 'text-2xl'} font-bold tracking-wide text-gray-800`}
             >
               🚧 {title}
             </h3>
             <p
-              className={`${sizeClasses.message} mx-auto max-w-md leading-relaxed text-gray-600`}
+              className={`${sizeStyles.text === 'text-sm' ? 'text-sm' : sizeStyles.text === 'text-base' ? 'text-sm' : 'text-base'} mx-auto max-w-md leading-relaxed text-gray-600`}
             >
               {message}
             </p>

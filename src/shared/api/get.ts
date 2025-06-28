@@ -64,5 +64,15 @@ export const getHourlyUsageLog = (
     API.get(`/usage-log/hour?userId=${userId}&date=${date}&binSize=${binSize}`)
   );
 
+export const getRecentUsageLog = (date: string = getKSTDateString()) =>
+  parseApi<UsageLog.RecentUsageLogItem[]>(
+    API.get(`/usage-log/recent?date=${date}`)
+  );
+
 export const getUserInfo = () =>
   parseApi<User.UserResponse>(API.get('/user/my-info'));
+
+export const getTimeline = (userId: string, date: string = getKSTDateString()) =>
+  parseApi<UsageLog.TimelineItem[]>(
+    API.get(`/usage-log/time-line?userId=${userId}&date=${date}`)
+  );

@@ -3,6 +3,7 @@
 import { formatKSTDate, getKSTDate } from '@/utils/timezone';
 import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, spacing } from '@/styles/design-system';
+import TierSystemTooltip from './TierSystemTooltip';
 
 interface PeriodSelectorProps {
   selectedPeriod: 'daily' | 'weekly' | 'monthly';
@@ -10,6 +11,7 @@ interface PeriodSelectorProps {
   selectedDateIndex: number;
   setSelectedDateIndex: (index: number) => void;
   currentDate: Date;
+  showTierTooltip?: boolean;
 }
 
 export default function PeriodSelector({
@@ -18,6 +20,7 @@ export default function PeriodSelector({
   selectedDateIndex,
   setSelectedDateIndex,
   currentDate,
+  showTierTooltip = true,
 }: PeriodSelectorProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
   const timeLabels = {
@@ -98,10 +101,10 @@ export default function PeriodSelector({
   };
 
   return (
-    <div className={`${spacing.section.normal} ${componentSizes.medium.borderRadius} ${componentSizes.medium.border} ${componentSizes.medium.padding} ${componentSizes.small.shadow} ${componentStates.hoverable.transition} hover:${componentSizes.medium.shadow} ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <div className={spacing.inner.normal}>
+    <div className={`mb-6 rounded-lg border p-4 shadow-sm transition-all duration-200 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')} relative`}>
+      <div className='space-y-4'>
         <div className='flex items-center justify-between'>
-          <div className='flex flex-col gap-2 sm:flex-row sm:gap-3'>
+          <div className='flex flex-row gap-3'>
             {Object.keys(timeLabels).map(period => (
               <button
                 key={period}
@@ -144,13 +147,26 @@ export default function PeriodSelector({
           </div>
         </div>
 
-        {/* 현재 선택된 기간 표시 */}
-        <div className='text-center'>
-          <div className='inline-block rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 shadow-sm'>
-            <span className='text-sm font-semibold text-white'>
-              {getPeriodLabel()}
-            </span>
+        {/* 현재 선택된 기간 표시와 티어 설명을 함께 배치 */}
+        <div className='flex items-center justify-between'>
+          {/* 좌측 하단: 티어 설명 */}
+          {showTierTooltip && (
+            <div className='flex-shrink-0'>
+              <TierSystemTooltip />
+            </div>
+          )}
+          
+          {/* 중앙: 현재 선택된 기간 표시 */}
+          <div className='flex-1 text-center'>
+            <div className='inline-block rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 shadow-sm'>
+              <span className='text-sm font-semibold text-white'>
+                {getPeriodLabel()}
+              </span>
+            </div>
           </div>
+          
+          {/* 우측: 빈 공간 (균형을 위해) */}
+          <div className='flex-shrink-0 w-16'></div>
         </div>
       </div>
     </div>

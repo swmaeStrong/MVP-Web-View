@@ -4,7 +4,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { ChartConfig, ChartContainer, ChartTooltip } from '@/shadcn/ui/chart';
 import { DailyStatistics } from '@/types/statistics';
 import { formatTime } from '@/utils/statisticsUtils';
-import { PieChart } from 'lucide-react';
+import { Activity } from 'lucide-react';
 import {
   PolarAngleAxis,
   PolarGrid,
@@ -38,15 +38,34 @@ export default function StatisticsRadarChart({
     color: categoryColors[index] || categoryColors[0], // 색상 오버라이드
   }));
 
-  if (top6Categories.length === 0) {
+  // 데이터 유효성 검사
+  const totalTime = data.totalTime || 0;
+  const hasValidData = top6Categories.length > 0 && totalTime > 0;
+  const hasMinimumData = top6Categories.length >= 4; // 최소 4개 카테고리 필요
+
+  if (!hasValidData) {
     return (
-      <div className='flex h-[550px] items-center justify-center'>
+      <div className='flex h-full items-center justify-center p-4'>
         <NoData
           title='분석할 카테고리가 없습니다'
           message='활동 데이터가 없어 레이더 차트를 표시할 수 없습니다.'
-          icon={PieChart}
+          icon={Activity}
           showBorder={false}
-          size='md'
+          size='medium'
+        />
+      </div>
+    );
+  }
+
+  if (!hasMinimumData) {
+    return (
+      <div className='flex h-full items-center justify-center p-4'>
+        <NoData
+          title='카테고리가 부족합니다'
+          message='의미있는 레이더 차트 분석을 위해서는 최소 4개 이상의 카테고리가 필요합니다.'
+          icon={Activity}
+          showBorder={false}
+          size='medium'
         />
       </div>
     );
@@ -71,29 +90,16 @@ export default function StatisticsRadarChart({
   }, {} as ChartConfig);
 
   return (
-    <div className='space-y-6'>
-      {/* 총 작업시간을 상단으로 이동 */}
-      <div className={`rounded-xl border-2 p-3 shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
-        <div className='flex items-center justify-between text-sm'>
-          <div className={`flex items-center gap-2 ${getThemeTextColor('accent')}`}>
-            <span>⚡</span>
-            <span className='font-medium'>총 작업시간</span>
-          </div>
-          <span className={`font-bold ${getThemeTextColor('accent')}`}>
-            {formatTime(top6Categories.reduce((sum, cat) => sum + cat.time, 0))}
-          </span>
-        </div>
-      </div>
-
-      {/* 차트 */}
-      <div className='relative h-[550px] w-full px-2'>
+    <div className='h-full flex items-center justify-center'>
+      {/* 차트 - 반응형 개선 */}
+      <div className='relative w-full h-full flex items-center justify-center'>
         <ChartContainer
           config={chartConfig}
-          className='mx-auto aspect-square max-h-[550px] max-w-[550px]'
+          className='mx-auto aspect-square w-full h-full min-h-[180px] max-h-[350px] min-w-[180px] max-w-[350px]'
         >
           <RadarChart
             data={chartData}
-            margin={{ top: 60, right: 80, bottom: 60, left: 80 }}
+            margin={{ top: 10, right: 20, bottom: 10, left: 20 }}
           >
             <ChartTooltip
               content={({ active, payload }) => {
@@ -142,16 +148,16 @@ export default function StatisticsRadarChart({
             <PolarAngleAxis
               dataKey='category'
               tick={{
-                fontSize: 12,
+                fontSize: 10,
                 fill: getThemeTextColorValue('primary'),
                 fontWeight: 'bold',
                 textAnchor: 'middle',
               }}
-              className={`text-sm font-semibold ${getThemeTextColor('primary')}`}
+              className={`text-xs lg:text-sm font-semibold ${getThemeTextColor('primary')}`}
               tickFormatter={value => {
-                // 더 긴 텍스트도 수용할 수 있도록 조정
-                if (value.length > 10) {
-                  return value.substring(0, 8) + '...';
+                // 작은 화면에서 더 짧게 자르기
+                if (value.length > 6) {
+                  return value.substring(0, 4) + '...';
                 }
                 return value;
               }}
@@ -169,8 +175,8 @@ export default function StatisticsRadarChart({
               stroke='url(#gradientRadar)'
               fill='url(#gradientRadar)'
               fillOpacity={0.1}
-              strokeWidth={3}
-              dot={{ fill: '#8b5cf6', strokeWidth: 2, r: 6 }}
+              strokeWidth={2}
+              dot={{ fill: '#8b5cf6', strokeWidth: 1, r: 3 }}
             />
             <defs>
               <linearGradient

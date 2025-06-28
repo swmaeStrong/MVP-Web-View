@@ -11,8 +11,6 @@ import CategoryFilter from '@/components/leaderboard/CategoryFilter';
 import LeaderboardList from '@/components/leaderboard/LeaderboardList';
 import MyRankBanner from '@/components/leaderboard/MyRankBanner';
 import PeriodSelector from '@/components/leaderboard/PeriodSelector';
-import { LiveIndicator } from '@/components/leaderboard/StatsSection';
-import TierSystemTooltip from '@/components/leaderboard/TierSystemTooltip';
 
 // User 타입은 userStore에서 import
 import { useCurrentUser, User } from '@/stores/userStore';
@@ -84,10 +82,8 @@ export default function Leaderboard() {
   const categories = LEADERBOARD_CATEGORIES;
 
   return (
-    <div className={`min-h-screen p-4 sm:p-6 lg:p-8 ${getThemeClass('background')}`}>
-      <div className='mx-auto max-w-6xl space-y-6 sm:space-y-8'>
-        {/* 실시간 경쟁 표시기 - LeaderboardHeader 바로 아래로 이동 */}
-        <LiveIndicator />
+    <div className={`min-h-screen p-4 lg:p-8 ${getThemeClass('background')}`}>
+      <div className='mx-auto max-w-6xl space-y-6 lg:space-y-8'>
 
         {/* 기간 선택 탭 */}
         <PeriodSelector
@@ -98,21 +94,13 @@ export default function Leaderboard() {
           currentDate={currentDate}
         />
 
-        {/* 티어 설명과 카테고리 필터 */}
-        <div className='relative mb-8'>
-          {/* 가장 좌측: 티어 설명 (absolute 고정) */}
-          <div className='absolute top-0 left-0 z-10'>
-            <TierSystemTooltip />
-          </div>
-
-          {/* 카테고리 필터 (중앙 고정) */}
-          <div className='flex justify-center'>
-            <CategoryFilter
-              categories={categories}
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-            />
-          </div>
+        {/* 카테고리 필터 */}
+        <div className='mb-6 flex justify-center'>
+          <CategoryFilter
+            categories={categories}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+          />
         </div>
 
         {/* 내 순위 배너 */}

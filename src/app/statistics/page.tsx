@@ -1,20 +1,22 @@
 'use client';
 
 import { useAvailableDates, useUsageStatistics } from '@/hooks/useStatistics';
+import { useTheme } from '@/hooks/useTheme';
 import { useCurrentUser } from '@/stores/userStore';
 import { PeriodType, StatisticsCategory } from '@/types/statistics';
 import { getDateString } from '@/utils/statisticsUtils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useTheme } from '@/hooks/useTheme';
+import { getTimeline } from '@/shared/api/get';
+import { useQuery } from '@tanstack/react-query';
 
 // 컴포넌트 임포트
-import CategoryList from '@/components/statistics/CategoryList';
+import ActivityList from '@/components/statistics/ActivityList';
 import HourlyUsageComparison from '@/components/statistics/HourlyUsageComparison';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
+import TimelineChart from '@/components/statistics/TimelineChart';
 import TotalTimeCard from '@/components/statistics/TotalTimeCard';
 import { useInitUser } from '@/hooks/useInitUser';
 import ErrorState from '../../components/common/ErrorState';
-import NoData from '../../components/common/NoData';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<PeriodType>('daily');
@@ -49,6 +51,24 @@ export default function StatisticsPage() {
     error,
     refetch,
   } = useUsageStatistics(selectedDate, currentUser?.id || '');
+
+  // 타임라인 데이터 조회
+  const {
+    data: timelineData,
+    isLoading: isTimelineLoading,
+    isError: isTimelineError,
+  } = useQuery({
+    queryKey: ['timeline', currentUser?.id, selectedDate],
+    queryFn: async () => {
+      if (!currentUser?.id) {
+        throw new Error('User ID is required');
+      }
+      return getTimeline(currentUser.id, selectedDate);
+    },
+    enabled: !!currentUser?.id && !!selectedDate,
+    staleTime: 5 * 60 * 1000, // 5분
+    retry: false, // 타임라인은 선택적 기능이므로 재시도하지 않음
+  });
 
   // availableDates 변경 모니터링
   React.useEffect(() => {
@@ -137,6 +157,7 @@ export default function StatisticsPage() {
     setSelectedCategory(category);
   };
 
+
   // 로딩 상태
   if (isLoading) {
     return (
@@ -174,39 +195,23 @@ export default function StatisticsPage() {
   }
 
   return (
-    <div className={`min-h-screen p-4 sm:p-6 lg:p-8 ${getThemeClass('background')}`}>
-      <div className='mx-auto max-w-6xl space-y-6 sm:space-y-8'>
+    <div className={`min-h-screen p-3 sm:p-4 lg:p-6 ${getThemeClass('background')}`}>
+      <div className='mx-auto max-w-6xl space-y-4 sm:space-y-6'>
         {/* 메인 콘텐츠 */}
-        <div className='grid gap-6 sm:gap-8 lg:grid-cols-2'>
+        <div className='grid gap-4 sm:gap-6 lg:grid-cols-2 min-h-[500px]'>
           {/* 왼쪽: 총 작업시간 & 상위 카테고리 */}
           <div className='flex flex-col space-y-3'>
             {/* 작업시간 카드 - 컴팩트하게 */}
             <div className='flex-shrink-0'>
-              <TotalTimeCard
-                totalTime={dailyData?.totalTime || 0}
-                selectedCategory={selectedCategory}
+            <TotalTimeCard
+              totalTime={dailyData?.totalTime || 0}
               />
             </div>
 
-            {/* 상위 6개 카테고리 목록 - 더 많은 공간 */}
-            {dailyData && dailyData.categories.length > 0 ? (
-              <div className='min-h-0 flex-1'>
-                <CategoryList
-                  categories={dailyData.categories}
-                  selectedCategory={selectedCategory}
-                  onCategorySelect={handleCategorySelect}
-                />
-              </div>
-            ) : (
-              <div className={`min-h-0 flex-1 rounded-lg shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
-                <NoData
-                  title='카테고리가 없습니다'
-                  message='오늘 활동한 카테고리가 없습니다.'
-                  showBorder={false}
-                  size='auto'
-                />
-              </div>
-            )}
+            {/* Activity 목록 */}
+            <div className='flex-1'>
+              <ActivityList date={selectedDate} />
+            </div>
           </div>
 
           {/* 오른쪽: 차트 */}
@@ -218,6 +223,14 @@ export default function StatisticsPage() {
             canGoPrevious={canGoPrevious}
             canGoNext={canGoNext}
             currentDate={selectedDate}
+          />
+        </div>
+
+        {/* 타임라인 차트 - 전체 너비 사용 */}
+        <div className='col-span-1 lg:col-span-2'>
+          <TimelineChart 
+            timelineData={timelineData}
+            isLoading={isTimelineLoading}
           />
         </div>
 
