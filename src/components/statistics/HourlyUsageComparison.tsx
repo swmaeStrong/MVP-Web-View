@@ -338,9 +338,7 @@ export default function HourlyUsageComparison({
                     fontSize={10}
                     tickLine={false}
                     axisLine={false}
-                    angle={-45}
-                    textAnchor='end'
-                    height={60}
+                    height={40}
                   />
                   <YAxis
                     fontSize={10}
@@ -381,9 +379,7 @@ export default function HourlyUsageComparison({
                     fontSize={10}
                     tickLine={false}
                     axisLine={false}
-                    angle={-45}
-                    textAnchor='end'
-                    height={60}
+                    height={40}
                   />
                   <YAxis
                     fontSize={10}

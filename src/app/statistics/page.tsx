@@ -6,6 +6,8 @@ import { useCurrentUser } from '@/stores/userStore';
 import { PeriodType, StatisticsCategory } from '@/types/statistics';
 import { getDateString } from '@/utils/statisticsUtils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { getTimeline } from '@/shared/api/get';
+import { useQuery } from '@tanstack/react-query';
 
 // 컴포넌트 임포트
 import ActivityList from '@/components/statistics/ActivityList';
@@ -49,6 +51,24 @@ export default function StatisticsPage() {
     error,
     refetch,
   } = useUsageStatistics(selectedDate, currentUser?.id || '');
+
+  // 타임라인 데이터 조회
+  const {
+    data: timelineData,
+    isLoading: isTimelineLoading,
+    isError: isTimelineError,
+  } = useQuery({
+    queryKey: ['timeline', currentUser?.id, selectedDate],
+    queryFn: async () => {
+      if (!currentUser?.id) {
+        throw new Error('User ID is required');
+      }
+      return getTimeline(currentUser.id, selectedDate);
+    },
+    enabled: !!currentUser?.id && !!selectedDate,
+    staleTime: 5 * 60 * 1000, // 5분
+    retry: false, // 타임라인은 선택적 기능이므로 재시도하지 않음
+  });
 
   // availableDates 변경 모니터링
   React.useEffect(() => {
@@ -137,78 +157,6 @@ export default function StatisticsPage() {
     setSelectedCategory(category);
   };
 
-  // 타임라인 샘플 데이터 생성
-  const timelineSchedules = useMemo(() => {
-    // 항상 샘플 데이터를 보여주도록 변경
-    interface ScheduleItem {
-      id: string;
-      title: string;
-      startTime: string;
-      endTime: string;
-      type: 'primary' | 'secondary';
-    }
-    
-    const schedules: ScheduleItem[] = [
-      {
-        id: 'timeline-1',
-        title: '개발 작업',
-        startTime: '09:00',
-        endTime: '12:00',
-        type: 'primary'
-      },
-      {
-        id: 'timeline-2',
-        title: '회의',
-        startTime: '14:00',
-        endTime: '15:30',
-        type: 'secondary'
-      },
-      {
-        id: 'timeline-3',
-        title: '코드 리뷰',
-        startTime: '16:00',
-        endTime: '17:00',
-        type: 'secondary'
-      },
-      {
-        id: 'timeline-4',
-        title: '프로젝트 설계',
-        startTime: '10:30',
-        endTime: '11:30',
-        type: 'primary'
-      },
-      {
-        id: 'timeline-5',
-        title: '문서 작성',
-        startTime: '19:00',
-        endTime: '21:00',
-        type: 'primary'
-      },
-      {
-        id: 'timeline-6',
-        title: '팀 스탠드업',
-        startTime: '08:30',
-        endTime: '09:00',
-        type: 'secondary'
-      },
-      {
-        id: 'timeline-7',
-        title: '버그 수정',
-        startTime: '13:00',
-        endTime: '13:45',
-        type: 'primary'
-      },
-      {
-        id: 'timeline-8',
-        title: '학습',
-        startTime: '22:00',
-        endTime: '23:30',
-        type: 'secondary'
-      }
-    ];
-
-    return schedules;
-  }, []);
 
   // 로딩 상태
   if (isLoading) {
@@ -262,7 +210,7 @@ export default function StatisticsPage() {
 
             {/* Activity 목록 */}
             <div className='flex-1'>
-              <ActivityList />
+              <ActivityList date={selectedDate} />
             </div>
           </div>
 
@@ -281,7 +229,8 @@ export default function StatisticsPage() {
         {/* 타임라인 차트 - 전체 너비 사용 */}
         <div className='col-span-1 lg:col-span-2'>
           <TimelineChart 
-            schedules={timelineSchedules}
+            timelineData={timelineData}
+            isLoading={isTimelineLoading}
           />
         </div>
 
