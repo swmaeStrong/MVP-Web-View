@@ -4,9 +4,9 @@ import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/shadcn/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import { cardSystem, componentStates, spacing } from '@/styles/design-system';
-import React, { useMemo } from 'react';
-import NoData from '../common/NoData';
 import { Activity } from 'lucide-react';
+import { useMemo } from 'react';
+import NoData from '../common/NoData';
 
 interface ScheduleItem {
   id: string;
@@ -222,7 +222,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
       getThemeClass('component'),
       'shadow-sm hover:shadow-md'
     )}>
-      <CardHeader className={cn(cardSystem.header, 'pb-3')}>
+      <CardHeader className={cn(cardSystem.header, '')}>
         <CardTitle className={cn(
           'flex items-center gap-3 text-lg font-bold',
           getThemeTextColor('primary')
