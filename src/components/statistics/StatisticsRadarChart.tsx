@@ -129,7 +129,7 @@ export default function StatisticsRadarChart({
                         <div className={`ml-5 text-sm ${getThemeTextColor('secondary')}`}>
                           시간:{' '}
                           <span className={`font-semibold ${getThemeTextColor('primary')}`}>
-                            {formatTime(time as number)}
+                            {data.payload.fullTime}
                           </span>
                         </div>
                         <div className={`ml-5 text-sm ${getThemeTextColor('secondary')}`}>
