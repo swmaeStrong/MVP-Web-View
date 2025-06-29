@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from '@/shadcn/ui/select';
 import { getKSTDateString } from '@/utils/timezone';
+import { Activity } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import {
   Bar,
@@ -29,7 +30,6 @@ import {
 } from 'recharts';
 import ErrorState from '../common/ErrorState';
 import NoData from '../common/NoData';
-import { Activity } from 'lucide-react';
 
 interface HourlyUsageComparisonProps {
   userId: string;
@@ -68,7 +68,7 @@ export default function HourlyUsageComparison({
   const { isDarkMode, getThemeClass, getThemeColor, getThemeTextColor } = useTheme();
   const [selectedBinSize, setSelectedBinSize] = useState(60);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [chartType, setChartType] = useState<'bar' | 'line'>('bar');
+  const [chartType, setChartType] = useState<'bar' | 'line'>('line');
 
   const currentDate = date || getKSTDateString();
 
@@ -283,6 +283,16 @@ export default function HourlyUsageComparison({
             {/* 하단: 차트 타입 토글 */}
             <div className='flex items-center'>
               <div className={`flex items-center rounded-lg p-1 ${getThemeClass('componentSecondary')}`}>
+              <button
+                  className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-200 ${
+                    chartType === 'line'
+                      ? `${getThemeClass('component')} ${getThemeTextColor('accent')} shadow-sm`
+                      : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
+                  }`}
+                  onClick={() => setChartType('line')}
+                >
+                  선형
+                </button>
                 <button
                   className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-200 ${
                     chartType === 'bar'
@@ -291,17 +301,7 @@ export default function HourlyUsageComparison({
                   }`}
                   onClick={() => setChartType('bar')}
                 >
-                  📊 막대
-                </button>
-                <button
-                  className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-200 ${
-                    chartType === 'line'
-                      ? `${getThemeClass('component')} ${getThemeTextColor('accent')} shadow-sm`
-                      : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
-                  }`}
-                  onClick={() => setChartType('line')}
-                >
-                  📈 선형
+                  막대
                 </button>
               </div>
             </div>
