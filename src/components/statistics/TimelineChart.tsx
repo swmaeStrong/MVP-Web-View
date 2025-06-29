@@ -36,10 +36,10 @@ interface TimelineChartProps {
 export default function TimelineChart({ schedules, timelineData, date, isLoading }: TimelineChartProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
 
-  // 0:00-23:00 시간 범위 (1시간 간격) - 전체 하루로 확장
+  // 0:00-24:00 시간 범위 (1시간 간격) - 전체 하루로 확장
   const timeHours = useMemo(() => {
     const hours = [];
-    for (let i = 0; i <= 23; i++) {
+    for (let i = 0; i <= 24; i++) {
       hours.push(i);
     }
     return hours;
@@ -222,7 +222,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
       getThemeClass('component'),
       'shadow-sm hover:shadow-md'
     )}>
-      <CardHeader className={cn(cardSystem.header, spacing.section.tight)}>
+      <CardHeader className={cn(cardSystem.header, 'pb-3')}>
         <CardTitle className={cn(
           'flex items-center gap-3 text-lg font-bold',
           getThemeTextColor('primary')
@@ -251,11 +251,9 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
               <div className={cn(
                 'w-full h-16 lg:h-20 relative overflow-hidden rounded-sm shadow-inner',
                 getThemeClass('componentSecondary'),
+                'border-2',
                 getThemeClass('border')
-              )}
-              style={{
-                border: '2px solid'
-              }}>
+              )}>
                 {/* 시간 눈금선 (1시간 간격) */}
                 <div className="absolute inset-0 flex">
                   {timeHours.slice(0, -1).map((hour, index) => (
@@ -322,7 +320,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
                       index % 2 !== 0 ? 'lg:hidden' : ''
                     )}
                   >
-                    {hour.toString().padStart(2, '0')}:00
+                    {hour === 24 ? '24:00' : `${hour.toString().padStart(2, '0')}:00`}
                   </div>
                 ))}
               </div>
