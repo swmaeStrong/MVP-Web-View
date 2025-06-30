@@ -24,9 +24,9 @@ export default function PeriodSelector({
 }: PeriodSelectorProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
   const timeLabels = {
-    daily: '일간',
-    weekly: '주간',
-    monthly: '월간',
+    daily: 'Daily',
+    weekly: 'Weekly',
+    monthly: 'Monthly',
   };
 
   const handlePreviousDate = () => {
@@ -96,7 +96,9 @@ export default function PeriodSelector({
         targetYear -= 1;
       }
 
-      return `${targetYear}년 ${targetMonth + 1}월`;
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+      return `${monthNames[targetMonth]} ${targetYear}`;
     }
   };
 

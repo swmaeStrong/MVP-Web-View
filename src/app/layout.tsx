@@ -25,18 +25,18 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: '개발자를 위한 스마트 생산성 추적기',
+  title: 'Smart Productivity Tracker for Developers',
   description:
-    'IDE별 코딩 시간부터 유튜브 콘텐츠 분석까지. 친구들과 리더보드 경쟁하며 생산성을 게임처럼 즐겨보세요.',
+    'From IDE coding time to YouTube content analysis. Compete with friends on leaderboards and gamify your productivity.',
   keywords: [
-    '생산성',
-    '개발자',
+    'productivity',
+    'developer',
     'IDE',
-    '코딩',
-    '시간추적',
-    '리더보드',
+    'coding',
+    'time tracking',
+    'leaderboard',
     'GitHub',
-    '노션',
+    'Notion',
   ],
   authors: [{ name: 'Productivity Tracker Team' }],
   viewport: 'width=device-width, initial-scale=1',
@@ -49,7 +49,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang='ko'
+      lang='en'
       className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable} ${
         process.env.NODE_ENV === 'production'
           ? 'bg-transparent'

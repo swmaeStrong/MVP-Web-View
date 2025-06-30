@@ -39,49 +39,49 @@ export default function TierSystemTooltip() {
   const tierSystemInfo = [
     {
       tier: 'CHALLENGER',
-      percentage: '상위 1%',
+      percentage: 'Top 1%',
       color: 'text-yellow-600',
       icon: '/icons/rank/challenger.png',
     },
     {
       tier: 'GRANDMASTER',
-      percentage: '상위 3%',
+      percentage: 'Top 3%',
       color: 'text-red-600',
       icon: '/icons/rank/grandMaster.png',
     },
     {
       tier: 'MASTER',
-      percentage: '상위 5%',
+      percentage: 'Top 5%',
       color: 'text-purple-600',
       icon: '/icons/rank/master.png',
     },
     {
       tier: 'DIAMOND',
-      percentage: '상위 10%',
+      percentage: 'Top 10%',
       color: 'text-blue-600',
       icon: '/icons/rank/diamond.png',
     },
     {
       tier: 'EMERALD',
-      percentage: '상위 15%',
+      percentage: 'Top 15%',
       color: 'text-emerald-600',
       icon: '/icons/rank/emerald.png',
     },
     {
       tier: 'PLATINUM',
-      percentage: '상위 30%',
+      percentage: 'Top 30%',
       color: 'text-slate-600',
       icon: '/icons/rank/platinum.png',
     },
     {
       tier: 'GOLD',
-      percentage: '상위 50%',
+      percentage: 'Top 50%',
       color: 'text-amber-600',
       icon: '/icons/rank/gold.png',
     },
     {
       tier: 'SILVER',
-      percentage: '상위 80%',
+      percentage: 'Top 80%',
       color: 'text-gray-600',
       icon: '/icons/rank/silver.png',
     },
@@ -107,7 +107,7 @@ export default function TierSystemTooltip() {
         style={{ zIndex: 99998 }}
       >
         <Info className={`h-3 w-3 ${getThemeTextColor('secondary')}`} />
-        <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>티어</span>
+        <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>Tier</span>
       </button>
 
       {/* 툴팁 */}
@@ -130,14 +130,14 @@ export default function TierSystemTooltip() {
 
           <div className='mb-3'>
             <h3 className={`mb-1 text-sm font-bold ${getThemeTextColor('primary')}`}>
-              🏆 티어 시스템
+              🏆 Tier System
             </h3>
             <p className={`text-xs ${getThemeTextColor('secondary')} leading-tight`}>
-              참가자가 100명 이하일 경우 특정 상위 티어는 존재하지 않을 수 있습니다.
+              When there are fewer than 100 participants, certain Top tiers may not exist.
             </p>
           </div>
 
-          {/* 컴팩트 그리드 레이아웃 */}
+          {/* Compact grid layout */}
           <div className='grid grid-cols-3 gap-1.5'>
             {tierSystemInfo.map((tier, index) => (
               <div

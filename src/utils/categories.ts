@@ -1,8 +1,8 @@
 import { categoryColors } from '@/styles/colors';
 
-// 🎯 leaderboard와 statistics에서 공통으로 사용하는 카테고리 정의
+// 🎯 Categories used across leaderboard and statistics
 export const CATEGORIES = {
-  // 메인 카테고리 (영문 - leaderboard에서 주로 사용)
+  // Main categories (English - default)
   DEVELOPMENT: 'Development',
   LLM: 'LLM',
   DOCUMENTATION: 'Documentation',
@@ -12,13 +12,7 @@ export const CATEGORIES = {
   SNS: 'SNS',
   UNCATEGORIZED: 'Uncategorized',
 
-  // 한글 카테고리 (statistics에서 주로 사용)
-  개발: '개발',
-  디자인: '디자인',
-  회의: '회의',
-  기타: '기타',
-
-  // 특수 카테고리
+  // Special categories
   ALL: 'all',
 } as const;
 
@@ -28,7 +22,7 @@ export const getCategoryColor = (category: string): string => {
   return colorConfig?.gradient || categoryColors.Uncategorized.gradient;
 };
 
-// 🎭 카테고리별 아이콘 맵 (통합)
+// 🎭 Category icon mapping
 export const CATEGORY_ICONS: { [key: string]: string } = {
   [CATEGORIES.DEVELOPMENT]: '⚡',
   [CATEGORIES.LLM]: '🤖',
@@ -41,12 +35,12 @@ export const CATEGORY_ICONS: { [key: string]: string } = {
   [CATEGORIES.ALL]: '🌟',
 };
 
-// 🎯 카테고리 아이콘 가져오기
+// 🎯 Get category icon
 export const getCategoryIcon = (category: string): string => {
-  return CATEGORY_ICONS[category] || CATEGORY_ICONS[CATEGORIES.기타];
+  return CATEGORY_ICONS[category] || CATEGORY_ICONS[CATEGORIES.UNCATEGORIZED];
 };
 
-// 📊 leaderboard 카테고리 목록
+// 📊 Leaderboard categories list
 export const LEADERBOARD_CATEGORIES = [
   CATEGORIES.DEVELOPMENT,
   CATEGORIES.LLM,
@@ -58,62 +52,43 @@ export const LEADERBOARD_CATEGORIES = [
   CATEGORIES.UNCATEGORIZED,
 ];
 
-// 📈 statistics 카테고리 목록 (한글명 포함)
+// 📈 Statistics categories list
 export const STATISTICS_CATEGORIES = [
   CATEGORIES.DEVELOPMENT,
-  CATEGORIES.개발,
   CATEGORIES.LLM,
   CATEGORIES.DOCUMENTATION,
   CATEGORIES.DESIGN,
-  CATEGORIES.디자인,
   CATEGORIES.COMMUNICATION,
-  CATEGORIES.회의,
   CATEGORIES.YOUTUBE,
   CATEGORIES.SNS,
   CATEGORIES.UNCATEGORIZED,
-  CATEGORIES.기타,
 ];
 
-// 🎨 카테고리 표시명 매핑
+// 🎨 Category display names mapping
 export const CATEGORY_DISPLAY_NAMES: { [key: string]: string } = {
-  [CATEGORIES.ALL]: '전체',
-  [CATEGORIES.DEVELOPMENT]: '개발',
-  [CATEGORIES.개발]: '개발',
+  [CATEGORIES.ALL]: 'All',
+  [CATEGORIES.DEVELOPMENT]: 'Development',
   [CATEGORIES.LLM]: 'LLM',
-  [CATEGORIES.DOCUMENTATION]: '문서작업',
-  [CATEGORIES.DESIGN]: '디자인',
-  [CATEGORIES.디자인]: '디자인',
-  [CATEGORIES.COMMUNICATION]: '소통',
-  [CATEGORIES.회의]: '소통',
-  [CATEGORIES.YOUTUBE]: '유튜브',
+  [CATEGORIES.DOCUMENTATION]: 'Documentation',
+  [CATEGORIES.DESIGN]: 'Design',
+  [CATEGORIES.COMMUNICATION]: 'Communication',
+  [CATEGORIES.YOUTUBE]: 'YouTube',
   [CATEGORIES.SNS]: 'SNS',
-  [CATEGORIES.UNCATEGORIZED]: '기타',
-  [CATEGORIES.기타]: '기타',
+  [CATEGORIES.UNCATEGORIZED]: 'Other',
 };
 
-// 🏷️ 카테고리 표시명 가져오기
+// 🏷️ Get category display name
 export const getCategoryDisplayName = (category: string): string => {
   return CATEGORY_DISPLAY_NAMES[category] || category;
 };
 
-// 🔄 영문 카테고리를 한글로 변환
-export const mapEnglishToKorean = (englishCategory: string): string => {
+// 🔄 Category normalization (for backward compatibility)
+export const normalizeCategory = (category: string): string => {
   const mapping: { [key: string]: string } = {
-    [CATEGORIES.DEVELOPMENT]: CATEGORIES.개발,
-    [CATEGORIES.DESIGN]: CATEGORIES.디자인,
-    [CATEGORIES.COMMUNICATION]: CATEGORIES.회의,
-    [CATEGORIES.UNCATEGORIZED]: CATEGORIES.기타,
+    '개발': CATEGORIES.DEVELOPMENT,
+    '디자인': CATEGORIES.DESIGN,
+    '회의': CATEGORIES.COMMUNICATION,
+    '기타': CATEGORIES.UNCATEGORIZED,
   };
-  return mapping[englishCategory] || englishCategory;
-};
-
-// 🔄 한글 카테고리를 영문으로 변환
-export const mapKoreanToEnglish = (koreanCategory: string): string => {
-  const mapping: { [key: string]: string } = {
-    [CATEGORIES.개발]: CATEGORIES.DEVELOPMENT,
-    [CATEGORIES.디자인]: CATEGORIES.DESIGN,
-    [CATEGORIES.회의]: CATEGORIES.COMMUNICATION,
-    [CATEGORIES.기타]: CATEGORIES.UNCATEGORIZED,
-  };
-  return mapping[koreanCategory] || koreanCategory;
+  return mapping[category] || category;
 };

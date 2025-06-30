@@ -11,9 +11,9 @@ import NoData from '../common/NoData';
 interface ScheduleItem {
   id: string;
   title?: string;
-  startTime: string; // "09:00" 형식
-  endTime: string; // "10:30" 형식
-  type: 'primary' | 'secondary'; // 생산성 | 비생산성
+  startTime: string; // "09:00" format
+  endTime: string; // "10:30" format
+  type: 'primary' | 'secondary'; // productive | non-productive
   mergedCategory?: string;
   app?: string;
   colorClass?: string;
@@ -36,7 +36,7 @@ interface TimelineChartProps {
 export default function TimelineChart({ schedules, timelineData, date, isLoading }: TimelineChartProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
 
-  // 0:00-24:00 시간 범위 (1시간 간격) - 전체 하루로 확장
+  // 0:00-24:00 time range (1-hour intervals) - expanded to full day
   const timeHours = useMemo(() => {
     const hours = [];
     for (let i = 0; i <= 24; i++) {
@@ -45,17 +45,17 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
     return hours;
   }, []);
 
-  // 시간을 분 단위로 변환하는 함수 (HH:MM 형식 또는 ISO string)
+  // Function to convert time to minutes (HH:MM format or ISO string)
   const timeToMinutes = (time: string): number => {
     if (!time) return 0;
     
     if (time.includes('T')) {
-      // ISO string인 경우
+      // If ISO string
       const date = new Date(time);
       if (isNaN(date.getTime())) return 0;
       return date.getHours() * 60 + date.getMinutes();
     } else {
-      // HH:MM 형식인 경우
+      // If HH:MM format
       const parts = time.split(':');
       if (parts.length !== 2) return 0;
       const [hours, minutes] = parts.map(Number);
@@ -64,7 +64,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
     }
   };
 
-  // 분을 시간으로 변환하는 함수
+  // Function to convert minutes to time
   const minutesToTime = (minutes: number): string => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
@@ -130,7 +130,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
     return exactMatch || lowerMatch || currentColors.others;
   };
 
-  // timelineData를 schedules 형식으로 변환 및 정렬
+  // Convert timelineData to schedules format and sort
   const convertedSchedules = useMemo(() => {
     if (schedules && schedules.length > 0) return schedules;
     if (!timelineData || !Array.isArray(timelineData)) return [];
@@ -141,7 +141,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
         const colorInfo = getCategoryColor(item.mergedCategory);
         return {
           id: `timeline-${index}`,
-          title: item.title || item.app || '활동',
+          title: item.title || item.app || 'Activity',
           startTime: item.startedAt,
           endTime: item.endedAt,
           type: colorInfo.type,
@@ -150,7 +150,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
         };
       })
       .sort((a, b) => {
-        // 시작 시간 순으로 정렬
+        // Sort by start time
         const timeA = timeToMinutes(a.startTime);
         const timeB = timeToMinutes(b.startTime);
         return timeA - timeB;
@@ -172,7 +172,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
       return acc;
     }, [] as Array<{ category: string; color: string; type: 'primary' | 'secondary' }>);
 
-    // 생산성 카테고리 먼저, 비생산성 카테고리 나중에
+    // Productive categories first, non-productive categories later
     return categories.sort((a, b) => {
       if (a.type === 'primary' && b.type === 'secondary') return -1;
       if (a.type === 'secondary' && b.type === 'primary') return 1;
@@ -180,7 +180,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
     });
   }, [convertedSchedules]);
 
-  // 데이터 없음 상태 체크
+  // Check for no data state
   const hasNoData = !isLoading && convertedSchedules.length === 0;
 
   if (isLoading) {
@@ -205,7 +205,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
           <div className="flex items-center justify-center h-32">
             <div className="text-center">
               <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-purple-600"></div>
-              <p className={getThemeClass('textSecondary')}>타임라인 데이터를 불러오는 중...</p>
+              <p className={getThemeClass('textSecondary')}>Loading timeline data...</p>
             </div>
           </div>
         </CardContent>
@@ -235,8 +235,8 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
         {hasNoData ? (
           <div className="flex h-[200px] items-center justify-center">
             <NoData
-              title="타임라인 데이터가 없습니다"
-              message="오늘 하루 동안의 활동 기록이 없습니다. 사용률 추적을 시작해보세요."
+              title="No timeline data available"
+              message="No activity records for today. Start tracking your usage."
               icon={Activity}
               showBorder={false}
               size="medium"
@@ -245,7 +245,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
         ) : (
         <div className="relative">
           <div className="w-full">
-            {/* 타임라인 바 */}
+            {/* Timeline bar */}
             <div className="relative mb-2">
               {/* 배경 바 (어두운 배경) */}
               <div className={cn(
@@ -254,7 +254,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
                 'border-2',
                 getThemeClass('border')
               )}>
-                {/* 시간 눈금선 (1시간 간격) */}
+                {/* Time grid lines (1-hour intervals) */}
                 <div className="absolute inset-0 flex">
                   {timeHours.slice(0, -1).map((hour, index) => (
                     <div
@@ -264,7 +264,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
                   ))}
                 </div>
 
-                {/* 활동 블록들 */}
+                {/* Activity blocks */}
                 {convertedSchedules.map((schedule, index) => {
                   const startMinutes = timeToMinutes(schedule.startTime);
                   const endMinutes = timeToMinutes(schedule.endTime);
@@ -278,7 +278,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
                   const category = schedule.mergedCategory || 'others';
                   const colorInfo = getCategoryColor(category);
                   
-                  // 겹침 방지를 위한 z-index 계산 (시간 순서대로)
+                  // Calculate z-index to prevent overlap (by time order)
                   const zIndex = 100 + index;
                   
                   // 명확한 블록 스타일 - 투명도 없이 순수 색상만
@@ -305,7 +305,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
               </div>
             </div>
 
-            {/* 시간 라벨 (하단) */}
+            {/* Time labels (bottom) */}
             <div className="relative">
               <div className="flex justify-between">
                 {timeHours.map((hour, index) => (
@@ -314,7 +314,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
                     className={cn(
                       'text-center text-xs lg:text-sm font-medium',
                       getThemeTextColor('secondary'),
-                      // 작은 화면에서는 4시간 간격으로 표시, 큰 화면에서는 2시간 간격
+                      // Show every 4 hours on small screens, every 2 hours on large screens
                       'lg:block',
                       index % 4 === 0 ? 'block' : 'hidden lg:block',
                       index % 2 !== 0 ? 'lg:hidden' : ''

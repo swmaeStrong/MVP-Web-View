@@ -36,29 +36,29 @@ interface HourlyUsageComparisonProps {
   date?: string;
 }
 
-// BinSize 옵션
+// BinSize options
 const BIN_SIZE_OPTIONS = [
-  { value: 15, label: '15분' },
-  { value: 30, label: '30분' },
-  { value: 60, label: '1시간' },
+  { value: 15, label: '15 min' },
+  { value: 30, label: '30 min' },
+  { value: 60, label: '1 hour' },
 ];
 
-// 초 단위까지 포함한 시간 포맷팅 (시간별 사용량 전용) - 소수점 제거
+// Time formatting including seconds (for hourly usage) - remove decimals
 const formatTimeWithSeconds = (seconds: number): string => {
   const totalSeconds = Math.floor(seconds); // 소수점 제거
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const secs = totalSeconds % 60;
 
-  if (hours === 0 && minutes === 0 && secs === 0) return '0초';
-  if (hours === 0 && minutes === 0) return `${secs}초`;
+  if (hours === 0 && minutes === 0 && secs === 0) return '0s';
+  if (hours === 0 && minutes === 0) return `${secs}s`;
   if (hours === 0)
-    return secs === 0 ? `${minutes}분` : `${minutes}분 ${secs}초`;
+    return secs === 0 ? `${minutes}m` : `${minutes}m ${secs}s`;
   if (minutes === 0)
-    return secs === 0 ? `${hours}시간` : `${hours}시간 ${secs}초`;
+    return secs === 0 ? `${hours}h` : `${hours}h ${secs}s`;
   return secs === 0
-    ? `${hours}시간 ${minutes}분`
-    : `${hours}시간 ${minutes}분 ${secs}초`;
+    ? `${hours}h ${minutes}m`
+    : `${hours}h ${minutes}m ${secs}s`;
 };
 
 export default function HourlyUsageComparison({
@@ -72,7 +72,7 @@ export default function HourlyUsageComparison({
 
   const currentDate = date || getKSTDateString();
 
-  // 시간별 사용량 데이터 조회
+  // Query hourly usage data
   const {
     data: hourlyData,
     isLoading,
@@ -80,11 +80,11 @@ export default function HourlyUsageComparison({
     refetch,
   } = useHourlyUsage(currentDate, userId, selectedBinSize);
 
-  // 차트 데이터 가공 및 유효성 검사
+  // Process chart data and validate
   const { chartData, dataValidation } = useMemo(() => {
     if (!hourlyData) return { chartData: [], dataValidation: { isValid: false, reason: 'no-data' } };
 
-    // 시간대별로 그룹화
+    // Group by time periods
     const hourlyMap = new Map<
       string,
       { total: number; categories: Record<string, number> }
@@ -102,20 +102,20 @@ export default function HourlyUsageComparison({
         (hourData.categories[item.category] || 0) + item.totalDuration;
     });
 
-    // 차트용 데이터 변환
+    // Convert to chart data
     const processedData = Array.from(hourlyMap.entries())
       .map(([hour, data]) => ({
         hour,
-        hourDisplay: hour.split('T')[1]?.substring(0, 5) || hour, // 시간 부분만 추출 (HH:MM)
+        hourDisplay: hour.split('T')[1]?.substring(0, 5) || hour, // Extract time part only (HH:MM)
         total: data.total,
         category: selectedCategory ? data.categories[selectedCategory] || 0 : 0,
         ...data.categories,
       }))
       .sort((a, b) => a.hour.localeCompare(b.hour));
 
-    // 데이터 유효성 검사
+    // Data validation
     const dataPointsCount = processedData.length;
-    const hasMinimumDataPoints = dataPointsCount >= 4; // 최소 4개 이상의 시간대 필요
+    const hasMinimumDataPoints = dataPointsCount >= 4; // Need at least 4 time periods
 
     let validation = { isValid: true, reason: '' };
     
@@ -128,7 +128,7 @@ export default function HourlyUsageComparison({
     return { chartData: processedData, dataValidation: validation };
   }, [hourlyData, selectedCategory]);
 
-  // 커스텀 툴팁 컴포넌트
+  // Custom tooltip component
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null;
 
@@ -144,26 +144,26 @@ export default function HourlyUsageComparison({
         {selectedCategory && (
           <div className='space-y-1 text-sm'>
             <div className={`font-medium ${getThemeTextColor('accent')}`}>
-              사용 비율: {percentage}%
+              Usage Rate: {percentage}%
             </div>
             <div className={getThemeTextColor('secondary')}>
-              {selectedCategory} 사용량: {formatTimeWithSeconds(categoryValue)}
+              {selectedCategory} Usage: {formatTimeWithSeconds(categoryValue)}
             </div>
             <div className={getThemeTextColor('secondary')}>
-              전체 사용량: {formatTimeWithSeconds(total)}
+              Total Usage: {formatTimeWithSeconds(total)}
             </div>
           </div>
         )}
         {!selectedCategory && (
           <div className={`text-sm ${getThemeTextColor('secondary')}`}>
-            전체 사용량: {formatTimeWithSeconds(total)}
+            Total Usage: {formatTimeWithSeconds(total)}
           </div>
         )}
       </div>
     );
   };
 
-  // 사용 가능한 카테고리 목록
+  // Available categories list
   const availableCategories = useMemo(() => {
     if (!hourlyData) return [];
 
@@ -172,15 +172,15 @@ export default function HourlyUsageComparison({
     return Array.from(categories).sort();
   }, [hourlyData]);
 
-  // 차트 설정
+  // Chart configuration
   const chartConfig = useMemo(
     () => ({
       total: {
-        label: '전체',
+        label: 'Total',
         color: 'hsl(var(--chart-1))',
       },
       category: {
-        label: selectedCategory || '선택된 카테고리',
+        label: selectedCategory || 'Selected Category',
         color: 'hsl(var(--chart-2))',
       },
     }),
@@ -194,7 +194,7 @@ export default function HourlyUsageComparison({
           <div className='flex h-64 items-center justify-center'>
             <div className='text-center'>
               <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-purple-600'></div>
-              <p className={getThemeTextColor('secondary')}>시간별 데이터를 불러오는 중...</p>
+              <p className={getThemeTextColor('secondary')}>Loading hourly data...</p>
             </div>
           </div>
         </CardContent>
@@ -207,10 +207,10 @@ export default function HourlyUsageComparison({
       <Card className={`rounded-lg border-2 shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardContent className='p-6'>
           <ErrorState
-            title='시간별 데이터를 불러올 수 없습니다'
-            message='네트워크 문제가 발생했습니다. 다시 시도해주세요.'
+            title='Unable to load hourly data'
+            message='A network error occurred. Please try again.'
             onRetry={refetch}
-            retryText='새로고침'
+            retryText='Refresh'
             showBorder={false}
             size='small'
           />
@@ -227,14 +227,14 @@ export default function HourlyUsageComparison({
             {/* 상단: 제목과 단위/비교 선택 */}
             <div className='flex items-center justify-between'>
               <CardTitle className={`flex items-center gap-2 text-lg font-semibold ${getThemeTextColor('primary')}`}>
-                시간별 사용량
+                Hourly Usage
               </CardTitle>
               
               {/* 단위와 비교 선택 */}
               <div className='flex items-center gap-3'>
               {/* 시간 단위 */}
               <div className='flex items-center gap-1 lg:gap-2'>
-                <span className={`text-xs ${getThemeTextColor('secondary')}`}>단위</span>
+                <span className={`text-xs ${getThemeTextColor('secondary')}`}>Unit</span>
                 <Select
                   value={selectedBinSize.toString()}
                   onValueChange={value => setSelectedBinSize(parseInt(value))}
@@ -257,7 +257,7 @@ export default function HourlyUsageComparison({
 
               {/* 카테고리 선택 */}
               <div className='flex items-center gap-1 lg:gap-2'>
-                <span className={`text-xs ${getThemeTextColor('secondary')}`}>비교</span>
+                <span className={`text-xs ${getThemeTextColor('secondary')}`}>Compare</span>
                 <Select
                   value={selectedCategory || 'all'}
                   onValueChange={value =>
@@ -265,10 +265,10 @@ export default function HourlyUsageComparison({
                   }
                 >
                   <SelectTrigger className={`h-8 w-[100px] lg:w-[140px] text-xs border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('componentSecondary')}`}>
-                    <SelectValue placeholder="전체" />
+                    <SelectValue placeholder="Total" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value='all'>전체</SelectItem>
+                    <SelectItem value='all'>Total</SelectItem>
                     {availableCategories.map(category => (
                       <SelectItem key={category} value={category}>
                         {category}
@@ -291,7 +291,7 @@ export default function HourlyUsageComparison({
                   }`}
                   onClick={() => setChartType('line')}
                 >
-                  선형
+                  Line
                 </button>
                 <button
                   className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-200 ${
@@ -301,7 +301,7 @@ export default function HourlyUsageComparison({
                   }`}
                   onClick={() => setChartType('bar')}
                 >
-                  막대
+                  Bar
                 </button>
               </div>
             </div>
@@ -314,13 +314,13 @@ export default function HourlyUsageComparison({
               <NoData
                 title={
                   dataValidation.reason === 'no-data' 
-                    ? '시간별 데이터가 없습니다'
-                    : '시간대가 부족합니다'
+                    ? 'No hourly data available'
+                    : 'Insufficient time periods'
                 }
                 message={
                   dataValidation.reason === 'no-data'
-                    ? '선택한 날짜에 활동 기록이 없습니다.'
-                    : '의미있는 시간별 패턴 분석을 위해서는 최소 4개 이상의 시간대에 활동이 필요합니다.'
+                    ? 'No activity records for the selected date.'
+                    : 'At least 4 time periods with activity are needed for meaningful hourly pattern analysis.'
                 }
                 icon={Activity}
                 showBorder={false}
@@ -357,7 +357,7 @@ export default function HourlyUsageComparison({
                   />
                   <Bar
                     dataKey='total'
-                    name='전체'
+                    name='Total'
                     fill='var(--color-total)'
                     radius={[4, 4, 0, 0]}
                   />
@@ -399,7 +399,7 @@ export default function HourlyUsageComparison({
                   <Line
                     type='monotone'
                     dataKey='total'
-                    name='전체'
+                    name='Total'
                     stroke='var(--color-total)'
                     strokeWidth={3}
                     dot={false}
@@ -425,7 +425,7 @@ export default function HourlyUsageComparison({
           {selectedCategory && (
             <div className={`mt-4 grid grid-cols-2 gap-2 lg:gap-4 rounded-lg border-2 p-3 lg:p-4 ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
               <div className='text-center'>
-                <div className={`text-xs lg:text-sm ${getThemeTextColor('secondary')}`}>전체</div>
+                <div className={`text-xs lg:text-sm ${getThemeTextColor('secondary')}`}>Total</div>
                 <div className={`text-sm lg:text-lg font-semibold ${getThemeTextColor('primary')}`}>
                   {formatTimeWithSeconds(
                     chartData.reduce((sum, item) => sum + item.total, 0)

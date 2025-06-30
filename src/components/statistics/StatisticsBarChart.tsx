@@ -35,7 +35,7 @@ export default function StatisticsBarChart({
     if (period === 'weekly') {
       return [
         {
-          name: '1주차',
+          name: 'Week 1',
           DEVELOPMENT: 25200, // 7시간
           Design: 14400, // 4시간
           Communication: 10800, // 3시간
@@ -44,7 +44,7 @@ export default function StatisticsBarChart({
           LLM: 5400, // 1.5시간
         },
         {
-          name: '2주차',
+          name: 'Week 2',
           DEVELOPMENT: 28800, // 8시간
           Design: 18000, // 5시간
           Communication: 7200, // 2시간
@@ -53,7 +53,7 @@ export default function StatisticsBarChart({
           LLM: 7200, // 2시간
         },
         {
-          name: '3주차',
+          name: 'Week 3',
           DEVELOPMENT: 21600, // 6시간
           Design: 16200, // 4.5시간
           Communication: 12600, // 3.5시간
@@ -62,7 +62,7 @@ export default function StatisticsBarChart({
           LLM: 10800, // 3시간
         },
         {
-          name: '4주차',
+          name: 'Week 4',
           DEVELOPMENT: 32400, // 9시간
           Design: 12600, // 3.5시간
           Communication: 14400, // 4시간
@@ -74,7 +74,7 @@ export default function StatisticsBarChart({
     } else {
       return [
         {
-          name: '1월',
+          name: 'January',
           DEVELOPMENT: 86400, // 24시간
           Design: 64800, // 18시간
           Communication: 43200, // 12시간
@@ -83,7 +83,7 @@ export default function StatisticsBarChart({
           LLM: 28800, // 8시간
         },
         {
-          name: '2월',
+          name: 'February',
           DEVELOPMENT: 93600, // 26시간
           Design: 72000, // 20시간
           Communication: 36000, // 10시간
@@ -92,7 +92,7 @@ export default function StatisticsBarChart({
           LLM: 32400, // 9시간
         },
         {
-          name: '3월',
+          name: 'March',
           DEVELOPMENT: 79200, // 22시간
           Design: 57600, // 16시간
           Communication: 50400, // 14시간
@@ -202,7 +202,7 @@ export default function StatisticsBarChart({
       {/* 카테고리 범례 */}
       <div className={`rounded-xl p-4 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <h4 className={`mb-3 text-sm font-semibold ${getThemeClass('textPrimary')}`}>
-          🏷️ 카테고리 범례
+          🏷️ Category Legend
         </h4>
         <div className='grid grid-cols-2 gap-3 lg:grid-cols-3'>
           {categories.map(category => (
@@ -222,21 +222,21 @@ export default function StatisticsBarChart({
       {/* 기간별 통계 요약 */}
       <div className={`rounded-xl p-4 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <h4 className={`mb-3 text-sm font-semibold ${getThemeClass('textPrimary')}`}>
-          📈 {period === 'weekly' ? '주간' : '월간'} 요약
+          📈 {period === 'weekly' ? 'Weekly' : 'Monthly'} Summary
         </h4>
         <div className='grid grid-cols-2 gap-4 lg:grid-cols-4'>
           <div className={`rounded-lg p-3 shadow-sm ${getThemeClass('component')}`}>
           </div>
           <div className={`rounded-lg p-3 shadow-sm ${getThemeClass('component')}`}>
             <div className={`text-xs ${getThemeClass('textSecondary')}`}>
-              {period === 'weekly' ? '주' : '월'}평균
+              {period === 'weekly' ? 'Weekly' : 'Monthly'} Average
             </div>
             <div className='text-lg font-bold text-blue-600'>
               {formatTime(Math.round(totalTime / chartData.length))}
             </div>
           </div>
           <div className={`rounded-lg p-3 shadow-sm ${getThemeClass('component')}`}>
-            <div className={`text-xs ${getThemeClass('textSecondary')}`}>최고 기록</div>
+            <div className={`text-xs ${getThemeClass('textSecondary')}`}>Best Record</div>
             <div className='text-lg font-bold text-green-600'>
               {formatTime(
                 Math.max(
@@ -249,11 +249,11 @@ export default function StatisticsBarChart({
           </div>
           <div className={`rounded-lg p-3 shadow-sm ${getThemeClass('component')}`}>
             <div className={`text-xs ${getThemeClass('textSecondary')}`}>
-              활동 {period === 'weekly' ? '주수' : '개월'}
+              Active {period === 'weekly' ? 'Weeks' : 'Months'}
             </div>
             <div className='text-lg font-bold text-orange-600'>
               {chartData.length}
-              {period === 'weekly' ? '주' : '개월'}
+              {period === 'weekly' ? 'weeks' : 'months'}
             </div>
           </div>
         </div>
@@ -263,12 +263,12 @@ export default function StatisticsBarChart({
       <div className={`rounded-xl p-4 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <div className='mb-2 flex items-center gap-2'>
           <span className='text-lg'>💡</span>
-          <h4 className={`text-sm font-semibold ${getThemeClass('textPrimary')}`}>인사이트</h4>
+          <h4 className={`text-sm font-semibold ${getThemeClass('textPrimary')}`}>Insights</h4>
         </div>
         <div className={`text-sm ${getThemeClass('textSecondary')}`}>
           {period === 'weekly' ? (
             <>
-              가장 생산적인 주는{' '}
+              Your most productive week was{' '}
               <strong className={getThemeClass('textAccent')}>
                 {
                   chartData.reduce(
@@ -286,14 +286,14 @@ export default function StatisticsBarChart({
                     { item: chartData[0], index: 0 }
                   ).item.name
                 }
-              </strong>
-              였습니다.
+              </strong>.
+              You invested the most time in the{' '}
               <strong className={getThemeClass('textAccent')}>DEVELOPMENT</strong>{' '}
-              카테고리에 가장 많은 시간을 투자했어요!
+              category!
             </>
           ) : (
             <>
-              가장 활발했던 달은{' '}
+              Your most active month was{' '}
               <strong className={getThemeClass('textAccent')}>
                 {
                   chartData.reduce(
@@ -311,9 +311,9 @@ export default function StatisticsBarChart({
                     { item: chartData[0], index: 0 }
                   ).item.name
                 }
-              </strong>
-              였습니다. 꾸준한 학습 패턴을{' '}
-              <strong className={getThemeClass('textAccent')}>유지</strong>하고 있어요!
+              </strong>.
+              You're{' '}
+              <strong className={getThemeClass('textAccent')}>maintaining</strong> a consistent learning pattern!
             </>
           )}
         </div>

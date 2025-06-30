@@ -19,46 +19,46 @@ export default function EmptyState({
 }: EmptyStateProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
   const timeLabels = {
-    daily: '일간',
-    weekly: '주간',
-    monthly: '월간',
+    daily: 'Daily',
+    weekly: 'Weekly',
+    monthly: 'Monthly',
   };
 
-  // 현재 기간인지 확인 (오늘, 이번주, 이번달)
+  // Check if current period (today, this week, this month)
   const isCurrentPeriod = selectedDateIndex === 0;
 
   const getEmptyStateContent = () => {
     const period = timeLabels[selectedPeriod];
-    const category = selectedCategory === 'all' ? '전체' : selectedCategory;
+    const category = selectedCategory === 'all' ? 'All' : selectedCategory;
 
     if (isCurrentPeriod) {
-      // 현재 기간 - 동기부여 및 경쟁심 자극
+      // Current period - motivational and competitive stimulus
       const currentMessages = {
         daily: {
-          title: '오늘의 1위를 차지하세요!',
-          subtitle: '아직 아무도 도전하지 않았어요',
-          description: `${category} 분야에서 첫 번째 기록을 만들어보세요!`,
-          cta: '지금 시작하면 오늘의 1위를 차지할 수 있어요!',
+          title: 'Claim today\'s #1 spot!',
+          subtitle: 'No one has challenged yet',
+          description: `Create the first record in the ${category} category!`,
+          cta: 'Start now and you can claim today\'s #1 spot!',
           icon: <Target className='h-16 w-16 text-orange-500' />,
           bgGradient: 'from-orange-100 via-red-50 to-pink-100',
           borderColor: 'border-orange-200',
           accentColor: 'text-orange-600',
         },
         weekly: {
-          title: '이번 주 1위를 차지하세요!',
-          subtitle: '아직 아무도 도전하지 않았어요',
-          description: `${category} 분야에서 첫 번째 기록을 만들어보세요!`,
-          cta: '지금 시작하면 이번 주 1위를 차지할 수 있어요!',
+          title: 'Claim this week\'s #1 spot!',
+          subtitle: 'No one has challenged yet',
+          description: `Create the first record in the ${category} category!`,
+          cta: 'Start now and you can claim this week\'s #1 spot!',
           icon: <Crown className='h-16 w-16 text-blue-500' />,
           bgGradient: 'from-blue-100 via-indigo-50 to-purple-100',
           borderColor: 'border-blue-200',
           accentColor: 'text-blue-600',
         },
         monthly: {
-          title: '이번 달 1위를 차지하세요!',
-          subtitle: '아직 아무도 도전하지 않았어요',
-          description: `${category} 분야에서 첫 번째 기록을 만들어보세요!`,
-          cta: '지금 시작하면 이번 달 1위를 차지할 수 있어요!',
+          title: 'Claim this month\'s #1 spot!',
+          subtitle: 'No one has challenged yet',
+          description: `Create the first record in the ${category} category!`,
+          cta: 'Start now and you can claim this month\'s #1 spot!',
           icon: <Trophy className='h-16 w-16 text-purple-500' />,
           bgGradient: 'from-purple-100 via-pink-50 to-indigo-100',
           borderColor: 'border-purple-200',
@@ -68,33 +68,33 @@ export default function EmptyState({
 
       return currentMessages[selectedPeriod];
     } else {
-      // 과거 기간 - 재치있는 역사적 관점
+      // Past period - witty historical perspective
       const pastMessages = {
         daily: {
-          title: '조용했던 하루였네요',
-          subtitle: `${selectedDateIndex}일 전`,
-          description: `${category} 분야에서는 아무도 활동하지 않았던 평온한 하루였어요.`,
-          cta: '역사의 빈 페이지를 발견했습니다!',
+          title: 'It was a quiet day',
+          subtitle: `${selectedDateIndex} days ago`,
+          description: `It was a peaceful day when no one was active in the ${category} category.`,
+          cta: 'You\'ve discovered a blank page in history!',
           icon: <History className='h-16 w-16 text-gray-400' />,
           bgGradient: 'from-gray-50 via-slate-50 to-blue-50',
           borderColor: 'border-gray-200',
           accentColor: 'text-gray-600',
         },
         weekly: {
-          title: '고요했던 한 주',
-          subtitle: `${selectedDateIndex}주 전`,
-          description: `${category} 분야에서는 아무런 활동이 없었던 조용한 주간이었어요.`,
-          cta: '침묵의 일주일을 발견했습니다!',
+          title: 'A quiet week',
+          subtitle: `${selectedDateIndex} weeks ago`,
+          description: `It was a quiet week with no activity in the ${category} category.`,
+          cta: 'You\'ve discovered a week of silence!',
           icon: <Ghost className='h-16 w-16 text-indigo-400' />,
           bgGradient: 'from-indigo-50 via-blue-50 to-cyan-50',
           borderColor: 'border-indigo-200',
           accentColor: 'text-indigo-600',
         },
         monthly: {
-          title: '조용했던 한 달',
-          subtitle: `${selectedDateIndex}개월 전`,
-          description: `${category} 분야에서는 아무런 활동이 없었던 조용한 달이었어요.`,
-          cta: '시간의 미스터리를 마주했습니다!',
+          title: 'A quiet month',
+          subtitle: `${selectedDateIndex} months ago`,
+          description: `It was a quiet month with no activity in the ${category} category.`,
+          cta: 'You\'ve encountered a mystery of time!',
           icon: <MapPin className='h-16 w-16 text-purple-400' />,
           bgGradient: 'from-purple-50 via-pink-50 to-indigo-50',
           borderColor: 'border-purple-200',
@@ -113,7 +113,7 @@ export default function EmptyState({
       <div
         className={`relative w-full overflow-hidden ${componentSizes.xlarge.borderRadius} ${componentSizes.medium.border} ${componentSizes.xlarge.padding} ${componentSizes.xlarge.shadow} ${componentStates.hoverable.transition} ${componentStates.hoverable.hover.scale} hover:shadow-2xl ${getThemeClass('borderLight')} ${getThemeClass('component')}`}
       >
-        {/* 헤더 */}
+        {/* Header */}
         <div className='mb-6 text-center'>
           <div className='mb-4 flex justify-center'>
             <div className={`rounded-full p-4 shadow-lg ${
@@ -130,7 +130,7 @@ export default function EmptyState({
           </p>
         </div>
 
-        {/* 메인 내용 */}
+        {/* Main content */}
         <div className='space-y-4 text-center'>
           <p className={`text-lg leading-relaxed ${getThemeTextColor('primary')}`}>
             {content.description}

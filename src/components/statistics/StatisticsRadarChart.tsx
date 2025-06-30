@@ -22,33 +22,33 @@ export default function StatisticsRadarChart({
   data,
 }: StatisticsRadarChartProps) {
   const { isDarkMode, getThemeClass, getThemeColor, getThemeTextColor, getThemeTextColorValue } = useTheme();
-  // 6개의 고정 색상 정의
+  // Define 6 fixed colors
   const categoryColors = [
-    '#8b5cf6', // 보라
-    '#06b6d4', // 청록
-    '#10b981', // 초록
-    '#f59e0b', // 노랑
-    '#ef4444', // 빨강
-    '#ec4899', // 핑크
+    '#8b5cf6', // Purple
+    '#06b6d4', // Cyan
+    '#10b981', // Green
+    '#f59e0b', // Yellow
+    '#ef4444', // Red
+    '#ec4899', // Pink
   ];
 
-  // Top 6 카테고리만 추출하고 색상 할당
+  // Extract only top 6 categories and assign colors
   const top6Categories = data.categories.slice(0, 6).map((category, index) => ({
     ...category,
-    color: categoryColors[index] || categoryColors[0], // 색상 오버라이드
+    color: categoryColors[index] || categoryColors[0], // Color override
   }));
 
-  // 데이터 유효성 검사
+  // Data validation
   const totalTime = data.totalTime || 0;
   const hasValidData = top6Categories.length > 0 && totalTime > 0;
-  const hasMinimumData = top6Categories.length >= 4; // 최소 4개 카테고리 필요
+  const hasMinimumData = top6Categories.length >= 4; // Need at least 4 categories
 
   if (!hasValidData) {
     return (
       <div className='flex h-full items-center justify-center p-4'>
         <NoData
-          title='분석할 카테고리가 없습니다'
-          message='활동 데이터가 없어 레이더 차트를 표시할 수 없습니다.'
+          title='No categories to analyze'
+          message='Cannot display radar chart due to lack of activity data.'
           icon={Activity}
           showBorder={false}
           size='medium'
@@ -61,8 +61,8 @@ export default function StatisticsRadarChart({
     return (
       <div className='flex h-full items-center justify-center p-4'>
         <NoData
-          title='카테고리가 부족합니다'
-          message='의미있는 레이더 차트 분석을 위해서는 최소 4개 이상의 카테고리가 필요합니다.'
+          title='Insufficient categories'
+          message='At least 4 categories are needed for meaningful radar chart analysis.'
           icon={Activity}
           showBorder={false}
           size='medium'
@@ -71,27 +71,27 @@ export default function StatisticsRadarChart({
     );
   }
 
-  // 차트 데이터 구성
+  // Construct chart data
   const chartData = top6Categories.map(category => ({
     category: category.name,
     time: category.time,
     percentage: category.percentage,
     fullTime: formatTime(category.time),
-    fill: category.color, // 할당된 색상 사용
+    fill: category.color, // Use assigned color
   }));
 
-  // 차트 설정
+  // Chart configuration
   const chartConfig = top6Categories.reduce((config, category, index) => {
     config[category.name] = {
       label: category.name,
-      color: category.color, // 할당된 색상 사용
+      color: category.color, // Use assigned color
     };
     return config;
   }, {} as ChartConfig);
 
   return (
     <div className='h-full flex items-center justify-center'>
-      {/* 차트 - 반응형 개선 */}
+      {/* Chart - responsive improvements */}
       <div className='relative w-full h-full flex items-center justify-center'>
         <ChartContainer
           config={chartConfig}
@@ -127,13 +127,13 @@ export default function StatisticsRadarChart({
                           </span>
                         </div>
                         <div className={`ml-5 text-sm ${getThemeTextColor('secondary')}`}>
-                          시간:{' '}
+                          Time:{' '}
                           <span className={`font-semibold ${getThemeTextColor('primary')}`}>
                             {data.payload.fullTime}
                           </span>
                         </div>
                         <div className={`ml-5 text-sm ${getThemeTextColor('secondary')}`}>
-                          비율:{' '}
+                          Rate:{' '}
                           <span className={`font-semibold ${getThemeTextColor('primary')}`}>
                             {percentage ? percentage.toFixed(1) : '0.0'}%
                           </span>
@@ -155,7 +155,7 @@ export default function StatisticsRadarChart({
               }}
               className={`text-xs lg:text-sm font-semibold ${getThemeTextColor('primary')}`}
               tickFormatter={value => {
-                // 작은 화면에서 더 짧게 자르기
+                // Truncate shorter on small screens
                 if (value.length > 6) {
                   return value.substring(0, 4) + '...';
                 }
