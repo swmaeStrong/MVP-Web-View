@@ -52,7 +52,7 @@ export default function RootLayout({
       lang='en'
       className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable} dark bg-gray-900`}
     >
-      <body className='font-sans antialiased'>
+      <body className='font-sans antialiased dark bg-gray-900 text-gray-100'>
         <SentryProvider>
           <QueryProvider>{children}</QueryProvider>
         </SentryProvider>
