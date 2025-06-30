@@ -4,7 +4,6 @@ import { useCurrentUser, User } from '@/stores/userStore';
 import { useRef } from 'react';
 import EmptyState from './EmptyState';
 import UserCard from './UserCard';
-import { tierAnimationStyles } from './tierConfig';
 import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, spacing } from '@/styles/design-system';
 
@@ -92,7 +91,6 @@ export default function LeaderboardList({
 
   return (
     <>
-      <style>{tierAnimationStyles}</style>
 
       {/* Leaderboard list */}
       <div className='mb-6'>

@@ -108,21 +108,13 @@ function LeaderboardDemoContent() {
           currentDate={currentDate}
         />
 
-        {/* 티어 설명과 카테고리 필터 */}
-        <div className='relative mb-8'>
-          {/* 가장 좌측: 티어 설명 (absolute 고정) */}
-          <div className='absolute top-0 left-0 z-10'>
-            {/* <TierSystemTooltip /> */}
-          </div>
-
-          {/* 카테고리 필터 (중앙 고정) */}
-          <div className='flex justify-center'>
-            <CategoryFilter
-              categories={categories}
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-            />
-          </div>
+        {/* 카테고리 필터 */}
+        <div className='flex justify-center mb-8'>
+          <CategoryFilter
+            categories={categories}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+          />
         </div>
 
 
