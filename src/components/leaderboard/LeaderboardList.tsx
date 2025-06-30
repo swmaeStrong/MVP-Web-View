@@ -6,6 +6,7 @@ import EmptyState from './EmptyState';
 import UserCard from './UserCard';
 import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, spacing } from '@/styles/design-system';
+import { LeaderboardListSkeleton } from '@/components/common/LeaderboardSkeleton';
 
 // 리더보드 표시용 확장된 User 타입
 type LeaderboardUser = User & {
@@ -45,14 +46,7 @@ export default function LeaderboardList({
 
   // Loading state
   if (isLoading) {
-    return (
-      <div className='mb-8 flex justify-center'>
-        <div className={`${componentSizes.medium.borderRadius} ${componentSizes.medium.border} ${componentSizes.xlarge.padding} text-center ${componentSizes.small.shadow} ${getThemeClass('border')} ${getThemeClass('component')}`}>
-          <div className='mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-purple-600'></div>
-          <p className={getThemeTextColor('secondary')}>Loading leaderboard data...</p>
-        </div>
-      </div>
-    );
+    return <LeaderboardListSkeleton itemCount={15} />;
   }
 
   // Error state

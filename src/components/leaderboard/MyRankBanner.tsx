@@ -49,6 +49,7 @@ interface MyRankBannerProps {
   period: 'daily' | 'weekly' | 'monthly';
   selectedDateIndex: number;
   onScrollToMyRank?: () => void;
+  totalUsers?: number;
   userId?: string; // 고정된 userId를 props로 받음
 }
 
@@ -57,6 +58,7 @@ export default function MyRankBanner({
   period,
   selectedDateIndex,
   onScrollToMyRank,
+  totalUsers = 1000,
   userId, //
 }: MyRankBannerProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();

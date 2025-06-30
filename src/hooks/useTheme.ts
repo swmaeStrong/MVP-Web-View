@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
  * Zustand store를 활용하여 전역 상태 관리
  */
 export function useTheme() {
-  const { isDarkMode, theme, setDarkMode, toggleDarkMode } = useThemeStore();
+  const { isDarkMode, theme } = useThemeStore();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -44,9 +44,7 @@ export function useTheme() {
     // 컬러 객체
     colors,
 
-    // 액션
-    setDarkMode,
-    toggleDarkMode,
+    // 액션 (dark mode only)
 
     // 유틸리티 함수들
     getThemeClass,

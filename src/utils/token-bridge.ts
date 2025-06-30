@@ -25,22 +25,11 @@ declare global {
 }
 
 /**
- * 테마 초기화 및 리스너 설정 함수
+ * 테마 초기화 - 다크모드 고정
  */
 const initializeTheme = () => {
-  // 현재 다크모드 상태 확인 및 저장
-  const currentIsDarkMode = isDarkMode();
-  useThemeStore.getState().setDarkMode(currentIsDarkMode);
-
-  // 테마 변경 리스너 등록
-  const removeListener = addThemeChangeListener((isDark, theme) => {
-    useThemeStore.getState().setDarkMode(isDark);
-  });
-
-  // 클린업 함수를 window 객체에 저장 (필요시 제거 가능)
-  if (typeof window !== 'undefined') {
-    (window as any).__themeListenerCleanup = removeListener;
-  }
+  // 다크모드 고정이므로 별도 초기화 불필요
+  // 테마 상태는 이미 dark로 고정되어 있음
 };
 
 /**
