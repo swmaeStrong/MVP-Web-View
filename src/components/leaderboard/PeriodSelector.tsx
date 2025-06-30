@@ -124,8 +124,8 @@ export default function PeriodSelector({
             <button
               className={
                 canGoPrevious()
-                  ? `h-8 w-8 rounded-lg text-sm transition-all duration-200 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('borderLight')}`
-                  : `h-8 w-8 cursor-not-allowed rounded-lg text-sm border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`
+                  ? `h-8 w-8 rounded-lg text-sm p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:border-purple-300 hover:bg-purple-50 dark:hover:border-purple-600 dark:hover:bg-purple-900/20`
+                  : `h-8 w-8 cursor-not-allowed rounded-lg text-sm p-0 border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')} opacity-50`
               }
               onClick={handlePreviousDate}
               disabled={!canGoPrevious()}
@@ -135,8 +135,8 @@ export default function PeriodSelector({
             <button
               className={
                 canGoNext()
-                  ? `h-8 w-8 rounded-lg text-sm transition-all duration-200 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('borderLight')}`
-                  : `h-8 w-8 cursor-not-allowed rounded-lg text-sm border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`
+                  ? `h-8 w-8 rounded-lg text-sm p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:border-purple-300 hover:bg-purple-50 dark:hover:border-purple-600 dark:hover:bg-purple-900/20`
+                  : `h-8 w-8 cursor-not-allowed rounded-lg text-sm p-0 border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')} opacity-50`
               }
               onClick={handleNextDate}
               disabled={!canGoNext()}
