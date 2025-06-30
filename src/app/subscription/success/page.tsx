@@ -4,6 +4,7 @@ import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useTheme } from '@/hooks/useTheme';
 
 interface Subscription {
   plan: string;
@@ -15,6 +16,7 @@ interface Subscription {
 
 export default function SubscriptionSuccessPage() {
   const router = useRouter();
+  const { getThemeClass } = useTheme();
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [showConfetti, setShowConfetti] = useState(true);
 
@@ -35,17 +37,17 @@ export default function SubscriptionSuccessPage() {
 
   if (!subscription) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50'>
+      <div className={`flex min-h-screen items-center justify-center ${getThemeClass('background')}`}>
         <div className='text-center'>
           <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-purple-600 border-t-transparent'></div>
-          <p className='text-gray-600'>구독 정보를 확인하는 중...</p>
+          <p className={getThemeClass('textSecondary')}>구독 정보를 확인하는 중...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className='relative min-h-screen overflow-hidden bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
+    <div className={`relative min-h-screen overflow-hidden ${getThemeClass('background')} p-4 sm:p-6 lg:p-8`}>
       {/* Confetti 효과 */}
       {showConfetti && (
         <div className='pointer-events-none absolute inset-0'>
@@ -78,44 +80,44 @@ export default function SubscriptionSuccessPage() {
           <h1 className='bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl'>
             환영합니다! 🚀
           </h1>
-          <p className='text-lg text-gray-600 sm:text-xl'>
+          <p className={`text-lg ${getThemeClass('textSecondary')} sm:text-xl`}>
             Premium 구독이 성공적으로 완료되었습니다
           </p>
         </div>
 
         {/* 구독 상세 정보 */}
-        <Card className='relative rounded-2xl border-0 bg-white p-6 shadow-xl sm:rounded-3xl sm:p-8'>
+        <Card className={`relative rounded-2xl border-0 ${getThemeClass('component')} p-6 shadow-xl sm:rounded-3xl sm:p-8`}>
           <div className='absolute inset-0 rounded-2xl bg-gradient-to-br from-green-600/5 to-blue-600/5 sm:rounded-3xl'></div>
 
           <CardContent className='relative space-y-6 p-0'>
             <div className='text-center'>
-              <h2 className='mb-4 text-2xl font-bold text-gray-800'>
+              <h2 className={`mb-4 text-2xl font-bold ${getThemeClass('textPrimary')}`}>
                 구독 내역
               </h2>
 
               <div className='grid gap-4 text-left sm:grid-cols-2'>
-                <div className='rounded-xl bg-gray-50 p-4'>
-                  <div className='mb-1 text-sm text-gray-600'>플랜</div>
-                  <div className='font-bold text-gray-800'>Premium 구독</div>
+                <div className={`rounded-xl ${getThemeClass('muted')} p-4`}>
+                  <div className={`mb-1 text-sm ${getThemeClass('textSecondary')}`}>플랜</div>
+                  <div className={`font-bold ${getThemeClass('textPrimary')}`}>Premium 구독</div>
                 </div>
 
-                <div className='rounded-xl bg-gray-50 p-4'>
-                  <div className='mb-1 text-sm text-gray-600'>월 요금</div>
-                  <div className='font-bold text-gray-800'>$1/월</div>
+                <div className={`rounded-xl ${getThemeClass('muted')} p-4`}>
+                  <div className={`mb-1 text-sm ${getThemeClass('textSecondary')}`}>월 요금</div>
+                  <div className={`font-bold ${getThemeClass('textPrimary')}`}>$1/월</div>
                 </div>
 
-                <div className='rounded-xl bg-gray-50 p-4'>
-                  <div className='mb-1 text-sm text-gray-600'>구독 시작일</div>
-                  <div className='font-bold text-gray-800'>
+                <div className={`rounded-xl ${getThemeClass('muted')} p-4`}>
+                  <div className={`mb-1 text-sm ${getThemeClass('textSecondary')}`}>구독 시작일</div>
+                  <div className={`font-bold ${getThemeClass('textPrimary')}`}>
                     {new Date(subscription.startDate).toLocaleDateString(
                       'ko-KR'
                     )}
                   </div>
                 </div>
 
-                <div className='rounded-xl bg-gray-50 p-4'>
-                  <div className='mb-1 text-sm text-gray-600'>결제 수단</div>
-                  <div className='font-bold text-gray-800'>
+                <div className={`rounded-xl ${getThemeClass('muted')} p-4`}>
+                  <div className={`mb-1 text-sm ${getThemeClass('textSecondary')}`}>결제 수단</div>
+                  <div className={`font-bold ${getThemeClass('textPrimary')}`}>
                     {subscription.paymentMethod === 'card'
                       ? '신용/체크카드'
                       : 'PayPal'}
@@ -142,7 +144,7 @@ export default function SubscriptionSuccessPage() {
 
             {/* 프리미엄 혜택 */}
             <div className='space-y-3'>
-              <h3 className='text-center font-bold text-gray-800'>
+              <h3 className={`text-center font-bold ${getThemeClass('textPrimary')}`}>
                 🎯 이제 이용할 수 있는 혜택
               </h3>
               <div className='grid gap-3 sm:grid-cols-2'>
@@ -154,10 +156,10 @@ export default function SubscriptionSuccessPage() {
                 ].map((benefit, index) => (
                   <div
                     key={index}
-                    className='flex items-center gap-3 rounded-lg bg-purple-50 p-3'
+                    className={`flex items-center gap-3 rounded-lg ${getThemeClass('muted')} p-3`}
                   >
                     <span className='text-xl'>{benefit.icon}</span>
-                    <span className='font-medium text-gray-700'>
+                    <span className={`font-medium ${getThemeClass('textSecondary')}`}>
                       {benefit.text}
                     </span>
                   </div>
@@ -184,7 +186,7 @@ export default function SubscriptionSuccessPage() {
             <Button
               size='default'
               variant='outline'
-              className='w-full rounded-xl border-purple-300 text-purple-600 hover:bg-purple-50'
+              className={`w-full rounded-xl ${getThemeClass('border')} text-purple-600 hover:bg-purple-50`}
               onClick={() => router.push('/subscription/manage')}
             >
               구독 관리
@@ -193,7 +195,7 @@ export default function SubscriptionSuccessPage() {
             <Button
               size='default'
               variant='outline'
-              className='w-full rounded-xl border-gray-300 text-gray-600 hover:bg-gray-50'
+              className={`w-full rounded-xl ${getThemeClass('border')} ${getThemeClass('textSecondary')} hover:opacity-80`}
               onClick={() => router.push('/support')}
             >
               고객 지원
@@ -202,19 +204,19 @@ export default function SubscriptionSuccessPage() {
         </div>
 
         {/* 추가 안내 */}
-        <div className='rounded-2xl bg-white p-6 shadow-lg'>
+        <div className={`rounded-2xl ${getThemeClass('component')} p-6 shadow-lg`}>
           <div className='space-y-3 text-center'>
             <div className='text-2xl'>📧</div>
-            <h3 className='text-lg font-bold text-gray-800'>
+            <h3 className={`text-lg font-bold ${getThemeClass('textPrimary')}`}>
               구독 확인 이메일
             </h3>
-            <p className='text-sm text-gray-600'>
+            <p className={`text-sm ${getThemeClass('textSecondary')}`}>
               구독 완료 확인 이메일이 발송되었습니다.
               <br />
               영수증과 자세한 구독 정보를 확인해보세요.
             </p>
 
-            <div className='mt-4 grid grid-cols-3 gap-4 text-xs text-gray-500'>
+            <div className={`mt-4 grid grid-cols-3 gap-4 text-xs ${getThemeClass('textSecondary')}`}>
               <div className='flex flex-col items-center'>
                 <span className='mb-1 text-lg text-green-500'>✓</span>
                 <span>언제든 취소 가능</span>

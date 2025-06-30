@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/shadcn/ui/card';
 import { getKSTDate } from '@/utils/timezone';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useTheme } from '@/hooks/useTheme';
 
 interface PaymentMethod {
   method: string;
@@ -19,6 +20,7 @@ interface CountdownState {
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const { getThemeClass } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
     null
@@ -92,17 +94,17 @@ export default function CheckoutPage() {
 
   if (!paymentMethod) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50'>
+      <div className={`flex min-h-screen items-center justify-center ${getThemeClass('background')}`}>
         <div className='text-center'>
           <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-purple-600 border-t-transparent'></div>
-          <p className='text-gray-600'>결제 정보를 확인하는 중...</p>
+          <p className={getThemeClass('textSecondary')}>결제 정보를 확인하는 중...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4 sm:p-6 lg:p-8'>
+    <div className={`min-h-screen ${getThemeClass('background')} p-4 sm:p-6 lg:p-8`}>
       <div className='mx-auto max-w-2xl space-y-6 sm:space-y-8'>
         {/* 헤더 */}
         <div className='space-y-4 text-center'>
@@ -113,13 +115,13 @@ export default function CheckoutPage() {
           <h1 className='bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl'>
             🎉 결제 확인
           </h1>
-          <p className='text-lg text-gray-600 sm:text-xl'>
+          <p className={`text-lg ${getThemeClass('textSecondary')} sm:text-xl`}>
             마지막 단계입니다! 구독을 완료해보세요
           </p>
         </div>
 
         {/* 진행 단계 표시 */}
-        <div className='rounded-2xl bg-white p-4 shadow-lg'>
+        <div className={`rounded-2xl ${getThemeClass('component')} p-4 shadow-lg`}>
           <div className='flex items-center justify-between text-sm'>
             <div className='flex items-center gap-2 text-green-600'>
               <div className='flex h-6 w-6 items-center justify-center rounded-full bg-green-600 text-xs font-bold text-white'>
@@ -164,12 +166,12 @@ export default function CheckoutPage() {
         )}
 
         {/* 구독 요약 */}
-        <Card className='relative rounded-2xl border-0 bg-white p-6 shadow-xl sm:rounded-3xl sm:p-8'>
+        <Card className={`relative rounded-2xl border-0 ${getThemeClass('component')} p-6 shadow-xl sm:rounded-3xl sm:p-8`}>
           <div className='absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-600/5 to-blue-600/5 sm:rounded-3xl'></div>
 
           <CardContent className='relative space-y-6 p-0'>
             <div className='text-center'>
-              <h2 className='mb-2 text-2xl font-bold text-gray-800'>
+              <h2 className={`mb-2 text-2xl font-bold ${getThemeClass('textPrimary')}`}>
                 Premium 구독
               </h2>
               <div className='mb-4 flex items-end justify-center gap-2'>
@@ -185,7 +187,7 @@ export default function CheckoutPage() {
 
             {/* 혜택 목록 */}
             <div className='space-y-3'>
-              <h3 className='font-bold text-gray-800'>포함된 혜택:</h3>
+              <h3 className={`font-bold ${getThemeClass('textPrimary')}`}>포함된 혜택:</h3>
               {[
                 '무제한 프리미엄 기능',
                 '광고 없는 깔끔한 경험',
@@ -195,25 +197,25 @@ export default function CheckoutPage() {
               ].map((benefit, index) => (
                 <div key={index} className='flex items-center gap-3'>
                   <span className='text-lg text-green-500'>✓</span>
-                  <span className='text-gray-700'>{benefit}</span>
+                  <span className={getThemeClass('textSecondary')}>{benefit}</span>
                 </div>
               ))}
             </div>
 
             {/* 결제 수단 정보 */}
-            <div className='rounded-xl bg-gray-50 p-4'>
-              <h3 className='mb-2 font-bold text-gray-800'>결제 수단</h3>
+            <div className={`rounded-xl ${getThemeClass('muted')} p-4`}>
+              <h3 className={`mb-2 font-bold ${getThemeClass('textPrimary')}`}>결제 수단</h3>
               <div className='flex items-center gap-3'>
                 <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500 text-white'>
                   💳
                 </div>
                 <div>
-                  <div className='font-medium text-gray-800'>
+                  <div className={`font-medium ${getThemeClass('textPrimary')}`}>
                     {paymentMethod.method === 'card'
                       ? '신용/체크카드'
                       : 'PayPal'}
                   </div>
-                  <div className='text-sm text-gray-600'>
+                  <div className={`text-sm ${getThemeClass('textSecondary')}`}>
                     등록일:{' '}
                     {new Date(paymentMethod.createdAt).toLocaleDateString(
                       'ko-KR'
@@ -249,7 +251,7 @@ export default function CheckoutPage() {
           <div className='text-center'>
             <button
               onClick={() => router.back()}
-              className='text-sm text-gray-500 transition-colors hover:text-gray-700'
+              className={`text-sm ${getThemeClass('textSecondary')} transition-colors hover:opacity-80`}
               disabled={isLoading}
             >
               ← 이전 단계로 돌아가기
@@ -258,11 +260,11 @@ export default function CheckoutPage() {
         </div>
 
         {/* 보장 정보 */}
-        <div className='rounded-2xl bg-white p-6 shadow-lg'>
+        <div className={`rounded-2xl ${getThemeClass('component')} p-6 shadow-lg`}>
           <div className='space-y-3 text-center'>
             <div className='text-2xl'>🛡️</div>
-            <h3 className='text-lg font-bold text-gray-800'>100% 만족 보장</h3>
-            <div className='grid gap-4 text-sm text-gray-600 sm:grid-cols-2'>
+            <h3 className={`text-lg font-bold ${getThemeClass('textPrimary')}`}>100% 만족 보장</h3>
+            <div className={`grid gap-4 text-sm ${getThemeClass('textSecondary')} sm:grid-cols-2`}>
               <div className='flex items-center gap-2'>
                 <span className='text-green-500'>✓</span>
                 <span>30일 무료 체험</span>
@@ -280,7 +282,7 @@ export default function CheckoutPage() {
                 <span>안전한 결제 처리</span>
               </div>
             </div>
-            <p className='mt-4 text-xs text-gray-500'>
+            <p className={`mt-4 text-xs ${getThemeClass('textSecondary')}`}>
               마음에 들지 않으시면 언제든 취소하세요. 위약금이나 수수료는
               없습니다.
             </p>
