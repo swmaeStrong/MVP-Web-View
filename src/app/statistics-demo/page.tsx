@@ -107,7 +107,13 @@ const generateDummyActivities = () => [
 // TimelineChart에서 사용하는 데이터 구조에 맞게 생성 (work, breaks, meetings, others)
 const generateDummyTimelineData = () => {
   const today = new Date().toISOString().split('T')[0];
-  const activities = [];
+  const activities: Array<{
+    mergedCategory: string;
+    startedAt: string;
+    endedAt: string;
+    app: string;
+    title: string;
+  }> = [];
   
   // 하루 일과 시간표 - TimelineChart와 동일한 카테고리 사용
   const sessions = [
@@ -141,7 +147,11 @@ const generateDummyTimelineData = () => {
 // HourlyUsageComparison에서 사용하는 데이터 구조에 맞게 생성 - 1시간 단위에 최적화
 const generateDummyHourlyData = () => {
   const today = new Date().toISOString().split('T')[0];
-  const hourlyData = [];
+  const hourlyData: Array<{
+    hour: string;
+    category: string;
+    totalDuration: number;
+  }> = [];
   
   // 하루 종일 시간별 사용량 데이터 생성 (9시-18시)
   const workingHours = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
@@ -149,7 +159,10 @@ const generateDummyHourlyData = () => {
   
   workingHours.forEach(hour => {
     // 각 시간대별로 카테고리 데이터를 생성하되, 총합이 1시간을 넘지 않도록 관리
-    const hourCategories = [];
+    const hourCategories: Array<{
+      category: string;
+      duration: number;
+    }> = [];
     let remainingTime = 3600; // 1시간 = 3600초
     
     // 주요 카테고리 우선 할당
