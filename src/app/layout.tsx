@@ -50,11 +50,7 @@ export default function RootLayout({
   return (
     <html
       lang='en'
-      className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable} ${
-        process.env.NODE_ENV === 'production'
-          ? 'bg-transparent'
-          : 'bg-[#ECECEC]'
-      }`}
+      className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable} dark bg-gray-900`}
     >
       <body className='font-sans antialiased'>
         <SentryProvider>

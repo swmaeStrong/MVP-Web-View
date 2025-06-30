@@ -18,7 +18,6 @@ import {
   TrendingUp,
   Users
 } from 'lucide-react';
-import Image from 'next/image';
 
 // Function to convert seconds to hours, minutes format
 const formatTime = (seconds: number) => {
@@ -44,27 +43,13 @@ const TopRankGlow = ({ rank, isDarkMode }: { rank: number | null; isDarkMode: bo
   return null; // 모든 글로우 효과 제거
 };
 
-// 리더보드와 동일한 티어 계산 로직
-const getTierByRank = (rank: number, totalUsers: number) => {
-  const percentage = (rank / totalUsers) * 100;
-
-  if (percentage <= 1) return 'challenger'; // Top 1%
-  if (percentage <= 3) return 'grandmaster'; // Top 3%
-  if (percentage <= 5) return 'master'; // Top 5%
-  if (percentage <= 10) return 'diamond'; // Top 10%
-  if (percentage <= 15) return 'emerald'; // Top 15%
-  if (percentage <= 30) return 'platinum'; // Top 30%
-  if (percentage <= 50) return 'gold'; // Top 50%
-  if (percentage <= 80) return 'silver'; // Top 80%
-  return 'bronze'; // 나머지
-};
 
 interface MyRankBannerProps {
   category: string;
   period: 'daily' | 'weekly' | 'monthly';
   selectedDateIndex: number;
   onScrollToMyRank?: () => void;
-  totalUsers?: number; // 전체 사용자 수를 받아서 티어 계산에 사용
+  totalUsers?: number;
   userId?: string; // 고정된 userId를 props로 받음
 }
 
@@ -73,77 +58,10 @@ export default function MyRankBanner({
   period,
   selectedDateIndex,
   onScrollToMyRank,
-  totalUsers = 1000, // 기본값 설정 (나중에 props로 받아올 수 있음)
+  totalUsers = 1000,
   userId, //
 }: MyRankBannerProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
-  
-  // 리더보드와 동일한 티어 설정
-  const tierConfig = {
-    challenger: {
-      icon: '/icons/rank/challenger.png',
-      title: 'Challenger',
-      bgGradient: 'from-yellow-200 via-amber-100 to-blue-200',
-      borderColor: 'border-yellow-400',
-      shadowColor: 'shadow-yellow-300/60',
-    },
-    grandmaster: {
-      icon: '/icons/rank/grandMaster.png',
-      title: 'Grandmaster',
-      bgGradient: 'from-red-200 via-rose-100 to-pink-200',
-      borderColor: 'border-red-400',
-      shadowColor: 'shadow-red-300/60',
-    },
-    master: {
-      icon: '/icons/rank/master.png',
-      title: 'Master',
-      bgGradient: 'from-purple-200 via-violet-100 to-indigo-200',
-      borderColor: 'border-purple-500',
-      shadowColor: 'shadow-purple-300/60',
-    },
-    diamond: {
-      icon: '/icons/rank/diamond.png',
-      title: 'Diamond',
-      bgGradient: 'from-blue-50 via-cyan-50 to-sky-50',
-      borderColor: 'border-blue-400',
-      shadowColor: 'shadow-blue-300/60',
-    },
-    emerald: {
-      icon: '/icons/rank/emerald.png',
-      title: 'Emerald',
-      bgGradient: 'from-emerald-100 to-emerald-50',
-      borderColor: 'border-emerald-300',
-      shadowColor: 'shadow-emerald-200/50',
-    },
-    platinum: {
-      icon: '/icons/rank/platinum.png',
-      title: 'Platinum',
-      bgGradient: 'from-slate-100 to-slate-50',
-      borderColor: 'border-slate-300',
-      shadowColor: 'shadow-slate-200/50',
-    },
-    gold: {
-      icon: '/icons/rank/gold.png',
-      title: 'Gold',
-      bgGradient: '',
-      borderColor: '',
-      shadowColor: 'shadow-gray-100/50',
-    },
-    silver: {
-      icon: '/icons/rank/silver.png',
-      title: 'Silver',
-      bgGradient: '',
-      borderColor: '',
-      shadowColor: 'shadow-gray-100/50',
-    },
-    bronze: {
-      icon: '/icons/rank/bronze.png',
-      title: 'Bronze',
-      bgGradient: '',
-      borderColor: '',
-      shadowColor: 'shadow-gray-100/50',
-    },
-  };
 
   // 날짜 계산 - 한국 시간대 기준
   const getDateForAPI = () => {
@@ -186,22 +104,8 @@ export default function MyRankBanner({
     return { text: `${rank}th`, color: isDarkMode ? 'text-blue-400' : 'text-blue-600', icon: TrendingUp };
   };
 
-  // 리더보드와 동일한 티어 로직 사용
-  const getTierInfo = (rank: number | null) => {
-    if (!rank) return tierConfig.bronze;
-    const tier = getTierByRank(rank, totalUsers);
-    return tierConfig[tier];
-  };
-
-  const getRankStyle = (rank: number | null) => {
-    const tierInfo = getTierInfo(rank);
-    // 다크모드일 때는 모든 티어에서 테마 색상 사용, 라이트모드일 때만 Top 티어 그라데이션 유지
-    const tier = getTierByRank(rank || 999, totalUsers);
-    if (!isDarkMode && ['challenger', 'grandmaster', 'master', 'diamond', 'emerald'].includes(tier)) {
-      return `bg-gradient-to-r ${tierInfo.bgGradient} ${tierInfo.borderColor} shadow-lg ${tierInfo.shadowColor}`;
-    } else {
-      return `${getThemeClass('component')} ${getThemeClass('border')} shadow-lg`;
-    }
+  const getRankStyle = () => {
+    return `${getThemeClass('component')} ${getThemeClass('border')} shadow-lg`;
   };
 
   if (isLoading) {
@@ -244,27 +148,17 @@ export default function MyRankBanner({
 
   const rankDisplay = getRankDisplay(rank);
   const IconComponent = rankDisplay.icon;
-  const tierInfo = getTierInfo(rank);
 
   return (
     <>
       <div
-        className={`mb-3 lg:mb-4 rounded-lg border p-3 lg:p-4 ${getRankStyle(rank)}`}
+        className={`mb-3 lg:mb-4 rounded-lg border p-3 lg:p-4 ${getRankStyle()}`}
         style={{ zIndex: 1 }}
       >
 
         {/* 미니멀 내 순위 정보 */}
         <div className='flex items-center justify-between'>
           <div className='flex items-center space-x-3'>
-            {/* 티어 아이콘 - 심플 */}
-            <Image
-              src={tierInfo.icon}
-              alt={tierInfo.title}
-              width={32}
-              height={32}
-              className='drop-shadow-sm lg:w-10 lg:h-10'
-            />
-
             {/* 핵심 정보만 */}
             <div>
               <div className='flex items-center space-x-2'>
@@ -278,10 +172,6 @@ export default function MyRankBanner({
               <div className='flex items-center space-x-2 mt-0.5'>
                 <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
                   {formatTime(score || 0)}
-                </span>
-                <span className={`text-xs ${getThemeTextColor('secondary')}`}>•</span>
-                <span className={`text-xs ${getThemeTextColor('secondary')}`}>
-                  Top {Math.round(((rank || 0) / totalUsers) * 100)}%
                 </span>
               </div>
             </div>

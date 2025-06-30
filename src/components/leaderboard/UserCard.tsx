@@ -2,8 +2,6 @@
 
 import { User } from '@/stores/userStore';
 import { extendedRankColors, rankColors } from '@/styles';
-import Image from 'next/image';
-import { getTierStyle } from './tierConfig';
 import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, getPriorityStyle, getRankPriority } from '@/styles/design-system';
 
@@ -57,7 +55,6 @@ export default function UserCard({
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
   const rank = index + 1;
   const rankInfo = getRankInfo(index);
-  const topRankStyle = getTierStyle(rank, totalUsers);
   
   // 디자인 시스템 적용 - 일관된 스타일
   const priorityStyle = getPriorityStyle(rank);
@@ -84,16 +81,6 @@ export default function UserCard({
           {rank}
         </div>
 
-        {/* 순위 아이콘 - 컴팩트 사이즈 */}
-        <div className='flex h-7 w-7 lg:h-10 lg:w-10 items-center justify-center'>
-          <Image
-            src={topRankStyle?.icon || '/icons/rank/bronze.png'}
-            alt={topRankStyle?.title || 'Bronze'}
-            width={28}
-            height={28}
-            className='drop-shadow-lg lg:w-10 lg:h-10'
-          />
-        </div>
 
         {/* 사용자 정보 */}
         <div className='flex-1 min-w-0'>
@@ -117,11 +104,7 @@ export default function UserCard({
       {/* Right - time info */}
       <div className='text-right flex-shrink-0'>
         <div
-          className={`text-sm lg:text-xl font-bold ${
-            topRankStyle
-              ? getThemeTextColor('primary')
-              : getThemeTextColor('primary')
-          }`}
+          className={`text-sm lg:text-xl font-bold ${getThemeTextColor('primary')}`}
         >
           {formatTime(user.score)}
         </div>

@@ -15,6 +15,12 @@ import PeriodSelector from '@/components/leaderboard/PeriodSelector';
 // User 타입은 userStore에서 import
 import { useCurrentUser, User } from '@/stores/userStore';
 import { useInitUser } from '../../hooks/useInitUser';
+import {
+  MyRankBannerSkeleton,
+  LeaderboardListSkeleton,
+  CategoryFilterSkeleton,
+  PeriodSelectorSkeleton
+} from '@/components/common/LeaderboardSkeleton';
 
 // 리더보드 표시용 확장된 User 타입
 type LeaderboardUser = User & {
@@ -80,6 +86,20 @@ export default function Leaderboard() {
   });
 
   const categories = LEADERBOARD_CATEGORIES;
+
+  // 전체 로딩 상태
+  if (isLoading && users.length === 0) {
+    return (
+      <div className={`min-h-screen p-4 lg:p-8 ${getThemeClass('background')}`}>
+        <div className='mx-auto max-w-6xl space-y-6 lg:space-y-8'>
+          <PeriodSelectorSkeleton />
+          <CategoryFilterSkeleton />
+          <MyRankBannerSkeleton />
+          <LeaderboardListSkeleton itemCount={15} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen p-4 lg:p-8 ${getThemeClass('background')}`}>
