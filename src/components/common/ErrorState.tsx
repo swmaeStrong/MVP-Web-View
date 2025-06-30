@@ -18,13 +18,13 @@ interface ErrorStateProps {
 }
 
 export default function ErrorState({
-  title = '오류가 발생했습니다',
-  message = '문제가 발생했습니다. 다시 시도해주세요.',
+  title = 'Error Occurred',
+  message = 'Something went wrong. Please try again.',
   size = 'medium',
   icon: Icon = AlertTriangle,
   className,
   onRetry,
-  retryText = '다시 시도',
+  retryText = 'Try Again',
   showBorder = true,
 }: ErrorStateProps) {
   const { getThemeClass } = useTheme();
@@ -58,7 +58,7 @@ export default function ErrorState({
           componentStates.default.transition
         )}
       >
-        {/* 아이콘 */}
+        {/* Icon */}
         <div className={cn(spacing.inner.normal)}>
           <div
             className={cn(
@@ -78,7 +78,7 @@ export default function ErrorState({
           </div>
         </div>
 
-        {/* 텍스트 */}
+        {/* Text */}
         <div className={spacing.inner.tight}>
           <h3
             className={cn(
@@ -99,7 +99,7 @@ export default function ErrorState({
           </p>
         </div>
 
-        {/* 재시도 버튼 - 필요한 경우에만 표시 */}
+        {/* Retry button - shown only when needed */}
         {onRetry && (
           <div className="mt-4">
             <button

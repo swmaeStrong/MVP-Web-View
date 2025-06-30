@@ -55,8 +55,8 @@ const StaticIcons = () => {
 const ProgressBar = () => (
   <div className='mt-6 w-full'>
     <div className='mb-2 flex items-center justify-between text-xs'>
-      <span className='font-medium text-purple-600'>개발 진행률</span>
-      <span className='text-purple-500'>진행중...</span>
+      <span className='font-medium text-purple-600'>Development Progress</span>
+      <span className='text-purple-500'>In Progress...</span>
     </div>
     <div className='h-2 w-full overflow-hidden rounded-full bg-purple-100'>
       <div className='relative h-full overflow-hidden rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500'></div>
@@ -65,8 +65,8 @@ const ProgressBar = () => (
 );
 
 export default function UnderConstruction({
-  title = '기능 개발중',
-  message = '더 나은 서비스를 위해 열심히 개발하고 있어요!',
+  title = 'Under Development',
+  message = 'We are working hard to bring you a better service!',
   size = 'medium',
   showAnimation = true,
 }: UnderConstructionProps) {
@@ -142,12 +142,12 @@ export default function UnderConstruction({
             <div className='mt-6 flex items-center justify-center space-x-4 text-xs text-gray-500'>
               <div className='flex items-center space-x-1'>
                 <div className='h-2 w-2 rounded-full bg-green-500'></div>
-                <span>개발팀이 작업중</span>
+                <span>Development team at work</span>
               </div>
               <span>•</span>
               <div className='flex items-center space-x-1'>
                 <Hammer className='h-3 w-3 text-purple-500' />
-                <span>곧 출시 예정</span>
+                <span>Coming soon</span>
               </div>
             </div>
           )}

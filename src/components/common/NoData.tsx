@@ -16,8 +16,8 @@ interface NoDataProps {
 }
 
 export default function NoData({
-  title = '데이터가 없습니다',
-  message = '표시할 데이터가 없습니다.',
+  title = 'No Data Available',
+  message = 'No data to display.',
   size = 'medium',
   icon: Icon = Inbox,
   className,
@@ -52,7 +52,7 @@ export default function NoData({
           componentStates.default.transition
         )}
       >
-        {/* 아이콘 */}
+        {/* Icon */}
         <div className="mb-6">
           <div
             className={cn(
@@ -72,7 +72,7 @@ export default function NoData({
           </div>
         </div>
 
-        {/* 텍스트 */}
+        {/* Text */}
         <div className={spacing.inner.tight}>
           <h3
             className={cn(
