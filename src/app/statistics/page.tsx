@@ -17,6 +17,13 @@ import TimelineChart from '@/components/statistics/TimelineChart';
 import TotalTimeCard from '@/components/statistics/TotalTimeCard';
 import { useInitUser } from '@/hooks/useInitUser';
 import ErrorState from '../../components/common/ErrorState';
+import { 
+  TotalTimeCardSkeleton,
+  ActivityListSkeleton,
+  StatisticsChartSkeleton,
+  TimelineChartSkeleton,
+  HourlyUsageComparisonSkeleton
+} from '@/components/common/StatisticsSkeleton';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<PeriodType>('daily');
@@ -161,13 +168,32 @@ export default function StatisticsPage() {
   // 로딩 상태
   if (isLoading) {
     return (
-      <div className={`min-h-screen p-4 sm:p-6 lg:p-8 ${getThemeClass('background')}`}>
-        <div className='mx-auto max-w-6xl'>
-          <div className={`flex h-64 items-center justify-center rounded-lg shadow-sm ${getThemeClass('component')}`}>
-            <div className='text-center'>
-              <div className='mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-purple-600'></div>
-              <p className={getThemeClass('textSecondary')}>통계 데이터를 불러오는 중...</p>
+      <div className={`min-h-screen p-3 sm:p-4 lg:p-6 ${getThemeClass('background')}`}>
+        <div className='mx-auto max-w-6xl space-y-4 sm:space-y-6'>
+          {/* 메인 콘텐츠 스켈레톤 */}
+          <div className='grid gap-4 sm:gap-6 lg:grid-cols-2 min-h-[500px]'>
+            {/* 왼쪽: 총 작업시간 & 상위 카테고리 스켈레톤 */}
+            <div className='flex flex-col space-y-3'>
+              <div className='flex-shrink-0'>
+                <TotalTimeCardSkeleton />
+              </div>
+              <div className='flex-1'>
+                <ActivityListSkeleton />
+              </div>
             </div>
+
+            {/* 오른쪽: 차트 스켈레톤 */}
+            <StatisticsChartSkeleton />
+          </div>
+
+          {/* 타임라인 차트 스켈레톤 */}
+          <div className='col-span-1 lg:col-span-2'>
+            <TimelineChartSkeleton />
+          </div>
+
+          {/* 시간별 사용량 비교 차트 스켈레톤 */}
+          <div className='col-span-1 lg:col-span-2'>
+            <HourlyUsageComparisonSkeleton />
           </div>
         </div>
       </div>
