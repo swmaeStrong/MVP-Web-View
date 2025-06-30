@@ -20,17 +20,17 @@ interface UserCardProps {
   isCurrentUser: boolean;
 }
 
-// 초 단위를 시간, 분 형식으로 변환하는 함수
+// Function to convert seconds to hours, minutes format
 const formatTime = (seconds: number) => {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
 
   if (hours === 0) {
-    return `${minutes}분`;
+    return `${minutes}m`;
   } else if (minutes === 0) {
-    return `${hours}시간`;
+    return `${hours}h`;
   } else {
-    return `${hours}시간 ${minutes}분`;
+    return `${hours}h ${minutes}m`;
   }
 };
 
@@ -114,7 +114,7 @@ export default function UserCard({
         </div>
       </div>
 
-      {/* 우측 - 시간 정보 */}
+      {/* Right - time info */}
       <div className='text-right flex-shrink-0'>
         <div
           className={`text-sm lg:text-xl font-bold ${
@@ -125,7 +125,7 @@ export default function UserCard({
         >
           {formatTime(user.score)}
         </div>
-        <div className={`text-xs ${getThemeTextColor('secondary')}`}>활동시간</div>
+        <div className={`text-xs ${getThemeTextColor('secondary')}`}>Activity Time</div>
       </div>
     </div>
   );

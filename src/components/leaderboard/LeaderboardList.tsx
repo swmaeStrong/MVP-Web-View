@@ -44,41 +44,41 @@ export default function LeaderboardList({
   // 현재 유저 하이라이트를 위한 ref
   const currentUserRef = useRef<HTMLDivElement>(null);
 
-  // 로딩 상태
+  // Loading state
   if (isLoading) {
     return (
       <div className='mb-8 flex justify-center'>
         <div className={`${componentSizes.medium.borderRadius} ${componentSizes.medium.border} ${componentSizes.xlarge.padding} text-center ${componentSizes.small.shadow} ${getThemeClass('border')} ${getThemeClass('component')}`}>
           <div className='mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-purple-600'></div>
-          <p className={getThemeTextColor('secondary')}>리더보드 데이터를 불러오는 중...</p>
+          <p className={getThemeTextColor('secondary')}>Loading leaderboard data...</p>
         </div>
       </div>
     );
   }
 
-  // 에러 상태
+  // Error state
   if (isError) {
     return (
       <div className='mb-8 flex justify-center'>
         <div className={`${componentSizes.medium.borderRadius} ${componentSizes.medium.border} ${componentSizes.xlarge.padding} text-center ${componentSizes.small.shadow} ${getThemeClass('border')} ${getThemeClass('component')}`}>
           <p className='mb-4 font-medium text-red-600'>
-            ❌ {error.message || '데이터를 불러오는 중 오류가 발생했습니다.'}
+            ❌ {error.message || 'An error occurred while loading data.'}
           </p>
           <p className={`mb-4 text-sm ${getThemeTextColor('secondary')}`}>
-            서버 요청이 중단되었습니다. 잠시 후 다시 시도해주세요.
+            Server request was interrupted. Please try again later.
           </p>
           <button
             onClick={() => refetch()}
             className='rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:from-purple-700 hover:to-blue-700'
           >
-            다시 시도
+            Try Again
           </button>
         </div>
       </div>
     );
   }
 
-  // 빈 데이터 상태
+  // Empty data state
   if (!users || users.length === 0) {
     return (
       <EmptyState
@@ -94,7 +94,7 @@ export default function LeaderboardList({
     <>
       <style>{tierAnimationStyles}</style>
 
-      {/* 리더보드 목록 */}
+      {/* Leaderboard list */}
       <div className='mb-6'>
         <div className='space-y-2 lg:space-y-3'>
           {users.map((user: LeaderboardUser, index: number) => {
@@ -114,13 +114,13 @@ export default function LeaderboardList({
         </div>
       </div>
 
-      {/* 무한 스크롤 로딩 표시 */}
+      {/* Infinite scroll loading indicator */}
       {isFetchingNextPage && (
         <div className='flex justify-center'>
           <div className={`rounded-lg border-2 p-4 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
             <div className='mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-purple-600'></div>
             <p className={`text-sm ${getThemeTextColor('secondary')}`}>
-              더 많은 경쟁자들을 불러오는 중...
+              Loading more competitors...
             </p>
           </div>
         </div>

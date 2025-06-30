@@ -20,17 +20,17 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 
-// 초 단위를 시간, 분 형식으로 변환하는 함수
+// Function to convert seconds to hours, minutes format
 const formatTime = (seconds: number) => {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
 
   if (hours === 0) {
-    return `${minutes}분`;
+    return `${minutes}min`;
   } else if (minutes === 0) {
-    return `${hours}시간`;
+    return `${hours}hr`;
   } else {
-    return `${hours}시간 ${minutes}분`;
+    return `${hours}hr ${minutes}min`;
   }
 };
 
@@ -39,7 +39,7 @@ const AnimatedParticles = ({ rank, isDarkMode }: { rank: number | null; isDarkMo
   return null; // 모든 파티클 애니메이션 제거
 };
 
-// 상위 랭크 글로우 효과 제거 (담백한 디자인)
+// Top 랭크 글로우 효과 제거 (담백한 디자인)
 const TopRankGlow = ({ rank, isDarkMode }: { rank: number | null; isDarkMode: boolean }) => {
   return null; // 모든 글로우 효과 제거
 };
@@ -48,14 +48,14 @@ const TopRankGlow = ({ rank, isDarkMode }: { rank: number | null; isDarkMode: bo
 const getTierByRank = (rank: number, totalUsers: number) => {
   const percentage = (rank / totalUsers) * 100;
 
-  if (percentage <= 1) return 'challenger'; // 상위 1%
-  if (percentage <= 3) return 'grandmaster'; // 상위 3%
-  if (percentage <= 5) return 'master'; // 상위 5%
-  if (percentage <= 10) return 'diamond'; // 상위 10%
-  if (percentage <= 15) return 'emerald'; // 상위 15%
-  if (percentage <= 30) return 'platinum'; // 상위 30%
-  if (percentage <= 50) return 'gold'; // 상위 50%
-  if (percentage <= 80) return 'silver'; // 상위 80%
+  if (percentage <= 1) return 'challenger'; // Top 1%
+  if (percentage <= 3) return 'grandmaster'; // Top 3%
+  if (percentage <= 5) return 'master'; // Top 5%
+  if (percentage <= 10) return 'diamond'; // Top 10%
+  if (percentage <= 15) return 'emerald'; // Top 15%
+  if (percentage <= 30) return 'platinum'; // Top 30%
+  if (percentage <= 50) return 'gold'; // Top 50%
+  if (percentage <= 80) return 'silver'; // Top 80%
   return 'bronze'; // 나머지
 };
 
@@ -177,7 +177,7 @@ export default function MyRankBanner({
 
   const getRankDisplay = (rank: number | null) => {
     if (!rank)
-      return { text: '순위 없음', color: getThemeTextColor('secondary'), icon: Users };
+      return { text: 'No Rank', color: getThemeTextColor('secondary'), icon: Users };
     if (rank === 1)
       return { text: '1st', color: 'text-yellow-600', icon: Crown };
     if (rank === 2) return { text: '2nd', color: isDarkMode ? 'text-gray-400' : 'text-gray-600', icon: Crown };
@@ -195,7 +195,7 @@ export default function MyRankBanner({
 
   const getRankStyle = (rank: number | null) => {
     const tierInfo = getTierInfo(rank);
-    // 다크모드일 때는 모든 티어에서 테마 색상 사용, 라이트모드일 때만 상위 티어 그라데이션 유지
+    // 다크모드일 때는 모든 티어에서 테마 색상 사용, 라이트모드일 때만 Top 티어 그라데이션 유지
     const tier = getTierByRank(rank || 999, totalUsers);
     if (!isDarkMode && ['challenger', 'grandmaster', 'master', 'diamond', 'emerald'].includes(tier)) {
       return `bg-gradient-to-r ${tierInfo.bgGradient} ${tierInfo.borderColor} shadow-lg ${tierInfo.shadowColor}`;
@@ -231,10 +231,10 @@ export default function MyRankBanner({
           <Users className='h-8 w-8 text-orange-500' />
           <div>
             <p className={`font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-700'}`}>
-              순위 정보를 불러올 수 없습니다
+              Unable to load rank information
             </p>
             <p className={`text-sm ${isDarkMode ? 'text-orange-300' : 'text-orange-600'}`}>
-              로그인하거나 활동 기록을 만들어보세요!
+              Please log in or create activity records!
             </p>
           </div>
         </div>
@@ -281,7 +281,7 @@ export default function MyRankBanner({
                 </span>
                 <span className={`text-xs ${getThemeTextColor('secondary')}`}>•</span>
                 <span className={`text-xs ${getThemeTextColor('secondary')}`}>
-                  상위 {Math.round(((rank || 0) / totalUsers) * 100)}%
+                  Top {Math.round(((rank || 0) / totalUsers) * 100)}%
                 </span>
               </div>
             </div>
@@ -297,7 +297,7 @@ export default function MyRankBanner({
                 onClick={onScrollToMyRank}
                 className='mt-1 text-xs text-blue-500 hover:text-blue-600 transition-colors'
               >
-                내 리더보드에서 찾기
+                Find me in leaderboard
               </button>
             )}
           </div>

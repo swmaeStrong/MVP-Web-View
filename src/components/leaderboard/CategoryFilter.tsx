@@ -16,16 +16,16 @@ export default function CategoryFilter({
   setSelectedCategory,
 }: CategoryFilterProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
-  // 3개 고정 슬롯을 위한 카테고리 배열 생성
+  // Generate category array for 3 fixed slots
   const getVisibleCategories = () => {
     const selectedIndex = categories.indexOf(selectedCategory);
     const visibleCategories = [];
 
-    // 3개 슬롯: [선택-1, 선택, 선택+1]
+    // 3 slots: [selected-1, selected, selected+1]
     for (let i = -1; i <= 1; i++) {
       let targetIndex = selectedIndex + i;
 
-      // 순환 처리: 배열 범위를 벗어나면 반대편으로
+      // Circular handling: wrap to opposite end if out of bounds
       if (targetIndex < 0) {
         targetIndex = categories.length + targetIndex;
       } else if (targetIndex >= categories.length) {
@@ -34,7 +34,7 @@ export default function CategoryFilter({
 
       visibleCategories.push({
         category: categories[targetIndex],
-        isSelected: i === 0, // 가운데 슬롯만 선택됨
+        isSelected: i === 0, // Only center slot is selected
         position: i, // -1, 0, 1
       });
     }
@@ -45,7 +45,7 @@ export default function CategoryFilter({
   return (
     <div className={`mx-auto max-w-[600px] lg:max-w-[800px] rounded-lg border p-4 lg:p-6 shadow-sm transition-all duration-200 ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <div className='flex items-center justify-center'>
-        {/* 카테고리 선택 버튼들 - 반응형 */}
+        {/* Category selection buttons - responsive */}
         <div className='flex justify-center'>
           <div className='flex items-center gap-2 lg:gap-4'>
             {getVisibleCategories().map((item, slotIndex) => {
@@ -66,7 +66,7 @@ export default function CategoryFilter({
                   }
                 >
                   <span className='block truncate'>
-                    {item.category === 'all' ? '전체' : item.category}
+                    {item.category === 'all' ? 'All' : item.category}
                   </span>
                 </button>
               );
@@ -75,7 +75,7 @@ export default function CategoryFilter({
         </div>
       </div>
 
-      {/* 하단: 인디케이터 - 반응형 */}
+      {/* Bottom: indicator - responsive */}
       <div className='mt-3 lg:mt-4 flex justify-center'>
         <div className='flex items-center gap-1'>
           {categories.map((_, index) => {
@@ -95,11 +95,11 @@ export default function CategoryFilter({
         </div>
       </div>
 
-      {/* 현재 카테고리 정보 - 반응형 */}
+      {/* Current category info - responsive */}
       <div className='mt-2 lg:mt-3 text-center'>
         <div className={`text-xs lg:text-sm ${getThemeTextColor('secondary')}`}>
           <span className='font-semibold text-purple-600'>
-            {selectedCategory === 'all' ? '전체' : selectedCategory}
+            {selectedCategory === 'all' ? 'All' : selectedCategory}
           </span>
           <span className='mx-1 lg:mx-2'>•</span>
           <span>

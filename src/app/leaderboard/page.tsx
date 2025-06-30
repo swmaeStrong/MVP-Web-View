@@ -29,7 +29,7 @@ export default function Leaderboard() {
   const { scrollToMyRank } = useScrollToMyRank();
   const { getThemeClass } = useTheme();
 
-  // 사용자 초기화를 useEffect로 처리
+  // Handle user initialization with useEffect
   useEffect(() => {
     if (!currentUser) {
       console.log('🔄 사용자 정보가 없어 초기화 시도...');
