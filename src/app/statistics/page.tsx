@@ -33,7 +33,7 @@ export default function StatisticsPage() {
   const { initializeUser } = useInitUser();
   const { getThemeClass, getThemeTextColor } = useTheme();
 
-  // 사용자 초기화를 useEffect로 처리
+  // Handle user initialization with useEffect
   useEffect(() => {
     if (!currentUser) {
       console.log('🔄 사용자 정보가 없어 초기화 시도...');
@@ -180,13 +180,13 @@ export default function StatisticsPage() {
       <div className={`min-h-screen p-4 sm:p-6 lg:p-8 ${getThemeClass('background')}`}>
         <div className='mx-auto max-w-6xl'>
           <ErrorState
-            title='통계 데이터를 불러올 수 없습니다'
+            title='Unable to load statistics data'
             message={
               error?.message ||
-              '서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.'
+              'A server error occurred. Please try again later.'
             }
             onRetry={refetch}
-            retryText='새로고침'
+            retryText='Refresh'
             className='h-64'
           />
         </div>

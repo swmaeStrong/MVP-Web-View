@@ -25,7 +25,7 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // API 데이터 가져오기
+  // Fetch API data
   useEffect(() => {
     if (activities) {
       // props로 전달된 데이터가 있으면 그것을 사용
@@ -42,7 +42,7 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
         setUsageData(data || []);
       } catch (err) {
         console.error('Failed to fetch usage log:', err);
-        setError('활동 데이터를 불러올 수 없습니다.');
+        setError('Unable to load activity data.');
         setUsageData([]);
       } finally {
         setLoading(false);
@@ -56,7 +56,7 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
   const formatTime = (timestamp: string) => {
     try {
       const date = new Date(timestamp);
-      return date.toLocaleTimeString('ko-KR', { 
+      return date.toLocaleTimeString('en-US', { 
         hour: '2-digit', 
         minute: '2-digit', 
         second: '2-digit',
@@ -76,24 +76,24 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
         {/* 제목 */}
         <div className="flex items-center justify-between mb-4">
           <h4 className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
-            최근 활동
+            Recent Activity
           </h4>
           <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-            {loading ? '로딩 중...' : `${usageData.length}개 항목`}
+            {loading ? 'Loading...' : `${usageData.length} items`}
           </div>
         </div>
 
         {/* 로딩 상태 */}
         {loading ? (
           <div className={`text-center py-8 ${getThemeTextColor('secondary')}`}>
-            <div className="animate-pulse">데이터를 불러오는 중...</div>
+            <div className="animate-pulse">Loading data...</div>
           </div>
         ) : usageData.length === 0 ? (
           /* 데이터 없음 */
           <div className="flex h-[300px] items-center justify-center">
             <NoData
-              title="최근 활동이 없습니다"
-              message={error || "최근 활동 기록이 없습니다. 사용률 추적을 시작해보세요."}
+              title="No Recent Activity"
+              message={error || "No recent activity records. Start tracking your usage."}
               icon={Activity}
               showBorder={false}
               size="medium"

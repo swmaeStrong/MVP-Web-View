@@ -39,15 +39,15 @@ export default function StatisticsChart({
   const getChartTitle = () => {
     switch (selectedPeriod) {
       case 'daily':
-        const date = new Date(currentDate + 'T00:00:00Z'); // UTC 기준으로 파싱
+        const date = new Date(currentDate + 'T00:00:00Z'); // Parse as UTC
         const formattedDate = formatKSTDate(date);
-        return `${formattedDate} Top 6 카테고리 분석`;
+        return `${formattedDate} Top 6 Category Analysis`;
       case 'weekly':
-        return '주별 작업 패턴';
+        return 'Weekly Work Patterns';
       case 'monthly':
-        return '월별 생산성 트렌드';
+        return 'Monthly Productivity Trends';
       default:
-        return '작업 분석';
+        return 'Work Analysis';
     }
   };
 
@@ -69,7 +69,7 @@ export default function StatisticsChart({
             </CardTitle>
           </div>
 
-          {/* 네비게이션 버튼 */}
+          {/* Navigation buttons */}
           <div className='flex gap-2'>
             <Button
               variant='outline'
@@ -101,8 +101,8 @@ export default function StatisticsChart({
           ) : (
             <div className='flex h-full items-center justify-center p-4'>
               <NoData
-                title='활동 데이터가 없습니다'
-                message='선택한 날짜에 기록된 활동이 없습니다.'
+                title='No Activity Data'
+                message='No activities recorded for the selected date.'
                 icon={Activity}
                 showBorder={false}
                 size='large'

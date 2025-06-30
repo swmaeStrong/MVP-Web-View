@@ -21,30 +21,30 @@ export default function CategoryList({
   const { getThemeClass, getThemeTextColor } = useTheme();
   const { getCardStyle, getButtonStyle } = useDesignSystem();
   
-  // 디자인 시스템 스타일 적용
+  // Apply design system styles
   const cardStyles = getCardStyle('medium', 'hoverable');
   const buttonStyles = getButtonStyle('small', 'ghost');
-  // 6개의 고정 색상 정의
+  // Define 6 fixed colors
   const categoryColors = [
-    '#8b5cf6', // 보라
-    '#06b6d4', // 청록
-    '#10b981', // 초록
-    '#f59e0b', // 노랑
-    '#ef4444', // 빨강
-    '#ec4899', // 핑크
+    '#8b5cf6', // Purple
+    '#06b6d4', // Cyan
+    '#10b981', // Green
+    '#f59e0b', // Yellow
+    '#ef4444', // Red
+    '#ec4899', // Pink
   ];
 
-  // 상위 6개만 표시하고 색상 할당
+  // Show only top 6 and assign colors
   const top6Categories = categories.slice(0, 6).map((category, index) => ({
     ...category,
-    color: categoryColors[index] || categoryColors[0], // 색상 오버라이드
+    color: categoryColors[index] || categoryColors[0], // Color override
   }));
 
   if (top6Categories.length === 0) {
     return (
       <NoData 
-        title="카테고리 데이터 없음"
-        message="분석할 카테고리 데이터가 없습니다."
+        title="No Category Data"
+        message="No category data available for analysis."
         size="medium"
         showBorder={false}
       />
@@ -54,12 +54,12 @@ export default function CategoryList({
   return (
     <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${componentStates.default.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <CardContent className={`${cardSystem.content} ${spacing.inner.normal}`}>
-        {/* ActivityList + TotalTimeCard와 동일한 높이를 위한 고정 높이 */}
+        {/* Fixed height to match ActivityList + TotalTimeCard height */}
         <div className="h-[542px] flex flex-col">
-          {/* 헤더 */}
+          {/* Header */}
           <div className="flex items-center justify-between mb-4">
             <h4 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
-              카테고리 분석
+              Category Analysis
             </h4>
             <button
               onClick={() => onCategorySelect(null)}
@@ -69,11 +69,11 @@ export default function CategoryList({
                   : `${buttonSystem.variants.ghost} ${getThemeTextColor('secondary')} hover:${getThemeTextColor('accent')}`
               } ${componentStates.clickable.transition}`}
             >
-              전체
+              All
             </button>
           </div>
 
-          {/* 카테고리 리스트 - 스크롤 가능 */}
+          {/* Category list - scrollable */}
           <div className="flex-1 overflow-y-auto">
             <div className="space-y-2">
               {top6Categories.slice(0, 4).map((category, index) => {
@@ -89,7 +89,7 @@ export default function CategoryList({
                         : `hover:${getThemeClass('componentSecondary')}`
                     }`}
                   >
-                    {/* 왼쪽: 색상 + 이름 */}
+                    {/* Left: color + name */}
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <div
                         className={`h-2 w-2 rounded-full flex-shrink-0 ${
@@ -108,7 +108,7 @@ export default function CategoryList({
                       </div>
                     </div>
 
-                    {/* 오른쪽: 퍼센티지만 표시 */}
+                    {/* Right: percentage only */}
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <div className={`text-sm font-semibold ${getThemeTextColor('secondary')}`}>
                         {category.percentage}%

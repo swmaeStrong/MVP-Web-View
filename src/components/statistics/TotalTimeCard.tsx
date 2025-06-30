@@ -13,41 +13,41 @@ export default function TotalTimeCard({
 }: TotalTimeCardProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
   
-  // 시간 포맷팅
+  // Time formatting
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
 
     if (hours === 0) {
-      return `${minutes}분`;
+      return `${minutes}m`;
     }
     if (minutes === 0) {
-      return `${hours}시간`;
+      return `${hours}h`;
     }
-    return `${hours}시간 ${minutes}분`;
+    return `${hours}h ${minutes}m`;
   };
 
-  // 항상 전체 시간 표시
+  // Always display total time
   const displayTime = totalTime;
-  const displayTitle = '전체 활동 시간';
+  const displayTitle = 'Total Activity Time';
 
   return (
     <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${componentStates.default.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <CardContent className={`${cardSystem.content} ${spacing.inner.normal}`}>
         <div className="flex items-center justify-between">
-          {/* 왼쪽: 제목 표시 */}
+          {/* Left: title display */}
           <div className="flex items-center gap-3">
             <div>
               <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
                 {displayTitle}
               </h3>
               <p className={`text-sm ${getThemeTextColor('secondary')}`}>
-                오늘의 총 활동
+                Today's Total Activity
               </p>
             </div>
           </div>
 
-          {/* 오른쪽: 시간 표시 */}
+          {/* Right: time display */}
           <div className="text-right">
             <div className={`text-3xl font-bold ${getThemeTextColor('primary')}`}>
               {formatTime(displayTime)}
