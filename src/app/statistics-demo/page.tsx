@@ -339,25 +339,26 @@ function StatisticsDemoContent() {
             <div className='flex-shrink-0'>
               <TotalTimeCard
                 totalTime={demoData.totalTime}
+                currentDate={selectedDate}
+                onPrevious={handlePreviousDate}
+                onNext={handleNextDate}
+                canGoPrevious={canGoPrevious}
+                canGoNext={canGoNext}
               />
             </div>
 
-            {/* Activity 목록 - 실제 컴포넌트 사용 */}
+            {/* Activity 목록 */}
             <div className='flex-1'>
-              <ActivityList activities={demoActivities} date={selectedDate} />
+            <StatisticsChart
+            selectedPeriod={selectedPeriod}
+            data={demoData}
+            currentDate={selectedDate}
+          />
             </div>
           </div>
 
           {/* 오른쪽: 차트 */}
-          <StatisticsChart
-            selectedPeriod={selectedPeriod}
-            data={demoData}
-            onPrevious={handlePreviousDate}
-            onNext={handleNextDate}
-            canGoPrevious={canGoPrevious}
-            canGoNext={canGoNext}
-            currentDate={selectedDate}
-          />
+          <ActivityList activities={demoActivities} date={selectedDate} />
         </div>
 
         {/* 타임라인 차트 - 전체 너비 사용 */}

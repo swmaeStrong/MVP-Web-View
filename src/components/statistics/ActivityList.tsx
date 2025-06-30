@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useDesignSystem } from '@/hooks/useDesignSystem';
 import { useTheme } from '@/hooks/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { useDesignSystem } from '@/hooks/useDesignSystem';
-import { cardSystem, componentStates, spacing } from '@/styles/design-system';
 import { getRecentUsageLog } from '@/shared/api/get';
-import NoData from '../common/NoData';
+import { cardSystem, componentStates, spacing } from '@/styles/design-system';
 import { Activity } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import NoData from '../common/NoData';
 
 interface ActivityListProps {
   activities?: UsageLog.RecentUsageLogItem[];
@@ -71,8 +71,8 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
   const cardStyles = getCardStyle('medium', 'hoverable');
 
   return (
-    <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${cardSystem.hover.lift} ${componentStates.hoverable.transition} ${getThemeClass('border')} ${getThemeClass('component')} w-full max-w-full overflow-hidden`}>
-      <CardContent className={`${cardSystem.content} ${spacing.inner.normal} w-full max-w-full overflow-hidden`}>
+    <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${cardSystem.hover.lift} ${componentStates.hoverable.transition} ${getThemeClass('border')} ${getThemeClass('component')} h-full flex flex-col`}>
+      <CardContent className={`${cardSystem.content} ${spacing.inner.normal} flex-1 flex flex-col overflow-hidden`}>
         {/* 제목 */}
         <div className="flex items-center justify-between mb-4">
           <h4 className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
@@ -102,7 +102,7 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
         ) : (
           /* 스크롤 가능한 활동 목록 */
           <div 
-            className="max-h-[400px] overflow-y-auto overflow-x-hidden space-y-2 pr-2"
+            className="flex-1 overflow-y-auto overflow-x-hidden space-y-2 pr-2 min-h-0 max-h-[525px]"
           >
             {usageData.map((activity, index) => (
             <div

@@ -148,16 +148,18 @@ export default function StatisticsRadarChart({
             <PolarAngleAxis
               dataKey='category'
               tick={{
-                fontSize: 10,
+                fontSize: 14,
                 fill: getThemeTextColorValue('primary'),
-                fontWeight: 'bold',
+                fontWeight: 'normal',
                 textAnchor: 'middle',
+                stroke: isDarkMode ? '#ffffff' : '#000000',
+                strokeWidth: 0.5,
               }}
-              className={`text-xs lg:text-sm font-semibold ${getThemeTextColor('primary')}`}
+              className={`text-sm lg:text-base font-normal ${getThemeTextColor('primary')}`}
               tickFormatter={value => {
-                // Truncate shorter on small screens
-                if (value.length > 6) {
-                  return value.substring(0, 4) + '...';
+                // Truncate for better readability
+                if (value.length > 8) {
+                  return value.substring(0, 6) + '...';
                 }
                 return value;
               }}

@@ -2,14 +2,21 @@
 
 import { useAvailableDates, useUsageStatistics } from '@/hooks/useStatistics';
 import { useTheme } from '@/hooks/useTheme';
+import { getTimeline } from '@/shared/api/get';
 import { useCurrentUser } from '@/stores/userStore';
 import { PeriodType, StatisticsCategory } from '@/types/statistics';
 import { getDateString } from '@/utils/statisticsUtils';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { getTimeline } from '@/shared/api/get';
 import { useQuery } from '@tanstack/react-query';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // 컴포넌트 임포트
+import {
+  ActivityListSkeleton,
+  HourlyUsageComparisonSkeleton,
+  StatisticsChartSkeleton,
+  TimelineChartSkeleton,
+  TotalTimeCardSkeleton
+} from '@/components/common/StatisticsSkeleton';
 import ActivityList from '@/components/statistics/ActivityList';
 import HourlyUsageComparison from '@/components/statistics/HourlyUsageComparison';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
@@ -17,13 +24,6 @@ import TimelineChart from '@/components/statistics/TimelineChart';
 import TotalTimeCard from '@/components/statistics/TotalTimeCard';
 import { useInitUser } from '@/hooks/useInitUser';
 import ErrorState from '../../components/common/ErrorState';
-import { 
-  TotalTimeCardSkeleton,
-  ActivityListSkeleton,
-  StatisticsChartSkeleton,
-  TimelineChartSkeleton,
-  HourlyUsageComparisonSkeleton
-} from '@/components/common/StatisticsSkeleton';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<PeriodType>('daily');
@@ -231,25 +231,27 @@ export default function StatisticsPage() {
             <div className='flex-shrink-0'>
             <TotalTimeCard
               totalTime={dailyData?.totalTime || 0}
+              currentDate={selectedDate}
+              onPrevious={handlePreviousDate}
+              onNext={handleNextDate}
+              canGoPrevious={canGoPrevious}
+              canGoNext={canGoNext}
               />
             </div>
 
             {/* Activity 목록 */}
             <div className='flex-1'>
-              <ActivityList date={selectedDate} />
+            <StatisticsChart
+            selectedPeriod={selectedPeriod}
+            data={dailyData || null}
+            currentDate={selectedDate}
+          />
             </div>
           </div>
 
           {/* 오른쪽: 차트 */}
-          <StatisticsChart
-            selectedPeriod={selectedPeriod}
-            data={dailyData || null}
-            onPrevious={handlePreviousDate}
-            onNext={handleNextDate}
-            canGoPrevious={canGoPrevious}
-            canGoNext={canGoNext}
-            currentDate={selectedDate}
-          />
+          <ActivityList date={selectedDate} />
+
         </div>
 
         {/* 타임라인 차트 - 전체 너비 사용 */}
