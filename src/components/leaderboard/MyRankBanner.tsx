@@ -292,14 +292,6 @@ export default function MyRankBanner({
             <div className={`text-xl lg:text-2xl font-bold ${getThemeTextColor('primary')}`}>
               #{rank || '?'}
             </div>
-            {onScrollToMyRank && rank && (
-              <button
-                onClick={onScrollToMyRank}
-                className='mt-1 text-xs text-blue-500 hover:text-blue-600 transition-colors'
-              >
-                Find me in leaderboard
-              </button>
-            )}
           </div>
         </div>
       </div>
