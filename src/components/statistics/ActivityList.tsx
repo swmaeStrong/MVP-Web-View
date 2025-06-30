@@ -103,10 +103,6 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
           /* 스크롤 가능한 활동 목록 */
           <div 
             className="max-h-[400px] overflow-y-auto overflow-x-hidden space-y-2 pr-2"
-            style={{
-              scrollbarWidth: 'thin',
-              scrollbarColor: 'rgba(156, 163, 175, 0.5) transparent'
-            }}
           >
             {usageData.map((activity, index) => (
             <div

@@ -435,6 +435,7 @@ div ::-webkit-scrollbar-thumb:hover {
   background: #5a5a5a !important;
 }
 
+
 /* 티어별 글로우 애니메이션 */
 @keyframes challenger-glow {
   0% {
