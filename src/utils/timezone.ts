@@ -1,17 +1,17 @@
-// 한국 시간대 (KST, UTC+9) 유틸리티
+// Korean Standard Time (KST, UTC+9) utilities
 
 /**
- * 한국 시간대의 현재 날짜를 가져옵니다.
+ * Get current date in Korean Standard Time (KST).
  */
 export const getKSTDate = (): Date => {
   const now = new Date();
-  // UTC 시간에 9시간(한국 시간대)을 더함
+  // Add 9 hours (Korean timezone) to UTC time
   const kstTime = new Date(now.getTime() + 9 * 60 * 60 * 1000);
   return kstTime;
 };
 
 /**
- * 한국 시간대 기준으로 날짜 문자열(YYYY-MM-DD)을 생성합니다.
+ * Generate date string (YYYY-MM-DD) based on Korean Standard Time.
  */
 export const getKSTDateString = (): string => {
   const kstDate = getKSTDate();
@@ -19,7 +19,7 @@ export const getKSTDateString = (): string => {
 };
 
 /**
- * 주어진 날짜를 한국 시간대 기준으로 변환합니다.
+ * Convert given date to Korean Standard Time.
  */
 export const convertToKST = (date: Date): Date => {
   const utcTime = date.getTime() + date.getTimezoneOffset() * 60 * 1000;
@@ -28,7 +28,7 @@ export const convertToKST = (date: Date): Date => {
 };
 
 /**
- * 한국 시간대 기준으로 n일 전 날짜 문자열을 생성합니다.
+ * Generate date string for n days ago based on Korean Standard Time.
  */
 export const getKSTDateStringDaysAgo = (daysAgo: number): string => {
   const kstDate = getKSTDate();
@@ -39,7 +39,7 @@ export const getKSTDateStringDaysAgo = (daysAgo: number): string => {
 };
 
 /**
- * 한국 시간대 기준으로 특정 날짜의 문자열을 생성합니다.
+ * Generate date string for a specific date based on Korean Standard Time.
  */
 export const getKSTDateStringFromDate = (date: Date): string => {
   const kstDate = convertToKST(date);
@@ -47,20 +47,20 @@ export const getKSTDateStringFromDate = (date: Date): string => {
 };
 
 /**
- * 한국 시간대 기준으로 월의 첫째 날(1일) 문자열을 생성합니다.
- * 월간 통계나 리더보드 조회시 사용되며, 반드시 해당 월의 1일로 고정됩니다.
+ * Generate first day of month string (1st) based on Korean Standard Time.
+ * Used for monthly statistics or leaderboard queries, always fixed to the 1st of the month.
  */
 export const getKSTFirstDayOfMonth = (year: number, month: number): string => {
   // month는 0-based (0 = January)
   // 간단하게 문자열로 직접 생성 (YYYY-MM-01 형태)
   const yearStr = year.toString();
-  const monthStr = (month + 1).toString().padStart(2, '0'); // 1-based로 변환
+  const monthStr = (month + 1).toString().padStart(2, '0'); // Convert to 1-based
   return `${yearStr}-${monthStr}-01`;
 };
 
 /**
- * 현재 날짜를 기준으로 n개월 전의 첫째 날(1일) 문자열을 반환합니다.
- * 월간 리더보드나 통계 조회시 사용되며, 항상 해당 월의 1일로 고정됩니다.
+ * Return first day (1st) string of n months ago based on current date.
+ * Used for monthly leaderboard or statistics queries, always fixed to the 1st of the month.
  */
 export const getKSTMonthlyDateString = (monthsAgo: number): string => {
   const today = getKSTDate();
@@ -70,7 +70,7 @@ export const getKSTMonthlyDateString = (monthsAgo: number): string => {
   let targetYear = currentYear;
   let targetMonth = currentMonth - monthsAgo;
 
-  // 음수 월 처리
+  // Handle negative months
   while (targetMonth < 0) {
     targetMonth += 12;
     targetYear -= 1;
@@ -78,7 +78,7 @@ export const getKSTMonthlyDateString = (monthsAgo: number): string => {
 
   const result = getKSTFirstDayOfMonth(targetYear, targetMonth);
 
-  // 디버깅용 로그
+  // Debug log
   console.log(
     `getKSTMonthlyDateString: monthsAgo=${monthsAgo}, today=${today.toISOString().split('T')[0]}, currentYear=${currentYear}, currentMonth=${currentMonth + 1}, targetYear=${targetYear}, targetMonth=${targetMonth + 1}, result=${result}`
   );
@@ -87,7 +87,7 @@ export const getKSTMonthlyDateString = (monthsAgo: number): string => {
 };
 
 /**
- * 현재 한국 시간대 기준으로 시간 문자열(HH:MM)을 생성합니다.
+ * Generate time string (HH:MM) based on current Korean Standard Time.
  */
 export const getKSTTimeString = (): string => {
   const kstDate = getKSTDate();
@@ -97,7 +97,7 @@ export const getKSTTimeString = (): string => {
 };
 
 /**
- * 한국 시간대 기준으로 포맷된 날짜 문자열을 반환합니다.
+ * Return formatted date string based on Korean Standard Time.
  */
 export const formatKSTDate = (date: Date): string => {
   const kstDate = convertToKST(date);
@@ -108,15 +108,15 @@ export const formatKSTDate = (date: Date): string => {
 };
 
 /**
- * 한국 시간대 기준으로 요일을 포함한 포맷된 날짜 문자열을 반환합니다.
+ * Return formatted date string with day of week based on Korean Standard Time.
  */
 export const formatKSTDateWithDay = (dateStr: string): string => {
-  const date = new Date(dateStr + 'T00:00:00Z'); // UTC 기준으로 파싱
+  const date = new Date(dateStr + 'T00:00:00Z'); // Parse as UTC
   const kstDate = convertToKST(date);
   const today = getKSTDate();
   const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
 
-  // 같은 날인지 확인하는 함수 (KST 기준)
+  // Function to check if it's the same day (KST based)
   const isSameDay = (d1: Date, d2: Date) => {
     return d1.toISOString().split('T')[0] === d2.toISOString().split('T')[0];
   };
@@ -124,34 +124,34 @@ export const formatKSTDateWithDay = (dateStr: string): string => {
   const year = kstDate.getUTCFullYear();
   const month = String(kstDate.getUTCMonth() + 1).padStart(2, '0');
   const day = String(kstDate.getUTCDate()).padStart(2, '0');
-  const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][
+  const dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][
     kstDate.getUTCDay()
   ];
 
   if (isSameDay(kstDate, today)) {
-    return `${year}.${month}.${day} (오늘)`;
+    return `${year}.${month}.${day} (Today)`;
   } else if (isSameDay(kstDate, yesterday)) {
-    return `${year}.${month}.${day} (어제)`;
+    return `${year}.${month}.${day} (Yesterday)`;
   } else {
     return `${year}.${month}.${day} (${dayOfWeek})`;
   }
 };
 
 /**
- * 현재 날짜를 기준으로 n주 전의 월요일 날짜 문자열을 반환합니다.
- * 주간 리더보드나 통계 조회시 사용되며, 월요일-일요일을 한 주로 계산합니다.
+ * Return Monday date string of n weeks ago based on current date.
+ * Used for weekly leaderboard or statistics queries, calculating Monday-Sunday as one week.
  */
 export const getKSTWeeklyDateString = (weeksAgo: number): string => {
   const today = getKSTDate();
 
-  // n주 전의 날짜 계산
+  // Calculate date n weeks ago
   const targetDate = new Date(
     today.getTime() - weeksAgo * 7 * 24 * 60 * 60 * 1000
   );
 
-  // 해당 주의 월요일 찾기
-  const dayOfWeek = targetDate.getUTCDay(); // 0=일요일, 1=월요일, ...
-  const daysFromMonday = (dayOfWeek + 6) % 7; // 월요일부터의 경과 일수
+  // Find Monday of that week
+  const dayOfWeek = targetDate.getUTCDay(); // 0=Sunday, 1=Monday, ...
+  const daysFromMonday = (dayOfWeek + 6) % 7; // Days elapsed from Monday
   const mondayOfWeek = new Date(
     targetDate.getTime() - daysFromMonday * 24 * 60 * 60 * 1000
   );
