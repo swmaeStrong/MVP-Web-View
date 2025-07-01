@@ -2,10 +2,11 @@
 
 import { useDesignSystem } from '@/hooks/useDesignSystem';
 import { useTheme } from '@/hooks/useTheme';
+import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { getRecentUsageLog } from '@/shared/api/get';
 import { cardSystem, componentStates, spacing } from '@/styles/design-system';
-import { Activity } from 'lucide-react';
+import { Activity, RotateCcw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import NoData from '../common/NoData';
 
@@ -24,6 +25,28 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
   const [usageData, setUsageData] = useState<UsageLog.RecentUsageLogItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // 새로고침 함수
+  const handleRefresh = async () => {
+    if (activities) {
+      // props로 전달된 데이터가 있으면 새로고침 불가
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const data = await getRecentUsageLog(date);
+      setUsageData(data || []);
+    } catch (err) {
+      console.error('Failed to fetch usage log:', err);
+      setError('Unable to load activity data.');
+      setUsageData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Fetch API data
   useEffect(() => {
@@ -78,8 +101,22 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
           <h4 className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
             Recent Activity
           </h4>
-          <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-            {loading ? 'Loading...' : `${usageData.length} items`}
+          <div className="flex items-center gap-2">
+            <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+              {loading ? 'Loading...' : `${usageData.length} items`}
+            </div>
+            {!activities && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleRefresh}
+                disabled={loading}
+                className={`h-6 w-6 p-0 ${getThemeClass('component')} hover:${getThemeClass('componentSecondary')}`}
+                title="Refresh activity list"
+              >
+                <RotateCcw className={`h-3 w-3 ${loading ? 'animate-spin' : ''} ${getThemeTextColor('secondary')}`} />
+              </Button>
+            )}
           </div>
         </div>
 
