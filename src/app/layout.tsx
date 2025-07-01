@@ -50,7 +50,7 @@ export default function RootLayout({
   return (
     <html
       lang='en'
-      className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable} dark bg-gray-900`}
+      className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable} dark`}
     >
       <body className='font-sans antialiased dark bg-gray-900 text-gray-100'>
         <SentryProvider>

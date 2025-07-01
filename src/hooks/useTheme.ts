@@ -1,18 +1,14 @@
-import { useThemeStore } from '@/stores/themeStore';
 import { themeColors } from '@/styles/colors';
-import { useEffect, useState } from 'react';
 
 /**
  * 테마 관리를 위한 통합 React Hook
- * Zustand store를 활용하여 전역 상태 관리
+ * 다크모드 고정 적용
  */
 export function useTheme() {
-  const { isDarkMode, theme } = useThemeStore();
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  // 다크모드 고정
+  const isDarkMode = true;
+  const theme = 'dark' as const;
+  const isClient = true; // SSR에서도 다크모드 고정이므로 항상 true
 
   // 현재 테마의 컬러 객체
   const colors = themeColors[theme];
@@ -38,13 +34,11 @@ export function useTheme() {
     // 상태
     theme,
     isDarkMode,
-    isLight: !isDarkMode,
+    isLight: false, // 항상 다크모드
     isClient,
 
     // 컬러 객체
     colors,
-
-    // 액션 (dark mode only)
 
     // 유틸리티 함수들
     getThemeClass,
