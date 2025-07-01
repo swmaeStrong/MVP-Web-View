@@ -2,7 +2,7 @@
 
 import { CATEGORIES, LEADERBOARD_CATEGORIES } from '@/utils/categories';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 // 컴포넌트 임포트
 import CategoryFilter from '@/components/leaderboard/CategoryFilter';
@@ -18,33 +18,76 @@ type LeaderboardUser = User & {
   rank: number;
 };
 
-// 데모용 더미 데이터 생성 - 영어 이름으로 구성
-const generateDummyUsers = (): LeaderboardUser[] => {
-  const englishNames = [
-    'Alex', 'Brian', 'Chris', 'David', 'Emma', 'Frank', 'Grace', 'Henry', 'Iris', 'Jack',
-    'Kate', 'Luke', 'Maya', 'Nick', 'Olivia', 'Paul', 'Quinn', 'Ryan', 'Sara', 'Tom',
-    'Uma', 'Victor', 'Wendy', 'Xavier', 'Yara', 'Zack', 'Anna', 'Ben', 'Chloe', 'Dan',
-    'Eva', 'Felix', 'Gina', 'Hugo', 'Ivy', 'Jake', 'Kira', 'Leo', 'Mia', 'Noah',
-    'Ava', 'Blake', 'Clara', 'Drew', 'Ella', 'Finn', 'Zoe', 'Ian', 'Jade', 'Kyle',
-    'Lily', 'Max', 'Nina', 'Owen', 'Piper', 'Reed', 'Sky', 'Tara', 'Evan', 'Vera',
-    'Wade', 'Xara', 'Yale', 'Zara', 'Amy', 'Cole', 'Dex', 'Elle', 'Fox', 'Grey',
-    'Hope', 'Ivan', 'Jess', 'Kent', 'Lane', 'Milo', 'Nora', 'Oscar', 'Page', 'Rory',
-    'Sage', 'Troy', 'Vale', 'Will', 'Zion', 'Ace', 'Bay', 'Cam', 'Eve', 'Kai',
-    'Lee', 'Neo', 'Ray', 'Sam', 'Ty', 'Uma', 'Val', 'Win', 'Zoe', 'Ash', 'Rex', 'Joy'
-  ];
+// 영어 이름 풀
+const englishNames = [
+  'Alex', 'Brian', 'Chris', 'David', 'Emma', 'Frank', 'Grace', 'Henry', 'Iris', 'Jack',
+  'Kate', 'Luke', 'Maya', 'Nick', 'Olivia', 'Paul', 'Quinn', 'Ryan', 'Sara', 'Tom',
+  'Uma', 'Victor', 'Wendy', 'Xavier', 'Yara', 'Zack', 'Anna', 'Ben', 'Chloe', 'Dan',
+  'Eva', 'Felix', 'Gina', 'Hugo', 'Ivy', 'Jake', 'Kira', 'Leo', 'Mia', 'Noah',
+  'Ava', 'Blake', 'Clara', 'Drew', 'Ella', 'Finn', 'Zoe', 'Ian', 'Jade', 'Kyle',
+  'Lily', 'Max', 'Nina', 'Owen', 'Piper', 'Reed', 'Sky', 'Tara', 'Evan', 'Vera',
+  'Wade', 'Xara', 'Yale', 'Zara', 'Amy', 'Cole', 'Dex', 'Elle', 'Fox', 'Grey',
+  'Hope', 'Ivan', 'Jess', 'Kent', 'Lane', 'Milo', 'Nora', 'Oscar', 'Page', 'Rory',
+  'Sage', 'Troy', 'Vale', 'Will', 'Zion', 'Ace', 'Bay', 'Cam', 'Eve', 'Kai',
+  'Lee', 'Neo', 'Ray', 'Sam', 'Ty', 'Uma', 'Val', 'Win', 'Zoe', 'Ash', 'Rex', 'Joy'
+];
+
+// 기간별로 다른 더미 데이터 생성
+const generateDummyUsers = (period: 'daily' | 'weekly' | 'monthly', dateIndex: number = 0): LeaderboardUser[] => {
+  // 각 기간별로 다른 시드값 사용 (날짜 인덱스 포함)
+  const seed = period === 'daily' ? 1000 + dateIndex : 
+               period === 'weekly' ? 2000 + dateIndex : 
+               3000 + dateIndex;
+  
+  // 시드를 기반으로 한 의사 랜덤 함수
+  const seededRandom = (s: number) => {
+    const x = Math.sin(s) * 10000;
+    return x - Math.floor(x);
+  };
 
   return Array.from({ length: 100 }, (_, index) => {
-    // 닉네임을 랜덤하게 선택하되, 중복을 피하기 위해 인덱스 기반으로 조정
-    const baseName = englishNames[index % englishNames.length];
+    // 닉네임 생성 (기간별로 다른 순서)
+    const nameIndex = (index + seed) % englishNames.length;
+    const baseName = englishNames[nameIndex];
     const nickname = index >= englishNames.length ? `${baseName}${Math.floor(index / englishNames.length) + 1}` : baseName;
     
-    // 상위권일수록 높은 점수 (시간 단위는 초)
-    const baseScore = 36000 - (index * 350) + Math.floor(Math.random() * 300); // 10시간에서 시작
+    // 기간별로 다른 점수 범위 설정
+    let baseScore, variance;
+    
+    switch (period) {
+      case 'daily':
+        // 일일: 1-8시간 범위, 더 집중적인 사용 패턴
+        baseScore = 28800 - (index * 280) + Math.floor(seededRandom(seed + index) * 600);
+        variance = 400;
+        break;
+      case 'weekly':
+        // 주간: 5-50시간 범위, 더 넓은 분포
+        baseScore = 180000 - (index * 1750) + Math.floor(seededRandom(seed + index) * 1200);
+        variance = 800;
+        break;
+      case 'monthly':
+        // 월간: 20-200시간 범위, 가장 넓은 분포
+        baseScore = 720000 - (index * 7000) + Math.floor(seededRandom(seed + index) * 2400);
+        variance = 1500;
+        break;
+      default:
+        baseScore = 36000 - (index * 350);
+        variance = 300;
+    }
+    
+    // 추가 랜덤성 적용
+    const randomVariance = Math.floor(seededRandom(seed + index + 1000) * variance);
+    const finalScore = baseScore + randomVariance;
+    
+    // 최소값 설정 (기간별로 다름)
+    const minScore = period === 'daily' ? 1800 : // 30분
+                     period === 'weekly' ? 7200 : // 2시간  
+                     21600; // 6시간
     
     return {
-      id: `demo-user-${index + 1}`,
+      id: `demo-user-${period}-${dateIndex}-${index + 1}`,
       nickname: nickname,
-      score: Math.max(baseScore, 1800), // 최소 30분
+      score: Math.max(finalScore, minScore),
       rank: index + 1,
     };
   });
@@ -90,8 +133,8 @@ function LeaderboardDemoContent() {
     }));
   };
 
-  // 데모 데이터
-  const [demoUsers] = useState<LeaderboardUser[]>(generateDummyUsers());
+  // 기간과 날짜 인덱스에 따른 데모 데이터 생성
+  const demoUsers = generateDummyUsers(selectedPeriod, selectedDateIndex);
   const categories = LEADERBOARD_CATEGORIES;
 
   return (
