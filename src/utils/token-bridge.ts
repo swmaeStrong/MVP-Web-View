@@ -5,9 +5,7 @@
 import { getUserInfo } from '../shared/api/get';
 import { setRccToken } from '../shared/configs/api/csrConfig';
 import { setRscToken } from '../shared/configs/api/ssrConfig';
-import { useThemeStore } from '../stores/themeStore';
 import { useUserStore } from '../stores/userStore';
-import { addThemeChangeListener, isDarkMode } from './theme-detector';
 
 // TypeScript 타입 정의
 declare global {
