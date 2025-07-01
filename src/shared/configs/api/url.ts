@@ -13,6 +13,16 @@ export const KAKAO_PAY_CHANNEL_KEY =
     ? process.env.NEXT_PUBLIC_CHANNEL_KEY_KAKAO_PAY
     : process.env.NEXT_PUBLIC_CHANNEL_KEY_KAKAO_PAY;
 
+export const NICE_PAY_CHANNEL_KEY =
+  process.env.NODE_ENV === 'production'
+    ? process.env.NEXT_PUBLIC_CHANNEL_KEY_NICE_PAY
+    : process.env.NEXT_PUBLIC_CHANNEL_KEY_NICE_PAY;
+
+export const TOSS_PAY_CHANNEL_KEY =
+  process.env.NODE_ENV === 'production'
+    ? process.env.NEXT_PUBLIC_CHANNEL_KEY_TOSS_PAY
+    : process.env.NEXT_PUBLIC_CHANNEL_KEY_TOSS_PAY;
+
 export const APP_URL =
   process.env.NODE_ENV === 'production'
     ? process.env.NEXT_PUBLIC_APP_URL

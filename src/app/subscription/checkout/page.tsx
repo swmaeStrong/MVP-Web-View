@@ -12,26 +12,37 @@ interface PaymentMethod {
   createdAt: string;
 }
 
-interface CountdownState {
-  hours: number;
-  minutes: number;
-  seconds: number;
+interface PlanData {
+  name: string;
+  price: number;
+  features: string[];
 }
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { getThemeClass } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
-    null
-  );
-  const [countdown, setCountdown] = useState<CountdownState | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<PlanData | null>(null);
 
   useEffect(() => {
+    // 선택된 플랜 정보 가져오기 (sessionStorage에서)
+    const planData = sessionStorage.getItem('selectedPlan');
+    if (planData) {
+      setSelectedPlan(JSON.parse(planData));
+    } else {
+      // 기본 플랜 설정
+      setSelectedPlan({
+        name: 'Premium',
+        price: 1,
+        features: ['무제한 프리미엄 기능', '광고 없는 경험', '우선 고객 지원']
+      });
+    }
+
     // 결제 수단 확인
     const savedPaymentMethods = localStorage.getItem('paymentMethods');
     if (!savedPaymentMethods) {
-      // 결제 수단이 없으면 등록 페이지로 리다이렉트
       router.push('/subscription/payment-method?from=subscription');
       return;
     }
@@ -44,21 +55,21 @@ export default function CheckoutPage() {
     setIsLoading(true);
 
     try {
-      // 실제 결제 처리 로직 (2초 딜레이로 시뮬레이션)
+      // 결제 처리 시뮬레이션
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // 구독 정보 저장 (한국 시간대 기준)
+      // 구독 정보 저장
       const subscriptionData = {
-        plan: 'premium',
-        price: 1,
+        plan: selectedPlan?.name.toLowerCase() || 'premium',
+        price: selectedPlan?.price || 1,
         startDate: getKSTDate().toISOString(),
         paymentMethod: paymentMethod?.method,
         status: 'active',
       };
       localStorage.setItem('subscription', JSON.stringify(subscriptionData));
 
-      // 성공 페이지로 이동
-      router.push('/subscription/success');
+      // 성공 상태로 변경 (별도 페이지로 이동하지 않음)
+      setIsSuccess(true);
     } catch (error) {
       console.error('결제 처리 중 오류:', error);
     } finally {
@@ -66,38 +77,62 @@ export default function CheckoutPage() {
     }
   };
 
-  // 특별 할인 카운트다운 효과 (한국 시간대 기준)
-  useEffect(() => {
-    const kstNow = getKSTDate();
-    const targetTime = new Date(kstNow.getTime());
-    targetTime.setUTCHours(23, 59, 59, 999); // 한국 시간 기준 자정까지
-
-    const timer = setInterval(() => {
-      const now = getKSTDate();
-      const difference = targetTime.getTime() - now.getTime();
-
-      if (difference > 0) {
-        const hours = Math.floor(difference / (1000 * 60 * 60));
-        const minutes = Math.floor(
-          (difference % (1000 * 60 * 60)) / (1000 * 60)
-        );
-        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-        setCountdown({ hours, minutes, seconds });
-      } else {
-        setCountdown({ hours: 0, minutes: 0, seconds: 0 });
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  if (!paymentMethod) {
+  if (!paymentMethod || !selectedPlan) {
     return (
       <div className={`flex min-h-screen items-center justify-center ${getThemeClass('background')}`}>
         <div className='text-center'>
           <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-purple-600 border-t-transparent'></div>
           <p className={getThemeClass('textSecondary')}>결제 정보를 확인하는 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 성공 메시지 표시
+  if (isSuccess) {
+    return (
+      <div className={`min-h-screen ${getThemeClass('background')} p-4 sm:p-6 lg:p-8`}>
+        <div className='mx-auto max-w-2xl space-y-6 text-center'>
+          <div className='space-y-4'>
+            <div className='text-6xl'>🎉</div>
+            <h1 className='bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl'>
+              구독 완료!
+            </h1>
+            <p className={`text-lg ${getThemeClass('textSecondary')} sm:text-xl`}>
+              {selectedPlan.name} 플랜이 성공적으로 활성화되었습니다.
+            </p>
+          </div>
+          
+          <Card className={`rounded-2xl border-0 ${getThemeClass('component')} p-6 shadow-xl`}>
+            <CardContent className='space-y-4 p-0'>
+              <div className='text-center'>
+                <h3 className={`text-xl font-bold ${getThemeClass('textPrimary')}`}>
+                  {selectedPlan.name} 플랜 활성화
+                </h3>
+                <p className={`text-2xl font-bold text-green-600`}>
+                  ${selectedPlan.price}/월
+                </p>
+              </div>
+              <div className='space-y-2'>
+                {selectedPlan.features.map((feature, index) => (
+                  <div key={index} className='flex items-center gap-3'>
+                    <span className='text-lg text-green-500'>✓</span>
+                    <span className={getThemeClass('textSecondary')}>{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className='space-y-4'>
+            <Button
+              size='lg'
+              className='w-full rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 py-6 text-xl font-bold text-white shadow-xl hover:from-purple-700 hover:to-blue-700'
+              onClick={() => router.push('/home')}
+            >
+              메인으로 돌아가기
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -109,125 +144,91 @@ export default function CheckoutPage() {
         {/* 헤더 */}
         <div className='space-y-4 text-center'>
           <Badge className='bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg'>
-            🚀 구독 진행 중 • 2단계 중 2단계
+            🚀 구독 진행 중 • 3단계 중 3단계
           </Badge>
 
           <h1 className='bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl'>
-            🎉 결제 확인
+            🎉 최종 결제
           </h1>
           <p className={`text-lg ${getThemeClass('textSecondary')} sm:text-xl`}>
             마지막 단계입니다! 구독을 완료해보세요
           </p>
         </div>
 
-        {/* 진행 단계 표시 */}
+        {/* 3단계 진행 표시 */}
         <div className={`rounded-2xl ${getThemeClass('component')} p-4 shadow-lg`}>
           <div className='flex items-center justify-between text-sm'>
             <div className='flex items-center gap-2 text-green-600'>
               <div className='flex h-6 w-6 items-center justify-center rounded-full bg-green-600 text-xs font-bold text-white'>
                 ✓
               </div>
-              <span className='font-medium'>결제 수단 등록</span>
+              <span className='font-medium'>플랜 선택</span>
             </div>
-            <div className='mx-4 h-1 flex-1 rounded-full bg-green-500'></div>
+            <div className='mx-2 h-1 flex-1 rounded-full bg-green-500'></div>
+            <div className='flex items-center gap-2 text-green-600'>
+              <div className='flex h-6 w-6 items-center justify-center rounded-full bg-green-600 text-xs font-bold text-white'>
+                ✓
+              </div>
+              <span className='font-medium'>결제 수단</span>
+            </div>
+            <div className='mx-2 h-1 flex-1 rounded-full bg-purple-500'></div>
             <div className='flex items-center gap-2 text-purple-600'>
               <div className='flex h-6 w-6 items-center justify-center rounded-full bg-purple-600 text-xs font-bold text-white'>
-                2
+                3
               </div>
               <span className='font-medium'>구독 완료</span>
             </div>
           </div>
         </div>
 
-        {/* 특별 할인 카운트다운 */}
-        {countdown && (
-          <Card className='relative rounded-2xl border-0 bg-gradient-to-r from-red-500 to-pink-500 p-6 text-white shadow-xl'>
-            <div className='space-y-2 text-center'>
-              <div className='text-lg font-bold'>⏰ 특별 할인 마감까지</div>
-              <div className='flex justify-center gap-4 text-2xl font-bold'>
-                <div className='rounded-lg bg-white/20 px-3 py-2'>
-                  <div>{countdown.hours.toString().padStart(2, '0')}</div>
-                  <div className='text-xs'>시간</div>
-                </div>
-                <div className='rounded-lg bg-white/20 px-3 py-2'>
-                  <div>{countdown.minutes.toString().padStart(2, '0')}</div>
-                  <div className='text-xs'>분</div>
-                </div>
-                <div className='rounded-lg bg-white/20 px-3 py-2'>
-                  <div>{countdown.seconds.toString().padStart(2, '0')}</div>
-                  <div className='text-xs'>초</div>
-                </div>
-              </div>
-              <p className='text-sm opacity-90'>
-                지금 놓치면 정가로 결제하셔야 합니다!
-              </p>
-            </div>
-          </Card>
-        )}
-
-        {/* 구독 요약 */}
-        <Card className={`relative rounded-2xl border-0 ${getThemeClass('component')} p-6 shadow-xl sm:rounded-3xl sm:p-8`}>
-          <div className='absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-600/5 to-blue-600/5 sm:rounded-3xl'></div>
-
-          <CardContent className='relative space-y-6 p-0'>
+        {/* 선택된 플랜 정보 */}
+        <Card className={`rounded-2xl border-0 ${getThemeClass('component')} p-6 shadow-xl`}>
+          <CardContent className='space-y-4 p-0'>
             <div className='text-center'>
               <h2 className={`mb-2 text-2xl font-bold ${getThemeClass('textPrimary')}`}>
-                Premium 구독
+                {selectedPlan.name} 플랜
               </h2>
               <div className='mb-4 flex items-end justify-center gap-2'>
-                <span className='bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-5xl font-bold text-transparent'>
-                  $1
+                <span className='bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-4xl font-bold text-transparent'>
+                  ${selectedPlan.price}
                 </span>
-                <span className='mb-2 text-xl text-gray-600'>/월</span>
-              </div>
-              <div className='inline-block rounded-full bg-green-500 px-4 py-1 text-sm font-semibold text-white'>
-                89% 절약 (원가 $9/월)
+                <span className='mb-2 text-lg text-gray-600'>/월</span>
               </div>
             </div>
 
             {/* 혜택 목록 */}
-            <div className='space-y-3'>
-              <h3 className={`font-bold ${getThemeClass('textPrimary')}`}>포함된 혜택:</h3>
-              {[
-                '무제한 프리미엄 기능',
-                '광고 없는 깔끔한 경험',
-                '30일 무료 체험',
-                '우선 고객 지원',
-                '새로운 기능 우선 접근',
-              ].map((benefit, index) => (
+            <div className='space-y-2'>
+              {selectedPlan.features.map((feature, index) => (
                 <div key={index} className='flex items-center gap-3'>
                   <span className='text-lg text-green-500'>✓</span>
-                  <span className={getThemeClass('textSecondary')}>{benefit}</span>
+                  <span className={getThemeClass('textSecondary')}>{feature}</span>
                 </div>
               ))}
             </div>
+          </CardContent>
+        </Card>
 
-            {/* 결제 수단 정보 */}
-            <div className={`rounded-xl ${getThemeClass('muted')} p-4`}>
-              <h3 className={`mb-2 font-bold ${getThemeClass('textPrimary')}`}>결제 수단</h3>
-              <div className='flex items-center gap-3'>
-                <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500 text-white'>
-                  💳
+        {/* 결제 수단 정보 */}
+        <Card className={`rounded-2xl border-0 ${getThemeClass('component')} p-6 shadow-xl`}>
+          <CardContent className='space-y-4 p-0'>
+            <h3 className={`text-lg font-bold ${getThemeClass('textPrimary')}`}>결제 수단</h3>
+            <div className='flex items-center gap-3'>
+              <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500 text-white'>
+                💳
+              </div>
+              <div>
+                <div className={`font-medium ${getThemeClass('textPrimary')}`}>
+                  {paymentMethod.method === 'card' ? '신용/체크카드' : 'PayPal'}
                 </div>
-                <div>
-                  <div className={`font-medium ${getThemeClass('textPrimary')}`}>
-                    {paymentMethod.method === 'card'
-                      ? '신용/체크카드'
-                      : 'PayPal'}
-                  </div>
-                  <div className={`text-sm ${getThemeClass('textSecondary')}`}>
-                    등록일:{' '}
-                    {new Date(paymentMethod.createdAt).toLocaleDateString(
-                      'ko-KR'
-                    )}
-                  </div>
+                <div className={`text-sm ${getThemeClass('textSecondary')}`}>
+                  등록일: {new Date(paymentMethod.createdAt).toLocaleDateString('ko-KR')}
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* 결제 버튼 */}
+        {/* 최종 결제 버튼 */}
         <div className='space-y-4'>
           <Button
             size='lg'
@@ -242,7 +243,7 @@ export default function CheckoutPage() {
               </div>
             ) : (
               <div className='flex items-center justify-center gap-2'>
-                <span>지금 $1로 시작하기</span>
+                <span>지금 ${selectedPlan.price}로 시작하기</span>
                 <span className='text-2xl'>🚀</span>
               </div>
             )}
@@ -256,36 +257,6 @@ export default function CheckoutPage() {
             >
               ← 이전 단계로 돌아가기
             </button>
-          </div>
-        </div>
-
-        {/* 보장 정보 */}
-        <div className={`rounded-2xl ${getThemeClass('component')} p-6 shadow-lg`}>
-          <div className='space-y-3 text-center'>
-            <div className='text-2xl'>🛡️</div>
-            <h3 className={`text-lg font-bold ${getThemeClass('textPrimary')}`}>100% 만족 보장</h3>
-            <div className={`grid gap-4 text-sm ${getThemeClass('textSecondary')} sm:grid-cols-2`}>
-              <div className='flex items-center gap-2'>
-                <span className='text-green-500'>✓</span>
-                <span>30일 무료 체험</span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <span className='text-green-500'>✓</span>
-                <span>언제든 취소 가능</span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <span className='text-green-500'>✓</span>
-                <span>즉시 환불 보장</span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <span className='text-green-500'>✓</span>
-                <span>안전한 결제 처리</span>
-              </div>
-            </div>
-            <p className={`mt-4 text-xs ${getThemeClass('textSecondary')}`}>
-              마음에 들지 않으시면 언제든 취소하세요. 위약금이나 수수료는
-              없습니다.
-            </p>
           </div>
         </div>
       </div>
