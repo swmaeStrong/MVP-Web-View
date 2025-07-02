@@ -7,6 +7,21 @@ import { noAccessTokenCode } from '../errorCode';
 import { removeRscAccess, setRscToken } from './ssrConfig';
 import { BASEURL } from './url';
 
+// 토큰 갱신 설정
+const TOKEN_REFRESH_CONFIG = {
+  MAX_RETRY_COUNT: 1,
+  RETRY_DELAY: 1000, // 1초
+} as const;
+
+// 재시도 카운터를 저장할 WeakMap
+const retryCountMap = new WeakMap<any, number>();
+
+// 토큰 갱신 상태 관리
+let tokenRefreshState = {
+  isRefreshing: false,
+  promise: null as Promise<string | null> | null,
+};
+
 export const API = axios.create({
   baseURL: BASEURL,
   headers: {
@@ -31,9 +46,11 @@ export const removeRccAccess = () => {
   delete FORMAPI.defaults.headers['Authorization'];
 };
 
+
 export const getRccAccess = (): string =>
   `${API.defaults.headers['Authorization']}`;
 
+// 개발 환경의 경우에는 env에 있는 토큰을 사용
 API.interceptors.request.use(config => {
   if (process.env.NODE_ENV === 'development') {
     config.headers['Authorization'] =
@@ -50,86 +67,153 @@ FORMAPI.interceptors.request.use(config => {
   return config;
 });
 
-API.interceptors.response.use(
-  response => response,
-  async error => {
-    // 토큰 관련 에러 처리
-    if (error.response) {
-      const {
-        response: {
-          data: { code },
-        },
-        config,
-      } = error;
-      //Access token 재발급 과정
-      if (noAccessTokenCode.includes(code)) {
-        //  accessToekn이 있는 경우에만 재발급 요청
-        if (API.defaults.headers['Authorization']) {
-          await handleAccessTokenRequest();
-          // 요청 다시 실행 
-          return API.request(config);
-        }
+/**
+ * 토큰 재시도가 필요한 에러인지 확인
+ */
+const isTokenRetryNeeded = (error: any): boolean => {
+  return (
+    error.response &&
+    noAccessTokenCode.includes(error.response.data?.code) &&
+    API.defaults.headers['Authorization']
+  );
+};
+
+/**
+ * 에러 로깅 및 리포팅
+ */
+const logAndReportError = (error: any, instanceName: string) => {
+  const currentUser = useUserStore.getState().currentUser;
+  handleApiError(error, {
+    feature: 'api-request',
+    component: `axios-${instanceName}-interceptor`,
+    userId: currentUser?.id,
+  });
+};
+
+/**
+ * 공통 에러 처리 인터셉터 생성
+ */
+const createTokenRetryInterceptor = (apiInstance: typeof API, instanceName: string) => {
+  return async (error: any) => {
+    if (isTokenRetryNeeded(error)) {
+      const { config } = error;
+      const retryResult = await handleTokenRetry(config, instanceName);
+      
+      if (retryResult.shouldRetry) {
+        return apiInstance.request(config);
       }
     }
 
-    // 통합 에러 핸들러로 전달
-    const currentUser = useUserStore.getState().currentUser;
-    const unifiedError = handleApiError(error, {
-      feature: 'api-request',
-      component: 'axios-interceptor',
-      userId: currentUser?.id,
-    });
-
-    // 원본 에러를 throw (api-utils.ts에서 처리하도록)
+    logAndReportError(error, instanceName);
     throw error;
+  };
+};
+
+/**
+ * 재시도 횟수 처리
+ */
+const handleRetryCount = (config: any, instanceName: string): { canRetry: boolean; currentCount: number } => {
+  const currentRetryCount = retryCountMap.get(config) || 0;
+  
+  if (currentRetryCount >= TOKEN_REFRESH_CONFIG.MAX_RETRY_COUNT) {
+    console.error(`${instanceName} max retry count exceeded (${TOKEN_REFRESH_CONFIG.MAX_RETRY_COUNT})`);
+    retryCountMap.delete(config);
+    removeRccAccess();
+    removeRscAccess();
+    return { canRetry: false, currentCount: currentRetryCount };
   }
+
+  const newCount = currentRetryCount + 1;
+  retryCountMap.set(config, newCount);
+  return { canRetry: true, currentCount: newCount };
+};
+
+/**
+ * 토큰 재시도 로직 처리
+ */
+const handleTokenRetry = async (config: any, instanceName: string): Promise<{ shouldRetry: boolean }> => {
+  const { canRetry, currentCount } = handleRetryCount(config, instanceName);
+  
+  if (!canRetry) {
+    return { shouldRetry: false };
+  }
+
+  console.log(`${instanceName} token refresh attempt ${currentCount}/${TOKEN_REFRESH_CONFIG.MAX_RETRY_COUNT}`);
+  
+  try {
+    const newToken = await handleAccessTokenRequest();
+    
+    if (newToken) {
+      await new Promise(resolve => setTimeout(resolve, TOKEN_REFRESH_CONFIG.RETRY_DELAY));
+      return { shouldRetry: true };
+    } else {
+      console.error(`${instanceName} token refresh failed - no new token received`);
+      retryCountMap.delete(config);
+      return { shouldRetry: false };
+    }
+  } catch (refreshError) {
+    console.error(`${instanceName} token refresh error:`, refreshError);
+    retryCountMap.delete(config);
+    return { shouldRetry: false };
+  }
+};
+
+API.interceptors.response.use(
+  response => response,
+  createTokenRetryInterceptor(API, 'API')
 );
 
 FORMAPI.interceptors.response.use(
   response => response,
-  async error => {
-    // 토큰 관련 에러 처리
-    if (error.response) {
-      const {
-        response: {
-          data: { errorCode },
-        },
-        config,
-      } = error;
-
-      //Access token 재발급 과정
-      if (noAccessTokenCode.includes(errorCode)) {
-        //  accessToekn이 있는 경우에만 재발급 요청
-        if (API.defaults.headers['Authorization']) {
-          await handleAccessTokenRequest();
-          // 요청 다시 실행
-          return FORMAPI.request(config);
-        }
-      }
-    }
-
-    // 통합 에러 핸들러로 전달
-    const currentUser = useUserStore.getState().currentUser;
-    const unifiedError = handleApiError(error, {
-      feature: 'api-request',
-      component: 'axios-form-interceptor',
-      userId: currentUser?.id,
-    });
-
-    // 원본 에러를 throw (api-utils.ts에서 처리하도록)
-    throw error;
-  }
+  createTokenRetryInterceptor(FORMAPI, 'FORMAPI')
 );
 
-const handleAccessTokenRequest = async () => {
-  // 기존 accessToken 삭제
-  removeRccAccess();
-  removeRscAccess();
+/**
+ * 토큰 갱신 요청 처리
+ */
+const handleAccessTokenRequest = async (): Promise<string | null> => {
+  // 이미 토큰 갱신 중이면 대기
+  if (tokenRefreshState.isRefreshing && tokenRefreshState.promise) {
+    console.log('Token refresh already in progress, waiting...');
+    return await tokenRefreshState.promise;
+  }
 
-  // 새로운 accessToken 요청
-  const newAccessToken = await requestTokenFromSwift();
-  if (newAccessToken) {
-    setRccToken(newAccessToken);
-    setRscToken(newAccessToken);
+  // 토큰 갱신 시작
+  tokenRefreshState.isRefreshing = true;
+  tokenRefreshState.promise = performTokenRefresh();
+
+  return await tokenRefreshState.promise;
+};
+
+/**
+ * 실제 토큰 갱신 수행
+ */
+const performTokenRefresh = async (): Promise<string | null> => {
+  try {
+    console.log('Starting token refresh process...');
+    
+    // 기존 토큰 삭제
+    removeRccAccess();
+    removeRscAccess();
+
+    // 새 토큰 요청
+    const newAccessToken = await requestTokenFromSwift();
+    
+    if (newAccessToken) {
+      console.log('New token received, setting up...');
+      setRccToken(newAccessToken);
+      setRscToken(newAccessToken);
+      return newAccessToken;
+    } else {
+      console.error('Failed to get new token from Swift');
+      return null;
+    }
+  } catch (error) {
+    console.error('Error during token refresh:', error);
+    return null;
+  } finally {
+    // 토큰 갱신 상태 초기화
+    tokenRefreshState.isRefreshing = false;
+    tokenRefreshState.promise = null;
   }
 };
