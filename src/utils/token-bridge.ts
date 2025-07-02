@@ -43,7 +43,6 @@ const initializeUserInfo = async () => {
         id: userInfo.userId,
         nickname: userInfo.nickname,
       });
-
       return userInfo;
     } else {
       return null;
@@ -101,7 +100,8 @@ export const requestTokenFromSwift = (): Promise<string | null> => {
 /**
  * 전역 토큰 수신 함수 설정
  * Swift 앱에서 window.initAccessToken(token) 형태로 호출 가능
- */
+*/
+
 if (typeof window !== 'undefined') {
   window.initAccessToken = async function (token: string) {
     try {

@@ -61,13 +61,16 @@ API.interceptors.response.use(
         },
         config,
       } = error;
-
+      console.log('errorCode', errorCode);
       //Access token 재발급 과정
       if (noAccessTokenCode.includes(errorCode)) {
+        console.log('accessToken이 있는 경우에만 재발급 요청');
         //  accessToekn이 있는 경우에만 재발급 요청
         if (API.defaults.headers['Authorization']) {
+          console.log('accessToken이 있는 경우에만 재발급 요청 1');
           await handleAccessTokenRequest();
-          // 요청 다시 실행
+          console.log('accessToken이 있는 경우에만 재발급 요청 2');
+          // 요청 다시 실행 
           return API.request(config);
         }
       }
