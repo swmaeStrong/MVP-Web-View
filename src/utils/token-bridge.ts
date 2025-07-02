@@ -65,21 +65,16 @@ export const requestTokenFromSwift = (): Promise<string | null> => {
     try {
       if (window.webkit?.messageHandlers?.tokenHandler) {
         // Swift 앱에 토큰 요청 메시지 전송
-        console.log('Swift 앱에 토큰 요청 메시지 전송');
         window.webkit.messageHandlers.tokenHandler.postMessage({
           type: 'request_token',
           timestamp: Date.now(),
         });
 
-        console.log('Swift 앱에 토큰 요청 메시지 전송 1');
         // Swift에서 응답을 받기 위한 전역 함수 등록
         window.receiveTokenFromSwift = (accessToken: string) => {
-          console.log('Swift 앱에 토큰 요청 메시지 전송 3');
           resolve(accessToken);
-          console.log('Swift 앱에 토큰 요청 메시지 전송 4');
           delete window.receiveTokenFromSwift;
         };
-        console.log('Swift 앱에 토큰 요청 메시지 전송 2');
 
         // 5초 타임아웃
         setTimeout(() => {
