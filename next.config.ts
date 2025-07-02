@@ -17,8 +17,8 @@ if (isProduction) {
   
   config = withSentryConfig(nextConfig, {
     // Sentry 빌드 플러그인 설정
-    org: process.env.SENTRY_ORG,
-    project: process.env.SENTRY_PROJECT,
+    org: process.env.NEXT_PUBLIC_SENTRY_ORG,
+    project: process.env.NEXT_PUBLIC_SENTRY_PROJECT,
     
     // 소스맵 업로드 설정
     silent: true,
