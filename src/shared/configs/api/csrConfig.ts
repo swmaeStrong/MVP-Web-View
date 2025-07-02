@@ -1,11 +1,11 @@
 import axios from 'axios';
 
+import { useUserStore } from '@/stores/userStore';
+import { handleApiError } from '@/utils/error-handler';
 import { requestTokenFromSwift } from '../../../utils/token-bridge';
 import { noAccessTokenCode } from '../errorCode';
 import { removeRscAccess, setRscToken } from './ssrConfig';
 import { BASEURL } from './url';
-import { handleApiError } from '@/utils/error-handler';
-import { useUserStore } from '@/stores/userStore';
 
 export const API = axios.create({
   baseURL: BASEURL,
@@ -63,7 +63,7 @@ API.interceptors.response.use(
       } = error;
 
       //Access token 재발급 과정
-      if (noAccessTokenCode.includes(errorCode) || error.status === 403) {
+      if (noAccessTokenCode.includes(errorCode)) {
         //  accessToekn이 있는 경우에만 재발급 요청
         if (API.defaults.headers['Authorization']) {
           await handleAccessTokenRequest();
@@ -99,10 +99,13 @@ FORMAPI.interceptors.response.use(
       } = error;
 
       //Access token 재발급 과정
-      if (noAccessTokenCode.includes(errorCode) || error.status === 403) {
-        await handleAccessTokenRequest();
-        // 요청 다시 실행
-        return FORMAPI.request(config);
+      if (noAccessTokenCode.includes(errorCode)) {
+        //  accessToekn이 있는 경우에만 재발급 요청
+        if (API.defaults.headers['Authorization']) {
+          await handleAccessTokenRequest();
+          // 요청 다시 실행
+          return FORMAPI.request(config);
+        }
       }
     }
 
