@@ -103,10 +103,29 @@ const createTokenRetryInterceptor = (apiInstance: typeof API, instanceName: stri
         return apiInstance.request(config);
       }
     }
-
+    redirectToUnauthorized();
     logAndReportError(error, instanceName);
     throw error;
   };
+};
+
+/**
+ * 인증 실패 시 권한 없음 페이지로 리다이렉트
+ */
+const redirectToUnauthorized = () => {
+  try {
+    console.log('Attempting redirect to unauthorized page...');
+    
+    if (typeof window !== 'undefined' && window.location) {
+      console.log('Using window.location.replace for redirect');
+      // replace를 사용하여 브라우저 히스토리에 남기지 않음
+      window.location.replace('/unauthorized');
+    } else {
+      console.warn('Window object not available - cannot redirect');
+    }
+  } catch (error) {
+    console.error('Error during redirect:', error);
+  }
 };
 
 /**
@@ -120,6 +139,11 @@ const handleRetryCount = (config: any, instanceName: string): { canRetry: boolea
     retryCountMap.delete(config);
     removeRccAccess();
     removeRscAccess();
+    
+    // 인증 실패 시 권한 없음 페이지로 리다이렉트
+    console.log('Max retry exceeded - triggering redirect');
+    setTimeout(() => redirectToUnauthorized(), 100); // 비동기 처리
+    
     return { canRetry: false, currentCount: currentRetryCount };
   }
 
@@ -149,11 +173,21 @@ const handleTokenRetry = async (config: any, instanceName: string): Promise<{ sh
     } else {
       console.error(`${instanceName} token refresh failed - no new token received`);
       retryCountMap.delete(config);
+      
+      // 토큰 갱신 실패 시 권한 없음 페이지로 리다이렉트
+      console.log('Token refresh failed - triggering redirect');
+      setTimeout(() => redirectToUnauthorized(), 100); // 비동기 처리
+      
       return { shouldRetry: false };
     }
   } catch (refreshError) {
     console.error(`${instanceName} token refresh error:`, refreshError);
     retryCountMap.delete(config);
+    
+    // 토큰 갱신 에러 시도 권한 없음 페이지로 리다이렉트
+    console.log('Token refresh error - triggering redirect');
+    setTimeout(() => redirectToUnauthorized(), 100); // 비동기 처리
+    
     return { shouldRetry: false };
   }
 };
@@ -206,10 +240,16 @@ const performTokenRefresh = async (): Promise<string | null> => {
       return newAccessToken;
     } else {
       console.error('Failed to get new token from Swift');
+      // Swift에서 토큰을 받지 못한 경우 권한 없음 페이지로 리다이렉트
+      console.log('Swift token request failed - triggering redirect');
+      setTimeout(() => redirectToUnauthorized(), 100); // 비동기 처리
       return null;
     }
   } catch (error) {
     console.error('Error during token refresh:', error);
+    // 토큰 갱신 에러 시 권한 없음 페이지로 리다이렉트
+    console.log('Token refresh process error - triggering redirect');
+    setTimeout(() => redirectToUnauthorized(), 100); // 비동기 처리
     return null;
   } finally {
     // 토큰 갱신 상태 초기화
