@@ -22,23 +22,6 @@ export const getCategoryColor = (category: string): string => {
   return colorConfig?.gradient || categoryColors.Uncategorized.gradient;
 };
 
-// 🎭 Category icon mapping
-export const CATEGORY_ICONS: { [key: string]: string } = {
-  [CATEGORIES.DEVELOPMENT]: '⚡',
-  [CATEGORIES.LLM]: '🤖',
-  [CATEGORIES.DOCUMENTATION]: '📚',
-  [CATEGORIES.DESIGN]: '🎨',
-  [CATEGORIES.COMMUNICATION]: '💬',
-  [CATEGORIES.YOUTUBE]: '📹',
-  [CATEGORIES.SNS]: '📱',
-  [CATEGORIES.UNCATEGORIZED]: '🗂️',
-  [CATEGORIES.ALL]: '🌟',
-};
-
-// 🎯 Get category icon
-export const getCategoryIcon = (category: string): string => {
-  return CATEGORY_ICONS[category] || CATEGORY_ICONS[CATEGORIES.UNCATEGORIZED];
-};
 
 // 📊 Leaderboard categories list
 export const LEADERBOARD_CATEGORIES = [
