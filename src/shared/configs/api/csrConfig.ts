@@ -53,27 +53,19 @@ FORMAPI.interceptors.request.use(config => {
 API.interceptors.response.use(
   response => response,
   async error => {
-    console.log('API.interceptors.response.use');
-    console.log(' 11 error', error);
     // 토큰 관련 에러 처리
     if (error.response) {
-      console.log(error.response);
-      console.log(' 11 error.response');
       const {
         response: {
           data: { code },
         },
         config,
       } = error;
-      console.log('code', code);
       //Access token 재발급 과정
       if (noAccessTokenCode.includes(code)) {
-        console.log('accessToken이 있는 경우에만 재발급 요청');
         //  accessToekn이 있는 경우에만 재발급 요청
         if (API.defaults.headers['Authorization']) {
-          console.log('accessToken이 있는 경우에만 재발급 요청 1');
           await handleAccessTokenRequest();
-          console.log('accessToken이 있는 경우에만 재발급 요청 2');
           // 요청 다시 실행 
           return API.request(config);
         }
