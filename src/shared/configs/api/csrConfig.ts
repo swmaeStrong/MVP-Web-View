@@ -63,8 +63,7 @@ FORMAPI.interceptors.request.use(config => {
 const isTokenRetryNeeded = (error: any): boolean => {
   return (
     error.response &&
-    noAccessTokenCode.includes(error.response.data?.code) &&
-    API.defaults.headers['Authorization']
+    noAccessTokenCode.includes(error.response.data?.code)
   );
 };
 
