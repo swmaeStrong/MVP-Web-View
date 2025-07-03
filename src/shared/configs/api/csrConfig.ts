@@ -113,19 +113,19 @@ const createTokenRetryInterceptor = (apiInstance: typeof API, instanceName: stri
  * 인증 실패 시 권한 없음 페이지로 리다이렉트
  */
 const redirectToUnauthorized = () => {
-  // try {
-  //   console.log('Attempting redirect to unauthorized page...');
+  try {
+    console.log('Attempting redirect to unauthorized page...');
     
-  //   if (typeof window !== 'undefined' && window.location) {
-  //     console.log('Using window.location.replace for redirect');
-  //     // replace를 사용하여 브라우저 히스토리에 남기지 않음
-  //     window.location.replace('/unauthorized');
-  //   } else {
-  //     console.warn('Window object not available - cannot redirect');
-  //   }
-  // } catch (error) {
-  //   console.error('Error during redirect:', error);
-  // }
+    if (typeof window !== 'undefined' && window.location) {
+      console.log('Using window.location.replace for redirect');
+      // replace를 사용하여 브라우저 히스토리에 남기지 않음
+      window.location.replace('/unauthorized');
+    } else {
+      console.warn('Window object not available - cannot redirect');
+    }
+  } catch (error) {
+    console.error('Error during redirect:', error);
+  }
 };
 
 /**
