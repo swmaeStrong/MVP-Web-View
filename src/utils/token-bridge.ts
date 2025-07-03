@@ -35,6 +35,7 @@ const initializeTheme = () => {
  */
 const initializeUserInfo = async () => {
   try {
+    console.log('initializeUserInfo');
     const userInfo = await getUserInfo();
 
     if (userInfo && userInfo.userId && userInfo.nickname) {
@@ -45,6 +46,7 @@ const initializeUserInfo = async () => {
       });
       return userInfo;
     } else {
+      console.log('initializeUserInfo', userInfo);
       return null;
     }
   } catch (error) {
@@ -65,19 +67,22 @@ export const requestTokenFromSwift = (): Promise<string | null> => {
     try {
       if (window.webkit?.messageHandlers?.tokenHandler) {
         // Swift 앱에 토큰 요청 메시지 전송
+        console.log('requestTokenFromSwift', window.webkit.messageHandlers.tokenHandler);
         window.webkit.messageHandlers.tokenHandler.postMessage({
           type: 'request_token',
           timestamp: Date.now(),
         });
-
+        console.log('requestTokenFromSwift', window.webkit.messageHandlers.tokenHandler);
         // Swift에서 응답을 받기 위한 전역 함수 등록
         window.receiveTokenFromSwift = (accessToken: string) => {
+          console.log('receiveTokenFromSwift', accessToken);
           resolve(accessToken);
           delete window.receiveTokenFromSwift;
         };
 
         // 5초 타임아웃
         setTimeout(() => {
+          console.log('receiveTokenFromSwift', window.receiveTokenFromSwift);
           if (window.receiveTokenFromSwift) {
             delete window.receiveTokenFromSwift;
             resolve(null);
