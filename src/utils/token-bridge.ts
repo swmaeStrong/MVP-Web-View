@@ -98,7 +98,10 @@ export const requestTokenFromSwift = (): Promise<string | null> => {
 */
 
 if (typeof window !== 'undefined') {
-  window.initAccessToken = async function (token: string) {
+  window.initAccessToken = async function (token: string | null) {
+    if (!token) {
+      return;
+    }
     try {
       // API 인스턴스에 토큰 설정
       await setRccToken(token);
