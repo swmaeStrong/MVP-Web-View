@@ -230,7 +230,10 @@ export default function TimelineChart({
   // 카테고리별 범례 데이터 생성
   const legendData = useMemo(() => {
     const categories = convertedSchedules.reduce((acc, schedule) => {
-      if (schedule.mergedCategory && !acc.some(item => item.category === schedule.mergedCategory)) {
+      if (schedule.mergedCategory && 
+          !acc.some(item => item.category === schedule.mergedCategory) &&
+          schedule.mergedCategory !== 'meetings' && 
+          schedule.mergedCategory !== 'others') {
         const colorInfo = getCategoryColor(schedule.mergedCategory);
         acc.push({
           category: schedule.mergedCategory,
