@@ -495,6 +495,46 @@ body.dark ::-webkit-scrollbar-thumb:hover,
   background: #4b5563 !important;
 }
 
+/* 웹뷰에서 스크롤바 숨기기 - 강제 적용 */
+.scrollbar-hide {
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none !important;  /* Chrome, Safari, Opera */
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
+}
+
+/* 웹뷰 환경에서 스크롤바 완전 숨기기 */
+html .scrollbar-hide::-webkit-scrollbar,
+body .scrollbar-hide::-webkit-scrollbar,
+div.scrollbar-hide::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
+}
+
+/* 타임라인과 활동 목록에서 스크롤바 숨기기 */
+.timeline-scroll-hide::-webkit-scrollbar,
+.activity-scroll-hide::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+}
+
+.timeline-scroll-hide {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.activity-scroll-hide {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
 
 /* 티어별 글로우 애니메이션 */
 @keyframes challenger-glow {

@@ -325,9 +325,7 @@ export default function TimelineChart({
           <div 
             className={cn(
               "w-full overflow-x-auto",
-              "scrollbar-thin",
-              isDarkMode ? "scrollbar-thumb-gray-600 scrollbar-track-gray-800" : "scrollbar-thumb-gray-400 scrollbar-track-gray-200",
-              "hover:scrollbar-thumb-gray-500"
+              "timeline-scroll-hide"
             )}
             ref={scrollContainerRef}
             onScroll={(e) => {

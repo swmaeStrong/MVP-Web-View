@@ -142,9 +142,7 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
           <div 
             className={cn(
               "flex-1 overflow-y-auto overflow-x-hidden space-y-2 pr-2 min-h-0 max-h-[525px]",
-              "scrollbar-thin",
-              isDarkMode ? "scrollbar-thumb-gray-600 scrollbar-track-gray-800" : "scrollbar-thumb-gray-400 scrollbar-track-gray-200",
-              "hover:scrollbar-thumb-gray-500"
+              "activity-scroll-hide"
             )}
           >
             {usageData.map((activity, index) => (
