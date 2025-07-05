@@ -8,6 +8,7 @@ import { getRecentUsageLog } from '@/shared/api/get';
 import { cardSystem, componentStates, spacing } from '@/styles/design-system';
 import { Activity, RotateCcw } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { cn } from '@/shadcn/lib/utils';
 import NoData from '../common/NoData';
 
 interface ActivityListProps {
@@ -19,7 +20,7 @@ interface ActivityListProps {
 
 
 export default function ActivityList({ activities, date }: ActivityListProps) {
-  const { getThemeClass, getThemeTextColor } = useTheme();
+  const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
   const { getCardStyle } = useDesignSystem();
   
   const [usageData, setUsageData] = useState<UsageLog.RecentUsageLogItem[]>([]);
@@ -139,7 +140,12 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
         ) : (
           /* 스크롤 가능한 활동 목록 */
           <div 
-            className="flex-1 overflow-y-auto overflow-x-hidden space-y-2 pr-2 min-h-0 max-h-[525px]"
+            className={cn(
+              "flex-1 overflow-y-auto overflow-x-hidden space-y-2 pr-2 min-h-0 max-h-[525px]",
+              "scrollbar-thin",
+              isDarkMode ? "scrollbar-thumb-gray-600 scrollbar-track-gray-800" : "scrollbar-thumb-gray-400 scrollbar-track-gray-200",
+              "hover:scrollbar-thumb-gray-500"
+            )}
           >
             {usageData.map((activity, index) => (
             <div
