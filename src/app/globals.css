@@ -407,7 +407,28 @@ p {
   scrollbar-color: #4a4a4a #1f1f1f;
 }
 
-/* 웹뷰에서 더 강력한 스크롤바 스타일 적용 (다크 모드만) */
+/* 웹뷰에서 더 강력한 스크롤바 스타일 적용 */
+/* 라이트 모드 */
+html ::-webkit-scrollbar-track,
+body ::-webkit-scrollbar-track,
+div ::-webkit-scrollbar-track {
+  background: #f1f1f1 !important;
+}
+
+html ::-webkit-scrollbar-thumb,
+body ::-webkit-scrollbar-thumb,
+div ::-webkit-scrollbar-thumb {
+  background: #c1c1c1 !important;
+  border: 1px solid #f1f1f1 !important;
+}
+
+html ::-webkit-scrollbar-thumb:hover,
+body ::-webkit-scrollbar-thumb:hover,
+div ::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1 !important;
+}
+
+/* 다크 모드 */
 html.dark ::-webkit-scrollbar-track,
 body.dark ::-webkit-scrollbar-track,
 .dark div ::-webkit-scrollbar-track {
@@ -429,32 +450,49 @@ body.dark ::-webkit-scrollbar-thumb:hover,
 
 /* 커스텀 스크롤바 클래스 */
 .scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 6px !important;
+  height: 6px !important;
 }
 
 .scrollbar-thumb-gray-400::-webkit-scrollbar-thumb {
-  background: #9ca3af;
-  border-radius: 4px;
+  background: #9ca3af !important;
+  border-radius: 4px !important;
 }
 
 .scrollbar-thumb-gray-600::-webkit-scrollbar-thumb {
-  background: #4b5563;
-  border-radius: 4px;
+  background: #4b5563 !important;
+  border-radius: 4px !important;
 }
 
 .scrollbar-track-gray-200::-webkit-scrollbar-track {
-  background: #e5e7eb;
-  border-radius: 4px;
+  background: #e5e7eb !important;
+  border-radius: 4px !important;
 }
 
 .scrollbar-track-gray-800::-webkit-scrollbar-track {
-  background: #1f2937;
-  border-radius: 4px;
+  background: #1f2937 !important;
+  border-radius: 4px !important;
 }
 
 .hover\:scrollbar-thumb-gray-500:hover::-webkit-scrollbar-thumb {
-  background: #6b7280;
+  background: #6b7280 !important;
+}
+
+/* 웹뷰에서 Timeline 컴포넌트의 스크롤바 강제 적용 */
+.scrollbar-thin.scrollbar-track-gray-200::-webkit-scrollbar-track {
+  background: #e5e7eb !important;
+}
+
+.scrollbar-thin.scrollbar-track-gray-800::-webkit-scrollbar-track {
+  background: #1f2937 !important;
+}
+
+.scrollbar-thin.scrollbar-thumb-gray-400::-webkit-scrollbar-thumb {
+  background: #9ca3af !important;
+}
+
+.scrollbar-thin.scrollbar-thumb-gray-600::-webkit-scrollbar-thumb {
+  background: #4b5563 !important;
 }
 
 
