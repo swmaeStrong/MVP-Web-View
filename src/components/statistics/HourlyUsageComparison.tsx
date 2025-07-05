@@ -138,9 +138,17 @@ export default function HourlyUsageComparison({
     const percentage =
       total > 0 ? Math.round((categoryValue / total) * 100) : 0;
 
+    // Format time range based on binSize
+    const startTime = label;
+    const [hours, minutes] = startTime.split(':').map(Number);
+    const endHours = hours + Math.floor((minutes + selectedBinSize) / 60);
+    const endMinutes = (minutes + selectedBinSize) % 60;
+    const endTime = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
+    const timeRange = `${startTime} - ${endTime}`;
+
     return (
       <div className={`z-50 rounded-lg border-2 p-3 shadow-xl backdrop-blur-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
-        <div className={`mb-2 font-medium ${getThemeTextColor('primary')}`}>{label}</div>
+        <div className={`mb-2 font-medium ${getThemeTextColor('primary')}`}>{timeRange}</div>
         {selectedCategory && (
           <div className='space-y-1 text-sm'>
             <div className={`font-medium ${getThemeTextColor('accent')}`}>
