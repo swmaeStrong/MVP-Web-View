@@ -46,7 +46,6 @@ const initializeUserInfo = async () => {
       });
       return userInfo;
     } else {
-      console.log('initializeUserInfo', userInfo);
       return null;
     }
   } catch (error) {
