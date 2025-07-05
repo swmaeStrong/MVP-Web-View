@@ -5,7 +5,7 @@ import { cn } from '@/shadcn/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import { cardSystem, componentStates, spacing } from '@/styles/design-system';
 import { Activity } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import NoData from '../common/NoData';
 
 interface ScheduleItem {
@@ -31,19 +31,88 @@ interface TimelineChartProps {
   }>;
   date?: string;
   isLoading?: boolean;
+  viewHours?: number; // Number of hours to display at once (default: 4)
+  startHour?: number; // Starting hour of the view (default: 0)
 }
 
-export default function TimelineChart({ schedules, timelineData, date, isLoading }: TimelineChartProps) {
+export default function TimelineChart({ 
+  schedules, 
+  timelineData, 
+  date, 
+  isLoading,
+  viewHours = 4,
+  startHour = 0 
+}: TimelineChartProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
 
-  // 0:00-24:00 time range (1-hour intervals) - expanded to full day
-  const timeHours = useMemo(() => {
+  // Get current hour for initial position
+  const currentHour = new Date().getHours();
+  const initialPosition = Math.max(0, Math.min(24 - viewHours, currentHour - Math.floor(viewHours / 2)));
+  
+  // State for scroll position
+  const [scrollPosition, setScrollPosition] = useState(initialPosition);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  
+  // Mouse drag states
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, scrollLeft: 0 });
+
+  // Calculate visible hours based on scroll position
+  const visibleHours = useMemo(() => {
+    const hours = [];
+    const start = Math.max(0, scrollPosition);
+    const end = Math.min(24, scrollPosition + viewHours);
+    for (let i = start; i <= end; i++) {
+      hours.push(i);
+    }
+    return hours;
+  }, [scrollPosition, viewHours]);
+
+  // Full 24-hour range for calculations
+  const fullDayHours = useMemo(() => {
     const hours = [];
     for (let i = 0; i <= 24; i++) {
       hours.push(i);
     }
     return hours;
   }, []);
+
+  // Set initial scroll position when component mounts
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const scrollPercentage = scrollPosition / (24 - viewHours);
+      const scrollLeft = scrollPercentage * (scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth);
+      scrollContainerRef.current.scrollLeft = scrollLeft;
+    }
+  }, []);
+
+  // Mouse drag handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollContainerRef.current) return;
+    
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX,
+      scrollLeft: scrollContainerRef.current.scrollLeft
+    });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollContainerRef.current) return;
+    
+    e.preventDefault();
+    const deltaX = e.clientX - dragStart.x;
+    scrollContainerRef.current.scrollLeft = dragStart.scrollLeft - deltaX;
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
 
   // Function to convert time to minutes (HH:MM format or ISO string)
   const timeToMinutes = (time: string): number => {
@@ -77,7 +146,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
     const timelineColors = {
       dark: {
         // 업무 카테고리 - 퍼플 그라데이션 계열
-        'work': { color: '#17153B', type: 'primary' as const }, // 다크 네이비
+        'work': { color: '#2E236C', type: 'primary' as const }, // 다크 네이비
         'DEVELOPMENT': { color: '#433D8B', type: 'primary' as const }, // 미드 퍼플
         'Documentation': { color: '#C8ACD6', type: 'primary' as const }, // 라이트 퍼플
         'Design': { color: '#433D8B', type: 'primary' as const }, // 미드 퍼플
@@ -85,7 +154,7 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
         'Learning': { color: '#C8ACD6', type: 'primary' as const }, // 라이트 퍼플
         
         // 회의/커뮤니케이션 - 퍼플 계열 (업무와 비슷한 톤)
-        'meetings': { color: '#433D8B', type: 'primary' as const }, // 미드 퍼플
+        'meetings': { color: '#2E236C', type: 'primary' as const }, // 미드 퍼플
         'Communication': { color: '#C8ACD6', type: 'primary' as const }, // 라이트 퍼플
         
         // 휴식/오락 - 다크 계열 (대비되는 쿨톤)
@@ -244,9 +313,35 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
           </div>
         ) : (
         <div className="relative">
-          <div className="w-full">
-            {/* Timeline bar */}
-            <div className="relative mb-2">
+          {/* Current time range indicator */}
+          <div className={cn('text-center text-sm font-medium mb-2', getThemeTextColor('secondary'))}>
+            {`${scrollPosition.toString().padStart(2, '0')}:00 - ${Math.min(24, scrollPosition + viewHours).toString().padStart(2, '0')}:00`}
+          </div>
+
+          {/* Scrollable timeline container */}
+          <div 
+            className={cn(
+              "w-full overflow-x-auto",
+              "scrollbar-thin",
+              isDarkMode ? "scrollbar-thumb-gray-600 scrollbar-track-gray-800" : "scrollbar-thumb-gray-400 scrollbar-track-gray-200",
+              "hover:scrollbar-thumb-gray-500"
+            )}
+            ref={scrollContainerRef}
+            onScroll={(e) => {
+              const scrollLeft = e.currentTarget.scrollLeft;
+              const scrollWidth = e.currentTarget.scrollWidth - e.currentTarget.clientWidth;
+              const scrollPercentage = scrollLeft / scrollWidth;
+              const newPosition = Math.round(scrollPercentage * (24 - viewHours));
+              setScrollPosition(newPosition);
+            }}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
+          >
+            <div className="relative" style={{ width: `${(24 / viewHours) * 100}%` }}>
+              {/* Timeline bar */}
+              <div className="relative mb-2">
               {/* 배경 바 (어두운 배경) */}
               <div className={cn(
                 'w-full h-16 lg:h-20 relative overflow-hidden rounded-sm shadow-inner',
@@ -254,26 +349,26 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
                 'border-2',
                 getThemeClass('border')
               )}>
-                {/* Time grid lines (1-hour intervals) */}
-                <div className="absolute inset-0 flex">
-                  {timeHours.slice(0, -1).map((hour, index) => (
-                    <div
-                      key={hour}
-                      className={cn('flex-1 border-r', getThemeClass('border'))}
-                    />
-                  ))}
-                </div>
+                  {/* Time grid lines (1-hour intervals) - for full 24 hours */}
+                  <div className="absolute inset-0 flex">
+                    {fullDayHours.slice(0, -1).map((hour, index) => (
+                      <div
+                        key={hour}
+                        className={cn('flex-1 border-r', getThemeClass('border'))}
+                      />
+                    ))}
+                  </div>
 
-                {/* Activity blocks */}
-                {convertedSchedules.map((schedule, index) => {
-                  const startMinutes = timeToMinutes(schedule.startTime);
-                  const endMinutes = timeToMinutes(schedule.endTime);
-                  const timelineStart = 0 * 60; // 0:00 (0분)
-                  const timelineEnd = 24 * 60; // 24:00 (1440분)
-                  const timelineWidth = timelineEnd - timelineStart; // 1440분
+                  {/* Activity blocks - for full 24 hours */}
+                  {convertedSchedules.map((schedule, index) => {
+                    const startMinutes = timeToMinutes(schedule.startTime);
+                    const endMinutes = timeToMinutes(schedule.endTime);
+                    const timelineStart = 0 * 60; // 0:00
+                    const timelineEnd = 24 * 60; // 24:00
+                    const timelineWidth = timelineEnd - timelineStart;
 
-                  const left = ((startMinutes - timelineStart) / timelineWidth) * 100;
-                  const width = ((endMinutes - startMinutes) / timelineWidth) * 100;
+                    const left = ((startMinutes - timelineStart) / timelineWidth) * 100;
+                    const width = ((endMinutes - startMinutes) / timelineWidth) * 100;
 
                   const category = schedule.mergedCategory || 'others';
                   const colorInfo = getCategoryColor(category);
@@ -305,24 +400,23 @@ export default function TimelineChart({ schedules, timelineData, date, isLoading
               </div>
             </div>
 
-            {/* Time labels (bottom) */}
-            <div className="relative">
-              <div className="flex justify-between">
-                {timeHours.map((hour, index) => (
-                  <div
-                    key={hour}
-                    className={cn(
-                      'text-center text-xs lg:text-sm font-medium',
-                      getThemeTextColor('secondary'),
-                      // Show every 4 hours on small screens, every 2 hours on large screens
-                      'lg:block',
-                      index % 4 === 0 ? 'block' : 'hidden lg:block',
-                      index % 2 !== 0 ? 'lg:hidden' : ''
-                    )}
-                  >
-                    {hour === 24 ? '24:00' : `${hour.toString().padStart(2, '0')}:00`}
-                  </div>
-                ))}
+              {/* Time labels (bottom) - for full 24 hours */}
+              <div className="relative">
+                <div className="flex justify-between">
+                  {fullDayHours.map((hour, index) => (
+                    <div
+                      key={hour}
+                      className={cn(
+                        'text-center text-xs lg:text-sm font-medium',
+                        getThemeTextColor('secondary'),
+                        // Show every hour on the expanded timeline
+                        'block'
+                      )}
+                    >
+                      {hour === 24 ? '24:00' : `${hour.toString().padStart(2, '0')}:00`}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
