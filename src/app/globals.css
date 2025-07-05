@@ -400,39 +400,61 @@ p {
 /* 웹뷰를 위한 추가 스크롤바 스타일 (Firefox) */
 * {
   scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+.dark * {
   scrollbar-color: #4a4a4a #1f1f1f;
 }
 
-/* 강제 다크모드 스크롤바 (모든 상황에서 적용) */
-html.dark,
-html.dark *,
-body.dark,
-body.dark *,
-html,
-html *,
-body,
-body * {
-  scrollbar-color: #4a4a4a #1f1f1f !important;
-}
-
-/* 웹뷰에서 더 강력한 스크롤바 스타일 적용 */
-html ::-webkit-scrollbar-track,
-body ::-webkit-scrollbar-track,
-div ::-webkit-scrollbar-track {
+/* 웹뷰에서 더 강력한 스크롤바 스타일 적용 (다크 모드만) */
+html.dark ::-webkit-scrollbar-track,
+body.dark ::-webkit-scrollbar-track,
+.dark div ::-webkit-scrollbar-track {
   background: #1f1f1f !important;
 }
 
-html ::-webkit-scrollbar-thumb,
-body ::-webkit-scrollbar-thumb,
-div ::-webkit-scrollbar-thumb {
+html.dark ::-webkit-scrollbar-thumb,
+body.dark ::-webkit-scrollbar-thumb,
+.dark div ::-webkit-scrollbar-thumb {
   background: #4a4a4a !important;
   border: 1px solid #1f1f1f !important;
 }
 
-html ::-webkit-scrollbar-thumb:hover,
-body ::-webkit-scrollbar-thumb:hover,
-div ::-webkit-scrollbar-thumb:hover {
+html.dark ::-webkit-scrollbar-thumb:hover,
+body.dark ::-webkit-scrollbar-thumb:hover,
+.dark div ::-webkit-scrollbar-thumb:hover {
   background: #5a5a5a !important;
+}
+
+/* 커스텀 스크롤바 클래스 */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thumb-gray-400::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 4px;
+}
+
+.scrollbar-thumb-gray-600::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+.scrollbar-track-gray-200::-webkit-scrollbar-track {
+  background: #e5e7eb;
+  border-radius: 4px;
+}
+
+.scrollbar-track-gray-800::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 4px;
+}
+
+.hover\:scrollbar-thumb-gray-500:hover::-webkit-scrollbar-thumb {
+  background: #6b7280;
 }
 
 
