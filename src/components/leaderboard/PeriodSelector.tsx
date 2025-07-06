@@ -124,7 +124,7 @@ export default function PeriodSelector({
             <button
               className={
                 canGoPrevious()
-                  ? `h-8 w-8 rounded-lg text-sm p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:border-purple-300 hover:bg-purple-50 dark:hover:border-purple-600 dark:hover:bg-purple-900/20`
+                  ? `h-8 w-8 rounded-lg text-sm p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('backgroundSecondary')}`
                   : `h-8 w-8 cursor-not-allowed rounded-lg text-sm p-0 border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')} opacity-50`
               }
               onClick={handlePreviousDate}
@@ -135,7 +135,7 @@ export default function PeriodSelector({
             <button
               className={
                 canGoNext()
-                  ? `h-8 w-8 rounded-lg text-sm p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:border-purple-300 hover:bg-purple-50 dark:hover:border-purple-600 dark:hover:bg-purple-900/20`
+                  ? `h-8 w-8 rounded-lg text-sm p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('backgroundSecondary')}`
                   : `h-8 w-8 cursor-not-allowed rounded-lg text-sm p-0 border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')} opacity-50`
               }
               onClick={handleNextDate}
@@ -148,7 +148,7 @@ export default function PeriodSelector({
 
         {/* 현재 선택된 기간 표시 */}
         <div className='flex justify-center'>
-          <div className={`inline-block rounded-lg px-4 py-2 border-2 ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')}`}>
+          <div className={`inline-block rounded-lg px-4 py-2 border ${getThemeClass('border')} ${getThemeClass('component')}`}>
             <span className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
               {getPeriodLabel()}
             </span>
