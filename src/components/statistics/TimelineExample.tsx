@@ -77,15 +77,9 @@ const sampleSchedules = [
 ];
 
 export default function TimelineExample() {
-  const today = new Date().toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  });
-
   return (
     <div className="p-4">
-      <TimelineChart schedules={sampleSchedules} date={today} />
+      <TimelineChart schedules={sampleSchedules}/>
     </div>
   );
 }
