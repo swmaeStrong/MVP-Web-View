@@ -18,7 +18,7 @@ import {
 } from '@/shadcn/ui/select';
 import { getKSTDateString } from '@/utils/timezone';
 import { Activity } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import {
   Bar,
   BarChart,
@@ -103,6 +103,22 @@ export default function HourlyUsageComparison({
 
   const currentDate = date || getKSTDateString();
 
+  // Memoize CSS classes to avoid recreating strings on every render
+  const cssClasses = useMemo(() => ({
+    card: `rounded-lg border-2 shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`,
+    cardTitle: `flex items-center gap-2 text-lg font-semibold ${getThemeTextColor('primary')}`,
+    labelText: `text-xs ${getThemeTextColor('secondary')}`,
+    selectTrigger: `h-8 w-[70px] lg:w-[80px] text-xs border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('componentSecondary')}`,
+    toggleContainer: `flex items-center rounded-lg p-1 ${getThemeClass('componentSecondary')}`,
+    categoryInfo: `mt-4 grid grid-cols-2 gap-2 lg:gap-4 rounded-lg border-2 p-3 lg:p-4 ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`,
+    tooltipContainer: `z-50 rounded-lg border-2 p-3 shadow-xl backdrop-blur-sm ${getThemeClass('border')} ${getThemeClass('component')}`,
+    button: {
+      base: 'rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-200',
+      active: `${getThemeClass('component')} ${getThemeTextColor('accent')} shadow-sm`,
+      inactive: `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
+    }
+  }), [getThemeClass, getThemeTextColor]);
+
   // Query hourly usage data
   const {
     data: hourlyData,
@@ -111,50 +127,50 @@ export default function HourlyUsageComparison({
     refetch,
   } = useHourlyUsage(currentDate, userId, selectedBinSize);
 
-  // Process chart data and validate
+  // Process chart data and validate - optimized
   const { chartData, dataValidation } = useMemo(() => {
-    if (!hourlyData) return { chartData: [], dataValidation: { isValid: false, reason: 'no-data' } };
+    if (!hourlyData || hourlyData.length === 0) {
+      return { chartData: [], dataValidation: { isValid: false, reason: 'no-data' } };
+    }
 
-    // Group by time periods
-    const hourlyMap = new Map<
-      string,
-      { total: number; categories: Record<string, number> }
-    >();
+    // Use object instead of Map for better performance with small datasets
+    const hourlyMap: Record<string, { total: number; categories: Record<string, number> }> = {};
 
-    hourlyData.forEach(item => {
+    // Single pass through data
+    for (const item of hourlyData) {
       const hour = item.hour;
-      if (!hourlyMap.has(hour)) {
-        hourlyMap.set(hour, { total: 0, categories: {} });
+      if (!hourlyMap[hour]) {
+        hourlyMap[hour] = { total: 0, categories: {} };
       }
 
-      const hourData = hourlyMap.get(hour)!;
+      const hourData = hourlyMap[hour];
       hourData.total += item.totalDuration;
-      hourData.categories[item.category] =
-        (hourData.categories[item.category] || 0) + item.totalDuration;
-    });
+      hourData.categories[item.category] = (hourData.categories[item.category] || 0) + item.totalDuration;
+    }
 
-    // Convert to chart data
-    const processedData = Array.from(hourlyMap.entries())
-      .map(([hour, data]) => ({
-        hour,
-        hourDisplay: hour.split('T')[1]?.substring(0, 5) || hour, // Extract time part only (HH:MM)
-        total: data.total,
-        category: selectedCategory ? data.categories[selectedCategory] || 0 : 0,
-        ...data.categories,
-      }))
+    // Convert to chart data with single pass
+    const processedData = Object.entries(hourlyMap)
+      .map(([hour, data]) => {
+        const hourDisplay = hour.includes('T') ? hour.split('T')[1].substring(0, 5) : hour;
+        const categoryValue = selectedCategory ? (data.categories[selectedCategory] || 0) : 0;
+        
+        return {
+          hour,
+          hourDisplay,
+          total: data.total,
+          category: categoryValue,
+          ...data.categories,
+        };
+      })
       .sort((a, b) => a.hour.localeCompare(b.hour));
 
-    // Data validation
+    // Quick validation
     const dataPointsCount = processedData.length;
-    const hasMinimumDataPoints = dataPointsCount >= 4; // Need at least 4 time periods
-
-    let validation = { isValid: true, reason: '' };
-    
-    if (dataPointsCount === 0) {
-      validation = { isValid: false, reason: 'no-data' };
-    } else if (!hasMinimumDataPoints) {
-      validation = { isValid: false, reason: 'insufficient-points' };
-    }
+    const validation = dataPointsCount === 0 
+      ? { isValid: false, reason: 'no-data' }
+      : dataPointsCount < 4 
+        ? { isValid: false, reason: 'insufficient-points' }
+        : { isValid: true, reason: '' };
 
     return { chartData: processedData, dataValidation: validation };
   }, [hourlyData, selectedCategory]);
@@ -174,15 +190,14 @@ export default function HourlyUsageComparison({
   // Get Y-axis ticks based on binSize
   const yAxisTicks = useMemo(() => generateYAxisTicks(maxValue, selectedBinSize), [maxValue, selectedBinSize]);
 
-  // Custom tooltip component
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  // Memoized Custom tooltip component
+  const CustomTooltip = useCallback(({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null;
 
     const data = payload[0]?.payload;
     const total = data?.total || 0;
     const categoryValue = data?.category || 0;
-    const percentage =
-      total > 0 ? Math.round((categoryValue / total) * 100) : 0;
+    const percentage = total > 0 ? Math.round((categoryValue / total) * 100) : 0;
 
     // Format time range based on binSize
     const startTime = label;
@@ -193,7 +208,7 @@ export default function HourlyUsageComparison({
     const timeRange = `${startTime} - ${endTime}`;
 
     return (
-      <div className={`z-50 rounded-lg border-2 p-3 shadow-xl backdrop-blur-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <div className={cssClasses.tooltipContainer}>
         <div className={`mb-2 font-medium ${getThemeTextColor('primary')}`}>{timeRange}</div>
         {selectedCategory && (
           <div className='space-y-1 text-sm'>
@@ -215,7 +230,7 @@ export default function HourlyUsageComparison({
         )}
       </div>
     );
-  };
+  }, [selectedBinSize, selectedCategory, cssClasses.tooltipContainer, getThemeTextColor]);
 
   // Available categories list
   const availableCategories = useMemo(() => {
@@ -275,12 +290,12 @@ export default function HourlyUsageComparison({
 
   return (
     <div className='w-full'>
-      <Card className={`rounded-lg border-2 shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <Card className={cssClasses.card}>
         <CardHeader className='pb-3'>
           <div className='space-y-3'>
             {/* 상단: 제목과 단위/비교 선택 */}
             <div className='flex items-center justify-between'>
-              <CardTitle className={`flex items-center gap-2 text-lg font-semibold ${getThemeTextColor('primary')}`}>
+              <CardTitle className={cssClasses.cardTitle}>
                 Hourly Usage
               </CardTitle>
               
@@ -288,12 +303,12 @@ export default function HourlyUsageComparison({
               <div className='flex items-center gap-3'>
               {/* 시간 단위 */}
               <div className='flex items-center gap-1 lg:gap-2'>
-                <span className={`text-xs ${getThemeTextColor('secondary')}`}>Unit</span>
+                <span className={cssClasses.labelText}>Unit</span>
                 <Select
                   value={selectedBinSize.toString()}
                   onValueChange={value => setSelectedBinSize(parseInt(value))}
                 >
-                  <SelectTrigger className={`h-8 w-[70px] lg:w-[80px] text-xs border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('componentSecondary')}`}>
+                  <SelectTrigger className={cssClasses.selectTrigger}>
                     <SelectValue placeholder="선택" />
                   </SelectTrigger>
                   <SelectContent>
@@ -311,7 +326,7 @@ export default function HourlyUsageComparison({
 
               {/* 카테고리 선택 */}
               <div className='flex items-center gap-1 lg:gap-2'>
-                <span className={`text-xs ${getThemeTextColor('secondary')}`}>Compare</span>
+                <span className={cssClasses.labelText}>Compare</span>
                 <Select
                   value={selectedCategory || 'all'}
                   onValueChange={value =>
@@ -336,22 +351,18 @@ export default function HourlyUsageComparison({
             
             {/* 하단: 차트 타입 토글 */}
             <div className='flex items-center'>
-              <div className={`flex items-center rounded-lg p-1 ${getThemeClass('componentSecondary')}`}>
+              <div className={cssClasses.toggleContainer}>
               <button
-                  className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-200 ${
-                    chartType === 'line'
-                      ? `${getThemeClass('component')} ${getThemeTextColor('accent')} shadow-sm`
-                      : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
+                  className={`${cssClasses.button.base} ${
+                    chartType === 'line' ? cssClasses.button.active : cssClasses.button.inactive
                   }`}
                   onClick={() => setChartType('line')}
                 >
                   Line
                 </button>
                 <button
-                  className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-200 ${
-                    chartType === 'bar'
-                      ? `${getThemeClass('component')} ${getThemeTextColor('accent')} shadow-sm`
-                      : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
+                  className={`${cssClasses.button.base} ${
+                    chartType === 'bar' ? cssClasses.button.active : cssClasses.button.inactive
                   }`}
                   onClick={() => setChartType('bar')}
                 >
@@ -481,7 +492,7 @@ export default function HourlyUsageComparison({
 
           {/* 요약 정보 */}
           {selectedCategory && (
-            <div className={`mt-4 grid grid-cols-2 gap-2 lg:gap-4 rounded-lg border-2 p-3 lg:p-4 ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
+            <div className={cssClasses.categoryInfo}>
               <div className='text-center'>
                 <div className={`text-xs lg:text-sm ${getThemeTextColor('secondary')}`}>Total</div>
                 <div className={`text-sm lg:text-lg font-semibold ${getThemeTextColor('primary')}`}>
