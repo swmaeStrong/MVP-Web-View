@@ -8,6 +8,19 @@ import { Activity } from 'lucide-react';
 import { useMemo, useRef, useState, useEffect } from 'react';
 import NoData from '../common/NoData';
 
+// Constants
+const TIMELINE_CONSTANTS = {
+  MIN_BLOCK_WIDTH: 2, // px
+  TIMELINE_START: 0, // hours
+  TIMELINE_END: 24, // hours
+  DEFAULT_VIEW_HOURS: 4,
+  SCROLL_DELAY: 100, // ms
+  MIN_WIDTH_PERCENTAGE: 0.1, // %
+  Z_INDEX_BASE: 100,
+  LEGEND_WIDTH: 6, // w-6 in tailwind
+  LEGEND_HEIGHT: 3, // h-3 in tailwind
+} as const;
+
 interface ScheduleItem {
   id: string;
   title?: string;
@@ -16,8 +29,6 @@ interface ScheduleItem {
   type: 'primary' | 'secondary'; // productive | non-productive
   mergedCategory?: string;
   app?: string;
-  colorClass?: string;
-  hoverColorClass?: string;
 }
 
 interface TimelineChartProps {
@@ -29,87 +40,61 @@ interface TimelineChartProps {
     app: string;
     title: string;
   }>;
-  date?: string;
   isLoading?: boolean;
-  viewHours?: number; // Number of hours to display at once (default: 4)
-  startHour?: number; // Starting hour of the view (default: 0)
+  viewHours?: number; // Number of hours to display at once
 }
 
 export default function TimelineChart({ 
   schedules, 
   timelineData, 
-  date, 
   isLoading,
-  viewHours = 4,
-  startHour = 0 
+  viewHours = TIMELINE_CONSTANTS.DEFAULT_VIEW_HOURS
 }: TimelineChartProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
 
   // Get current hour for initial position
   const currentHour = new Date().getHours();
-  const initialPosition = Math.max(0, Math.min(24 - viewHours, currentHour - Math.floor(viewHours / 2)));
+  const initialPosition = Math.max(0, Math.min(TIMELINE_CONSTANTS.TIMELINE_END - viewHours, currentHour - Math.floor(viewHours / 2)));
   
   // State for scroll position
   const [scrollPosition, setScrollPosition] = useState(initialPosition);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const timelineRef = useRef<HTMLDivElement>(null);
   
   // Mouse drag states
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, scrollLeft: 0 });
 
-  // Calculate visible hours based on scroll position
-  const visibleHours = useMemo(() => {
-    const hours = [];
-    const start = Math.max(0, scrollPosition);
-    const end = Math.min(24, scrollPosition + viewHours);
-    for (let i = start; i <= end; i++) {
-      hours.push(i);
-    }
-    return hours;
-  }, [scrollPosition, viewHours]);
 
   // Full 24-hour range for calculations
   const fullDayHours = useMemo(() => {
     const hours = [];
-    for (let i = 0; i <= 24; i++) {
+    for (let i = TIMELINE_CONSTANTS.TIMELINE_START; i <= TIMELINE_CONSTANTS.TIMELINE_END; i++) {
       hours.push(i);
     }
     return hours;
   }, []);
 
-  // Set initial scroll position when component mounts
+  // Helper function to update scroll position
+  const updateScrollPosition = (position: number) => {
+    if (!scrollContainerRef.current) return;
+    
+    const scrollPercentage = position / (TIMELINE_CONSTANTS.TIMELINE_END - viewHours);
+    const scrollLeft = scrollPercentage * (scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth);
+    scrollContainerRef.current.scrollLeft = scrollLeft;
+  };
+
+  // Set initial scroll position when component mounts or data changes
   useEffect(() => {
-    const setInitialScroll = () => {
-      if (scrollContainerRef.current) {
-        const scrollPercentage = scrollPosition / (24 - viewHours);
-        const scrollLeft = scrollPercentage * (scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth);
-        scrollContainerRef.current.scrollLeft = scrollLeft;
-      }
-    };
+    const adjustScroll = () => updateScrollPosition(scrollPosition);
 
     // Try immediately
-    setInitialScroll();
+    adjustScroll();
     
     // Also try after a short delay to ensure DOM is ready
-    const timeout = setTimeout(setInitialScroll, 100);
+    const timeout = setTimeout(adjustScroll, TIMELINE_CONSTANTS.SCROLL_DELAY);
     
     return () => clearTimeout(timeout);
-  }, [scrollPosition, viewHours]);
-
-  // Re-adjust scroll position when data changes
-  useEffect(() => {
-    const adjustScroll = () => {
-      if (scrollContainerRef.current) {
-        const scrollPercentage = scrollPosition / (24 - viewHours);
-        const scrollLeft = scrollPercentage * (scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth);
-        scrollContainerRef.current.scrollLeft = scrollLeft;
-      }
-    };
-
-    const timeout = setTimeout(adjustScroll, 50);
-    return () => clearTimeout(timeout);
-  }, [schedules, timelineData, scrollPosition, viewHours]);
+  }, [scrollPosition, viewHours, schedules, timelineData]);
 
   // Mouse drag handlers
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -157,12 +142,6 @@ export default function TimelineChart({
     }
   };
 
-  // Function to convert minutes to time
-  const minutesToTime = (minutes: number): string => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-  };
 
   // 테마별 카테고리 색상 매핑 - 깔끔하고 세련된 색상 시스템
   const getCategoryColor = (category: string) => {
@@ -253,20 +232,23 @@ export default function TimelineChart({
 
   // 카테고리별 범례 데이터 생성
   const legendData = useMemo(() => {
-    const categories = convertedSchedules.reduce((acc, schedule) => {
+    const categoryMap = new Map<string, { color: string; type: 'primary' | 'secondary' }>();
+    
+    convertedSchedules.forEach(schedule => {
       if (schedule.mergedCategory && 
-          !acc.some(item => item.category === schedule.mergedCategory) &&
+          !categoryMap.has(schedule.mergedCategory) &&
           schedule.mergedCategory !== 'meetings' && 
           schedule.mergedCategory !== 'others') {
         const colorInfo = getCategoryColor(schedule.mergedCategory);
-        acc.push({
-          category: schedule.mergedCategory,
-          color: colorInfo.color,
-          type: colorInfo.type
-        });
+        categoryMap.set(schedule.mergedCategory, colorInfo);
       }
-      return acc;
-    }, [] as Array<{ category: string; color: string; type: 'primary' | 'secondary' }>);
+    });
+
+    const categories = Array.from(categoryMap.entries()).map(([category, colorInfo]) => ({
+      category,
+      color: colorInfo.color,
+      type: colorInfo.type
+    }));
 
     // Productive categories first, non-productive categories later
     return categories.sort((a, b) => {
@@ -279,16 +261,19 @@ export default function TimelineChart({
   // Check for no data state
   const hasNoData = !isLoading && convertedSchedules.length === 0;
 
+  // Common card styles
+  const cardStyles = cn(
+    cardSystem.base,
+    cardSystem.variants.elevated,
+    componentStates.default.transition,
+    getThemeClass('border'),
+    getThemeClass('component'),
+    'shadow-sm hover:shadow-md'
+  );
+
   if (isLoading) {
     return (
-      <Card className={cn(
-        cardSystem.base,
-        cardSystem.variants.elevated,
-        componentStates.default.transition,
-        getThemeClass('border'),
-        getThemeClass('component'),
-        'shadow-sm hover:shadow-md'
-      )}>
+      <Card className={cardStyles}>
         <CardHeader className={cn(cardSystem.header, spacing.section.tight)}>
           <CardTitle className={cn(
             'flex items-center gap-3 text-lg font-bold',
@@ -310,14 +295,7 @@ export default function TimelineChart({
   }
 
   return (
-    <Card className={cn(
-      cardSystem.base,
-      cardSystem.variants.elevated,
-      componentStates.default.transition,
-      getThemeClass('border'),
-      getThemeClass('component'),
-      'shadow-sm hover:shadow-md'
-    )}>
+    <Card className={cardStyles}>
       <CardHeader className={cn(cardSystem.header, '')}>
         <CardTitle className={cn(
           'flex items-center gap-3 text-lg font-bold',
@@ -342,7 +320,7 @@ export default function TimelineChart({
         <div className="relative">
           {/* Current time range indicator */}
           <div className={cn('text-center text-sm font-medium mb-2', getThemeTextColor('secondary'))}>
-            {`${scrollPosition.toString().padStart(2, '0')}:00 - ${Math.min(24, scrollPosition + viewHours).toString().padStart(2, '0')}:00`}
+            {`${scrollPosition.toString().padStart(2, '0')}:00 - ${Math.min(TIMELINE_CONSTANTS.TIMELINE_END, scrollPosition + viewHours).toString().padStart(2, '0')}:00`}
           </div>
 
           {/* Scrollable timeline container */}
@@ -356,7 +334,7 @@ export default function TimelineChart({
               const scrollLeft = e.currentTarget.scrollLeft;
               const scrollWidth = e.currentTarget.scrollWidth - e.currentTarget.clientWidth;
               const scrollPercentage = scrollLeft / scrollWidth;
-              const newPosition = Math.round(scrollPercentage * (24 - viewHours));
+              const newPosition = Math.round(scrollPercentage * (TIMELINE_CONSTANTS.TIMELINE_END - viewHours));
               setScrollPosition(newPosition);
             }}
             onMouseDown={handleMouseDown}
@@ -364,7 +342,7 @@ export default function TimelineChart({
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseLeave}
           >
-            <div className="relative" style={{ width: `${(24 / viewHours) * 100}%` }}>
+            <div className="relative" style={{ width: `${(TIMELINE_CONSTANTS.TIMELINE_END / viewHours) * 100}%` }}>
               {/* Timeline bar */}
               <div className="relative mb-2">
               {/* 배경 바 (어두운 배경) */}
@@ -388,8 +366,8 @@ export default function TimelineChart({
                   {convertedSchedules.map((schedule, index) => {
                     const startMinutes = timeToMinutes(schedule.startTime);
                     const endMinutes = timeToMinutes(schedule.endTime);
-                    const timelineStart = 0 * 60; // 0:00
-                    const timelineEnd = 24 * 60; // 24:00
+                    const timelineStart = TIMELINE_CONSTANTS.TIMELINE_START * 60; // 0:00
+                    const timelineEnd = TIMELINE_CONSTANTS.TIMELINE_END * 60; // 24:00
                     const timelineWidth = timelineEnd - timelineStart;
 
                     const left = ((startMinutes - timelineStart) / timelineWidth) * 100;
@@ -399,14 +377,14 @@ export default function TimelineChart({
                   const colorInfo = getCategoryColor(category);
                   
                   // Calculate z-index to prevent overlap (by time order)
-                  const zIndex = 100 + index;
+                  const zIndex = TIMELINE_CONSTANTS.Z_INDEX_BASE + index;
                   
                   // 명확한 블록 스타일 - 투명도 없이 순수 색상만
                   const blockStyle = {
                     position: 'absolute' as const,
                     left: `${Math.max(left, 0)}%`,
-                    width: `${Math.max(width, 0.1)}%`,
-                    minWidth: '2px',
+                    width: `${Math.max(width, TIMELINE_CONSTANTS.MIN_WIDTH_PERCENTAGE)}%`,
+                    minWidth: `${TIMELINE_CONSTANTS.MIN_BLOCK_WIDTH}px`,
                     height: '100%',
                     top: '0',
                     zIndex: zIndex,
@@ -438,7 +416,7 @@ export default function TimelineChart({
                         'block'
                       )}
                     >
-                      {hour === 24 ? '24:00' : `${hour.toString().padStart(2, '0')}:00`}
+                      {hour === TIMELINE_CONSTANTS.TIMELINE_END ? '24:00' : `${hour.toString().padStart(2, '0')}:00`}
                     </div>
                   ))}
                 </div>
@@ -454,23 +432,20 @@ export default function TimelineChart({
             getThemeClass('border')
           )}>
             <div className="flex flex-wrap gap-x-4 gap-y-2">
-              {legendData.map((legend) => {
-                const colorInfo = getCategoryColor(legend.category);
-                return (
-                  <div key={legend.category} className="flex items-center gap-2">
-                    <div 
-                      className="w-6 h-3 flex-shrink-0 shadow-sm rounded-sm"
-                      style={{ backgroundColor: colorInfo.color }}
-                    ></div>
-                    <span className={cn(
-                      'text-xs font-medium', 
-                      getThemeTextColor('primary')
-                    )}>
-                      {legend.category}
-                    </span>
-                  </div>
-                );
-              })}
+              {legendData.map((legend) => (
+                <div key={legend.category} className="flex items-center gap-2">
+                  <div 
+                    className="w-6 h-3 flex-shrink-0 shadow-sm rounded-sm"
+                    style={{ backgroundColor: legend.color }}
+                  ></div>
+                  <span className={cn(
+                    'text-xs font-medium', 
+                    getThemeTextColor('primary')
+                  )}>
+                    {legend.category}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
