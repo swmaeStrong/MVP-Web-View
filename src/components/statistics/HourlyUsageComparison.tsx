@@ -111,7 +111,7 @@ export default function HourlyUsageComparison({
     selectTrigger: `h-8 w-[70px] lg:w-[80px] text-xs border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('componentSecondary')}`,
     toggleContainer: `flex items-center rounded-lg p-1 ${getThemeClass('componentSecondary')}`,
     categoryInfo: `mt-4 grid grid-cols-2 gap-2 lg:gap-4 rounded-lg border-2 p-3 lg:p-4 ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`,
-    tooltipContainer: `z-50 rounded-lg border-2 p-3 shadow-xl backdrop-blur-sm ${getThemeClass('border')} ${getThemeClass('component')}`,
+    tooltipContainer: `rounded-lg border-2 p-3 shadow-xl backdrop-blur-sm ${getThemeClass('border')} ${getThemeClass('component')}`,
     button: {
       base: 'rounded-md px-3 py-1.5 text-xs font-medium transition-all duration-200',
       active: `${getThemeClass('component')} ${getThemeTextColor('accent')} shadow-sm`,
@@ -416,7 +416,10 @@ export default function HourlyUsageComparison({
                     ticks={yAxisTicks}
                     domain={[0, 'dataMax']}
                   />
-                  <ChartTooltip content={<CustomTooltip />} />
+                  <ChartTooltip 
+                    content={<CustomTooltip />} 
+                    wrapperStyle={{ zIndex: 99999 }}
+                  />
                   <ChartLegend
                     content={
                       <ChartLegendContent className={`font-medium ${getThemeTextColor('primary')}`} />
@@ -459,7 +462,10 @@ export default function HourlyUsageComparison({
                     ticks={yAxisTicks}
                     domain={[0, 'dataMax']}
                   />
-                  <ChartTooltip content={<CustomTooltip />} />
+                  <ChartTooltip 
+                    content={<CustomTooltip />} 
+                    wrapperStyle={{ zIndex: 99999 }}
+                  />
                   <ChartLegend
                     content={
                       <ChartLegendContent className={`font-medium ${getThemeTextColor('primary')}`} />

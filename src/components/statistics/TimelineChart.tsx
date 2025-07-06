@@ -300,7 +300,7 @@ export default function TimelineChart({
   }
 
   return (
-    <Card className={cardStyles}>
+    <Card className={`${cardStyles} relative z-10`}>
       <CardHeader className={cn(cardSystem.header, '')}>
         <CardTitle className={cn(
           'flex items-center gap-3 text-lg font-bold',
