@@ -13,9 +13,6 @@ export function MyRankBannerSkeleton() {
           <div>
             <div className='flex items-center space-x-2'>
               <div className={`h-4 w-24 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-              <div className='rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-2 py-0.5 text-xs font-bold text-white'>
-                YOU
-              </div>
             </div>
             <div className='flex items-center space-x-2 mt-0.5'>
               <div className={`h-3 w-16 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
@@ -85,7 +82,7 @@ export function CategoryFilterSkeleton() {
 }
 
 export function PeriodSelectorSkeleton() {
-  const { getThemeClass } = useTheme();
+  const { getThemeClass, isDarkMode } = useTheme();
   
   return (
     <div className={`mb-6 rounded-lg border p-4 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
@@ -107,8 +104,8 @@ export function PeriodSelectorSkeleton() {
         </div>
 
         <div className='flex justify-center'>
-          <div className='inline-block rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 shadow-sm'>
-            <div className='h-4 w-32 animate-pulse rounded bg-white/20'></div>
+          <div className={`inline-block rounded-lg px-4 py-2 border-2 ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')}`}>
+            <div className={`h-4 w-32 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
           </div>
         </div>
       </div>
