@@ -4,6 +4,7 @@ import { User } from '@/stores/userStore';
 import { extendedRankColors, rankColors } from '@/styles';
 import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, getPriorityStyle, getRankPriority } from '@/styles/design-system';
+import { Medal } from 'lucide-react';
 
 type LeaderboardUser = User & {
   score: number;
@@ -74,11 +75,19 @@ export default function UserCard({
     >
       {/* 좌측 - 순위 & 특별 아이콘 & 사용자 정보 */}
       <div className='flex items-center space-x-2 lg:space-x-3'>
-        {/* 순위 표시 - 컴팩트 사이즈 */}
+        {/* 순위 표시 */}
         <div
-          className={`flex h-7 w-7 lg:h-10 lg:w-10 items-center justify-center rounded-full border text-xs lg:text-sm font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')} ${getThemeClass('border')}`}
+          className={`flex h-7 w-7 lg:h-10 lg:w-10 items-center justify-center ${rank <= 3 ? '' : ''}`}
         >
-          {rank}
+          {rank === 1 ? (
+            <Medal className="w-5 h-5 lg:w-7 lg:h-7 text-yellow-500" />
+          ) : rank === 2 ? (
+            <Medal className="w-5 h-5 lg:w-7 lg:h-7 text-gray-400" />
+          ) : rank === 3 ? (
+            <Medal className="w-5 h-5 lg:w-7 lg:h-7 text-amber-600" />
+          ) : (
+            <span className={`text-base lg:text-lg font-bold ${getThemeTextColor('secondary')}`}>{rank}</span>
+          )}
         </div>
 
 
