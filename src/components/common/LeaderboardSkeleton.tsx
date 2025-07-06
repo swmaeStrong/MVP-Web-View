@@ -104,7 +104,7 @@ export function PeriodSelectorSkeleton() {
         </div>
 
         <div className='flex justify-center'>
-          <div className={`inline-block rounded-lg px-4 py-2 border-2 ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')}`}>
+          <div className={`inline-block rounded-lg px-4 py-2 border ${getThemeClass('border')} ${getThemeClass('component')}`}>
             <div className={`h-4 w-32 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
           </div>
         </div>
