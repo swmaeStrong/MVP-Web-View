@@ -83,18 +83,23 @@ export default function TimelineChart({
     scrollContainerRef.current.scrollLeft = scrollLeft;
   };
 
-  // Set initial scroll position when component mounts
-  useEffect(() => {
-    const adjustScroll = () => updateScrollPosition(initialPosition);
+  // Track if initial scroll has been set
+  const [hasInitialScroll, setHasInitialScroll] = useState(false);
 
-    // Try immediately
-    adjustScroll();
+  // Set initial scroll position after data loads
+  useEffect(() => {
+    // Only set initial position when:
+    // 1. Not loading
+    // 2. Haven't set initial scroll yet
+    // 3. Container is available
+    if (isLoading || hasInitialScroll || !scrollContainerRef.current) return;
     
-    // Also try after a short delay to ensure DOM is ready
-    const timeout = setTimeout(adjustScroll, TIMELINE_CONSTANTS.SCROLL_DELAY);
-    
-    return () => clearTimeout(timeout);
-  }, [initialPosition, viewHours]); // Only re-run if viewHours changes, not scrollPosition
+    // Use requestAnimationFrame to ensure DOM is fully painted
+    requestAnimationFrame(() => {
+      updateScrollPosition(initialPosition);
+      setHasInitialScroll(true);
+    });
+  }, [isLoading, hasInitialScroll, initialPosition]);
 
   // Mouse drag handlers
   const handleMouseDown = (e: React.MouseEvent) => {
