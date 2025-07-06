@@ -19,7 +19,7 @@ export default function PeriodSelector({
   setSelectedDateIndex,
   currentDate,
 }: PeriodSelectorProps) {
-  const { getThemeClass, getThemeTextColor } = useTheme();
+  const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
   const timeLabels = {
     daily: 'Daily',
     weekly: 'Weekly',
@@ -109,7 +109,7 @@ export default function PeriodSelector({
                 key={period}
                 className={
                   selectedPeriod === period
-                    ? 'rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:from-purple-700 hover:to-blue-700'
+                    ? `rounded-lg px-4 py-2 text-sm font-semibold border-2 transition-all duration-200 ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')} ${getThemeTextColor('primary')}`
                     : `rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('borderLight')}`
                 }
                 onClick={() => setSelectedPeriod(period as any)}
@@ -148,8 +148,8 @@ export default function PeriodSelector({
 
         {/* 현재 선택된 기간 표시 */}
         <div className='flex justify-center'>
-          <div className='inline-block rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 shadow-sm'>
-            <span className='text-sm font-semibold text-white'>
+          <div className={`inline-block rounded-lg px-4 py-2 border-2 ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')}`}>
+            <span className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
               {getPeriodLabel()}
             </span>
           </div>

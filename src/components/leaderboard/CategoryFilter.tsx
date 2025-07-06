@@ -15,7 +15,7 @@ export default function CategoryFilter({
   selectedCategory,
   setSelectedCategory,
 }: CategoryFilterProps) {
-  const { getThemeClass, getThemeTextColor } = useTheme();
+  const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
   // Generate category array for 3 fixed slots
   const getVisibleCategories = () => {
     const selectedIndex = categories.indexOf(selectedCategory);
@@ -59,7 +59,7 @@ export default function CategoryFilter({
                   onClick={() => setSelectedCategory(item.category)}
                   className={
                     item.isSelected
-                      ? `w-[100px] lg:w-[140px] rounded-lg bg-gradient-to-r ${categoryColor.buttonGradient} scale-105 transform px-2 lg:px-4 py-2 lg:py-2.5 text-xs lg:text-sm font-semibold text-white shadow-md transition-all duration-200 overflow-hidden`
+                      ? `w-[100px] lg:w-[140px] rounded-lg border-2 scale-105 transform px-2 lg:px-4 py-2 lg:py-2.5 text-xs lg:text-sm font-semibold transition-all duration-200 overflow-hidden ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')} ${getThemeTextColor('primary')}`
                       : item.position === -1 || item.position === 1
                         ? `w-[80px] lg:w-[120px] scale-95 transform rounded-lg border-2 px-2 lg:px-4 py-1.5 lg:py-2 text-xs lg:text-sm font-medium transition-all duration-200 overflow-hidden ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('borderLight')}`
                         : `w-[80px] lg:w-[120px] rounded-lg border-2 px-2 lg:px-4 py-1.5 lg:py-2 text-xs lg:text-sm font-medium opacity-70 transition-all duration-200 overflow-hidden ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`
