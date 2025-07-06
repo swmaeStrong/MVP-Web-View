@@ -124,7 +124,7 @@ export default function PeriodSelector({
             <button
               className={
                 canGoPrevious()
-                  ? `h-8 w-8 rounded-lg text-sm p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('backgroundSecondary')}`
+                  ? `h-8 w-8 rounded-lg text-sm p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('componentSecondary')}`
                   : `h-8 w-8 cursor-not-allowed rounded-lg text-sm p-0 border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')} opacity-50`
               }
               onClick={handlePreviousDate}
@@ -135,7 +135,7 @@ export default function PeriodSelector({
             <button
               className={
                 canGoNext()
-                  ? `h-8 w-8 rounded-lg text-sm p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('backgroundSecondary')}`
+                  ? `h-8 w-8 rounded-lg text-sm p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('componentSecondary')}`
                   : `h-8 w-8 cursor-not-allowed rounded-lg text-sm p-0 border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')} opacity-50`
               }
               onClick={handleNextDate}
