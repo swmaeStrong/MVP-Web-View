@@ -61,6 +61,37 @@ const formatTimeWithSeconds = (seconds: number): string => {
     : `${hours}h ${minutes}m ${secs}s`;
 };
 
+// Generate Y-axis ticks based on binSize
+const generateYAxisTicks = (maxValue: number, binSize: number): number[] => {
+  const ticks: number[] = [0];
+  
+  if (binSize === 15) {
+    // For 15 minutes: 4min, 8min, 12min, 15min
+    ticks.push(240, 480, 720, 900); // 4, 8, 12, 15 minutes in seconds
+  } else if (binSize === 30) {
+    // For 30 minutes: 8min, 16min, 24min, 30min
+    ticks.push(480, 960, 1440, 1800); // 8, 16, 24, 30 minutes in seconds
+  } else if (binSize === 60) {
+    // For 1 hour: 15min, 30min, 45min, 60min intervals
+    ticks.push(900, 1800, 2700, 3600); // 15, 30, 45, 60 minutes in seconds
+  } else if (binSize === 180) {
+    // For 3 hours: 30min, 1h, 1.5h, 2h, 2.5h, 3h
+    ticks.push(1800, 3600, 5400, 7200, 9000, 10800);
+  } else if (binSize === 360) {
+    // For 6 hours: 1h, 2h, 3h, 4h, 5h, 6h
+    ticks.push(3600, 7200, 10800, 14400, 18000, 21600);
+  } else if (binSize === 720) {
+    // For 12 hours: 2h, 4h, 6h, 8h, 10h, 12h
+    ticks.push(7200, 14400, 21600, 28800, 36000, 43200);
+  } else if (binSize === 1440) {
+    // For 24 hours: 4h, 8h, 12h, 16h, 20h, 24h
+    ticks.push(14400, 28800, 43200, 57600, 72000, 86400);
+  }
+  
+  // Filter ticks to only include those within the actual data range
+  return ticks.filter(tick => tick <= Math.ceil(maxValue));
+};
+
 export default function HourlyUsageComparison({
   userId,
   date,
@@ -127,6 +158,21 @@ export default function HourlyUsageComparison({
 
     return { chartData: processedData, dataValidation: validation };
   }, [hourlyData, selectedCategory]);
+
+  // Calculate max value for Y-axis
+  const maxValue = useMemo(() => {
+    if (!chartData || chartData.length === 0) return 3600; // Default to 1 hour
+    
+    const maxTotal = Math.max(...chartData.map(item => item.total));
+    const maxCategory = selectedCategory 
+      ? Math.max(...chartData.map(item => item.category))
+      : 0;
+    
+    return Math.max(maxTotal, maxCategory);
+  }, [chartData, selectedCategory]);
+
+  // Get Y-axis ticks based on binSize
+  const yAxisTicks = useMemo(() => generateYAxisTicks(maxValue, selectedBinSize), [maxValue, selectedBinSize]);
 
   // Custom tooltip component
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -356,6 +402,8 @@ export default function HourlyUsageComparison({
                     axisLine={false}
                     tickFormatter={value => formatTimeWithSeconds(value)}
                     width={45}
+                    ticks={yAxisTicks}
+                    domain={[0, 'dataMax']}
                   />
                   <ChartTooltip content={<CustomTooltip />} />
                   <ChartLegend
@@ -397,6 +445,8 @@ export default function HourlyUsageComparison({
                     axisLine={false}
                     tickFormatter={value => formatTimeWithSeconds(value)}
                     width={45}
+                    ticks={yAxisTicks}
+                    domain={[0, 'dataMax']}
                   />
                   <ChartTooltip content={<CustomTooltip />} />
                   <ChartLegend
