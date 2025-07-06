@@ -14,6 +14,7 @@ interface TotalTimeCardProps {
   onNext: () => void;
   canGoPrevious: boolean;
   canGoNext: boolean;
+  isLoading?: boolean;
 }
 
 export default function TotalTimeCard({
@@ -23,6 +24,7 @@ export default function TotalTimeCard({
   onNext,
   canGoPrevious,
   canGoNext,
+  isLoading = false,
 }: TotalTimeCardProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
   
@@ -46,6 +48,35 @@ export default function TotalTimeCard({
   
   // Format current date for display
   const formattedDate = formatKSTDate(new Date(currentDate + 'T00:00:00Z'));
+
+  if (isLoading) {
+    return (
+      <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${componentStates.default.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>
+        <CardContent className={`${cardSystem.content} ${spacing.inner.normal}`}>
+          {/* Date navigation header skeleton */}
+          <div className="flex items-center justify-between mb-4">
+            <div className={`h-7 w-32 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+            <div className='flex gap-2'>
+              <div className={`h-8 w-8 animate-pulse rounded-lg ${getThemeClass('componentSecondary')}`}></div>
+              <div className={`h-8 w-8 animate-pulse rounded-lg ${getThemeClass('componentSecondary')}`}></div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            {/* Left: title skeleton */}
+            <div className="flex items-center gap-3">
+              <div className={`h-7 w-40 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+            </div>
+
+            {/* Right: time skeleton */}
+            <div className="text-right">
+              <div className={`h-9 w-20 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${componentStates.default.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>

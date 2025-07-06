@@ -258,12 +258,64 @@ export default function HourlyUsageComparison({
 
   if (isLoading) {
     return (
-      <Card className={`rounded-lg border-2 shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
-        <CardContent className='p-6'>
-          <div className='flex h-64 items-center justify-center'>
+      <Card className={cssClasses.card}>
+        <CardHeader className='pb-3'>
+          <div className='space-y-3'>
+            {/* Header skeleton */}
+            <div className='flex items-center justify-between'>
+              <div className={`h-7 w-32 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+              
+              {/* Controls skeleton */}
+              <div className='flex items-center gap-3'>
+                <div className='flex items-center gap-1 lg:gap-2'>
+                  <div className={`h-4 w-8 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+                  <div className={`h-8 w-[70px] lg:w-[80px] animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+                </div>
+                <div className='flex items-center gap-1 lg:gap-2'>
+                  <div className={`h-4 w-16 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+                  <div className={`h-8 w-[100px] lg:w-[140px] animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Chart type toggle skeleton */}
+            <div className='flex items-center'>
+              <div className={`flex items-center rounded-lg p-1 ${getThemeClass('componentSecondary')}`}>
+                <div className={`h-8 w-12 animate-pulse rounded-md mx-1 ${getThemeClass('borderLight')}`}></div>
+                <div className={`h-8 w-12 animate-pulse rounded-md mx-1 ${getThemeClass('borderLight')}`}></div>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className='px-2 pt-0'>
+          {/* Chart skeleton */}
+          <div className='h-[300px] lg:h-[350px] w-full'>
+            <div className='h-full flex items-end gap-2 px-4'>
+              {[...Array(12)].map((_, index) => (
+                <div key={index} className='flex-1 flex flex-col items-center gap-1'>
+                  <div 
+                    className={`w-full animate-pulse rounded ${getThemeClass('componentSecondary')}`} 
+                    style={{ 
+                      height: `${Math.random() * 150 + 50}px`,
+                      animationDelay: `${index * 50}ms`
+                    }}
+                  ></div>
+                  <div className={`h-3 w-8 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Summary skeleton */}
+          <div className={`mt-4 grid grid-cols-2 gap-2 lg:gap-4 rounded-lg border-2 p-3 lg:p-4 ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
             <div className='text-center'>
-              <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-purple-600'></div>
-              <p className={getThemeTextColor('secondary')}>Loading hourly data...</p>
+              <div className={`h-4 w-12 mx-auto mb-1 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+              <div className={`h-6 w-16 mx-auto animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+            </div>
+            <div className='text-center'>
+              <div className={`h-4 w-20 mx-auto mb-1 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+              <div className={`h-6 w-16 mx-auto animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
             </div>
           </div>
         </CardContent>

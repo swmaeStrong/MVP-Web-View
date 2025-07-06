@@ -11,12 +11,14 @@ interface CategoryListProps {
   categories: StatisticsCategory[];
   selectedCategory: StatisticsCategory | null;
   onCategorySelect: (category: StatisticsCategory | null) => void;
+  isLoading?: boolean;
 }
 
 export default function CategoryList({
   categories,
   selectedCategory,
   onCategorySelect,
+  isLoading = false,
 }: CategoryListProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
   const { getCardStyle, getButtonStyle } = useDesignSystem();
@@ -39,6 +41,42 @@ export default function CategoryList({
     ...category,
     color: categoryColors[index] || categoryColors[0], // Color override
   }));
+
+  if (isLoading) {
+    return (
+      <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${componentStates.default.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>
+        <CardContent className={`${cardSystem.content} ${spacing.inner.normal}`}>
+          {/* Fixed height to match ActivityList + TotalTimeCard height */}
+          <div className="h-[542px] flex flex-col">
+            {/* Header skeleton */}
+            <div className="flex items-center justify-between mb-4">
+              <div className={`h-7 w-40 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+              <div className={`h-8 w-12 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+            </div>
+
+            {/* Category list skeleton */}
+            <div className="flex-1 overflow-y-auto">
+              <div className="space-y-2">
+                {[...Array(4)].map((_, index) => (
+                  <div key={index} className={`group flex items-center justify-between p-2 rounded ${getThemeClass('componentSecondary')}`}>
+                    {/* Left: color + name skeleton */}
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <div className={`h-2 w-2 rounded-full animate-pulse ${getThemeClass('borderLight')}`}></div>
+                      <div className={`h-4 w-20 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+                    </div>
+                    {/* Right: percentage skeleton */}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className={`h-4 w-8 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (top6Categories.length === 0) {
     return (

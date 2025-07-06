@@ -123,8 +123,24 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
 
         {/* 로딩 상태 */}
         {loading ? (
-          <div className={`text-center py-8 ${getThemeTextColor('secondary')}`}>
-            <div className="animate-pulse">Loading data...</div>
+          <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+            {[...Array(8)].map((_, index) => (
+              <div key={index} className={`group rounded-lg border p-3 ${getThemeClass('border')} ${getThemeClass('component')}`}>
+                <div className="grid grid-cols-[5rem_4rem_1fr_5rem] gap-3 items-center">
+                  {/* 시간 skeleton */}
+                  <div className={`h-4 w-16 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+                  {/* 앱 이름 skeleton */}
+                  <div className={`h-4 w-12 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+                  {/* 제목 skeleton */}
+                  <div className="space-y-1">
+                    <div className={`h-4 w-full animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+                    <div className={`h-3 w-3/4 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+                  </div>
+                  {/* 카테고리 skeleton */}
+                  <div className={`h-6 w-16 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : usageData.length === 0 ? (
           /* 데이터 없음 */

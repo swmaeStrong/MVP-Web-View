@@ -288,10 +288,66 @@ export default function TimelineChart({
           </CardTitle>
         </CardHeader>
         <CardContent className={cn(cardSystem.content, 'pb-4')}>
-          <div className="flex items-center justify-center h-32">
-            <div className="text-center">
-              <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-purple-600"></div>
-              <p className={getThemeClass('textSecondary')}>Loading timeline data...</p>
+          <div className="relative">
+            {/* Current time range skeleton */}
+            <div className="text-center mb-2">
+              <div className={`h-5 w-24 mx-auto animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+            </div>
+
+            {/* Timeline container skeleton */}
+            <div className="w-full overflow-hidden">
+              <div className="relative mb-2">
+                {/* Timeline bar skeleton */}
+                <div className={cn(
+                  'w-full h-16 lg:h-20 relative overflow-hidden rounded-sm',
+                  getThemeClass('componentSecondary'),
+                  'border-2',
+                  getThemeClass('border')
+                )}>
+                  {/* Activity blocks skeleton */}
+                  <div className="absolute inset-0 flex gap-1 p-1">
+                    {[...Array(8)].map((_, index) => (
+                      <div
+                        key={index}
+                        className={`flex-1 animate-pulse rounded ${getThemeClass('borderLight')}`}
+                        style={{ 
+                          height: '100%',
+                          animationDelay: `${index * 100}ms`
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Time labels skeleton */}
+                <div className="relative mt-2">
+                  <div className="flex justify-between">
+                    {[...Array(6)].map((_, index) => (
+                      <div
+                        key={index}
+                        className={`h-4 w-10 animate-pulse rounded ${getThemeClass('borderLight')}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Legend skeleton */}
+            <div className={cn(
+              'mt-4 p-3',
+              getThemeClass('componentSecondary'),
+              'border border-solid rounded-lg',
+              getThemeClass('border')
+            )}>
+              <div className="flex flex-wrap gap-x-4 gap-y-2">
+                {[...Array(5)].map((_, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div className={`w-6 h-3 animate-pulse rounded-sm ${getThemeClass('borderLight')}`}></div>
+                    <div className={`h-4 w-16 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </CardContent>
