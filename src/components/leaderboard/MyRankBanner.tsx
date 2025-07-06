@@ -165,9 +165,6 @@ export default function MyRankBanner({
                 <h3 className={`text-sm lg:text-base font-bold ${getThemeTextColor('primary')}`}>
                   {myRank.nickname}
                 </h3>
-                <span className='rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-2 py-0.5 text-xs font-bold text-white'>
-                  YOU
-                </span>
               </div>
               <div className='flex items-center space-x-2 mt-0.5'>
                 <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>

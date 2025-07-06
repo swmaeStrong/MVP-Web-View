@@ -102,7 +102,7 @@ export default function UserCard({
 
             {/* 사용자 표시 - 컴팩트 */}
             {isCurrentUser && (
-              <span className='rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-2 py-0.5 text-xs font-bold text-white shadow-sm'>
+              <span className={`rounded-full border px-2 py-0.5 text-xs font-bold shadow-sm ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
                 YOU
               </span>
             )}
