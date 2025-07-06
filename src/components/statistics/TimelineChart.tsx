@@ -85,7 +85,7 @@ export default function TimelineChart({
 
   // Set initial scroll position when component mounts
   useEffect(() => {
-    const adjustScroll = () => updateScrollPosition(scrollPosition);
+    const adjustScroll = () => updateScrollPosition(initialPosition);
 
     // Try immediately
     adjustScroll();
@@ -94,7 +94,7 @@ export default function TimelineChart({
     const timeout = setTimeout(adjustScroll, TIMELINE_CONSTANTS.SCROLL_DELAY);
     
     return () => clearTimeout(timeout);
-  }, []); // Remove dependencies to prevent re-triggering on scroll
+  }, [initialPosition, viewHours]); // Only re-run if viewHours changes, not scrollPosition
 
   // Mouse drag handlers
   const handleMouseDown = (e: React.MouseEvent) => {
