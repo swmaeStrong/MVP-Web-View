@@ -80,12 +80,36 @@ export default function TimelineChart({
 
   // Set initial scroll position when component mounts
   useEffect(() => {
-    if (scrollContainerRef.current) {
-      const scrollPercentage = scrollPosition / (24 - viewHours);
-      const scrollLeft = scrollPercentage * (scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth);
-      scrollContainerRef.current.scrollLeft = scrollLeft;
-    }
-  }, []);
+    const setInitialScroll = () => {
+      if (scrollContainerRef.current) {
+        const scrollPercentage = scrollPosition / (24 - viewHours);
+        const scrollLeft = scrollPercentage * (scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth);
+        scrollContainerRef.current.scrollLeft = scrollLeft;
+      }
+    };
+
+    // Try immediately
+    setInitialScroll();
+    
+    // Also try after a short delay to ensure DOM is ready
+    const timeout = setTimeout(setInitialScroll, 100);
+    
+    return () => clearTimeout(timeout);
+  }, [scrollPosition, viewHours]);
+
+  // Re-adjust scroll position when data changes
+  useEffect(() => {
+    const adjustScroll = () => {
+      if (scrollContainerRef.current) {
+        const scrollPercentage = scrollPosition / (24 - viewHours);
+        const scrollLeft = scrollPercentage * (scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth);
+        scrollContainerRef.current.scrollLeft = scrollLeft;
+      }
+    };
+
+    const timeout = setTimeout(adjustScroll, 50);
+    return () => clearTimeout(timeout);
+  }, [schedules, timelineData, scrollPosition, viewHours]);
 
   // Mouse drag handlers
   const handleMouseDown = (e: React.MouseEvent) => {
