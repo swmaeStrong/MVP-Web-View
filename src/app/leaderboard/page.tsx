@@ -3,7 +3,7 @@
 import { useLeaderboardInfiniteScroll } from '@/hooks/useLeaderboardInfiniteScroll';
 import { useScrollToMyRank } from '@/hooks/useScrollToMyRank';
 import { CATEGORIES, LEADERBOARD_CATEGORIES } from '@/utils/categories';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 
 // 컴포넌트 임포트
@@ -70,6 +70,9 @@ export default function Leaderboard() {
     }));
   };
 
+  // 리더보드 컨테이너 ref
+  const leaderboardContainerRef = useRef<HTMLDivElement>(null);
+
   // 무한 스크롤 훅 사용
   const {
     users,
@@ -83,6 +86,7 @@ export default function Leaderboard() {
     category: selectedCategory,
     period: selectedPeriod,
     selectedDateIndex,
+    containerRef: leaderboardContainerRef,
   });
 
   const categories = LEADERBOARD_CATEGORIES;
@@ -144,6 +148,7 @@ export default function Leaderboard() {
           selectedPeriod={selectedPeriod}
           selectedCategory={selectedCategory}
           selectedDateIndex={selectedDateIndex}
+          containerRef={leaderboardContainerRef}
         />
       </div>
     </div>

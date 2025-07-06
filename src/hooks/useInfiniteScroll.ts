@@ -8,6 +8,7 @@ interface UseInfiniteScrollOptions<T> {
   enabled?: boolean;
   staleTime?: number;
   refetchOnWindowFocus?: boolean;
+  containerRef?: React.RefObject<HTMLElement>;
 }
 
 interface UseInfiniteScrollReturn<T> {
@@ -29,6 +30,7 @@ export function useInfiniteScroll<T>({
   enabled = true,
   staleTime = 5 * 60 * 1000, // 5분
   refetchOnWindowFocus = false,
+  containerRef,
 }: UseInfiniteScrollOptions<T>): UseInfiniteScrollReturn<T> {
   const {
     data,
@@ -57,22 +59,51 @@ export function useInfiniteScroll<T>({
 
   // 스크롤 이벤트 핸들러
   const handleScroll = useCallback(() => {
-    if (
-      window.innerHeight + window.scrollY >=
-        document.body.offsetHeight - 1000 &&
-      hasNextPage &&
-      !isFetchingNextPage &&
-      !isError // 에러가 발생했으면 스크롤 로딩을 중단
-    ) {
-      fetchNextPage();
+    if (!hasNextPage || isFetchingNextPage || isError) return;
+
+    if (containerRef?.current) {
+      // 컨테이너 스크롤
+      const container = containerRef.current;
+      const threshold = 100; // 컨테이너 하단에서 100px 전에 로드
+      
+      console.log('컨테이너 스크롤 감지:', {
+        scrollTop: container.scrollTop,
+        clientHeight: container.clientHeight,
+        scrollHeight: container.scrollHeight,
+        threshold,
+        shouldFetch: container.scrollTop + container.clientHeight >= container.scrollHeight - threshold
+      });
+      
+      if (
+        container.scrollTop + container.clientHeight >= 
+        container.scrollHeight - threshold
+      ) {
+        console.log('다음 페이지 로드 요청');
+        fetchNextPage();
+      }
+    } else {
+      // 윈도우 스크롤 (기존 로직)
+      if (
+        window.innerHeight + window.scrollY >=
+          document.body.offsetHeight - 1000
+      ) {
+        fetchNextPage();
+      }
     }
-  }, [hasNextPage, isFetchingNextPage, isError, fetchNextPage]);
+  }, [hasNextPage, isFetchingNextPage, isError, fetchNextPage, containerRef]);
 
   // 스크롤 이벤트 리스너 등록/해제
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
+    const container = containerRef?.current;
+    
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      return () => container.removeEventListener('scroll', handleScroll);
+    } else {
+      window.addEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
+    }
+  }, [handleScroll, containerRef]);
 
   // 모든 페이지의 데이터를 하나의 배열로 평탄화
   const flattenedData = data?.pages.flat() ?? [];

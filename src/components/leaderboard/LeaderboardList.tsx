@@ -7,6 +7,7 @@ import UserCard from './UserCard';
 import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, spacing } from '@/styles/design-system';
 import { LeaderboardListSkeleton } from '@/components/common/LeaderboardSkeleton';
+import { cn } from '@/shadcn/lib/utils';
 
 // 리더보드 표시용 확장된 User 타입
 type LeaderboardUser = User & {
@@ -25,6 +26,7 @@ interface LeaderboardListProps {
   selectedPeriod: 'daily' | 'weekly' | 'monthly';
   selectedCategory: string;
   selectedDateIndex: number;
+  containerRef: React.RefObject<HTMLDivElement>;
 }
 
 export default function LeaderboardList({
@@ -37,6 +39,7 @@ export default function LeaderboardList({
   selectedPeriod,
   selectedCategory,
   selectedDateIndex,
+  containerRef,
 }: LeaderboardListProps) {
   const currentUser = useCurrentUser();
   const { getThemeClass, getThemeTextColor } = useTheme();
@@ -84,31 +87,36 @@ export default function LeaderboardList({
   }
 
   return (
-    <>
-
+    <div 
+      ref={containerRef}
+      className={cn(
+        "h-[700px] lg:h-[750px] overflow-y-auto rounded-lg border p-4",
+        getThemeClass('border'),
+        getThemeClass('component'),
+        "activity-scroll-hide"
+      )}
+    >
       {/* Leaderboard list */}
-      <div className='mb-6'>
-        <div className='space-y-2 lg:space-y-3'>
-          {users.map((user: LeaderboardUser, index: number) => {
-            // 현재 유저인지 확인
-            const isCurrentUser = currentUser && user.id === currentUser.id;
+      <div className='space-y-2 lg:space-y-3'>
+        {users.map((user: LeaderboardUser, index: number) => {
+          // 현재 유저인지 확인
+          const isCurrentUser = currentUser && user.id === currentUser.id;
 
-            return (
-              <UserCard
-                key={`rank-${index + 1}-${user.id || user.nickname || index}`}
-                user={user}
-                index={index}
-                totalUsers={users.length}
-                isCurrentUser={!!isCurrentUser}
-              />
-            );
-          })}
-        </div>
+          return (
+            <UserCard
+              key={`rank-${index + 1}-${user.id || user.nickname || index}`}
+              user={user}
+              index={index}
+              totalUsers={users.length}
+              isCurrentUser={!!isCurrentUser}
+            />
+          );
+        })}
       </div>
 
       {/* Infinite scroll loading indicator */}
       {isFetchingNextPage && (
-        <div className='flex justify-center'>
+        <div className='flex justify-center mt-4 mb-4'>
           <div className={`rounded-lg border-2 p-4 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
             <div className='mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-purple-600'></div>
             <p className={`text-sm ${getThemeTextColor('secondary')}`}>
@@ -117,6 +125,6 @@ export default function LeaderboardList({
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

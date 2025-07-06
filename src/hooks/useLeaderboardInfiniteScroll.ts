@@ -17,12 +17,14 @@ interface UseLeaderboardInfiniteScrollParams {
   category: string;
   period: 'daily' | 'weekly' | 'monthly';
   selectedDateIndex: number;
+  containerRef?: React.RefObject<HTMLElement>;
 }
 
 export function useLeaderboardInfiniteScroll({
   category,
   period,
   selectedDateIndex,
+  containerRef,
 }: UseLeaderboardInfiniteScrollParams) {
   const categories = LEADERBOARD_CATEGORIES;
 
@@ -127,6 +129,7 @@ export function useLeaderboardInfiniteScroll({
     },
     enabled: true,
     staleTime: 2 * 60 * 1000, // 2분
+    containerRef,
   });
 
   return {
