@@ -26,7 +26,7 @@ interface LeaderboardListProps {
   selectedPeriod: 'daily' | 'weekly' | 'monthly';
   selectedCategory: string;
   selectedDateIndex: number;
-  containerRef: React.RefObject<HTMLDivElement>;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 export default function LeaderboardList({

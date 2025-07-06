@@ -8,7 +8,7 @@ interface UseInfiniteScrollOptions<T> {
   enabled?: boolean;
   staleTime?: number;
   refetchOnWindowFocus?: boolean;
-  containerRef?: React.RefObject<HTMLElement>;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 interface UseInfiniteScrollReturn<T> {

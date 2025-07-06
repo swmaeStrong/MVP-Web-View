@@ -17,7 +17,7 @@ interface UseLeaderboardInfiniteScrollParams {
   category: string;
   period: 'daily' | 'weekly' | 'monthly';
   selectedDateIndex: number;
-  containerRef?: React.RefObject<HTMLElement>;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 export function useLeaderboardInfiniteScroll({

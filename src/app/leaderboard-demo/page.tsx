@@ -2,7 +2,7 @@
 
 import { CATEGORIES, LEADERBOARD_CATEGORIES } from '@/utils/categories';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 
 // 컴포넌트 임포트
 import CategoryFilter from '@/components/leaderboard/CategoryFilter';

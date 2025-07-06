@@ -2,9 +2,9 @@
 
 import { useLeaderboardInfiniteScroll } from '@/hooks/useLeaderboardInfiniteScroll';
 import { useScrollToMyRank } from '@/hooks/useScrollToMyRank';
-import { CATEGORIES, LEADERBOARD_CATEGORIES } from '@/utils/categories';
-import { useEffect, useState, useRef } from 'react';
 import { useTheme } from '@/hooks/useTheme';
+import { CATEGORIES, LEADERBOARD_CATEGORIES } from '@/utils/categories';
+import { useEffect, useRef, useState } from 'react';
 
 // 컴포넌트 임포트
 import CategoryFilter from '@/components/leaderboard/CategoryFilter';
@@ -13,14 +13,14 @@ import MyRankBanner from '@/components/leaderboard/MyRankBanner';
 import PeriodSelector from '@/components/leaderboard/PeriodSelector';
 
 // User 타입은 userStore에서 import
-import { useCurrentUser, User } from '@/stores/userStore';
-import { useInitUser } from '../../hooks/useInitUser';
 import {
-  MyRankBannerSkeleton,
-  LeaderboardListSkeleton,
   CategoryFilterSkeleton,
+  LeaderboardListSkeleton,
+  MyRankBannerSkeleton,
   PeriodSelectorSkeleton
 } from '@/components/common/LeaderboardSkeleton';
+import { useCurrentUser, User } from '@/stores/userStore';
+import { useInitUser } from '../../hooks/useInitUser';
 
 // 리더보드 표시용 확장된 User 타입
 type LeaderboardUser = User & {
