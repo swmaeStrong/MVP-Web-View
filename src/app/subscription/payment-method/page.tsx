@@ -77,12 +77,16 @@ function PaymentMethodContent() {
   useEffect(() => {
     const loadExistingPaymentMethods = () => {
       try {
-        const saved = localStorage.getItem('paymentMethods');
-        if (saved) {
-          const methods = JSON.parse(saved);
-          setExistingMethods(methods);
-          // 기존 결제 수단이 있으면 목록을 표시하고, 없으면 새로 추가하는 화면을 표시
-          setShowAddNew(methods.length === 0);
+        if (typeof window !== 'undefined') {
+          const saved = localStorage.getItem('paymentMethods');
+          if (saved) {
+            const methods = JSON.parse(saved);
+            setExistingMethods(methods);
+            // 기존 결제 수단이 있으면 목록을 표시하고, 없으면 새로 추가하는 화면을 표시
+            setShowAddNew(methods.length === 0);
+          } else {
+            setShowAddNew(true);
+          }
         } else {
           setShowAddNew(true);
         }
@@ -100,7 +104,9 @@ function PaymentMethodContent() {
     if (confirm('이 결제 수단을 삭제하시겠습니까?')) {
       const updatedMethods = existingMethods.filter(method => method.id !== methodId);
       setExistingMethods(updatedMethods);
-      localStorage.setItem('paymentMethods', JSON.stringify(updatedMethods));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('paymentMethods', JSON.stringify(updatedMethods));
+      }
       
       // 모든 결제 수단이 삭제되면 새로 추가하는 화면으로 전환
       if (updatedMethods.length === 0) {
@@ -113,7 +119,9 @@ function PaymentMethodContent() {
   const handleDeleteAllPaymentMethods = () => {
     if (confirm('모든 결제 수단을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) {
       setExistingMethods([]);
-      localStorage.removeItem('paymentMethods');
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('paymentMethods');
+      }
       setShowAddNew(true);
     }
   };
@@ -177,7 +185,9 @@ function PaymentMethodContent() {
 
         const updatedMethods = [...existingMethods, newPaymentMethod];
         setExistingMethods(updatedMethods);
-        localStorage.setItem('paymentMethods', JSON.stringify(updatedMethods));
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('paymentMethods', JSON.stringify(updatedMethods));
+        }
         
         setShowAddNew(false);
         console.log('발급된 빌링키:', response.billingKey);

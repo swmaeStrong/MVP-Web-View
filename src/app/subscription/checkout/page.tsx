@@ -28,7 +28,7 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     // 선택된 플랜 정보 가져오기 (sessionStorage에서)
-    const planId = sessionStorage.getItem('selectedPlan');
+    const planId = typeof window !== 'undefined' ? sessionStorage.getItem('selectedPlan') : null;
     
     // 플랜 데이터 정의
     const plans: { [key: string]: PlanData } = {
@@ -57,14 +57,16 @@ export default function CheckoutPage() {
     }
 
     // 결제 수단 확인
-    const savedPaymentMethods = localStorage.getItem('paymentMethods');
-    if (!savedPaymentMethods) {
-      router.push('/subscription/payment-method?from=subscription');
-      return;
-    }
+    if (typeof window !== 'undefined') {
+      const savedPaymentMethods = localStorage.getItem('paymentMethods');
+      if (!savedPaymentMethods) {
+        router.push('/subscription/payment-method?from=subscription');
+        return;
+      }
 
-    const methods = JSON.parse(savedPaymentMethods);
-    setPaymentMethod(methods[0]);
+      const methods = JSON.parse(savedPaymentMethods);
+      setPaymentMethod(methods[0]);
+    }
   }, [router]);
 
   const handlePayment = async () => {
@@ -82,7 +84,9 @@ export default function CheckoutPage() {
         paymentMethod: paymentMethod?.method,
         status: 'active',
       };
-      localStorage.setItem('subscription', JSON.stringify(subscriptionData));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('subscription', JSON.stringify(subscriptionData));
+      }
 
       // 성공 상태로 변경 (별도 페이지로 이동하지 않음)
       setIsSuccess(true);
@@ -153,8 +157,10 @@ export default function CheckoutPage() {
               className='w-full rounded-2xl text-purple-400 hover:bg-purple-400/10'
               onClick={() => {
                 // 구독 정보 초기화
-                localStorage.removeItem('subscription');
-                sessionStorage.removeItem('selectedPlan');
+                if (typeof window !== 'undefined') {
+                  localStorage.removeItem('subscription');
+                  sessionStorage.removeItem('selectedPlan');
+                }
                 router.push('/subscription');
               }}
             >

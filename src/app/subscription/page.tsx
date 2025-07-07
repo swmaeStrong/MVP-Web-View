@@ -9,8 +9,11 @@ import { useTheme } from '@/hooks/useTheme';
 // 결제 수단 상태를 시뮬레이션하는 더미 데이터
 const checkPaymentMethods = () => {
   // 실제로는 API 호출이나 로컬 스토리지 확인
-  const savedPaymentMethods = localStorage.getItem('paymentMethods');
-  return savedPaymentMethods ? JSON.parse(savedPaymentMethods) : [];
+  if (typeof window !== 'undefined') {
+    const savedPaymentMethods = localStorage.getItem('paymentMethods');
+    return savedPaymentMethods ? JSON.parse(savedPaymentMethods) : [];
+  }
+  return [];
 };
 
 const SubscriptionPage = () => {
@@ -79,7 +82,9 @@ const SubscriptionPage = () => {
 
     try {
       // 선택된 플랜 정보를 세션에 저장
-      sessionStorage.setItem('selectedPlan', planId);
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('selectedPlan', planId);
+      }
       
       // 결제 수단 등록 페이지로 이동 (step 2)
       router.push('/subscription/payment-method?from=subscription');
@@ -197,29 +202,33 @@ const SubscriptionPage = () => {
           
           {/* 이미 구독 중인 경우 정보 표시 */}
           {(() => {
-            const subscription = localStorage.getItem('subscription');
-            if (subscription) {
-              const subData = JSON.parse(subscription);
-              return (
-                <div className={`mt-4 rounded-lg p-4 ${getThemeClass('componentSecondary')} ${getThemeClass('border')}`}>
-                  <p className={`text-sm ${getThemeTextColor('primary')}`}>
-                    현재 {subData.plan} 플랜을 구독 중입니다.
-                  </p>
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    className='mt-2 text-red-400 hover:bg-red-400/10'
-                    onClick={() => {
-                      if (confirm('현재 구독을 취소하시겠습니까?')) {
-                        localStorage.removeItem('subscription');
-                        window.location.reload();
-                      }
-                    }}
-                  >
-                    구독 취소
-                  </Button>
-                </div>
-              );
+            if (typeof window !== 'undefined') {
+              const subscription = localStorage.getItem('subscription');
+              if (subscription) {
+                const subData = JSON.parse(subscription);
+                return (
+                  <div className={`mt-4 rounded-lg p-4 ${getThemeClass('componentSecondary')} ${getThemeClass('border')}`}>
+                    <p className={`text-sm ${getThemeTextColor('primary')}`}>
+                      현재 {subData.plan} 플랜을 구독 중입니다.
+                    </p>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      className='mt-2 text-red-400 hover:bg-red-400/10'
+                      onClick={() => {
+                        if (confirm('현재 구독을 취소하시겠습니까?')) {
+                          if (typeof window !== 'undefined') {
+                            localStorage.removeItem('subscription');
+                            window.location.reload();
+                          }
+                        }
+                      }}
+                    >
+                      구독 취소
+                    </Button>
+                  </div>
+                );
+              }
             }
             return null;
           })()}
