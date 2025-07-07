@@ -10,7 +10,6 @@ import {
   APP_URL,
   KAKAO_PAY_CHANNEL_KEY,
   NICE_PAY_CHANNEL_KEY,
-  TOSS_PAY_CHANNEL_KEY,
   PORTONE_STORE_ID,
 } from '@/shared/configs/api/url';
 import { useTheme } from '@/hooks/useTheme';
