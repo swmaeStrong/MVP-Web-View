@@ -28,16 +28,32 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     // 선택된 플랜 정보 가져오기 (sessionStorage에서)
-    const planData = sessionStorage.getItem('selectedPlan');
-    if (planData) {
-      setSelectedPlan(JSON.parse(planData));
+    const planId = sessionStorage.getItem('selectedPlan');
+    
+    // 플랜 데이터 정의
+    const plans: { [key: string]: PlanData } = {
+      basic: {
+        name: '베이직',
+        price: 9900,
+        features: ['기본 프리미엄 기능', '광고 제거', '7일 무료 체험']
+      },
+      premium: {
+        name: '프리미엄',
+        price: 4900,
+        features: ['모든 프리미엄 기능', '광고 없는 깔끔한 경험', '30일 무료 체험', '우선 고객 지원']
+      },
+      enterprise: {
+        name: '엔터프라이즈',
+        price: 19900,
+        features: ['무제한 모든 기능', '팀 협업 도구', '고급 분석 기능', '24/7 전담 지원']
+      }
+    };
+    
+    if (planId && plans[planId]) {
+      setSelectedPlan(plans[planId]);
     } else {
       // 기본 플랜 설정
-      setSelectedPlan({
-        name: 'Premium',
-        price: 1,
-        features: ['무제한 프리미엄 기능', '광고 없는 경험', '우선 고객 지원']
-      });
+      setSelectedPlan(plans.premium);
     }
 
     // 결제 수단 확인
@@ -109,14 +125,14 @@ export default function CheckoutPage() {
                 <h3 className={`text-xl font-bold ${getThemeClass('textPrimary')}`}>
                   {selectedPlan.name} 플랜 활성화
                 </h3>
-                <p className={`text-2xl font-bold text-green-600`}>
-                  ${selectedPlan.price}/월
+                <p className='text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent'>
+                  ₩{selectedPlan.price.toLocaleString()}/월
                 </p>
               </div>
               <div className='space-y-2'>
                 {selectedPlan.features.map((feature, index) => (
                   <div key={index} className='flex items-center gap-3'>
-                    <span className='text-lg text-green-500'>✓</span>
+                    <span className='text-lg text-purple-500'>✓</span>
                     <span className={getThemeClass('textSecondary')}>{feature}</span>
                   </div>
                 ))}
@@ -131,6 +147,18 @@ export default function CheckoutPage() {
               onClick={() => router.push('/home')}
             >
               메인으로 돌아가기
+            </Button>
+            <Button
+              variant='outline'
+              className='w-full rounded-2xl text-purple-400 hover:bg-purple-400/10'
+              onClick={() => {
+                // 구독 정보 초기화
+                localStorage.removeItem('subscription');
+                sessionStorage.removeItem('selectedPlan');
+                router.push('/subscription');
+              }}
+            >
+              다른 플랜 선택하기
             </Button>
           </div>
         </div>
@@ -158,21 +186,21 @@ export default function CheckoutPage() {
         {/* 3단계 진행 표시 */}
         <div className={`rounded-2xl ${getThemeClass('component')} p-4 shadow-lg`}>
           <div className='flex items-center justify-between text-sm'>
-            <div className='flex items-center gap-2 text-green-600'>
-              <div className='flex h-6 w-6 items-center justify-center rounded-full bg-green-600 text-xs font-bold text-white'>
+            <div className='flex items-center gap-2'>
+              <div className='flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-xs font-bold text-white'>
                 ✓
               </div>
-              <span className='font-medium'>플랜 선택</span>
+              <span className='font-medium text-[rgb(220,220,220)]'>플랜 선택</span>
             </div>
-            <div className='mx-2 h-1 flex-1 rounded-full bg-green-500'></div>
-            <div className='flex items-center gap-2 text-green-600'>
-              <div className='flex h-6 w-6 items-center justify-center rounded-full bg-green-600 text-xs font-bold text-white'>
+            <div className='mx-2 h-1 flex-1 rounded-full bg-gradient-to-r from-purple-600 to-blue-600'></div>
+            <div className='flex items-center gap-2'>
+              <div className='flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-xs font-bold text-white'>
                 ✓
               </div>
-              <span className='font-medium'>결제 수단</span>
+              <span className='font-medium text-[rgb(220,220,220)]'>결제 수단</span>
             </div>
             <div className='mx-2 h-1 flex-1 rounded-full bg-purple-500'></div>
-            <div className='flex items-center gap-2 text-purple-600'>
+            <div className='flex items-center gap-2'>
               <div className='flex h-6 w-6 items-center justify-center rounded-full bg-purple-600 text-xs font-bold text-white'>
                 3
               </div>
@@ -190,7 +218,7 @@ export default function CheckoutPage() {
               </h2>
               <div className='mb-4 flex items-end justify-center gap-2'>
                 <span className='bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-4xl font-bold text-transparent'>
-                  ${selectedPlan.price}
+                  ₩{selectedPlan.price.toLocaleString()}
                 </span>
                 <span className='mb-2 text-lg text-gray-600'>/월</span>
               </div>
@@ -213,7 +241,7 @@ export default function CheckoutPage() {
           <CardContent className='space-y-4 p-0'>
             <h3 className={`text-lg font-bold ${getThemeClass('textPrimary')}`}>결제 수단</h3>
             <div className='flex items-center gap-3'>
-              <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500 text-white'>
+              <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 text-white'>
                 💳
               </div>
               <div>
@@ -243,7 +271,7 @@ export default function CheckoutPage() {
               </div>
             ) : (
               <div className='flex items-center justify-center gap-2'>
-                <span>지금 ${selectedPlan.price}로 시작하기</span>
+                <span>지금 ₩{selectedPlan.price.toLocaleString()}로 시작하기</span>
                 <span className='text-2xl'>🚀</span>
               </div>
             )}

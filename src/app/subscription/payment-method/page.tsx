@@ -16,7 +16,7 @@ import {
 import { useTheme } from '@/hooks/useTheme';
 
 // 타입 정의
-type PaymentProvider = 'KAKAOPAY' | 'NICEPAY' | 'TOSSPAY';
+type PaymentProvider = 'KAKAOPAY' | 'NICEPAY';
 
 interface ProviderInfo {
   name: string;
@@ -71,15 +71,6 @@ function PaymentMethodContent() {
       gradient: 'from-blue-500 to-blue-600',
       bgGradient: 'from-blue-50 to-blue-100',
     },
-    TOSSPAY: {
-      name: '토스페이',
-      channelKey: TOSS_PAY_CHANNEL_KEY,
-      method: 'EASY_PAY',
-      description: '간편하고 빠른 토스 결제',
-      icon: '🔵',
-      gradient: 'from-blue-600 to-blue-700',
-      bgGradient: 'from-blue-50 to-blue-100',
-    },
   };
 
   // 기존 결제 수단 로드
@@ -103,6 +94,29 @@ function PaymentMethodContent() {
 
     loadExistingPaymentMethods();
   }, []);
+
+  // 결제 수단 삭제 함수
+  const handleDeletePaymentMethod = (methodId: string) => {
+    if (confirm('이 결제 수단을 삭제하시겠습니까?')) {
+      const updatedMethods = existingMethods.filter(method => method.id !== methodId);
+      setExistingMethods(updatedMethods);
+      localStorage.setItem('paymentMethods', JSON.stringify(updatedMethods));
+      
+      // 모든 결제 수단이 삭제되면 새로 추가하는 화면으로 전환
+      if (updatedMethods.length === 0) {
+        setShowAddNew(true);
+      }
+    }
+  };
+
+  // 모든 결제 수단 삭제 함수
+  const handleDeleteAllPaymentMethods = () => {
+    if (confirm('모든 결제 수단을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) {
+      setExistingMethods([]);
+      localStorage.removeItem('paymentMethods');
+      setShowAddNew(true);
+    }
+  };
 
   // 새 결제 수단 추가
   const handleAddNewPaymentMethod = async () => {
@@ -226,14 +240,14 @@ function PaymentMethodContent() {
         {fromSubscription && (
           <div className={`rounded-2xl p-4 shadow-lg ${getThemeClass('component')} ${getThemeClass('border')}`}>
             <div className='flex items-center justify-between text-sm'>
-              <div className='flex items-center gap-2 text-purple-400'>
-                <div className='flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-xs font-bold text-white'>
+              <div className='flex items-center gap-2'>
+                <div className='flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-xs font-bold text-white'>
                   ✓
                 </div>
                 <span className={`font-medium ${getThemeTextColor('primary')}`}>플랜 선택</span>
               </div>
               <div className={`mx-2 h-1 flex-1 rounded-full bg-purple-600`}></div>
-              <div className='flex items-center gap-2 text-purple-400'>
+              <div className='flex items-center gap-2'>
                 <div className='flex h-6 w-6 items-center justify-center rounded-full bg-purple-600 text-xs font-bold text-white'>
                   2
                 </div>
@@ -256,13 +270,22 @@ function PaymentMethodContent() {
           <div className='space-y-4'>
             <div className='flex items-center justify-between'>
               <h2 className={`text-xl font-bold ${getThemeTextColor('primary')}`}>등록된 결제 수단</h2>
-              <Button
-                variant='outline'
-                onClick={() => setShowAddNew(true)}
-                className={`rounded-xl border-purple-400 text-purple-400 hover:bg-purple-400/10 ${getThemeClass('border')}`}
-              >
-                + 새 결제 수단 추가
-              </Button>
+              <div className='flex gap-2'>
+                <Button
+                  variant='outline'
+                  onClick={handleDeleteAllPaymentMethods}
+                  className={`rounded-xl border-red-400 text-red-400 hover:bg-red-400/10 ${getThemeClass('border')}`}
+                >
+                  모두 삭제
+                </Button>
+                <Button
+                  variant='outline'
+                  onClick={() => setShowAddNew(true)}
+                  className={`rounded-xl border-purple-400 text-purple-400 hover:bg-purple-400/10 ${getThemeClass('border')}`}
+                >
+                  + 새 결제 수단 추가
+                </Button>
+              </div>
             </div>
             
             <div className='grid gap-4'>
@@ -274,27 +297,39 @@ function PaymentMethodContent() {
                 >
                   <CardContent className='p-6'>
                     <div className='flex items-center gap-4'>
-                      <div className='h-16 w-16 rounded-2xl bg-gradient-to-r from-gray-500 to-gray-600 flex items-center justify-center text-2xl text-white'>
-                        {method.type === 'KAKAOPAY' ? '💛' : method.type === 'TOSSPAY' ? '🔵' : '💳'}
+                      <div className='h-16 w-16 rounded-2xl bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center text-2xl text-white'>
+                        {method.type === 'KAKAOPAY' ? '💛' : '💳'}
                       </div>
                       
                       <div className='flex-1'>
                         <h3 className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
                           {method.type === 'KAKAOPAY' ? '카카오페이' : 
-                           method.type === 'NICEPAY' ? '나이스페이' :
-                           method.type === 'TOSSPAY' ? '토스페이' : '신용/체크카드'}
+                           method.type === 'NICEPAY' ? '나이스페이' : '신용/체크카드'}
                         </h3>
                         <p className={`text-sm ${getThemeTextColor('secondary')}`}>
                           {method.last4 ? `****-****-****-${method.last4}` : 
-                           (method.type === 'KAKAOPAY' || method.type === 'TOSSPAY') ? '간편결제' : '카드결제'}
+                           method.type === 'KAKAOPAY' ? '간편결제' : '카드결제'}
                         </p>
                         <p className={`text-xs ${getThemeTextColor('secondary')}`}>
                           등록일: {new Date(method.createdAt).toLocaleDateString('ko-KR')}
                         </p>
                       </div>
                       
-                      <div className='text-purple-400'>
-                        <span className='text-sm'>선택하기 →</span>
+                      <div className='flex items-center gap-2'>
+                        <Button
+                          variant='ghost'
+                          size='sm'
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeletePaymentMethod(method.id);
+                          }}
+                          className='text-red-400 hover:text-red-500 hover:bg-red-400/10'
+                        >
+                          삭제
+                        </Button>
+                        <div className='text-purple-400'>
+                          <span className='text-sm'>선택하기 →</span>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
@@ -351,7 +386,7 @@ function PaymentMethodContent() {
                             {method.name}
                           </h3>
                           {method.recommended && (
-                            <span className='rounded-full bg-yellow-600 px-2 py-1 text-xs text-yellow-100'>
+                            <span className='rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-2 py-1 text-xs text-white'>
                               추천
                             </span>
                           )}
@@ -429,15 +464,15 @@ function PaymentMethodContent() {
             </h3>
             <div className={`grid gap-4 text-sm sm:grid-cols-3 ${getThemeTextColor('secondary')}`}>
               <div className='flex items-center gap-2'>
-                <span className='text-green-400'>✓</span>
+                <span className='text-purple-400'>✓</span>
                 <span>256비트 SSL 암호화</span>
               </div>
               <div className='flex items-center gap-2'>
-                <span className='text-green-400'>✓</span>
+                <span className='text-purple-400'>✓</span>
                 <span>개인정보 보호</span>
               </div>
               <div className='flex items-center gap-2'>
-                <span className='text-green-400'>✓</span>
+                <span className='text-purple-400'>✓</span>
                 <span>안전한 결제 처리</span>
               </div>
             </div>

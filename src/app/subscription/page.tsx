@@ -95,11 +95,8 @@ const SubscriptionPage = () => {
       <div className='mx-auto max-w-6xl'>
         {/* 헤더 */}
         <div className='mb-8 text-center'>
-          <Badge className='mb-4 bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg'>
-            🚀 1단계: 구독 플랜 선택
-          </Badge>
-          <h1 className='mb-4 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-4xl font-bold text-transparent'>
-            프리미엄 구독 플랜
+          <h1 className={`mb-4 text-3xl font-bold ${getThemeTextColor('primary')}`}>
+            구독 플랜
           </h1>
           <p className={`text-lg ${getThemeTextColor('secondary')}`}>
             프리미엄 기능을 체험하고 생산성을 높이세요
@@ -111,56 +108,51 @@ const SubscriptionPage = () => {
           {subscriptionPlans.map((plan) => (
             <Card
               key={plan.id}
-              className={`relative cursor-pointer rounded-2xl border-2 p-6 transition-all duration-300 hover:shadow-xl ${
+              className={`relative cursor-pointer rounded-lg border p-4 transition-all duration-200 ${
                 selectedPlan === plan.id
-                  ? `scale-105 border-purple-400 shadow-lg ${getThemeClass('componentSecondary')}`
-                  : `${getThemeClass('component')} ${getThemeClass('border')} hover:border-purple-400`
-              } ${plan.popular ? 'ring-2 ring-purple-400' : ''}`}
+                  ? `${getThemeClass('componentSecondary')} shadow-md`
+                  : `${getThemeClass('component')} ${getThemeClass('border')} hover:shadow-sm`
+              }`}
               onClick={() => setSelectedPlan(plan.id)}
             >
-              {/* 인기 배지 */}
+              {/* 인기 표시 (미니멀) */}
               {plan.popular && (
-                <div className='absolute -top-3 left-1/2 -translate-x-1/2'>
-                  <Badge className='bg-gradient-to-r from-purple-600 to-blue-600 px-3 py-1 text-xs font-bold text-white'>
-                    ⭐ 가장 인기
-                  </Badge>
+                <div className='absolute -top-2 right-3'>
+                  <div className={`text-xs px-2 py-1 rounded ${getThemeTextColor('primary')}`}>
+                    인기
+                  </div>
                 </div>
               )}
 
               <CardContent className='p-0'>
                 {/* 플랜 이름 */}
-                <div className='mb-4 text-center'>
-                  <h3 className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
+                <div className='mb-3 text-center'>
+                  <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
                     {plan.name}
                   </h3>
                 </div>
 
                 {/* 가격 정보 */}
-                <div className='mb-6 text-center'>
+                <div className='mb-4 text-center'>
                   <div className='flex items-baseline justify-center gap-1'>
-                    <span className='bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-4xl font-bold text-transparent'>
+                    <span className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
                       ₩{plan.price.toLocaleString()}
                     </span>
-                    <span className={`text-lg ${getThemeTextColor('secondary')}`}>
+                    <span className={`text-sm ${getThemeTextColor('secondary')}`}>
                       /{plan.period}
                     </span>
                   </div>
-                  <p className={`text-sm ${getThemeTextColor('secondary')} line-through`}>
-                    원래 ₩{plan.originalPrice.toLocaleString()}/{plan.period}
+                  <p className={`text-xs ${getThemeTextColor('secondary')} line-through mt-1`}>
+                    ₩{plan.originalPrice.toLocaleString()}
                   </p>
-                  <div className='mt-2 inline-block rounded-full bg-green-500 px-3 py-1 text-xs font-semibold text-white'>
-                    {plan.discount} 절약
-                  </div>
                 </div>
 
                 {/* 기능 목록 */}
-                <div className='mb-6 space-y-3'>
+                <div className='mb-4 space-y-2'>
                   {plan.features.map((feature, index) => (
-                    <div key={index} className='flex items-center gap-3'>
-                      <div className='flex h-5 w-5 items-center justify-center rounded-full bg-green-500'>
-                        <span className='text-xs text-white'>✓</span>
-                      </div>
-                      <span className={`text-sm ${getThemeTextColor('primary')}`}>
+                    <div key={index} className='flex items-center gap-2'>
+                      <span className={`text-xs ${getThemeTextColor('primary')}`}>•</span>
+                      <span className={`text-xs ${getThemeTextColor('secondary')}`}>
                         {feature}
                       </span>
                     </div>
@@ -170,14 +162,14 @@ const SubscriptionPage = () => {
                 {/* 선택 표시 */}
                 <div className='text-center'>
                   <div
-                    className={`mx-auto flex h-6 w-6 items-center justify-center rounded-full border-2 ${
+                    className={`mx-auto flex h-4 w-4 items-center justify-center rounded-full border ${
                       selectedPlan === plan.id
-                        ? 'border-purple-400 bg-purple-400'
-                        : `${getThemeClass('border')} ${getThemeClass('component')}`
+                        ? `${getThemeTextColor('primary')} border-current`
+                        : `${getThemeClass('border')}`
                     }`}
                   >
                     {selectedPlan === plan.id && (
-                      <div className='h-3 w-3 rounded-full bg-white'></div>
+                      <div className={`h-2 w-2 rounded-full ${getThemeTextColor('primary')} bg-current`}></div>
                     )}
                   </div>
                 </div>
@@ -187,37 +179,53 @@ const SubscriptionPage = () => {
         </div>
 
         {/* 계속하기 버튼 */}
-        <div className='mt-8 text-center'>
+        <div className='mt-6 text-center'>
           <Button
             onClick={() => handleSubscribe(selectedPlan)}
             disabled={isLoading}
-            className='transform rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-4 text-lg font-bold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:from-purple-700 hover:to-blue-700 hover:shadow-2xl disabled:opacity-50 disabled:hover:scale-100'
+            className={`rounded-lg px-6 py-2 text-sm font-medium transition-colors ${getThemeClass('component')} ${getThemeClass('border')} ${getThemeTextColor('primary')} hover:${getThemeClass('componentSecondary')} disabled:opacity-50`}
           >
             {isLoading ? (
               <div className='flex items-center gap-2'>
-                <div className='h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent'></div>
+                <div className='h-4 w-4 animate-spin rounded-full border border-current border-t-transparent'></div>
                 처리 중...
               </div>
             ) : (
-              '다음 단계: 결제 수단 등록 →'
+              '구독하기'
             )}
           </Button>
           
-          <div className={`mt-4 text-center text-sm ${getThemeTextColor('secondary')}`}>
-            <div className='flex items-center justify-center gap-4'>
-              <span className='flex items-center gap-1'>
-                <span>🔒</span>
-                <span>30일 환불 보장</span>
-              </span>
-              <span className='flex items-center gap-1'>
-                <span>💳</span>
-                <span>안전한 결제</span>
-              </span>
-              <span className='flex items-center gap-1'>
-                <span>⭐</span>
-                <span>4.9/5.0 만족도</span>
-              </span>
-            </div>
+          {/* 이미 구독 중인 경우 정보 표시 */}
+          {(() => {
+            const subscription = localStorage.getItem('subscription');
+            if (subscription) {
+              const subData = JSON.parse(subscription);
+              return (
+                <div className={`mt-4 rounded-lg p-4 ${getThemeClass('componentSecondary')} ${getThemeClass('border')}`}>
+                  <p className={`text-sm ${getThemeTextColor('primary')}`}>
+                    현재 {subData.plan} 플랜을 구독 중입니다.
+                  </p>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    className='mt-2 text-red-400 hover:bg-red-400/10'
+                    onClick={() => {
+                      if (confirm('현재 구독을 취소하시겠습니까?')) {
+                        localStorage.removeItem('subscription');
+                        window.location.reload();
+                      }
+                    }}
+                  >
+                    구독 취소
+                  </Button>
+                </div>
+              );
+            }
+            return null;
+          })()}
+          
+          <div className={`mt-4 text-center text-xs ${getThemeTextColor('secondary')}`}>
+            <p>30일 환불 보장 • 안전한 결제</p>
           </div>
         </div>
       </div>
