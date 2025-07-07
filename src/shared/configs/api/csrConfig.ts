@@ -70,13 +70,21 @@ const isTokenRetryNeeded = (error: any): boolean => {
 /**
  * 에러 로깅 및 리포팅
  */
-const logAndReportError = (error: any, instanceName: string) => {
+const logAndReportError = (error: any, instanceName: string, isTokenRefreshFailure = false) => {
   const currentUser = useUserStore.getState().currentUser;
-  handleApiError(error, {
+  
+  // 인증 에러 중 토큰 갱신 실패인 경우 추가 컨텍스트 포함
+  const errorContext = {
     feature: 'api-request',
     component: `axios-${instanceName}-interceptor`,
     userId: currentUser?.id,
-  });
+    ...(isTokenRefreshFailure && {
+      action: 'token-refresh-failure',
+      isAuthRecoveryFailed: true,
+    }),
+  };
+  
+  handleApiError(error, errorContext);
 };
 
 /**
@@ -97,8 +105,10 @@ const redirectToUnauthorized = () => {
  */
 const createTokenRetryInterceptor = (apiInstance: typeof API, instanceName: string) => {
   return async (error: any) => {
-    // 토큰 관련 에러인지 확인
-    if (isTokenRetryNeeded(error)) {
+    const isAuthError = isTokenRetryNeeded(error);
+    
+    // 토큰 관련 에러인 경우 갱신 시도
+    if (isAuthError) {
       const { config } = error;
       
       try {
@@ -108,7 +118,7 @@ const createTokenRetryInterceptor = (apiInstance: typeof API, instanceName: stri
         const newToken = await handleAccessTokenRequest();
         
         if (newToken) {
-          console.log(`${instanceName}: New token received, retrying original request...`);
+          console.log(`${instanceName}: Token refresh successful, retrying original request...`);
           
           // 새로운 axios 인스턴스 생성 (일회용)
           const tempAxiosInstance = axios.create({
@@ -119,7 +129,7 @@ const createTokenRetryInterceptor = (apiInstance: typeof API, instanceName: stri
             },
           });
           
-          // 새 인스턴스로 요청 재시도
+          // 새 인스턴스로 요청 재시도 - 성공하면 원본 에러는 로깅하지 않음
           return tempAxiosInstance.request({
             ...config,
             headers: {
@@ -128,18 +138,24 @@ const createTokenRetryInterceptor = (apiInstance: typeof API, instanceName: stri
             },
           });
         } else {
-          console.error(`${instanceName}: Failed to refresh token`);
+          console.error(`${instanceName}: Failed to refresh token, will log and redirect`);
+          
+          // 토큰 갱신 실패 시에만 로깅 및 리다이렉트
+          redirectToUnauthorized();
+          logAndReportError(error, instanceName, true);
+          throw error;
         }
       } catch (refreshError) {
         console.error(`${instanceName}: Token refresh error:`, refreshError);
+        
+        // 토큰 갱신 중 에러 발생 시에만 로깅 및 리다이렉트
+        redirectToUnauthorized();
+        logAndReportError(error, instanceName, true);
+        throw error;
       }
     }
     
-    // 토큰 갱신 실패 또는 다른 에러의 경우
-    if (error.response && noAccessTokenCode.includes(error.response.data?.code)) {
-      redirectToUnauthorized();
-    }
-    
+    // 인증 에러가 아닌 다른 에러의 경우 바로 로깅
     logAndReportError(error, instanceName);
     throw error;
   };
