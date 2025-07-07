@@ -225,6 +225,23 @@ function PaymentMethodContent() {
             </div>
           )}
 
+          {/* 선택된 상품 정보 표시 */}
+          {fromSubscription && (
+            <div className={`mb-6 rounded-lg border p-4 ${getThemeClass('componentSecondary')} ${getThemeClass('border')}`}>
+              <h3 className={`mb-2 text-sm font-semibold ${getThemeTextColor('primary')}`}>선택하신 상품</h3>
+              <div className={`text-sm ${getThemeTextColor('secondary')}`}>
+                <div className='flex justify-between items-center'>
+                  <span>Pawcus 프리미엄 구독 (월간)</span>
+                  <span className='font-bold'>₩4,900/월</span>
+                </div>
+                <div className='mt-1 text-xs'>
+                  <span>• 매월 자동 결제</span>
+                  <span className='ml-2'>• 언제든 취소 가능</span>
+                </div>
+              </div>
+            </div>
+          )}
+
           <h1 className='bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-3xl font-bold text-transparent sm:text-4xl'>
             💳 결제 수단 선택
           </h1>

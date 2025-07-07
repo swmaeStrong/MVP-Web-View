@@ -139,17 +139,26 @@ const SubscriptionPage = () => {
 
                 {/* 가격 정보 */}
                 <div className='mb-4 text-center'>
-                  <div className='flex items-baseline justify-center gap-1'>
-                    <span className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-                      ₩{plan.price.toLocaleString()}
-                    </span>
-                    <span className={`text-sm ${getThemeTextColor('secondary')}`}>
-                      /{plan.period}
-                    </span>
+                  <div className={`mb-2 rounded p-2 ${getThemeClass('componentSecondary')}`}>
+                    <div className='flex items-baseline justify-center gap-1'>
+                      <span className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
+                        ₩{plan.price.toLocaleString()}
+                      </span>
+                      <span className={`text-sm ${getThemeTextColor('secondary')}`}>
+                        /{plan.period}
+                      </span>
+                    </div>
+                    <p className={`text-xs ${getThemeTextColor('secondary')} line-through mt-1`}>
+                      정가: ₩{plan.originalPrice.toLocaleString()}
+                    </p>
+                    <p className='text-xs text-red-500 font-medium mt-1'>
+                      {plan.discount} 할인
+                    </p>
                   </div>
-                  <p className={`text-xs ${getThemeTextColor('secondary')} line-through mt-1`}>
-                    ₩{plan.originalPrice.toLocaleString()}
-                  </p>
+                  <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                    <p>• 부가세 포함 가격</p>
+                    <p>• 매월 자동 결제</p>
+                  </div>
                 </div>
 
                 {/* 기능 목록 */}
@@ -233,8 +242,33 @@ const SubscriptionPage = () => {
             return null;
           })()}
           
+          {/* 교환/환불 규정 */}
+          <div className={`mt-6 rounded-lg border p-4 ${getThemeClass('component')} ${getThemeClass('border')}`}>
+            <h3 className={`mb-3 text-sm font-semibold ${getThemeTextColor('primary')}`}>교환/환불 규정</h3>
+            <div className={`space-y-2 text-xs ${getThemeTextColor('secondary')}`}>
+              <div>
+                <span className='font-medium'>환불 가능 기간:</span> 서비스 이용 시작일로부터 7일 이내
+              </div>
+              <div>
+                <span className='font-medium'>환불 조건:</span> 서비스를 이용하지 않은 경우에 한해 전액 환불
+              </div>
+              <div>
+                <span className='font-medium'>환불 처리 기간:</span> 환불 신청 후 3~5영업일 이내
+              </div>
+              <div>
+                <span className='font-medium'>환불 방법:</span> 결제한 수단으로 자동 환불
+              </div>
+              <div>
+                <span className='font-medium'>교환:</span> 디지털 서비스 특성상 교환 불가
+              </div>
+              <div>
+                <span className='font-medium'>문의:</span> 고객센터 support@pawcus.com
+              </div>
+            </div>
+          </div>
+
           <div className={`mt-4 text-center text-xs ${getThemeTextColor('secondary')}`}>
-            <p>30일 환불 보장 • 안전한 결제</p>
+            <p>7일 환불 보장 • 안전한 결제 • 개인정보보호</p>
           </div>
         </div>
       </div>

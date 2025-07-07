@@ -262,6 +262,37 @@ export default function CheckoutPage() {
           </CardContent>
         </Card>
 
+        {/* 정기결제 이용조건 안내 */}
+        <Card className={`rounded-2xl border-0 ${getThemeClass('component')} p-6 shadow-xl`}>
+          <CardContent className='space-y-4 p-0'>
+            <h3 className={`text-lg font-bold ${getThemeClass('textPrimary')}`}>정기결제 이용조건</h3>
+            <div className={`space-y-3 text-sm ${getThemeClass('textSecondary')}`}>
+              <div>
+                <span className='font-medium text-purple-600'>결제 방식:</span>
+                <p className='mt-1'>• 매월 결제일에 자동으로 결제됩니다</p>
+                <p>• 첫 결제일로부터 매월 같은 날에 결제</p>
+              </div>
+              <div>
+                <span className='font-medium text-purple-600'>결제 시기:</span>
+                <p className='mt-1'>• 매월 {new Date().getDate()}일 자동 결제</p>
+                <p>• 결제 3일 전 사전 안내 메일 발송</p>
+              </div>
+              <div>
+                <span className='font-medium text-purple-600'>취소/환불:</span>
+                <p className='mt-1'>• 언제든지 구독 취소 가능</p>
+                <p>• 취소 시 다음 결제일부터 중단</p>
+                <p>• 사용하지 않은 기간에 대해 일할계산 환불</p>
+              </div>
+              <div>
+                <span className='font-medium text-purple-600'>이의신청:</span>
+                <p className='mt-1'>• 고객센터: support@pawcus.com</p>
+                <p>• 전화: 1588-0000 (평일 9-18시)</p>
+                <p>• 온라인 문의: 24시간 접수</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* 최종 결제 버튼 */}
         <div className='space-y-4'>
           <Button
@@ -276,12 +307,27 @@ export default function CheckoutPage() {
                 결제 처리 중...
               </div>
             ) : (
-              <div className='flex items-center justify-center gap-2'>
-                <span>지금 ₩{selectedPlan.price.toLocaleString()}로 시작하기</span>
-                <span className='text-2xl'>🚀</span>
+              <div className='text-center'>
+                <div className='text-lg font-bold'>
+                  ₩{selectedPlan.price.toLocaleString()} 결제하기
+                </div>
+                <div className='text-sm mt-1 opacity-90'>
+                  {selectedPlan.name} 플랜 • 매월 자동 결제
+                </div>
               </div>
             )}
           </Button>
+
+          {/* 법적 고지사항 */}
+          <div className={`rounded-lg border p-3 text-xs ${getThemeClass('componentSecondary')} ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}>
+            <p className='mb-2 font-medium'>결제 진행 시 다음 사항에 동의하는 것으로 간주됩니다:</p>
+            <div className='space-y-1'>
+              <p>• 서비스 이용약관 및 개인정보처리방침</p>
+              <p>• 정기결제 약관 및 자동결제 동의</p>
+              <p>• 전자상거래 등에서의 소비자보호에 관한 법률</p>
+              <p>• 구매조건 확인 및 결제진행에 동의</p>
+            </div>
+          </div>
 
           <div className='text-center'>
             <button
