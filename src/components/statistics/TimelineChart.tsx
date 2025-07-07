@@ -42,7 +42,7 @@ interface TimelineChartProps {
     title: string;
   }>;
   isLoading?: boolean;
-  viewHours?: number; // Number of hours to display at once
+  viewHours?: typeof TIMELINE_CONSTANTS.ZOOM_LEVELS[number]; // Number of hours to display at once
 }
 
 export default function TimelineChart({ 
@@ -54,7 +54,9 @@ export default function TimelineChart({
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
 
   // State for view hours (zoom level)
-  const [viewHours, setViewHours] = useState(initialViewHours);
+  const [viewHours, setViewHours] = useState<typeof TIMELINE_CONSTANTS.ZOOM_LEVELS[number]>(
+    initialViewHours as typeof TIMELINE_CONSTANTS.ZOOM_LEVELS[number]
+  );
   const [zoomCenter, setZoomCenter] = useState<number | null>(null);
 
   // Get current hour for initial position
