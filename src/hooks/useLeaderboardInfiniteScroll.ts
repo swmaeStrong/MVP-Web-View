@@ -18,6 +18,7 @@ interface UseLeaderboardInfiniteScrollParams {
   period: 'daily' | 'weekly' | 'monthly';
   selectedDateIndex: number;
   containerRef?: React.RefObject<HTMLDivElement | null>;
+  initialPage?: number; // 초기 페이지 번호 추가
 }
 
 export function useLeaderboardInfiniteScroll({
@@ -25,6 +26,7 @@ export function useLeaderboardInfiniteScroll({
   period,
   selectedDateIndex,
   containerRef,
+  initialPage = 1,
 }: UseLeaderboardInfiniteScrollParams) {
   const categories = LEADERBOARD_CATEGORIES;
 
@@ -130,6 +132,7 @@ export function useLeaderboardInfiniteScroll({
     enabled: true,
     staleTime: 2 * 60 * 1000, // 2분
     containerRef,
+    initialPageParam: initialPage, // 초기 페이지 설정
   });
 
   return {

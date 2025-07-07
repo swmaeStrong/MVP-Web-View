@@ -28,6 +28,10 @@ type LeaderboardUser = User & {
   rank: number;
 };
 
+// 필요한 유틸리티 함수들 import
+import { useMyRank } from '@/hooks/useMyRank';
+import { getKSTDate, getKSTDateStringFromDate, getKSTWeeklyDateString, getKSTMonthlyDateString } from '@/utils/timezone';
+
 export default function Leaderboard() {
   // Hook 순서를 항상 동일하게 유지
   const currentUser = useCurrentUser();
@@ -72,6 +76,35 @@ export default function Leaderboard() {
 
   // 리더보드 컨테이너 ref
   const leaderboardContainerRef = useRef<HTMLDivElement>(null);
+  
+  // MyRank 정보를 먼저 가져오기 위한 import
+  const { myRank, rank } = useMyRank({
+    category: selectedCategory,
+    type: selectedPeriod,
+    date: (() => {
+      const today = getKSTDate();
+      if (selectedPeriod === 'daily') {
+        const targetDate = new Date(
+          today.getTime() - selectedDateIndex * 24 * 60 * 60 * 1000
+        );
+        return getKSTDateStringFromDate(targetDate);
+      } else if (selectedPeriod === 'weekly') {
+        return getKSTWeeklyDateString(selectedDateIndex);
+      } else if (selectedPeriod === 'monthly') {
+        return getKSTMonthlyDateString(selectedDateIndex);
+      }
+      return getKSTDateStringFromDate(today);
+    })(),
+    userId: currentUser?.id,
+  });
+  
+  // 랭크를 기준으로 초기 페이지 계산 (한 페이지에 10개씩)
+  const calculateInitialPage = (rank: number | null) => {
+    if (!rank || rank <= 0) return 1;
+    return Math.max(1, Math.floor((rank - 1) / 10) + 1);
+  };
+  
+  const initialPage = calculateInitialPage(rank);
 
   // 무한 스크롤 훅 사용
   const {
@@ -87,6 +120,7 @@ export default function Leaderboard() {
     period: selectedPeriod,
     selectedDateIndex,
     containerRef: leaderboardContainerRef,
+    initialPage, // 계산된 초기 페이지 전달
   });
 
   const categories = LEADERBOARD_CATEGORIES;

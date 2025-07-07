@@ -9,6 +9,7 @@ interface UseInfiniteScrollOptions<T> {
   staleTime?: number;
   refetchOnWindowFocus?: boolean;
   containerRef?: React.RefObject<HTMLDivElement | null>;
+  initialPageParam?: number; // 초기 페이지 번호 추가
 }
 
 interface UseInfiniteScrollReturn<T> {
@@ -31,6 +32,7 @@ export function useInfiniteScroll<T>({
   staleTime = 5 * 60 * 1000, // 5분
   refetchOnWindowFocus = false,
   containerRef,
+  initialPageParam = 1,
 }: UseInfiniteScrollOptions<T>): UseInfiniteScrollReturn<T> {
   const {
     data,
@@ -48,7 +50,7 @@ export function useInfiniteScroll<T>({
     enabled,
     staleTime,
     refetchOnWindowFocus,
-    initialPageParam: 1,
+    initialPageParam,
     retry: (failureCount, error) => {
       // 무한 스크롤에서는 더 보수적으로 재시도
       console.warn(`무한 스크롤 에러 (${failureCount}번째):`, error);
