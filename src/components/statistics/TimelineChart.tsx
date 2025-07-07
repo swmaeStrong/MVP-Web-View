@@ -4,7 +4,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/shadcn/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import { cardSystem, componentStates, spacing } from '@/styles/design-system';
-import { Activity } from 'lucide-react';
+import { Activity, ZoomIn, ZoomOut } from 'lucide-react';
 import { useMemo, useRef, useState, useEffect } from 'react';
 import NoData from '../common/NoData';
 
@@ -13,7 +13,8 @@ const TIMELINE_CONSTANTS = {
   MIN_BLOCK_WIDTH: 2, // px
   TIMELINE_START: 0, // hours
   TIMELINE_END: 24, // hours
-  DEFAULT_VIEW_HOURS: 4,
+  DEFAULT_VIEW_HOURS: 12,
+  ZOOM_LEVELS: [4, 8, 12, 24], // Available zoom levels
   SCROLL_DELAY: 100, // ms
   MIN_WIDTH_PERCENTAGE: 0.1, // %
   Z_INDEX_BASE: 100,
@@ -48,16 +49,23 @@ export default function TimelineChart({
   schedules, 
   timelineData, 
   isLoading,
-  viewHours = TIMELINE_CONSTANTS.DEFAULT_VIEW_HOURS
+  viewHours: initialViewHours = TIMELINE_CONSTANTS.DEFAULT_VIEW_HOURS
 }: TimelineChartProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
 
+  // State for view hours (zoom level)
+  const [viewHours, setViewHours] = useState(initialViewHours);
+  const [zoomCenter, setZoomCenter] = useState<number | null>(null);
+
   // Get current hour for initial position
   const currentHour = new Date().getHours();
-  const initialPosition = Math.max(0, Math.min(TIMELINE_CONSTANTS.TIMELINE_END - viewHours, currentHour - Math.floor(viewHours / 2)));
+  const calculateInitialPosition = (hours: number) => {
+    const position = currentHour - Math.floor(hours / 2);
+    return Math.max(0, Math.min(TIMELINE_CONSTANTS.TIMELINE_END - hours, position));
+  };
   
   // State for scroll position
-  const [scrollPosition, setScrollPosition] = useState(initialPosition);
+  const [scrollPosition, setScrollPosition] = useState(() => calculateInitialPosition(viewHours));
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   
   // Mouse drag states
@@ -75,12 +83,25 @@ export default function TimelineChart({
   }, []);
 
   // Helper function to update scroll position
-  const updateScrollPosition = (position: number) => {
+  const updateScrollPosition = (position: number, targetViewHours?: number) => {
     if (!scrollContainerRef.current) return;
     
-    const scrollPercentage = position / (TIMELINE_CONSTANTS.TIMELINE_END - viewHours);
-    const scrollLeft = scrollPercentage * (scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth);
-    scrollContainerRef.current.scrollLeft = scrollLeft;
+    const hours = targetViewHours || viewHours;
+    const safePosition = Math.max(0, Math.min(position, TIMELINE_CONSTANTS.TIMELINE_END - hours));
+    
+    // For 24-hour view, no scrolling needed
+    if (hours >= 24) {
+      scrollContainerRef.current.scrollLeft = 0;
+      return;
+    }
+    
+    const scrollPercentage = safePosition / (TIMELINE_CONSTANTS.TIMELINE_END - hours);
+    const scrollWidth = scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth;
+    
+    if (scrollWidth > 0) {
+      const scrollLeft = scrollPercentage * scrollWidth;
+      scrollContainerRef.current.scrollLeft = scrollLeft;
+    }
   };
 
   // Track if initial scroll has been set
@@ -96,10 +117,28 @@ export default function TimelineChart({
     
     // Use requestAnimationFrame to ensure DOM is fully painted
     requestAnimationFrame(() => {
-      updateScrollPosition(initialPosition);
+      const position = calculateInitialPosition(viewHours);
+      updateScrollPosition(position, viewHours);
       setHasInitialScroll(true);
     });
-  }, [isLoading, hasInitialScroll, initialPosition]);
+  }, [isLoading, hasInitialScroll, viewHours]);
+
+  // Handle zoom center preservation
+  useEffect(() => {
+    if (zoomCenter !== null && scrollContainerRef.current) {
+      const newScrollPosition = Math.max(
+        0,
+        Math.min(
+          TIMELINE_CONSTANTS.TIMELINE_END - viewHours,
+          zoomCenter - viewHours / 2
+        )
+      );
+      
+      setScrollPosition(newScrollPosition);
+      updateScrollPosition(newScrollPosition, viewHours);
+      setZoomCenter(null); // Reset after use
+    }
+  }, [viewHours, zoomCenter]);
 
   // Mouse drag handlers
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -126,6 +165,42 @@ export default function TimelineChart({
 
   const handleMouseLeave = () => {
     setIsDragging(false);
+  };
+
+
+  // Zoom handlers
+  const handleZoomIn = () => {
+    const currentIndex = TIMELINE_CONSTANTS.ZOOM_LEVELS.indexOf(viewHours);
+    if (currentIndex > 0) {
+      const newViewHours = TIMELINE_CONSTANTS.ZOOM_LEVELS[currentIndex - 1];
+      
+      // Calculate the center of the current view
+      const centerHour = scrollPosition + viewHours / 2;
+      
+      // Set the center for the zoom effect
+      setZoomCenter(centerHour);
+      setViewHours(newViewHours);
+    }
+  };
+
+  const handleZoomOut = () => {
+    const currentIndex = TIMELINE_CONSTANTS.ZOOM_LEVELS.indexOf(viewHours);
+    if (currentIndex < TIMELINE_CONSTANTS.ZOOM_LEVELS.length - 1) {
+      const newViewHours = TIMELINE_CONSTANTS.ZOOM_LEVELS[currentIndex + 1];
+      
+      // Calculate the center of the current view
+      const centerHour = scrollPosition + viewHours / 2;
+      
+      // Set the center for the zoom effect
+      if (newViewHours >= 24) {
+        // For 24-hour view, just reset to 0
+        setViewHours(newViewHours);
+        setScrollPosition(0);
+      } else {
+        setZoomCenter(centerHour);
+        setViewHours(newViewHours);
+      }
+    }
   };
 
   // Function to convert time to minutes (HH:MM format or ISO string)
@@ -358,12 +433,53 @@ export default function TimelineChart({
   return (
     <Card className={`${cardStyles} relative z-10`}>
       <CardHeader className={cn(cardSystem.header, '')}>
-        <CardTitle className={cn(
-          'flex items-center gap-3 text-lg font-bold',
-          getThemeTextColor('primary')
-        )}>
-          TIMELINE
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className={cn(
+            'flex items-center gap-3 text-lg font-bold',
+            getThemeTextColor('primary')
+          )}>
+            TIMELINE
+          </CardTitle>
+          
+          {/* Zoom controls */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleZoomOut}
+              disabled={viewHours === TIMELINE_CONSTANTS.ZOOM_LEVELS[TIMELINE_CONSTANTS.ZOOM_LEVELS.length - 1]}
+              className={cn(
+                'p-2 rounded-lg transition-all duration-200',
+                getThemeClass('componentSecondary'),
+                'hover:bg-opacity-80',
+                'disabled:opacity-50 disabled:cursor-not-allowed',
+                'border',
+                getThemeClass('border')
+              )}
+              title="Zoom out"
+            >
+              <ZoomOut className="h-4 w-4" />
+            </button>
+            
+            <span className={cn('text-sm font-medium px-2', getThemeTextColor('secondary'))}>
+              {viewHours}h
+            </span>
+            
+            <button
+              onClick={handleZoomIn}
+              disabled={viewHours === TIMELINE_CONSTANTS.ZOOM_LEVELS[0]}
+              className={cn(
+                'p-2 rounded-lg transition-all duration-200',
+                getThemeClass('componentSecondary'),
+                'hover:bg-opacity-80',
+                'disabled:opacity-50 disabled:cursor-not-allowed',
+                'border',
+                getThemeClass('border')
+              )}
+              title="Zoom in"
+            >
+              <ZoomIn className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
       </CardHeader>
 
       <CardContent className={cn(cardSystem.content, 'pb-4')}>
@@ -381,22 +497,35 @@ export default function TimelineChart({
         <div className="relative">
           {/* Current time range indicator */}
           <div className={cn('text-center text-sm font-medium mb-2', getThemeTextColor('secondary'))}>
-            {`${scrollPosition.toString().padStart(2, '0')}:00 - ${Math.min(TIMELINE_CONSTANTS.TIMELINE_END, scrollPosition + viewHours).toString().padStart(2, '0')}:00`}
+            {viewHours >= TIMELINE_CONSTANTS.ZOOM_LEVELS[TIMELINE_CONSTANTS.ZOOM_LEVELS.length - 1]
+              ? '00:00 - 24:00'
+              : `${Math.round(scrollPosition).toString().padStart(2, '0')}:00 - ${Math.round(Math.min(TIMELINE_CONSTANTS.TIMELINE_END, scrollPosition + viewHours)).toString().padStart(2, '0')}:00`
+            }
           </div>
 
           {/* Scrollable timeline container */}
           <div 
             className={cn(
-              "w-full overflow-x-auto",
-              "timeline-scroll-hide"
+              "w-full",
+              viewHours < TIMELINE_CONSTANTS.ZOOM_LEVELS[TIMELINE_CONSTANTS.ZOOM_LEVELS.length - 1] ? "overflow-x-auto timeline-scroll-hide" : "overflow-x-hidden"
             )}
             ref={scrollContainerRef}
             onScroll={(e) => {
+              // Only handle scroll if not showing full 24 hours
+              if (viewHours >= TIMELINE_CONSTANTS.ZOOM_LEVELS[TIMELINE_CONSTANTS.ZOOM_LEVELS.length - 1]) return;
+              
               const scrollLeft = e.currentTarget.scrollLeft;
               const scrollWidth = e.currentTarget.scrollWidth - e.currentTarget.clientWidth;
-              const scrollPercentage = scrollLeft / scrollWidth;
-              const newPosition = Math.round(scrollPercentage * (TIMELINE_CONSTANTS.TIMELINE_END - viewHours));
-              setScrollPosition(newPosition);
+              
+              if (scrollWidth > 0) {
+                const scrollPercentage = scrollLeft / scrollWidth;
+                const newPosition = Math.round(scrollPercentage * (TIMELINE_CONSTANTS.TIMELINE_END - viewHours));
+                const safePosition = Math.max(0, Math.min(newPosition, TIMELINE_CONSTANTS.TIMELINE_END - viewHours));
+                
+                if (!isNaN(safePosition)) {
+                  setScrollPosition(safePosition);
+                }
+              }
             }}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
@@ -467,19 +596,27 @@ export default function TimelineChart({
               {/* Time labels (bottom) - for full 24 hours */}
               <div className="relative">
                 <div className="flex justify-between">
-                  {fullDayHours.map((hour, index) => (
-                    <div
-                      key={hour}
-                      className={cn(
-                        'text-center text-xs lg:text-sm font-medium',
-                        getThemeTextColor('secondary'),
-                        // Show every hour on the expanded timeline
-                        'block'
-                      )}
-                    >
-                      {hour === TIMELINE_CONSTANTS.TIMELINE_END ? '24:00' : `${hour.toString().padStart(2, '0')}:00`}
-                    </div>
-                  ))}
+                  {fullDayHours.map((hour, index) => {
+                    // Dynamic label display based on zoom level
+                    const showLabel = 
+                      viewHours === 24 ? hour % 6 === 0 :  // Show every 6 hours for full day
+                      viewHours === 12 ? hour % 3 === 0 :  // Show every 3 hours for 12h view
+                      viewHours === 8 ? hour % 2 === 0 :   // Show every 2 hours for 8h view
+                      true;                                 // Show every hour for 4h view
+                    
+                    return (
+                      <div
+                        key={hour}
+                        className={cn(
+                          'text-center text-xs lg:text-sm font-medium',
+                          getThemeTextColor('secondary'),
+                          showLabel ? 'block' : 'hidden'
+                        )}
+                      >
+                        {hour === TIMELINE_CONSTANTS.TIMELINE_END ? '24:00' : `${hour.toString().padStart(2, '0')}:00`}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
