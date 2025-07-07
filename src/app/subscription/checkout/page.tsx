@@ -20,7 +20,7 @@ interface PlanData {
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { getThemeClass } = useTheme();
+  const { getThemeClass, getThemeTextColor } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
