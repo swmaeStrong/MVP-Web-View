@@ -3,6 +3,8 @@
 import { formatKSTDate, getKSTDate } from '@/utils/timezone';
 import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, spacing } from '@/styles/design-system';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/shadcn/ui/button';
 
 interface PeriodSelectorProps {
   selectedPeriod: 'daily' | 'weekly' | 'monthly';
@@ -121,28 +123,24 @@ export default function PeriodSelector({
 
           {/* 이전/다음 버튼 */}
           <div className='flex gap-2'>
-            <button
-              className={
-                canGoPrevious()
-                  ? `h-8 w-8 rounded-lg text-sm p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('componentSecondary')}`
-                  : `h-8 w-8 cursor-not-allowed rounded-lg text-sm p-0 border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')} opacity-50`
-              }
+            <Button
+              variant='outline'
+              size='sm'
               onClick={handlePreviousDate}
               disabled={!canGoPrevious()}
+              className={`h-8 w-8 rounded-lg p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeClass('textPrimary')} hover:border-purple-300 hover:bg-purple-50 dark:hover:border-purple-600 dark:hover:bg-purple-900/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:border-current disabled:hover:bg-current`}
             >
-              ←
-            </button>
-            <button
-              className={
-                canGoNext()
-                  ? `h-8 w-8 rounded-lg text-sm p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('componentSecondary')}`
-                  : `h-8 w-8 cursor-not-allowed rounded-lg text-sm p-0 border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')} opacity-50`
-              }
+              <ChevronLeft className='h-4 w-4' />
+            </Button>
+            <Button
+              variant='outline'
+              size='sm'
               onClick={handleNextDate}
               disabled={!canGoNext()}
+              className={`h-8 w-8 rounded-lg p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeClass('textPrimary')} hover:border-purple-300 hover:bg-purple-50 dark:hover:border-purple-600 dark:hover:bg-purple-900/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:border-current disabled:hover:bg-current`}
             >
-              →
-            </button>
+              <ChevronRight className='h-4 w-4' />
+            </Button>
           </div>
         </div>
 
