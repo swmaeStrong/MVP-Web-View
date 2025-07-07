@@ -3,6 +3,7 @@
 import { useMyRank } from '@/hooks/useMyRank';
 import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, spacing } from '@/styles/design-system';
+import ErrorState from '@/components/common/ErrorState';
 import {
   getKSTDate,
   getKSTDateStringFromDate,
@@ -127,21 +128,14 @@ export default function MyRankBanner({
 
   if (isError || !myRank) {
     return (
-      <div
-        className={`relative ${spacing.section.normal} ${componentSizes.large.borderRadius} ${componentSizes.medium.border} border-orange-200 ${componentSizes.medium.padding} ${componentSizes.small.shadow} ${getThemeClass('component')}`}
-        style={{ zIndex: 1 }}
-      >
-        <div className='flex items-center space-x-3'>
-          <Users className='h-8 w-8 text-orange-500' />
-          <div>
-            <p className={`font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-700'}`}>
-              Unable to load rank information
-            </p>
-            <p className={`text-sm ${isDarkMode ? 'text-orange-300' : 'text-orange-600'}`}>
-              Please log in or create activity records!
-            </p>
-          </div>
-        </div>
+      <div className={`relative ${spacing.section.normal}`} style={{ zIndex: 1 }}>
+        <ErrorState
+          title="Unable to load rank information"
+          message="Please log in or create activity records to see your ranking!"
+          size="small"
+          icon={Users}
+          showBorder={true}
+        />
       </div>
     );
   }

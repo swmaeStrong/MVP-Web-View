@@ -3,6 +3,7 @@
 import { useCurrentUser, User } from '@/stores/userStore';
 import { useRef } from 'react';
 import EmptyState from './EmptyState';
+import ErrorState from '@/components/common/ErrorState';
 import UserCard from './UserCard';
 import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, spacing } from '@/styles/design-system';
@@ -55,21 +56,15 @@ export default function LeaderboardList({
   // Error state
   if (isError) {
     return (
-      <div className='mb-8 flex justify-center'>
-        <div className={`${componentSizes.medium.borderRadius} ${componentSizes.medium.border} ${componentSizes.xlarge.padding} text-center ${componentSizes.small.shadow} ${getThemeClass('border')} ${getThemeClass('component')}`}>
-          <p className='mb-4 font-medium text-red-600'>
-            ❌ {error.message || 'An error occurred while loading data.'}
-          </p>
-          <p className={`mb-4 text-sm ${getThemeTextColor('secondary')}`}>
-            Server request was interrupted. Please try again later.
-          </p>
-          <button
-            onClick={() => refetch()}
-            className='rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:from-purple-700 hover:to-blue-700'
-          >
-            Try Again
-          </button>
-        </div>
+      <div className='mb-8'>
+        <ErrorState
+          title="Failed to load leaderboard"
+          message={error.message || 'Unable to load ranking data. Please check your connection and try again.'}
+          size="medium"
+          onRetry={() => refetch()}
+          retryText="Try Again"
+          showBorder={true}
+        />
       </div>
     );
   }
