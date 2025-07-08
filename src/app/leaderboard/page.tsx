@@ -56,7 +56,7 @@ export default function Leaderboard() {
     monthly: 0,
   });
   const [selectedCategory, setSelectedCategory] = useState<string>(
-    CATEGORIES.DEVELOPMENT
+    CATEGORIES.TOTAL
   );
 
   // 현재 선택된 기간의 날짜 인덱스
