@@ -90,12 +90,12 @@ export const categoryColors = {
     solid: '#6366f1', // indigo-500, 브랜드성+중립적
   },
   total: {
-    gradient: 'from-emerald-600 via-green-600 to-teal-600',
-    buttonGradient: 'from-emerald-600 to-green-600',
-    badgeClass: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-    borderGradient: 'from-emerald-400 to-green-400',
-    bgOpacity: 'from-emerald-600/5 to-green-600/5',
-    solid: '#059669', // emerald-600, 종합 점수를 나타내는 강렬한 초록
+    gradient: 'from-purple-600 via-violet-600 to-indigo-600',
+    buttonGradient: 'from-purple-600 to-violet-600',
+    badgeClass: 'bg-purple-100 text-purple-700 border-purple-200',
+    borderGradient: 'from-purple-400 to-violet-400',
+    bgOpacity: 'from-purple-600/5 to-violet-600/5',
+    solid: '#7c3aed', // violet-600, 종합 점수를 나타내는 보라색
   },
   development: {
     gradient: 'from-blue-500 via-indigo-500 to-violet-500',

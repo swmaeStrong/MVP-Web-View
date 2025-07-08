@@ -121,18 +121,18 @@ export default function UserCard({
                     // 카테고리 색상 가져오기 - 조화로운 색상 팔레트
                     const categoryColor = detail.category === 'others' 
                       ? 'bg-gray-400' 
-                      : detail.category === 'development' ? 'bg-purple-500'
-                      : detail.category === 'documentation' ? 'bg-indigo-500'
-                      : detail.category === 'llm' ? 'bg-violet-500'
-                      : detail.category === 'design' ? 'bg-blue-500'
+                      : detail.category === 'Development' ? 'bg-purple-500'
+                      : detail.category === 'Documentation' ? 'bg-indigo-500'
+                      : detail.category === 'LLM' ? 'bg-violet-500'
+                      : detail.category === 'Design' ? 'bg-blue-500'
                       : 'bg-gray-400';
                     
                     const hoverColor = detail.category === 'others'
                       ? 'hover:bg-gray-500'
-                      : detail.category === 'development' ? 'hover:bg-purple-600'
-                      : detail.category === 'documentation' ? 'hover:bg-indigo-600'
-                      : detail.category === 'llm' ? 'hover:bg-violet-600'
-                      : detail.category === 'design' ? 'hover:bg-blue-600'
+                      : detail.category === 'Development' ? 'hover:bg-purple-600'
+                      : detail.category === 'Documentation' ? 'hover:bg-indigo-600'
+                      : detail.category === 'LLM' ? 'hover:bg-violet-600'
+                      : detail.category === 'Design' ? 'hover:bg-blue-600'
                       : 'hover:bg-gray-500';
                       
                     return (
@@ -165,13 +165,13 @@ export default function UserCard({
                 {processedDetails.slice(0, 2).map((detail: ProcessedDetail, detailIndex: number) => (
                   <div key={detailIndex} className='flex items-center gap-1'>
                     <div className={`w-2 h-2 rounded flex-shrink-0 ${
-                      detail.category === 'development' ? 'bg-purple-500'
-                      : detail.category === 'documentation' ? 'bg-indigo-500'
-                      : detail.category === 'llm' ? 'bg-violet-500'
-                      : detail.category === 'design' ? 'bg-blue-500'
+                      detail.category === 'Development' ? 'bg-purple-500'
+                      : detail.category === 'Documentation' ? 'bg-indigo-500'
+                      : detail.category === 'LLM' ? 'bg-violet-500'
+                      : detail.category === 'Design' ? 'bg-blue-500'
                       : 'bg-gray-400'
                     }`} />
-                    <span className={`${getThemeTextColor('secondary')} truncate`}>
+                    <span className={`truncate ${getThemeTextColor('secondary')}`}>
                       {getCategoryDisplayName(detail.category)}
                     </span>
                     <span className={`${getThemeTextColor('primary')} font-medium`}>

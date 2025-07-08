@@ -19,11 +19,11 @@ export const LEADERBOARD_CATEGORIES = [
 // 🏷️ Get category display name
 export const getCategoryDisplayName = (category: string): string => {
   const displayNames: { [key: string]: string } = {
-    [CATEGORIES.TOTAL]: 'Total',
-    [CATEGORIES.DEVELOPMENT]: 'Development',
-    [CATEGORIES.DOCUMENTATION]: 'Documentation', 
-    [CATEGORIES.LLM]: 'LLM',
-    [CATEGORIES.DESIGN]: 'Design',
+    'total': 'Total',
+    'Development': 'Development',
+    'Documentation': 'Documentation', 
+    'LLM': 'LLM',
+    'Design': 'Design',
   };
   return displayNames[category] || category;
 };
