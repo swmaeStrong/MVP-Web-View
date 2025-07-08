@@ -18,7 +18,7 @@ import {
 } from '@/shadcn/ui/select';
 import { getKSTDateString } from '@/utils/timezone';
 import { Activity } from 'lucide-react';
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import {
   Bar,
   BarChart,
@@ -97,7 +97,7 @@ export default function HourlyUsageComparison({
   date,
 }: HourlyUsageComparisonProps) {
   const { isDarkMode, getThemeClass, getThemeColor, getThemeTextColor } = useTheme();
-  const [selectedBinSize, setSelectedBinSize] = useState(60);
+  const [selectedBinSize, setSelectedBinSize] = useState(15);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [chartType, setChartType] = useState<'bar' | 'line'>('line');
 
@@ -240,6 +240,24 @@ export default function HourlyUsageComparison({
     hourlyData.forEach(item => categories.add(item.category));
     return Array.from(categories).sort();
   }, [hourlyData]);
+
+  // Adjust default category based on available categories
+  useEffect(() => {
+    if (availableCategories.length > 0) {
+      // If Development is available, use it as default
+      if (availableCategories.includes('Development') && selectedCategory !== 'Development') {
+        setSelectedCategory('Development');
+      }
+      // If Development is not available and we're still set to Development, use first available
+      else if (selectedCategory === 'Development' && !availableCategories.includes('Development')) {
+        setSelectedCategory(availableCategories[0]);
+      }
+      // If selectedCategory is null or not in available categories, set to first available
+      else if (!selectedCategory || !availableCategories.includes(selectedCategory)) {
+        setSelectedCategory(availableCategories.includes('Development') ? 'Development' : availableCategories[0]);
+      }
+    }
+  }, [availableCategories, selectedCategory]);
 
   // Chart configuration
   const chartConfig = useMemo(

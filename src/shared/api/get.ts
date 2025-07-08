@@ -23,7 +23,7 @@ export const getUserSubscriptionHistory = () =>
 // 리더보드 조회
 export const getLeaderBoard = (
   category: string,
-  type: 'daily' | 'weekly' | 'monthly' | 'all',
+  type: 'daily' | 'weekly' | 'monthly',
   page: number = 1,
   size: number = 10,
   date: string = getKSTDateString()
