@@ -51,7 +51,7 @@ export default function CategoryFilter({
             {getVisibleCategories().map((item, slotIndex) => {
               const categoryColor =
                 categoryColors[item.category as keyof typeof categoryColors] ||
-                categoryColors.Uncategorized;
+                categoryColors.uncategorized;
 
               return (
                 <button
@@ -66,7 +66,12 @@ export default function CategoryFilter({
                   }
                 >
                   <span className='block truncate'>
-                    {item.category === 'all' ? 'All' : item.category}
+                    {item.category === 'total' ? 'Total'
+                    : item.category === 'Development' ? 'Development'
+                    : item.category === 'Documentation' ? 'Documentation'
+                    : item.category === 'LLM' ? 'LLM'
+                    : item.category === 'Design' ? 'Design'
+                    : item.category}
                   </span>
                 </button>
               );
@@ -86,8 +91,8 @@ export default function CategoryFilter({
                 key={index}
                 className={
                   index === selectedIndex
-                    ? 'h-1.5 w-4 lg:h-2 lg:w-6 rounded-full bg-purple-500 transition-all duration-200'
-                    : `h-1 w-1 lg:h-1.5 lg:w-1.5 rounded-full transition-all duration-200 ${getThemeClass('borderLight')}`
+                    ? 'h-1.5 w-4 lg:h-2 lg:w-6 rounded-full bg-purple-500 border border-purple-600 transition-all duration-200'
+                    : `h-1 w-1 lg:h-1.5 lg:w-1.5 rounded-full border transition-all duration-200 ${getThemeClass('borderLight')} border-purple-300`
                 }
               />
             );
@@ -99,7 +104,12 @@ export default function CategoryFilter({
       <div className='mt-2 lg:mt-3 text-center'>
         <div className={`text-xs lg:text-sm ${getThemeTextColor('secondary')}`}>
           <span className='font-semibold text-purple-600'>
-            {selectedCategory === 'all' ? 'All' : selectedCategory}
+            {selectedCategory === 'total' ? 'Total'
+            : selectedCategory === 'Development' ? 'Development'
+            : selectedCategory === 'Documentation' ? 'Documentation'
+            : selectedCategory === 'LLM' ? 'LLM'
+            : selectedCategory === 'Design' ? 'Design'
+            : selectedCategory}
           </span>
           <span className='mx-1 lg:mx-2'>•</span>
           <span>

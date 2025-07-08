@@ -1,22 +1,17 @@
 'use client';
 
-import { User } from '@/stores/userStore';
 import { extendedRankColors, rankColors } from '@/styles';
 import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, getPriorityStyle, getRankPriority } from '@/styles/design-system';
 import { Medal } from 'lucide-react';
-
-type LeaderboardUser = User & {
-  score: number;
-  rank: number;
-  isMe?: boolean;
-};
+import { processLeaderboardDetails, ProcessedDetail, getCategoryDisplayName, formatScoreToMinutes } from '@/utils/leaderboard';
 
 interface UserCardProps {
-  user: LeaderboardUser;
+  user: LeaderBoard.LeaderBoardResponse & { id?: string; isMe?: boolean };
   index: number;
   totalUsers: number;
   isCurrentUser: boolean;
+  category: string;
 }
 
 // Function to convert seconds to hours, minutes format
@@ -52,6 +47,7 @@ export default function UserCard({
   index,
   totalUsers,
   isCurrentUser,
+  category,
 }: UserCardProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
   const rank = index + 1;
@@ -64,8 +60,8 @@ export default function UserCard({
 
   return (
     <div
-      key={`rank-${rank}-${user.id || user.nickname || index}`}
-      data-user-id={user.id}
+      key={`rank-${rank}-${user.userId || user.nickname || index}`}
+      data-user-id={user.userId}
       className={`group relative flex items-center justify-between rounded-lg border p-3 lg:p-4 shadow-sm ${componentStates.hoverable.transition} ${getThemeClass('border')} ${getThemeClass('component')} ${
         isCurrentUser
           ? `ring-2 ${isDarkMode ? 'ring-purple-400' : 'ring-purple-300'}`
@@ -110,14 +106,106 @@ export default function UserCard({
         </div>
       </div>
 
-      {/* Right - time info */}
-      <div className='text-right flex-shrink-0'>
-        <div
-          className={`text-sm lg:text-xl font-bold ${getThemeTextColor('primary')}`}
-        >
-          {formatTime(user.score)}
+      {/* Right - score info */}
+      <div className='flex items-center gap-2 flex-shrink-0'>
+        {/* Details for total category - Fixed position */}
+        <div className='w-64 lg:w-72 flex items-center justify-start'>
+          {category === 'total' && user.details && user.details.length > 0 && (() => {
+            const processedDetails = processLeaderboardDetails(user.details);
+            
+            return (
+              <div className='flex items-center gap-3'>
+                {/* Stacked progress bar */}
+                <div className={`relative h-6 w-20 lg:w-24 rounded-lg overflow-hidden ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                  <div className='flex h-full'>
+                    {processedDetails.map((detail: ProcessedDetail, detailIndex: number) => {
+                      // 카테고리 색상 가져오기 - 조화로운 색상 팔레트
+                      const categoryColor = detail.category === 'others' 
+                        ? 'bg-gray-400' 
+                        : detail.category === 'Development' ? 'bg-purple-500'
+                        : detail.category === 'Documentation' ? 'bg-indigo-500'
+                        : detail.category === 'LLM' ? 'bg-violet-500'
+                        : detail.category === 'Design' ? 'bg-blue-500'
+                        : 'bg-gray-400';
+                      
+                      const hoverColor = detail.category === 'others'
+                        ? 'hover:bg-gray-500'
+                        : detail.category === 'Development' ? 'hover:bg-purple-600'
+                        : detail.category === 'Documentation' ? 'hover:bg-indigo-600'
+                        : detail.category === 'LLM' ? 'hover:bg-violet-600'
+                        : detail.category === 'Design' ? 'hover:bg-blue-600'
+                        : 'hover:bg-gray-500';
+                        
+                      return (
+                        <div
+                          key={detailIndex}
+                          className={`relative group transition-all duration-200 ${categoryColor} ${hoverColor}`}
+                          style={{ width: `${detail.percentage}%` }}
+                        >
+                          {/* Tooltip on hover */}
+                          <div className={`absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10`}>
+                            <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-900'} text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap`}>
+                              <div className='font-medium'>
+                                {getCategoryDisplayName(detail.category)}
+                              </div>
+                              <div className='text-gray-300'>
+                                {formatScoreToMinutes(detail.score)} ({detail.percentage}%)
+                              </div>
+                            </div>
+                            {/* Tooltip arrow */}
+                            <div className={`absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 w-0 h-0 border-l-4 border-r-4 border-t-4 ${isDarkMode ? 'border-gray-800' : 'border-gray-900'} border-l-transparent border-r-transparent`}></div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                
+                {/* Details breakdown */}
+                <div className='flex flex-col gap-0.5 text-xs w-36 lg:w-40'>
+                  {processedDetails.slice(0, 2).map((detail: ProcessedDetail, detailIndex: number) => (
+                    <div key={detailIndex} className='flex items-center gap-1'>
+                      <div className={`w-1.5 h-1.5 rounded flex-shrink-0 ${
+                        detail.category === 'Development' ? 'bg-purple-500'
+                        : detail.category === 'Documentation' ? 'bg-indigo-500'
+                        : detail.category === 'LLM' ? 'bg-violet-500'
+                        : detail.category === 'Design' ? 'bg-blue-500'
+                        : 'bg-gray-400'
+                      }`} />
+                      <span className={`text-xs ${getThemeTextColor('secondary')} whitespace-nowrap`}>
+                        {getCategoryDisplayName(detail.category)}
+                      </span>
+                      <span className={`${getThemeTextColor('primary')} font-medium text-xs whitespace-nowrap ml-auto`}>
+                        {detail.percentage}%
+                      </span>
+                    </div>
+                  ))}
+                  {processedDetails.length > 2 && (
+                    <div className='flex items-center gap-1'>
+                      <div className='w-1.5 h-1.5 rounded flex-shrink-0 bg-gray-400' />
+                      <span className={`${getThemeTextColor('secondary')} text-xs whitespace-nowrap`}>Others</span>
+                      <span className={`${getThemeTextColor('primary')} font-medium text-xs whitespace-nowrap ml-auto`}>
+                        {processedDetails.find(d => d.category === 'others')?.percentage || 0}%
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
         </div>
-        <div className={`text-xs ${getThemeTextColor('secondary')}`}>Activity Time</div>
+        
+        {/* Score display - Fixed width */}
+        <div className='w-20 lg:w-24 text-right'>
+          <div
+            className={`text-sm lg:text-xl font-bold ${getThemeTextColor('primary')} whitespace-nowrap`}
+          >
+            {category === 'total' ? formatScoreToMinutes(user.score) : formatTime(user.score)}
+          </div>
+          <div className={`text-xs ${getThemeTextColor('secondary')} whitespace-nowrap`}>
+            {category === 'total' ? 'Total Time' : 'Activity Time'}
+          </div>
+        </div>
       </div>
     </div>
   );

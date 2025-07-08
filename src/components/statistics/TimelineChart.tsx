@@ -225,69 +225,55 @@ export default function TimelineChart({
   };
 
 
-  // 테마별 카테고리 색상 매핑 - 깔끔하고 세련된 색상 시스템
+  // 테마별 카테고리 색상 매핑 - work와 breaks만 지원
   const getCategoryColor = (category: string) => {
-    // 새로운 퍼플 그라데이션 팔레트
     const timelineColors = {
       dark: {
-        // 업무 카테고리 - 퍼플 그라데이션 계열
-        'work': { color: '#2E236C', type: 'primary' as const }, // 다크 네이비
-        'DEVELOPMENT': { color: '#433D8B', type: 'primary' as const }, // 미드 퍼플
-        'Documentation': { color: '#C8ACD6', type: 'primary' as const }, // 라이트 퍼플
-        'Design': { color: '#433D8B', type: 'primary' as const }, // 미드 퍼플
-        'LLM': { color: '#2E236C', type: 'primary' as const }, // 딥 퍼플
-        'Learning': { color: '#C8ACD6', type: 'primary' as const }, // 라이트 퍼플
-        
-        // 회의/커뮤니케이션 - 퍼플 계열 (업무와 비슷한 톤)
-        'meetings': { color: '#2E236C', type: 'primary' as const }, // 미드 퍼플
-        'Communication': { color: '#C8ACD6', type: 'primary' as const }, // 라이트 퍼플
-        
-        // 휴식/오락 - 다크 계열 (대비되는 쿨톤)
-        'breaks': { color: '#C8ACD6', type: 'secondary' as const }, // 라이트 퍼플 (가장 연한 색)
-        'Gaming': { color: '#17153B', type: 'secondary' as const }, // 다크 네이비
-        'YouTube': { color: '#17153B', type: 'secondary' as const }, // 다크 네이비
-        'SNS': { color: '#17153B', type: 'secondary' as const }, // 다크 네이비
-        
-        // 기타
-        'Uncategorized': { color: '#2E236C', type: 'secondary' as const }, // 딥 퍼플
-        'others': { color: '#2E236C', type: 'secondary' as const },
+        'work': { color: '#433D8B', type: 'primary' as const }, // 진한 퍼플 (생산적인 활동)
+        'breaks': { color: '#C8ACD6', type: 'secondary' as const }, // 연한 퍼플 (휴식)
       },
       light: {
-        // 업무 카테고리 - 딥 블루 그레이 계열
-        'work': { color: '#405D72', type: 'primary' as const }, // 딥 블루 그레이
-        'DEVELOPMENT': { color: '#405D72', type: 'primary' as const }, // 딥 블루 그레이
-        'Documentation': { color: '#758694', type: 'primary' as const }, // 미드 그레이
-        'Design': { color: '#405D72', type: 'primary' as const }, // 딥 블루 그레이
-        'LLM': { color: '#405D72', type: 'primary' as const }, // 딥 블루 그레이
-        'Learning': { color: '#758694', type: 'primary' as const }, // 미드 그레이
-        
-        // 회의/커뮤니케이션 - 그레이 계열
-        'meetings': { color: '#758694', type: 'primary' as const }, // 미드 그레이
-        'Communication': { color: '#405D72', type: 'primary' as const }, // 딥 블루 그레이
-        
-        // 휴식/오락 - 베이지 계열 (따뜻한 대비)
-        'breaks': { color: '#FFF8F3', type: 'secondary' as const }, // 가장 연한 베이지
-        'Gaming': { color: '#F7E7DC', type: 'secondary' as const }, // 라이트 베이지
-        'YouTube': { color: '#F7E7DC', type: 'secondary' as const }, // 라이트 베이지
-        'SNS': { color: '#F7E7DC', type: 'secondary' as const }, // 라이트 베이지
-        
-        // 기타
-        'Uncategorized': { color: '#758694', type: 'secondary' as const }, // 미드 그레이
-        'others': { color: '#758694', type: 'secondary' as const },
+        'work': { color: '#405D72', type: 'primary' as const }, // 진한 블루 그레이 (생산적인 활동)
+        'breaks': { color: '#F7E7DC', type: 'secondary' as const }, // 연한 베이지 (휴식)
       }
     };
 
     const currentColors = timelineColors[isDarkMode ? 'dark' : 'light'];
-    const exactMatch = currentColors[category as keyof typeof currentColors];
-    const lowerMatch = currentColors[category.toLowerCase() as keyof typeof currentColors];
-    
-    return exactMatch || lowerMatch || currentColors.others;
+    return currentColors[category as keyof typeof currentColors] || currentColors.work; // 기본값은 work
   };
 
   // Convert timelineData to schedules format and sort
   const convertedSchedules = useMemo(() => {
     if (schedules && schedules.length > 0) return schedules;
     if (!timelineData || !Array.isArray(timelineData)) return [];
+    
+    // Work와 Breaks 시간 집계 (mergedCategory 기준)
+    const workTotal = timelineData.reduce((sum, item) => {
+      if (item && item.startedAt && item.endedAt && item.mergedCategory === 'work') {
+        const startMinutes = timeToMinutes(item.startedAt);
+        const endMinutes = timeToMinutes(item.endedAt);
+        const duration = endMinutes - startMinutes;
+        return sum + (duration > 0 ? duration : 0);
+      }
+      return sum;
+    }, 0);
+    
+    const breakTotal = timelineData.reduce((sum, item) => {
+      if (item && item.startedAt && item.endedAt && item.mergedCategory === 'breaks') {
+        const startMinutes = timeToMinutes(item.startedAt);
+        const endMinutes = timeToMinutes(item.endedAt);
+        const duration = endMinutes - startMinutes;
+        return sum + (duration > 0 ? duration : 0);
+      }
+      return sum;
+    }, 0);
+    
+    const totalTime = workTotal + breakTotal;
+    
+    console.log('⏰ 시간 집계 (mergedCategory 기준):');
+    console.log('📊 Work 시간:', (workTotal / 60).toFixed(2) + '시간', totalTime > 0 ? `(${((workTotal / totalTime) * 100).toFixed(1)}%)` : '');
+    console.log('☕ Breaks 시간:', (breakTotal / 60).toFixed(2) + '시간', totalTime > 0 ? `(${((breakTotal / totalTime) * 100).toFixed(1)}%)` : '');
+    console.log('🎯 전체 시간:', (totalTime / 60).toFixed(2) + '시간');
     
     return timelineData
       .filter(item => item && item.startedAt && item.endedAt)
@@ -312,15 +298,14 @@ export default function TimelineChart({
   }, [schedules, timelineData]);
 
 
-  // 카테고리별 범례 데이터 생성
+  // 카테고리별 범례 데이터 생성 - work와 breaks만 지원
   const legendData = useMemo(() => {
     const categoryMap = new Map<string, { color: string; type: 'primary' | 'secondary' }>();
     
     convertedSchedules.forEach(schedule => {
       if (schedule.mergedCategory && 
           !categoryMap.has(schedule.mergedCategory) &&
-          schedule.mergedCategory !== 'meetings' && 
-          schedule.mergedCategory !== 'others') {
+          (schedule.mergedCategory === 'work' || schedule.mergedCategory === 'breaks')) {
         const colorInfo = getCategoryColor(schedule.mergedCategory);
         categoryMap.set(schedule.mergedCategory, colorInfo);
       }
@@ -332,11 +317,11 @@ export default function TimelineChart({
       type: colorInfo.type
     }));
 
-    // Productive categories first, non-productive categories later
+    // work가 먼저, breaks가 나중에
     return categories.sort((a, b) => {
-      if (a.type === 'primary' && b.type === 'secondary') return -1;
-      if (a.type === 'secondary' && b.type === 'primary') return 1;
-      return a.category.localeCompare(b.category);
+      if (a.category === 'work' && b.category === 'breaks') return -1;
+      if (a.category === 'breaks' && b.category === 'work') return 1;
+      return 0;
     });
   }, [convertedSchedules]);
 

@@ -3,7 +3,9 @@
 import { useMyRank } from '@/hooks/useMyRank';
 import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, spacing } from '@/styles/design-system';
-import ErrorState from '@/components/common/ErrorState';
+import { themeColors } from '@/styles/colors';
+import NoData from '@/components/common/NoData';
+import { processLeaderboardDetails, ProcessedDetail, getCategoryDisplayName, formatScoreToMinutes } from '@/utils/leaderboard';
 import {
   getKSTDate,
   getKSTDateStringFromDate,
@@ -16,8 +18,7 @@ import {
   Clock,
   Crown,
   Star,
-  TrendingUp,
-  Users
+  TrendingUp
 } from 'lucide-react';
 
 // Function to convert seconds to hours, minutes format
@@ -26,11 +27,11 @@ const formatTime = (seconds: number) => {
   const minutes = Math.floor((seconds % 3600) / 60);
 
   if (hours === 0) {
-    return `${minutes}min`;
+    return `${minutes}m`;
   } else if (minutes === 0) {
-    return `${hours}hr`;
+    return `${hours}h`;
   } else {
-    return `${hours}hr ${minutes}min`;
+    return `${hours}h ${minutes}m`;
   }
 };
 
@@ -94,9 +95,14 @@ export default function MyRankBanner({
     userId, // props로 받은 userId 사용
   });
 
+  // total 카테고리의 details 처리
+  const processedDetails = category === 'total' && myRank?.details 
+    ? processLeaderboardDetails(myRank.details)
+    : [];
+
   const getRankDisplay = (rank: number | null) => {
     if (!rank)
-      return { text: 'No Rank', color: getThemeTextColor('secondary'), icon: Users };
+      return { text: 'No Rank', color: getThemeTextColor('secondary'), icon: TrendingUp };
     if (rank === 1)
       return { text: '1st', color: 'text-yellow-600', icon: Crown };
     if (rank === 2) return { text: '2nd', color: isDarkMode ? 'text-gray-400' : 'text-gray-600', icon: Crown };
@@ -126,16 +132,19 @@ export default function MyRankBanner({
     );
   }
 
-  if (isError || !myRank) {
+  if (isError || (!isLoading && !myRank)) {
     return (
       <div className={`relative ${spacing.section.normal}`} style={{ zIndex: 1 }}>
-        <ErrorState
-          title="Unable to load rank information"
-          message="Please log in or create activity records to see your ranking!"
-          size="small"
-          icon={Users}
-          showBorder={true}
-        />
+        <div className={`border border-dashed rounded-lg p-6 ${
+          isDarkMode ? `${themeColors.dark.classes.borderLight} ${themeColors.dark.classes.componentSecondary}/50` : `${themeColors.light.classes.borderLight} ${themeColors.light.classes.componentSecondary}/50`
+        }`}>
+          <NoData
+            title="No Rank Data"
+            message="Please log in or create activity records to see your ranking!"
+            size="medium"
+            showBorder={false}
+          />
+        </div>
       </div>
     );
   }
@@ -157,23 +166,28 @@ export default function MyRankBanner({
             <div>
               <div className='flex items-center space-x-2'>
                 <h3 className={`text-sm lg:text-base font-bold ${getThemeTextColor('primary')}`}>
-                  {myRank.nickname}
+                  {myRank?.nickname}
                 </h3>
               </div>
               <div className='flex items-center space-x-2 mt-0.5'>
-                <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
-                  {formatTime(score || 0)}
+                <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                  {category === 'total' ? 'Total Time' : 'Activity Time'}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* 순위 숫자 - 심플 */}
-          <div className='text-right'>
-            <div className={`text-xl lg:text-2xl font-bold ${getThemeTextColor('primary')}`}>
-              #{rank || '?'}
+          {/* 우측 - 등수만 표시 */}
+          {rank && (
+            <div className='flex items-center'>
+              <div className={`text-lg lg:text-xl font-bold whitespace-nowrap ${getThemeTextColor('primary')}`}>
+                {rank === 1 ? '1st'
+                : rank === 2 ? '2nd' 
+                : rank === 3 ? '3rd'
+                : `${rank}th`}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

@@ -11,9 +11,8 @@ import { LeaderboardListSkeleton } from '@/components/common/LeaderboardSkeleton
 import { cn } from '@/shadcn/lib/utils';
 
 // 리더보드 표시용 확장된 User 타입
-type LeaderboardUser = User & {
-  score: number;
-  rank: number;
+type LeaderboardUser = LeaderBoard.LeaderBoardResponse & {
+  id?: string;
   isMe?: boolean;
 };
 
@@ -95,15 +94,16 @@ export default function LeaderboardList({
       <div className='space-y-2 lg:space-y-3'>
         {users.map((user: LeaderboardUser, index: number) => {
           // 현재 유저인지 확인
-          const isCurrentUser = currentUser && user.id === currentUser.id;
+          const isCurrentUser = currentUser && user.userId === currentUser.id;
 
           return (
             <UserCard
-              key={`rank-${index + 1}-${user.id || user.nickname || index}`}
+              key={`rank-${index + 1}-${user.userId || user.nickname || index}`}
               user={user}
               index={index}
               totalUsers={users.length}
               isCurrentUser={!!isCurrentUser}
+              category={selectedCategory}
             />
           );
         })}

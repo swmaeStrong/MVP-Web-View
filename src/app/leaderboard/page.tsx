@@ -22,11 +22,7 @@ import {
 import { useCurrentUser, User } from '@/stores/userStore';
 import { useInitUser } from '../../hooks/useInitUser';
 
-// 리더보드 표시용 확장된 User 타입
-type LeaderboardUser = User & {
-  score: number;
-  rank: number;
-};
+// LeaderBoard.LeaderBoardResponse 타입을 직접 사용
 
 // 필요한 유틸리티 함수들 import
 import { useMyRank } from '@/hooks/useMyRank';
@@ -60,7 +56,7 @@ export default function Leaderboard() {
     monthly: 0,
   });
   const [selectedCategory, setSelectedCategory] = useState<string>(
-    CATEGORIES.DEVELOPMENT
+    CATEGORIES.TOTAL
   );
 
   // 현재 선택된 기간의 날짜 인덱스
@@ -173,7 +169,7 @@ export default function Leaderboard() {
 
         {/* 리더보드 리스트 */}
         <LeaderboardList
-          users={users as LeaderboardUser[]}
+          users={users}
           isLoading={isLoading}
           isError={isError}
           error={error}

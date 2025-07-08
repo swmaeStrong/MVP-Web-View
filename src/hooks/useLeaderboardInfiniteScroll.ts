@@ -48,7 +48,7 @@ export function useLeaderboardInfiniteScroll({
       return getKSTMonthlyDateString(selectedDateIndex);
     }
 
-    // 'all'인 경우 오늘 날짜 반환
+    // 기본값으로 오늘 날짜 반환 (이 경우는 발생하지 않아야 함)
     return getKSTDateStringFromDate(today);
   };
 
@@ -56,23 +56,14 @@ export function useLeaderboardInfiniteScroll({
   const transformAPIUser = (
     apiUser: APILeaderBoardResponse,
     index: number
-  ): User & { score: number; rank: number } => ({
+  ): LeaderBoard.LeaderBoardResponse & { id?: string } => ({
+    ...apiUser,
     id: apiUser.userId,
-    nickname: apiUser.nickname,
-    score: apiUser.score,
-    rank: apiUser.rank,
   });
 
   const queryFn = async ({ pageParam }: { pageParam: number }) => {
     const categoryParam = category === 'all' ? 'all' : category;
-    const apiType =
-      period === 'daily'
-        ? 'daily'
-        : period === 'weekly'
-          ? 'weekly'
-          : period === 'monthly'
-            ? 'monthly'
-            : 'all';
+    const apiType: 'daily' | 'weekly' | 'monthly' = period;
     const dateParam = getDateForAPI();
 
     console.log(
@@ -112,7 +103,7 @@ export function useLeaderboardInfiniteScroll({
     hasNextPage,
     fetchNextPage,
     refetch,
-  } = useInfiniteScroll<User>({
+  } = useInfiniteScroll<LeaderBoard.LeaderBoardResponse & { id?: string }>({
     queryKey: [
       'leaderboard',
       category,

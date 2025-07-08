@@ -8,7 +8,6 @@ import {
   ChartTooltipContent,
 } from '@/shadcn/ui/chart';
 import { PeriodType } from '@/types/statistics';
-import { getCategoryColor } from '@/utils/categories';
 import { formatTime } from '@/utils/statisticsUtils';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
@@ -118,7 +117,6 @@ export default function StatisticsBarChart({
   const chartConfig: ChartConfig = categories.reduce((config, category) => {
     config[category] = {
       label: category,
-      color: getCategoryColor(category),
     };
     return config;
   }, {} as ChartConfig);
@@ -161,9 +159,6 @@ export default function StatisticsBarChart({
                     <div key={name} className='flex items-center gap-2'>
                       <div
                         className='h-3 w-3 rounded-full'
-                        style={{
-                          backgroundColor: getCategoryColor(name as string),
-                        }}
                       />
                       <span className={`font-medium ${getThemeClass('textPrimary')}`}>{name}</span>
                       <span className={`ml-auto font-bold ${getThemeClass('textPrimary')}`}>
@@ -186,7 +181,6 @@ export default function StatisticsBarChart({
                 key={category}
                 dataKey={category}
                 stackId='stack'
-                fill={getCategoryColor(category)}
                 radius={
                   category === categories[categories.length - 1]
                     ? [4, 4, 0, 0]
@@ -209,7 +203,6 @@ export default function StatisticsBarChart({
             <div key={category} className='flex items-center gap-2'>
               <div
                 className='h-4 w-4 rounded-full shadow-sm'
-                style={{ backgroundColor: getCategoryColor(category) }}
               />
               <span className={`text-sm font-medium ${getThemeClass('textPrimary')}`}>
                 {category}

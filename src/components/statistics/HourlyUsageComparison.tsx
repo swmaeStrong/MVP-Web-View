@@ -18,7 +18,7 @@ import {
 } from '@/shadcn/ui/select';
 import { getKSTDateString } from '@/utils/timezone';
 import { Activity } from 'lucide-react';
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import {
   Bar,
   BarChart,
@@ -97,7 +97,7 @@ export default function HourlyUsageComparison({
   date,
 }: HourlyUsageComparisonProps) {
   const { isDarkMode, getThemeClass, getThemeColor, getThemeTextColor } = useTheme();
-  const [selectedBinSize, setSelectedBinSize] = useState(60);
+  const [selectedBinSize, setSelectedBinSize] = useState(15);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [chartType, setChartType] = useState<'bar' | 'line'>('line');
 
@@ -241,6 +241,16 @@ export default function HourlyUsageComparison({
     return Array.from(categories).sort();
   }, [hourlyData]);
 
+  // Adjust default category based on available categories
+  useEffect(() => {
+    if (availableCategories.length > 0) {
+      // Only set default if no category is selected or selected category is not available
+      if (!selectedCategory || !availableCategories.includes(selectedCategory)) {
+        setSelectedCategory(availableCategories.includes('Development') ? 'Development' : availableCategories[0]);
+      }
+    }
+  }, [availableCategories, selectedCategory]);
+
   // Chart configuration
   const chartConfig = useMemo(
     () => ({
@@ -380,16 +390,13 @@ export default function HourlyUsageComparison({
               <div className='flex items-center gap-1 lg:gap-2'>
                 <span className={cssClasses.labelText}>Compare</span>
                 <Select
-                  value={selectedCategory || 'all'}
-                  onValueChange={value =>
-                    setSelectedCategory(value === 'all' ? null : value)
-                  }
+                  value={selectedCategory || availableCategories[0]}
+                  onValueChange={value => setSelectedCategory(value)}
                 >
                   <SelectTrigger className={`h-8 w-[100px] lg:w-[140px] text-xs border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('componentSecondary')}`}>
-                    <SelectValue placeholder="Total" />
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value='all'>Total</SelectItem>
                     {availableCategories.map(category => (
                       <SelectItem key={category} value={category}>
                         {category}
