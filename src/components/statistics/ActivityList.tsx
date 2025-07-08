@@ -178,19 +178,32 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
         {loading ? (
           <div className="flex-1 overflow-y-auto space-y-2 pr-2">
             {[...Array(8)].map((_, index) => (
-              <div key={index} className={`group rounded-lg border p-3 ${getThemeClass('border')} ${getThemeClass('component')}`}>
-                <div className="grid grid-cols-[5rem_4rem_1fr_5rem] gap-3 items-center">
-                  {/* 시간 skeleton */}
-                  <div className={`h-4 w-16 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-                  {/* 앱 이름 skeleton */}
-                  <div className={`h-4 w-12 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-                  {/* 제목 skeleton */}
-                  <div className="space-y-1">
-                    <div className={`h-4 w-full animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-                    <div className={`h-3 w-3/4 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
-                  </div>
-                  {/* 카테고리 skeleton */}
-                  <div className={`h-6 w-16 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+              <div 
+                key={index} 
+                className={`group rounded-lg border p-2 h-14 ${getThemeClass('border')} ${getThemeClass('component')}`}
+                style={{ 
+                  display: 'grid',
+                  gridTemplateColumns: '4rem 3.5rem 1fr 5.5rem',
+                  gap: '0.5rem',
+                  alignItems: 'center',
+                  width: '100%',
+                  overflow: 'hidden',
+                  minWidth: 0
+                }}
+              >
+                {/* 시간 skeleton */}
+                <div className={`h-3 w-12 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+                {/* 앱 이름 skeleton */}
+                <div className="min-w-0 max-w-full overflow-hidden">
+                  <div className={`h-3 w-10 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+                </div>
+                {/* 제목/URL skeleton */}
+                <div className="min-w-0 overflow-hidden h-10 flex items-center">
+                  <div className={`h-3 w-3/4 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+                </div>
+                {/* 카테고리 skeleton */}
+                <div className="min-w-0 max-w-full">
+                  <div className={`h-5 w-full max-w-[5rem] mx-auto animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
                 </div>
               </div>
             ))}
@@ -220,14 +233,15 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
             {filteredData.map((activity, index) => (
             <div
               key={index}
-              className={`group rounded-lg border p-3 ${componentStates.hoverable.transition} ${componentStates.hoverable.cursor} ${getThemeClass('border')} ${getThemeClass('component')} hover:shadow-md hover:${getThemeClass('borderLight')}`}
+              className={`group rounded-lg border p-2 h-14 ${componentStates.hoverable.transition} ${componentStates.hoverable.cursor} ${getThemeClass('border')} ${getThemeClass('component')} hover:shadow-md hover:${getThemeClass('borderLight')}`}
               style={{ 
                 display: 'grid',
-                gridTemplateColumns: '5rem 4rem 1fr 5rem',
-                gap: '0.75rem',
+                gridTemplateColumns: '4rem 3.5rem 1fr 5.5rem',
+                gap: '0.5rem',
                 alignItems: 'center',
                 width: '100%',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                minWidth: 0
               }}
             >
               {/* 시간 */}
@@ -236,28 +250,34 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
               </div>
 
               {/* 앱 이름 */}
-              <div className="min-w-0">
-                <span className={`text-sm font-medium transition-colors truncate block ${getThemeTextColor('primary')} group-hover:${getThemeTextColor('accent')}`} title={activity.app}>
+              <div className="min-w-0 max-w-full overflow-hidden">
+                <span className={`text-xs font-medium transition-colors truncate block ${getThemeTextColor('primary')} group-hover:${getThemeTextColor('accent')}`} title={activity.app}>
                   {activity.app}
                 </span>
               </div>
 
-              {/* 제목/URL - 가장 많은 공간 차지 */}
-              <div className="min-w-0 overflow-hidden">
-                <div className={`text-sm transition-colors truncate ${getThemeTextColor('primary')} group-hover:${getThemeTextColor('accent')}`} title={activity.title}>
-                  {activity.title}
-                </div>
-                {activity.url && (
-                  <div className={`text-xs mt-1 truncate ${getThemeTextColor('secondary')}`} title={activity.url}>
-                    {activity.url}
+              {/* 제목/URL - 고정 높이 */}
+              <div className="min-w-0 overflow-hidden h-10 flex flex-col justify-center">
+                {activity.url ? (
+                  <>
+                    <div className={`text-xs transition-colors truncate leading-tight ${getThemeTextColor('primary')} group-hover:${getThemeTextColor('accent')}`} title={activity.title}>
+                      {activity.title}
+                    </div>
+                    <div className={`text-xs truncate leading-tight ${getThemeTextColor('secondary')}`} title={activity.url}>
+                      {activity.url}
+                    </div>
+                  </>
+                ) : (
+                  <div className={`text-xs transition-colors truncate leading-tight ${getThemeTextColor('primary')} group-hover:${getThemeTextColor('accent')}`} title={activity.title}>
+                    {activity.title}
                   </div>
                 )}
               </div>
 
               {/* 카테고리 배지 */}
-              <div className="min-w-0">
-                <div className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium ${getThemeClass('border')} ${getThemeTextColor('primary')} truncate w-full`} title={activity.category}>
-                  {activity.category}
+              <div className="min-w-0 max-w-full">
+                <div className={`inline-flex items-center rounded-md border px-1.5 py-1 text-xs font-medium ${getThemeClass('border')} ${getThemeTextColor('primary')} w-full justify-center overflow-hidden`} title={activity.category}>
+                  <span className="truncate">{activity.category}</span>
                 </div>
               </div>
             </div>
