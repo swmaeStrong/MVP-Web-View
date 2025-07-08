@@ -3,7 +3,8 @@
 import { useMyRank } from '@/hooks/useMyRank';
 import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, spacing } from '@/styles/design-system';
-import ErrorState from '@/components/common/ErrorState';
+import { themeColors } from '@/styles/colors';
+import NoData from '@/components/common/NoData';
 import { processLeaderboardDetails, ProcessedDetail, getCategoryDisplayName, formatScoreToMinutes } from '@/utils/leaderboard';
 import {
   getKSTDate,
@@ -17,8 +18,7 @@ import {
   Clock,
   Crown,
   Star,
-  TrendingUp,
-  Users
+  TrendingUp
 } from 'lucide-react';
 
 // Function to convert seconds to hours, minutes format
@@ -102,7 +102,7 @@ export default function MyRankBanner({
 
   const getRankDisplay = (rank: number | null) => {
     if (!rank)
-      return { text: 'No Rank', color: getThemeTextColor('secondary'), icon: Users };
+      return { text: 'No Rank', color: getThemeTextColor('secondary'), icon: TrendingUp };
     if (rank === 1)
       return { text: '1st', color: 'text-yellow-600', icon: Crown };
     if (rank === 2) return { text: '2nd', color: isDarkMode ? 'text-gray-400' : 'text-gray-600', icon: Crown };
@@ -135,13 +135,16 @@ export default function MyRankBanner({
   if (isError || (!isLoading && !myRank)) {
     return (
       <div className={`relative ${spacing.section.normal}`} style={{ zIndex: 1 }}>
-        <ErrorState
-          title="Unable to load rank information"
-          message="Please log in or create activity records to see your ranking!"
-          size="small"
-          icon={Users}
-          showBorder={true}
-        />
+        <div className={`border border-dashed rounded-lg p-6 ${
+          isDarkMode ? `${themeColors.dark.classes.borderLight} ${themeColors.dark.classes.componentSecondary}/50` : `${themeColors.light.classes.borderLight} ${themeColors.light.classes.componentSecondary}/50`
+        }`}>
+          <NoData
+            title="No Rank Data"
+            message="Please log in or create activity records to see your ranking!"
+            size="medium"
+            showBorder={false}
+          />
+        </div>
       </div>
     );
   }
@@ -174,26 +177,17 @@ export default function MyRankBanner({
             </div>
           </div>
 
-          {/* 우측 - 점수와 바 */}
-          <div className='flex items-center gap-2'>
-            {/* 점수 표시 - Fixed width */}
-            <div className='w-16 lg:w-20 text-right'>
-              <div className={`text-sm lg:text-base font-bold ${getThemeTextColor('primary')} whitespace-nowrap`}>
-                {category === 'total' ? formatScoreToMinutes(score || 0) : formatTime(score || 0)}
-              </div>
-            </div>
-            
-            {/* 순위 표시 - 서수형 */}
-            <div className='w-16 lg:w-18 text-right'>
-              <div className={`text-xl lg:text-2xl font-bold ${getThemeTextColor('primary')} whitespace-nowrap`}>
+          {/* 우측 - 등수만 표시 */}
+          {rank && (
+            <div className='flex items-center'>
+              <div className={`text-lg lg:text-xl font-bold whitespace-nowrap ${getThemeTextColor('primary')}`}>
                 {rank === 1 ? '1st'
                 : rank === 2 ? '2nd' 
                 : rank === 3 ? '3rd'
-                : rank ? `${rank}th`
-                : '?'}
+                : `${rank}th`}
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
