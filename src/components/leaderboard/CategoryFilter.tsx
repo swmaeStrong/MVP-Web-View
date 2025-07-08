@@ -51,7 +51,7 @@ export default function CategoryFilter({
             {getVisibleCategories().map((item, slotIndex) => {
               const categoryColor =
                 categoryColors[item.category as keyof typeof categoryColors] ||
-                categoryColors.Uncategorized;
+                categoryColors.uncategorized;
 
               return (
                 <button

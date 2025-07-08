@@ -4,6 +4,7 @@ import { useMyRank } from '@/hooks/useMyRank';
 import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, spacing } from '@/styles/design-system';
 import ErrorState from '@/components/common/ErrorState';
+import { processLeaderboardDetails, ProcessedDetail, getCategoryDisplayName, formatScoreToMinutes } from '@/utils/leaderboard';
 import {
   getKSTDate,
   getKSTDateStringFromDate,
@@ -94,6 +95,11 @@ export default function MyRankBanner({
     userId, // props로 받은 userId 사용
   });
 
+  // total 카테고리의 details 처리
+  const processedDetails = category === 'total' && myRank?.details 
+    ? processLeaderboardDetails(myRank.details)
+    : [];
+
   const getRankDisplay = (rank: number | null) => {
     if (!rank)
       return { text: 'No Rank', color: getThemeTextColor('secondary'), icon: Users };
@@ -126,7 +132,7 @@ export default function MyRankBanner({
     );
   }
 
-  if (isError || !myRank) {
+  if (isError || (!isLoading && !myRank)) {
     return (
       <div className={`relative ${spacing.section.normal}`} style={{ zIndex: 1 }}>
         <ErrorState
@@ -157,14 +163,94 @@ export default function MyRankBanner({
             <div>
               <div className='flex items-center space-x-2'>
                 <h3 className={`text-sm lg:text-base font-bold ${getThemeTextColor('primary')}`}>
-                  {myRank.nickname}
+                  {myRank?.nickname}
                 </h3>
               </div>
               <div className='flex items-center space-x-2 mt-0.5'>
                 <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
-                  {formatTime(score || 0)}
+                  {category === 'total' ? formatScoreToMinutes(score || 0) : formatTime(score || 0)}
+                </span>
+                <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                  {category === 'total' ? 'Total Time' : 'Activity Time'}
                 </span>
               </div>
+              
+              {/* Details for total category - Stacked bar chart */}
+              {category === 'total' && processedDetails.length > 0 && (
+                <div className='mt-2 flex items-center gap-3'>
+                  {/* Stacked progress bar */}
+                  <div className={`relative h-5 w-24 lg:w-32 rounded-lg overflow-hidden ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                    <div className='flex h-full'>
+                      {processedDetails.map((detail: ProcessedDetail, detailIndex: number) => {
+                        // 카테고리 색상 가져오기 - 조화로운 색상 팔레트
+                        const categoryColor = detail.category === 'others' 
+                          ? 'bg-gray-400' 
+                          : detail.category === 'development' ? 'bg-purple-500'
+                          : detail.category === 'documentation' ? 'bg-indigo-500'
+                          : detail.category === 'llm' ? 'bg-violet-500'
+                          : detail.category === 'design' ? 'bg-blue-500'
+                          : 'bg-gray-400';
+                        
+                        const hoverColor = detail.category === 'others'
+                          ? 'hover:bg-gray-500'
+                          : detail.category === 'development' ? 'hover:bg-purple-600'
+                          : detail.category === 'documentation' ? 'hover:bg-indigo-600'
+                          : detail.category === 'llm' ? 'hover:bg-violet-600'
+                          : detail.category === 'design' ? 'hover:bg-blue-600'
+                          : 'hover:bg-gray-500';
+                          
+                        return (
+                          <div
+                            key={detailIndex}
+                            className={`relative group transition-all duration-200 ${categoryColor} ${hoverColor}`}
+                            style={{ width: `${detail.percentage}%` }}
+                          >
+                            {/* Tooltip on hover */}
+                            <div className={`absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10`}>
+                              <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-900'} text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap`}>
+                                <div className='font-medium'>
+                                  {getCategoryDisplayName(detail.category)}
+                                </div>
+                                <div className='text-gray-300'>
+                                  {formatScoreToMinutes(detail.score)} ({detail.percentage}%)
+                                </div>
+                              </div>
+                              {/* Tooltip arrow */}
+                              <div className={`absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 w-0 h-0 border-l-4 border-r-4 border-t-4 ${isDarkMode ? 'border-gray-800' : 'border-gray-900'} border-l-transparent border-r-transparent`}></div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  
+                  {/* Compact details */}
+                  <div className='flex gap-2 text-xs'>
+                    {processedDetails.slice(0, 2).map((detail: ProcessedDetail, detailIndex: number) => (
+                      <div key={detailIndex} className='flex items-center gap-1'>
+                        <div className={`w-2 h-2 rounded ${
+                          detail.category === 'development' ? 'bg-purple-500'
+                          : detail.category === 'documentation' ? 'bg-indigo-500'
+                          : detail.category === 'llm' ? 'bg-violet-500'
+                          : detail.category === 'design' ? 'bg-blue-500'
+                          : 'bg-gray-400'
+                        }`} />
+                        <span className={`${getThemeTextColor('secondary')}`}>
+                          {detail.percentage}%
+                        </span>
+                      </div>
+                    ))}
+                    {processedDetails.length > 2 && (
+                      <div className='flex items-center gap-1'>
+                        <div className='w-2 h-2 rounded bg-gray-400' />
+                        <span className={`${getThemeTextColor('secondary')}`}>
+                          {processedDetails.find(d => d.category === 'others')?.percentage || 0}%
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

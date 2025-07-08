@@ -3,14 +3,14 @@ import { DailyStatistics, StatisticsCategory } from '@/types/statistics';
 
 // 카테고리별 고정 색상 맵 - colors.ts와 통합
 export const categoryColorMap: { [key: string]: string } = {
-  DEVELOPMENT: categoryColors.DEVELOPMENT.solid,
-  LLM: categoryColors.LLM.solid,
-  Documentation: categoryColors.Documentation.solid,
-  Design: categoryColors.Design.solid,
-  Communication: categoryColors.Communication.solid,
-  YouTube: categoryColors.YouTube.solid,
-  SNS: categoryColors.SNS.solid,
-  Uncategorized: categoryColors.Uncategorized.solid,
+  DEVELOPMENT: categoryColors.development.solid,
+  LLM: categoryColors.llm.solid,
+  Documentation: categoryColors.documentation.solid,
+  Design: categoryColors.design.solid,
+  Communication: categoryColors.communication.solid,
+  YouTube: categoryColors.youtube.solid,
+  SNS: categoryColors.sns.solid,
+  Uncategorized: categoryColors.uncategorized.solid,
 };
 
 // 카테고리별 아이콘 맵 - leaderboard와 통합

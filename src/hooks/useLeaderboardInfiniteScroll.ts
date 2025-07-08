@@ -56,11 +56,9 @@ export function useLeaderboardInfiniteScroll({
   const transformAPIUser = (
     apiUser: APILeaderBoardResponse,
     index: number
-  ): User & { score: number; rank: number } => ({
+  ): LeaderBoard.LeaderBoardResponse & { id?: string } => ({
+    ...apiUser,
     id: apiUser.userId,
-    nickname: apiUser.nickname,
-    score: apiUser.score,
-    rank: apiUser.rank,
   });
 
   const queryFn = async ({ pageParam }: { pageParam: number }) => {
@@ -105,7 +103,7 @@ export function useLeaderboardInfiniteScroll({
     hasNextPage,
     fetchNextPage,
     refetch,
-  } = useInfiniteScroll<User>({
+  } = useInfiniteScroll<LeaderBoard.LeaderBoardResponse & { id?: string }>({
     queryKey: [
       'leaderboard',
       category,

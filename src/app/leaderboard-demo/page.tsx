@@ -12,10 +12,9 @@ import PeriodSelector from '@/components/leaderboard/PeriodSelector';
 // 타입 임포트
 import { User, useUserStore } from '@/stores/userStore';
 
-// 리더보드 표시용 확장된 User 타입
-type LeaderboardUser = User & {
-  score: number;
-  rank: number;
+// LeaderBoard.LeaderBoardResponse를 확장하여 사용
+type LeaderboardUser = LeaderBoard.LeaderBoardResponse & {
+  id?: string;
 };
 
 // 영어 이름 풀
@@ -85,6 +84,7 @@ const generateDummyUsers = (period: 'daily' | 'weekly' | 'monthly', dateIndex: n
                      21600; // 6시간
     
     return {
+      userId: `demo-user-${period}-${dateIndex}-${index + 1}`,
       id: `demo-user-${period}-${dateIndex}-${index + 1}`,
       nickname: nickname,
       score: Math.max(finalScore, minScore),
