@@ -4,10 +4,11 @@ import { useDesignSystem } from '@/hooks/useDesignSystem';
 import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/ui/select';
 import { getRecentUsageLog } from '@/shared/api/get';
 import { cardSystem, componentStates, spacing } from '@/styles/design-system';
-import { Activity, RotateCcw } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Activity, RotateCcw, Filter } from 'lucide-react';
+import { useEffect, useState, useMemo } from 'react';
 import { cn } from '@/shadcn/lib/utils';
 import NoData from '../common/NoData';
 
@@ -26,6 +27,7 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
   const [usageData, setUsageData] = useState<UsageLog.RecentUsageLogItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   // 새로고침 함수
   const handleRefresh = async () => {
@@ -91,6 +93,39 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
     }
   };
   
+  // 고유한 카테고리 목록 추출 (우선순위 기반 정렬)
+  const uniqueCategories = useMemo(() => {
+    const categories = usageData.map(item => item.category);
+    const uniqueSet = [...new Set(categories)];
+    
+    // 주요 작업 카테고리 우선순위 정의
+    const priorityOrder = [
+      'Development',
+      'Design', 
+      'Research',
+      'Productivity',
+      'Communication',
+      'Browser',
+      'Education',
+      'Entertainment',
+      'Social'
+    ];
+    
+    // 우선순위 기반으로 정렬
+    const prioritized = priorityOrder.filter(category => uniqueSet.includes(category));
+    const others = uniqueSet.filter(category => !priorityOrder.includes(category)).sort();
+    
+    return [...prioritized, ...others];
+  }, [usageData]);
+
+  // 필터링된 데이터
+  const filteredData = useMemo(() => {
+    if (selectedCategory === 'all') {
+      return usageData;
+    }
+    return usageData.filter(item => item.category === selectedCategory);
+  }, [usageData, selectedCategory]);
+
   // 디자인 시스템 스타일 적용
   const cardStyles = getCardStyle('medium', 'hoverable');
 
@@ -99,12 +134,30 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
       <CardContent className={`${cardSystem.content} ${spacing.inner.normal} flex-1 flex flex-col overflow-hidden`}>
         {/* 제목 */}
         <div className="flex items-center justify-between mb-4">
-          <h4 className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
-            Recent Activity
-          </h4>
+          <div className="flex items-center gap-3">
+            <h4 className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
+              Recent Activity
+            </h4>
+            {/* 카테고리 필터 */}
+            {uniqueCategories.length > 0 && (
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger className={`w-32 h-7 text-xs ${getThemeClass('component')} ${getThemeClass('border')}`}>
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent className={`${getThemeClass('component')} ${getThemeClass('border')}`}>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {uniqueCategories.map(category => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-              {loading ? 'Loading...' : `${usageData.length} items`}
+              {loading ? 'Loading...' : `${filteredData.length} items`}
             </div>
             {!activities && (
               <Button
@@ -142,12 +195,15 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
               </div>
             ))}
           </div>
-        ) : usageData.length === 0 ? (
+        ) : filteredData.length === 0 ? (
           /* 데이터 없음 */
           <div className="flex h-[300px] items-center justify-center">
             <NoData
-              title="No Recent Activity"
-              message={error || "No recent activity records. Start tracking your usage."}
+              title={selectedCategory === 'all' ? "No Recent Activity" : `No ${selectedCategory} Activity`}
+              message={error || (selectedCategory === 'all' 
+                ? "No recent activity records. Start tracking your usage."
+                : `No recent activity found for the ${selectedCategory} category.`
+              )}
               icon={Activity}
               showBorder={false}
               size="medium"
@@ -161,7 +217,7 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
               "activity-scroll-hide"
             )}
           >
-            {usageData.map((activity, index) => (
+            {filteredData.map((activity, index) => (
             <div
               key={index}
               className={`group rounded-lg border p-3 ${componentStates.hoverable.transition} ${componentStates.hoverable.cursor} ${getThemeClass('border')} ${getThemeClass('component')} hover:shadow-md hover:${getThemeClass('borderLight')}`}
