@@ -16,10 +16,18 @@ export function getCategoryDisplayName(category: string): string {
   return displayNames[category.toLowerCase()] || category;
 }
 
-// 점수를 분 단위로 변환 (소수점 제거)
+// 점수를 시간과 분 단위로 변환 (소수점 제거)
 export function formatScoreToMinutes(score: number): string {
-  const minutes = Math.floor(score / 60);
-  return `${minutes}m`;
+  const hours = Math.floor(score / 3600);
+  const minutes = Math.floor((score % 3600) / 60);
+
+  if (hours === 0) {
+    return `${minutes}m`;
+  } else if (minutes === 0) {
+    return `${hours}h`;
+  } else {
+    return `${hours}h ${minutes}m`;
+  }
 }
 
 export function processLeaderboardDetails(

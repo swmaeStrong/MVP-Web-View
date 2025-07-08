@@ -27,11 +27,11 @@ const formatTime = (seconds: number) => {
   const minutes = Math.floor((seconds % 3600) / 60);
 
   if (hours === 0) {
-    return `${minutes}min`;
+    return `${minutes}m`;
   } else if (minutes === 0) {
-    return `${hours}hr`;
+    return `${hours}h`;
   } else {
-    return `${hours}hr ${minutes}min`;
+    return `${hours}h ${minutes}m`;
   }
 };
 
