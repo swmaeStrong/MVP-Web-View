@@ -244,16 +244,8 @@ export default function HourlyUsageComparison({
   // Adjust default category based on available categories
   useEffect(() => {
     if (availableCategories.length > 0) {
-      // If Development is available, use it as default
-      if (availableCategories.includes('Development') && selectedCategory !== 'Development') {
-        setSelectedCategory('Development');
-      }
-      // If Development is not available and we're still set to Development, use first available
-      else if (selectedCategory === 'Development' && !availableCategories.includes('Development')) {
-        setSelectedCategory(availableCategories[0]);
-      }
-      // If selectedCategory is null or not in available categories, set to first available
-      else if (!selectedCategory || !availableCategories.includes(selectedCategory)) {
+      // Only set default if no category is selected or selected category is not available
+      if (!selectedCategory || !availableCategories.includes(selectedCategory)) {
         setSelectedCategory(availableCategories.includes('Development') ? 'Development' : availableCategories[0]);
       }
     }
@@ -398,16 +390,13 @@ export default function HourlyUsageComparison({
               <div className='flex items-center gap-1 lg:gap-2'>
                 <span className={cssClasses.labelText}>Compare</span>
                 <Select
-                  value={selectedCategory || 'all'}
-                  onValueChange={value =>
-                    setSelectedCategory(value === 'all' ? null : value)
-                  }
+                  value={selectedCategory || availableCategories[0]}
+                  onValueChange={value => setSelectedCategory(value)}
                 >
                   <SelectTrigger className={`h-8 w-[100px] lg:w-[140px] text-xs border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('componentSecondary')}`}>
-                    <SelectValue placeholder="Total" />
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value='all'>Total</SelectItem>
                     {availableCategories.map(category => (
                       <SelectItem key={category} value={category}>
                         {category}
