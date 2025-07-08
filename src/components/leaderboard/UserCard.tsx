@@ -1,10 +1,10 @@
 'use client';
 
-import { extendedRankColors, rankColors } from '@/styles';
 import { useTheme } from '@/hooks/useTheme';
+import { extendedRankColors, rankColors } from '@/styles';
 import { componentSizes, componentStates, getPriorityStyle, getRankPriority } from '@/styles/design-system';
+import { ProcessedDetail, formatScoreToMinutes, getCategoryDisplayName, processLeaderboardDetails } from '@/utils/leaderboard';
 import { Medal } from 'lucide-react';
-import { processLeaderboardDetails, ProcessedDetail, getCategoryDisplayName, formatScoreToMinutes } from '@/utils/leaderboard';
 
 interface UserCardProps {
   user: LeaderBoard.LeaderBoardResponse & { id?: string; isMe?: boolean };
@@ -120,21 +120,38 @@ export default function UserCard({
                   <div className='flex h-full'>
                     {processedDetails.map((detail: ProcessedDetail, detailIndex: number) => {
                       // 카테고리 색상 가져오기 - 조화로운 색상 팔레트
-                      const categoryColor = detail.category === 'others' 
-                        ? 'bg-gray-400' 
-                        : detail.category === 'Development' ? 'bg-purple-500'
-                        : detail.category === 'Documentation' ? 'bg-indigo-500'
-                        : detail.category === 'LLM' ? 'bg-violet-500'
-                        : detail.category === 'Design' ? 'bg-blue-500'
-                        : 'bg-gray-400';
+                      const getCategoryColors = (category: string) => {
+                        switch (category) {
+                          case 'others':
+                            return { bg: 'bg-gray-400', hover: 'hover:bg-gray-500' };
+                          case 'Development':
+                            return { bg: 'bg-purple-500', hover: 'hover:bg-purple-600' };
+                          case 'Documentation':
+                            return { bg: 'bg-indigo-400', hover: 'hover:bg-indigo-500' };
+                          case 'LLM':
+                            return { bg: 'bg-violet-400', hover: 'hover:bg-violet-500' };
+                          case 'Design':
+                            return { bg: 'bg-blue-400', hover: 'hover:bg-blue-500' };
+                          case 'Communication':
+                            return { bg: 'bg-emerald-400', hover: 'hover:bg-emerald-500' };
+                          case 'Education':
+                            return { bg: 'bg-teal-400', hover: 'hover:bg-teal-500' };
+                          case 'Entertainment':
+                            return { bg: 'bg-pink-400', hover: 'hover:bg-pink-500' };
+                          case 'System & Utilities':
+                            return { bg: 'bg-cyan-500', hover: 'hover:bg-cyan-600' };
+                          case 'SNS':
+                            return { bg: 'bg-amber-400', hover: 'hover:bg-amber-500' };
+                          case 'Productivity':
+                            return { bg: 'bg-rose-400', hover: 'hover:bg-rose-500' };
+                          default:
+                            return { bg: 'bg-slate-400', hover: 'hover:bg-slate-500' };
+                        }
+                      };
                       
-                      const hoverColor = detail.category === 'others'
-                        ? 'hover:bg-gray-500'
-                        : detail.category === 'Development' ? 'hover:bg-purple-600'
-                        : detail.category === 'Documentation' ? 'hover:bg-indigo-600'
-                        : detail.category === 'LLM' ? 'hover:bg-violet-600'
-                        : detail.category === 'Design' ? 'hover:bg-blue-600'
-                        : 'hover:bg-gray-500';
+                      const colors = getCategoryColors(detail.category);
+                      const categoryColor = colors.bg;
+                      const hoverColor = colors.hover;
                         
                       return (
                         <div
@@ -166,11 +183,22 @@ export default function UserCard({
                   {processedDetails.slice(0, 2).map((detail: ProcessedDetail, detailIndex: number) => (
                     <div key={detailIndex} className='flex items-center gap-1'>
                       <div className={`w-1.5 h-1.5 rounded flex-shrink-0 ${
-                        detail.category === 'Development' ? 'bg-purple-500'
-                        : detail.category === 'Documentation' ? 'bg-indigo-500'
-                        : detail.category === 'LLM' ? 'bg-violet-500'
-                        : detail.category === 'Design' ? 'bg-blue-500'
-                        : 'bg-gray-400'
+                        (() => {
+                          switch (detail.category) {
+                            case 'others': return 'bg-gray-400';
+                            case 'Development': return 'bg-purple-500';
+                            case 'Documentation': return 'bg-indigo-400';
+                            case 'LLM': return 'bg-violet-400';
+                            case 'Design': return 'bg-blue-400';
+                            case 'Communication': return 'bg-emerald-400';
+                            case 'Education': return 'bg-teal-400';
+                            case 'Entertainment': return 'bg-pink-400';
+                            case 'System & Utilities': return 'bg-cyan-500';
+                            case 'SNS': return 'bg-amber-400';
+                            case 'Productivity': return 'bg-rose-400';
+                            default: return 'bg-slate-400';
+                          }
+                        })()
                       }`} />
                       <span className={`text-xs ${getThemeTextColor('secondary')} whitespace-nowrap`}>
                         {getCategoryDisplayName(detail.category)}
