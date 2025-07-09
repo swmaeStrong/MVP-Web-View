@@ -3,8 +3,9 @@
 import { formatKSTDate, getKSTDate } from '@/utils/timezone';
 import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, spacing } from '@/styles/design-system';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { Button } from '@/shadcn/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
 
 interface PeriodSelectorProps {
   selectedPeriod: 'daily' | 'weekly' | 'monthly';
@@ -103,6 +104,40 @@ export default function PeriodSelector({
 
   return (
     <div className={`mb-6 rounded-lg border p-4 shadow-sm transition-all duration-200 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')} relative`}>
+      {/* Information Tooltip - 우측 하단에 위치 */}
+      <div className='absolute bottom-2 right-2'>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div 
+              className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full transition-all duration-200 cursor-pointer text-xs border hover:shadow-sm ${
+                isDarkMode 
+                  ? 'bg-[#2D2D2D] border-[rgb(80,80,80)] text-[rgb(153,153,153)] hover:text-[rgb(220,220,220)] hover:border-[rgb(120,120,120)]' 
+                  : 'bg-gray-50 border-gray-200 text-[rgb(142,142,142)] hover:text-[rgb(43,43,43)] hover:border-gray-300'
+              }`} 
+            >
+              <Info className="h-3 w-3" />
+              <span>Info</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="top" align="end" className="max-w-xs text-sm leading-relaxed">
+            <div className='space-y-3'>
+              <div className="leading-relaxed">
+                <span className='font-semibold text-[rgb(220,220,220)]'>Data Updates:</span>
+                <br />
+                <span className="text-[rgb(153,153,153)]">All user data is updated every 20-30 seconds</span>
+              </div>
+              <div className="leading-relaxed">
+                <span className='font-semibold text-[rgb(220,220,220)]'>Total Category:</span>
+                <br />
+                <span className="text-[rgb(153,153,153)]">Only work activities (Development, Design, LLM, Documentation, etc.)</span>
+                <br />
+                <span className="text-[rgb(153,153,153)]">Excludes: Entertainment, Game, SNS</span>
+              </div>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </div>
+
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
           <div className='flex flex-row gap-3'>

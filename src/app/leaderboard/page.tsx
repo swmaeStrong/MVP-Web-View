@@ -33,7 +33,7 @@ export default function Leaderboard() {
   const currentUser = useCurrentUser();
   const { initializeUser } = useInitUser();
   const { scrollToMyRank } = useScrollToMyRank();
-  const { getThemeClass } = useTheme();
+  const { getThemeClass, getThemeTextColor } = useTheme();
 
   // Handle user initialization with useEffect
   useEffect(() => {
@@ -149,12 +149,14 @@ export default function Leaderboard() {
         />
 
         {/* 카테고리 필터 */}
-        <div className='mb-6 flex justify-center'>
-          <CategoryFilter
-            categories={categories}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-          />
+        <div className='mb-6 space-y-3'>
+          <div className='flex justify-center'>
+            <CategoryFilter
+              categories={categories}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+            />
+          </div>
         </div>
 
         {/* 내 순위 배너 */}
