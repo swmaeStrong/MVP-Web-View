@@ -121,19 +121,8 @@ export default function Leaderboard() {
 
   const categories = LEADERBOARD_CATEGORIES;
 
-  // 전체 로딩 상태
-  if (isLoading && users.length === 0) {
-    return (
-      <div className={`min-h-screen p-4 lg:p-8 ${getThemeClass('background')}`}>
-        <div className='mx-auto max-w-6xl space-y-6 lg:space-y-8'>
-          <PeriodSelectorSkeleton />
-          <CategoryFilterSkeleton />
-          <MyRankBannerSkeleton />
-          <LeaderboardListSkeleton itemCount={15} />
-        </div>
-      </div>
-    );
-  }
+  // 전체 로딩 상태 - PeriodSelector와 CategoryFilter는 항상 표시
+  const isInitialLoading = isLoading && users.length === 0;
 
   return (
     <div className={`min-h-screen p-4 lg:p-8 ${getThemeClass('background')}`}>
@@ -159,29 +148,37 @@ export default function Leaderboard() {
           </div>
         </div>
 
-        {/* 내 순위 배너 */}
-        <MyRankBanner
-          category={selectedCategory}
-          period={selectedPeriod}
-          selectedDateIndex={selectedDateIndex}
-          onScrollToMyRank={scrollToMyRank}
-          totalUsers={users.length} // 전체 사용자 수 전달
-          userId={currentUser?.id} // 고정된 userId 전달로 중복 호출 방지
-        />
+        {/* 내 순위 배너 - 로딩 중일 때 스켈레톤 표시 */}
+        {isInitialLoading ? (
+          <MyRankBannerSkeleton />
+        ) : (
+          <MyRankBanner
+            category={selectedCategory}
+            period={selectedPeriod}
+            selectedDateIndex={selectedDateIndex}
+            onScrollToMyRank={scrollToMyRank}
+            totalUsers={users.length} // 전체 사용자 수 전달
+            userId={currentUser?.id} // 고정된 userId 전달로 중복 호출 방지
+          />
+        )}
 
-        {/* 리더보드 리스트 */}
-        <LeaderboardList
-          users={users}
-          isLoading={isLoading}
-          isError={isError}
-          error={error}
-          isFetchingNextPage={isFetchingNextPage}
-          refetch={refetch}
-          selectedPeriod={selectedPeriod}
-          selectedCategory={selectedCategory}
-          selectedDateIndex={selectedDateIndex}
-          containerRef={leaderboardContainerRef}
-        />
+        {/* 리더보드 리스트 - 로딩 중일 때 스켈레톤 표시 */}
+        {isInitialLoading ? (
+          <LeaderboardListSkeleton itemCount={15} />
+        ) : (
+          <LeaderboardList
+            users={users}
+            isLoading={isLoading}
+            isError={isError}
+            error={error}
+            isFetchingNextPage={isFetchingNextPage}
+            refetch={refetch}
+            selectedPeriod={selectedPeriod}
+            selectedCategory={selectedCategory}
+            selectedDateIndex={selectedDateIndex}
+            containerRef={leaderboardContainerRef}
+          />
+        )}
       </div>
     </div>
   );
