@@ -7,23 +7,30 @@ export function MyRankBannerSkeleton() {
   const { getThemeClass } = useTheme();
   
   return (
-    <div className={`mb-3 lg:mb-4 rounded-lg border p-3 lg:p-4 ${getThemeClass('component')} ${getThemeClass('border')} shadow-lg`}>
-      <div className='flex items-center justify-between'>
-        <div className='flex items-center space-x-3'>
-          <div>
-            <div className='flex items-center space-x-2'>
-              <div className={`h-4 w-24 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-            </div>
-            <div className='flex items-center space-x-2 mt-0.5'>
-              <div className={`h-3 w-16 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+    <>
+      <div className={`mb-3 lg:mb-4 rounded-lg border p-3 lg:p-4 ${getThemeClass('component')} ${getThemeClass('border')} shadow-sm`}>
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center space-x-3'>
+            <div>
+              <div className='flex items-center space-x-2'>
+                <div className={`h-4 lg:h-5 w-24 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+              </div>
+              <div className='flex items-center space-x-2 mt-0.5'>
+                <div className={`h-3 w-20 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+              </div>
             </div>
           </div>
-        </div>
-        <div className='text-right'>
-          <div className={`h-6 w-12 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+          <div className='flex items-center'>
+            <div className={`h-6 lg:h-7 w-12 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+          </div>
         </div>
       </div>
-    </div>
+      
+      {/* 구분선 스켈레톤 추가 */}
+      <div className='mb-2 lg:mb-3'>
+        <div className={`h-px w-full ${getThemeClass('border')}`}></div>
+      </div>
+    </>
   );
 }
 
@@ -32,21 +39,44 @@ export function UserCardSkeleton() {
   
   return (
     <div className={`group relative flex items-center justify-between rounded-lg border p-3 lg:p-4 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      {/* 좌측 - 순위 & 사용자 정보 */}
       <div className='flex items-center space-x-2 lg:space-x-3'>
-        <div className={`flex h-7 w-7 lg:h-10 lg:w-10 items-center justify-center rounded-full border ${getThemeClass('componentSecondary')} ${getThemeClass('border')}`}>
-          <div className={`h-3 w-3 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+        {/* 순위 표시 */}
+        <div className={`flex h-7 w-7 lg:h-10 lg:w-10 items-center justify-center`}>
+          <div className={`h-4 lg:h-5 w-4 lg:w-5 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
         </div>
         
+        {/* 사용자 정보 */}
         <div className='flex-1 min-w-0'>
           <div className='flex items-center space-x-2'>
-            <div className={`h-4 w-20 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+            <div className={`h-4 lg:h-5 w-24 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
           </div>
         </div>
       </div>
 
-      <div className='text-right flex-shrink-0'>
-        <div className={`h-5 w-16 animate-pulse rounded ${getThemeClass('componentSecondary')} mb-1`}></div>
-        <div className={`h-3 w-20 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+      {/* 우측 - 점수 정보 (total category 경우 더 넓은 공간) */}
+      <div className='flex items-center gap-2 flex-shrink-0'>
+        {/* Total category 상세 정보 영역 */}
+        <div className='w-64 lg:w-72 flex items-center justify-start'>
+          <div className='flex items-center gap-3'>
+            {/* Progress bar skeleton */}
+            <div className={`relative h-6 w-20 lg:w-24 rounded-lg overflow-hidden ${getThemeClass('componentSecondary')}`}>
+              <div className={`h-full w-full animate-pulse ${getThemeClass('borderLight')}`}></div>
+            </div>
+            
+            {/* Details skeleton */}
+            <div className='flex flex-col gap-0.5 w-36 lg:w-40'>
+              <div className={`h-3 w-24 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+              <div className={`h-3 w-20 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+            </div>
+          </div>
+        </div>
+        
+        {/* 점수 표시 */}
+        <div className='w-20 lg:w-24 text-right'>
+          <div className={`h-5 lg:h-6 w-16 lg:w-20 animate-pulse rounded ${getThemeClass('componentSecondary')} mb-1 ml-auto`}></div>
+          <div className={`h-3 w-16 lg:w-20 animate-pulse rounded ${getThemeClass('componentSecondary')} ml-auto`}></div>
+        </div>
       </div>
     </div>
   );
