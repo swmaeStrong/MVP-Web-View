@@ -25,7 +25,7 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
   const { getCardStyle } = useDesignSystem();
   
   const [usageData, setUsageData] = useState<UsageLog.RecentUsageLogItem[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!activities); // props가 없으면 초기에 로딩 상태
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -56,9 +56,12 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
     if (activities) {
       // props로 전달된 데이터가 있으면 그것을 사용
       setUsageData(activities);
+      setLoading(false); // props 데이터가 있으면 로딩 완료
+      setError(null); // 에러 상태도 클리어
       return;
     }
 
+    // props가 없으면 API에서 데이터 fetch
     const fetchUsageLog = async () => {
       setLoading(true);
       setError(null);

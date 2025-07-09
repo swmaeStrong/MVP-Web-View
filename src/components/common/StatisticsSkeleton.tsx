@@ -40,31 +40,6 @@ export function CategoryListSkeleton() {
   );
 }
 
-export function ActivityListSkeleton() {
-  const { getThemeClass } = useTheme();
-  
-  return (
-    <div className={`${componentSizes.large.borderRadius} ${componentSizes.medium.border} ${componentSizes.medium.padding} ${componentSizes.small.shadow} ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <div className="space-y-4">
-        <div className={`h-6 w-32 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-        <div className="space-y-3">
-          {[...Array(8)].map((_, i) => (
-            <div key={i} className="flex items-center justify-between py-2">
-              <div className="flex items-center space-x-3">
-                <div className={`h-8 w-8 animate-pulse rounded-full ${getThemeClass('componentSecondary')}`}></div>
-                <div>
-                  <div className={`h-4 w-32 animate-pulse rounded ${getThemeClass('componentSecondary')} mb-1`}></div>
-                  <div className={`h-3 w-20 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-                </div>
-              </div>
-              <div className={`h-4 w-16 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function StatisticsChartSkeleton() {
   const { getThemeClass } = useTheme();

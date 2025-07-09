@@ -11,7 +11,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // 컴포넌트 임포트
 import {
-  ActivityListSkeleton,
   HourlyUsageComparisonSkeleton,
   StatisticsChartSkeleton,
   TimelineChartSkeleton,
@@ -178,7 +177,7 @@ export default function StatisticsPage() {
                 <TotalTimeCardSkeleton />
               </div>
               <div className='flex-1'>
-                <ActivityListSkeleton />
+                <StatisticsChartSkeleton />
               </div>
             </div>
 
