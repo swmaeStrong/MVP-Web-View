@@ -102,7 +102,7 @@ export default function CategoryFilter({
 
       {/* Current category info - responsive */}
       <div className='mt-3 text-center'>
-        <div className={`${FONT_SIZES.LEADERBOARD.SECONDARY} ${getThemeTextColor('secondary')}`}>
+        <div className={`${FONT_SIZES.LEADERBOARD.PRIMARY} ${getThemeTextColor('secondary')}`}>
           <span className='font-semibold text-purple-600'>
             {selectedCategory === 'total' ? 'Total'
             : selectedCategory === 'Development' ? 'Development'

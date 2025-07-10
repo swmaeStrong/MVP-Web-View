@@ -11,7 +11,7 @@ export const FONT_SIZES = {
   // 리더보드 전용 반응형 폰트
   LEADERBOARD: {
     PRIMARY: 'text-[15px]',      // 14px (주요 텍스트 - 13px에 가장 가까운 14px 선택)
-    SECONDARY: 'text-[13px]',    // 12px (보조 텍스트)
+    SECONDARY: 'text-[11px]',    // 12px (보조 텍스트)
     BUTTON: 'text-[11px]',       // 12px (버튼 텍스트)
     RANK: 'text-[15px]', // 14px -> 16px (순위 숫자)
     HEADER: 'text-[18px]',      // 24px (헤더 제목, 작은 사이즈 기준으로 통일)
