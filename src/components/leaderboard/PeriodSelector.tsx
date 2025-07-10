@@ -5,7 +5,7 @@ import { Button } from '@/shadcn/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
 import { FONT_SIZES } from '@/styles/font-sizes';
 import { formatKSTDate, getKSTDate } from '@/utils/timezone';
-import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Info, RefreshCw } from 'lucide-react';
 import { getThemeColor } from '../../utils/theme-detector';
 
 interface PeriodSelectorProps {
@@ -14,6 +14,8 @@ interface PeriodSelectorProps {
   selectedDateIndex: number;
   setSelectedDateIndex: (index: number) => void;
   currentDate: Date;
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
 }
 
 export default function PeriodSelector({
@@ -22,6 +24,8 @@ export default function PeriodSelector({
   selectedDateIndex,
   setSelectedDateIndex,
   currentDate,
+  onRefresh,
+  isRefreshing = false,
 }: PeriodSelectorProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
   const timeLabels = {
@@ -133,8 +137,31 @@ export default function PeriodSelector({
 
   return (
     <div className={`mb-6 rounded-lg border p-4 shadow-sm transition-all duration-200 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')} relative`}>
-      {/* Information Tooltip - 우측 하단에 위치 */}
-      <div className='absolute bottom-2 right-2'>
+      {/* Information Tooltip과 새로고침 버튼 - 우측 하단에 위치 */}
+      <div className='absolute bottom-2 right-2 flex items-center gap-2'>
+        {/* 새로고침 버튼 */}
+        {onRefresh && (
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <button
+                onClick={onRefresh}
+                disabled={isRefreshing}
+                className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full transition-all duration-200 cursor-pointer ${FONT_SIZES.LEADERBOARD.SECONDARY} border hover:shadow-sm ${
+                  isRefreshing 
+                    ? 'opacity-50 cursor-not-allowed'
+                    : isDarkMode 
+                      ? `${getThemeColor('component')} border-[rgb(80,80,80)] text-[rgb(153,153,153)] hover:text-[rgb(220,220,220)] hover:border-[rgb(120,120,120)] hover:scale-105` 
+                      : `bg-gray-50 border-gray-200 text-[rgb(142,142,142)] hover:text-[rgb(43,43,43)] hover:border-gray-300 hover:scale-105`
+                }`}
+              >
+                <RefreshCw className={`h-3 w-3 ${getThemeTextColor('primary')} ${isRefreshing ? 'animate-spin' : ''}`} />
+                <span className={`${getThemeColor('background')} ${getThemeTextColor('primary')}`}>Refresh</span>
+              </button>
+            </TooltipTrigger>
+          </Tooltip>
+        )}
+
+        {/* Info 버튼 */}
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
             <div 

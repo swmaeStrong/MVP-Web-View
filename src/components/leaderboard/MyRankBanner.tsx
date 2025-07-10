@@ -203,7 +203,7 @@ export default function MyRankBanner({
                     ) : (
                       <Eye size={12} />
                     )}
-                    <span>{isLoadingToMyRank ? '찾는 중...' : '내 순위 찾기'}</span>
+                    <span>{isLoadingToMyRank ? 'Finding...' : 'Find My Rank'}</span>
                   </button>
                 )}
               </>
