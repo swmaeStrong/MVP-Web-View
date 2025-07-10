@@ -92,6 +92,25 @@ export default function HomePage() {
             구독 플랜 보기 →
           </Button>
         </div>
+
+        {/* Business Information */}
+        <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
+          <div className="text-sm text-gray-600 dark:text-[rgb(153,153,153)] space-y-2">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-center md:space-x-8 space-y-1 md:space-y-0">
+              <span className="font-medium">상호명: 집중</span>
+              <span className="hidden md:inline text-gray-400 dark:text-[rgb(153,153,153)]">|</span>
+              <span>사업자등록번호: 255-18-02409</span>
+            </div>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-center md:space-x-8 space-y-1 md:space-y-0">
+              <span>대표자: 김영현</span>
+              <span className="hidden md:inline text-gray-400 dark:text-[rgb(153,153,153)]">|</span>
+              <span>전화번호: 010-5172-5645</span>
+            </div>
+            <div className="text-center">
+              <span>사업장주소: 전라남도 나주시 우정로 77</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
