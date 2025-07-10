@@ -1,11 +1,12 @@
 'use client';
 
-import { formatKSTDate, getKSTDate } from '@/utils/timezone';
 import { useTheme } from '@/hooks/useTheme';
-import { componentSizes, componentStates, spacing } from '@/styles/design-system';
-import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { Button } from '@/shadcn/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
+import { FONT_SIZES } from '@/styles/font-sizes';
+import { formatKSTDate, getKSTDate } from '@/utils/timezone';
+import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
+import { getThemeColor } from '../../utils/theme-detector';
 
 interface PeriodSelectorProps {
   selectedPeriod: 'daily' | 'weekly' | 'monthly';
@@ -28,9 +29,14 @@ export default function PeriodSelector({
     weekly: 'Weekly',
     monthly: 'Monthly',
   };
+  
+  // 최소 허용 날짜: 2025년 7월 7일
+  const MIN_DATE = new Date('2025-07-07T00:00:00+09:00'); // KST 시간대
 
   const handlePreviousDate = () => {
-    setSelectedDateIndex(selectedDateIndex + 1);
+    if (canGoPrevious()) {
+      setSelectedDateIndex(selectedDateIndex + 1);
+    }
   };
 
   const handleNextDate = () => {
@@ -40,7 +46,30 @@ export default function PeriodSelector({
   };
 
   const canGoPrevious = () => {
-    return selectedDateIndex < 30;
+    // 기본 제한: 30일
+    if (selectedDateIndex >= 30) return false;
+    
+    const kstCurrentDate = getKSTDate();
+    let targetDate: Date;
+    
+    if (selectedPeriod === 'daily') {
+      targetDate = new Date(
+        kstCurrentDate.getTime() - (selectedDateIndex + 1) * 24 * 60 * 60 * 1000
+      );
+    } else if (selectedPeriod === 'weekly') {
+      targetDate = new Date(
+        kstCurrentDate.getTime() - (selectedDateIndex + 1) * 7 * 24 * 60 * 60 * 1000
+      );
+    } else if (selectedPeriod === 'monthly') {
+      const nextMonthDate = new Date(kstCurrentDate);
+      nextMonthDate.setMonth(nextMonthDate.getMonth() - (selectedDateIndex + 1));
+      targetDate = nextMonthDate;
+    } else {
+      return false;
+    }
+    
+    // 2025-07-07 이전으로는 갈 수 없음
+    return targetDate >= MIN_DATE;
   };
 
   const canGoNext = () => {
@@ -106,17 +135,17 @@ export default function PeriodSelector({
     <div className={`mb-6 rounded-lg border p-4 shadow-sm transition-all duration-200 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')} relative`}>
       {/* Information Tooltip - 우측 하단에 위치 */}
       <div className='absolute bottom-2 right-2'>
-        <Tooltip>
+        <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
             <div 
-              className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full transition-all duration-200 cursor-pointer text-xs border hover:shadow-sm ${
+              className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full transition-all duration-200 cursor-pointer ${FONT_SIZES.LEADERBOARD.SECONDARY} border hover:shadow-sm ${
                 isDarkMode 
-                  ? 'bg-[#2D2D2D] border-[rgb(80,80,80)] text-[rgb(153,153,153)] hover:text-[rgb(220,220,220)] hover:border-[rgb(120,120,120)]' 
-                  : 'bg-gray-50 border-gray-200 text-[rgb(142,142,142)] hover:text-[rgb(43,43,43)] hover:border-gray-300'
+                  ? `${getThemeColor('component')} border-[rgb(80,80,80)] text-[rgb(153,153,153)] hover:text-[rgb(220,220,220)] hover:border-[rgb(120,120,120)]` 
+                  : `bg-gray-50 border-gray-200 text-[rgb(142,142,142)] hover:text-[rgb(43,43,43)] hover:border-gray-300`
               }`} 
             >
-              <Info className="h-3 w-3" />
-              <span>Info</span>
+              <Info className={`h-3 w-3 ${getThemeTextColor('primary')}`} />
+              <span className={`${getThemeColor('background')} ${getThemeTextColor('primary')}`}>Info</span>
             </div>
           </TooltipTrigger>
           <TooltipContent side="top" align="end" className="max-w-xs text-sm leading-relaxed">
@@ -127,7 +156,7 @@ export default function PeriodSelector({
                 <span className="text-[rgb(153,153,153)]">All user data is updated every 20-30 seconds</span>
               </div>
               <div className="leading-relaxed">
-                <span className='font-semibold text-[rgb(220,220,220)]'>Total Category:</span>
+                <span className='font-semibold text-[rgb(220,220,220)]'>Work Category:</span>
                 <br />
                 <span className="text-[rgb(153,153,153)]">Only work activities (Development, Design, LLM, Documentation, etc.)</span>
                 <br />
@@ -146,8 +175,8 @@ export default function PeriodSelector({
                 key={period}
                 className={
                   selectedPeriod === period
-                    ? `rounded-lg px-4 py-2 text-sm font-semibold border-2 transition-all duration-200 ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')} ${getThemeTextColor('primary')}`
-                    : `rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('borderLight')}`
+                    ? `rounded-lg px-4 py-2 ${FONT_SIZES.LEADERBOARD.PRIMARY} font-semibold border-2 transition-all duration-200 ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')} ${getThemeTextColor('primary')}`
+                    : `rounded-lg px-4 py-2 ${FONT_SIZES.LEADERBOARD.PRIMARY} font-medium transition-all duration-200 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('borderLight')}`
                 }
                 onClick={() => setSelectedPeriod(period as any)}
               >
@@ -182,7 +211,7 @@ export default function PeriodSelector({
         {/* 현재 선택된 기간 표시 */}
         <div className='flex justify-center'>
           <div className={`inline-block rounded-lg px-4 py-2 border ${getThemeClass('border')} ${getThemeClass('component')}`}>
-            <span className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
+            <span className={`${FONT_SIZES.LEADERBOARD.PRIMARY} font-semibold ${getThemeTextColor('primary')}`}>
               {getPeriodLabel()}
             </span>
           </div>

@@ -5,7 +5,6 @@ import {
   categoryColors,
   commonCombinations,
   layout,
-  rankColors,
   typography,
   utils,
 } from './index';
@@ -72,23 +71,25 @@ export const examples = {
     </div>
   ),
 
-  // 7. 순위별 컬러 사용
+  // 7. 순위별 배지 사용
   rankBadge: (rank: number) => {
-    const rankInfo =
-      rank <= 10 ? rankColors[rank as keyof typeof rankColors] : null;
-    return rankInfo ? (
+    const isTopRank = rank <= 3;
+    const badgeColor = isTopRank 
+      ? rank === 1 ? 'bg-yellow-500 text-yellow-900 border-yellow-600' 
+      : rank === 2 ? 'bg-gray-400 text-gray-900 border-gray-500'
+      : 'bg-amber-600 text-amber-900 border-amber-700'
+      : 'bg-gray-200 text-gray-700 border-gray-300';
+    
+    return (
       <div
         className={utils.cn(
-          'rounded-full px-2 py-1 text-xs font-medium',
-          rankInfo.bgColor,
-          rankInfo.textColor,
-          rankInfo.borderColor,
-          'border'
+          'rounded-full px-2 py-1 text-xs font-medium border',
+          badgeColor
         )}
       >
-        #{rank} {rankInfo.title}
+        #{rank}
       </div>
-    ) : null;
+    );
   },
 
   // 8. 복합 레이아웃 구성

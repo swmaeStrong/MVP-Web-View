@@ -1,8 +1,8 @@
 'use client';
 
-import { categoryColors } from '@/styles';
 import { useTheme } from '@/hooks/useTheme';
-import { componentSizes, componentStates, spacing } from '@/styles/design-system';
+import { categoryColors } from '@/styles';
+import { FONT_SIZES } from '@/styles/font-sizes';
 
 interface CategoryFilterProps {
   categories: string[];
@@ -43,11 +43,11 @@ export default function CategoryFilter({
   };
 
   return (
-    <div className={`mx-auto max-w-[600px] lg:max-w-[800px] rounded-lg border p-4 lg:p-6 shadow-sm transition-all duration-200 ${getThemeClass('border')} ${getThemeClass('component')}`}>
+    <div className={`mx-auto max-w-[800px] rounded-lg border p-6 shadow-sm transition-all duration-200 ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <div className='flex items-center justify-center'>
         {/* Category selection buttons - responsive */}
         <div className='flex justify-center'>
-          <div className='flex items-center gap-2 lg:gap-4'>
+          <div className='flex items-center gap-4'>
             {getVisibleCategories().map((item, slotIndex) => {
               const categoryColor =
                 categoryColors[item.category as keyof typeof categoryColors] ||
@@ -59,14 +59,14 @@ export default function CategoryFilter({
                   onClick={() => setSelectedCategory(item.category)}
                   className={
                     item.isSelected
-                      ? `w-[100px] lg:w-[140px] rounded-lg border-2 scale-105 transform px-2 lg:px-4 py-2 lg:py-2.5 text-xs lg:text-sm font-semibold transition-all duration-200 overflow-hidden ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')} ${getThemeTextColor('primary')}`
+                      ? `w-[160px] rounded-lg border-2 scale-105 transform px-3 py-2 ${FONT_SIZES.LEADERBOARD.PRIMARY} font-semibold transition-all duration-200 overflow-hidden ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')} ${getThemeTextColor('primary')}`
                       : item.position === -1 || item.position === 1
-                        ? `w-[80px] lg:w-[120px] scale-95 transform rounded-lg border-2 px-2 lg:px-4 py-1.5 lg:py-2 text-xs lg:text-sm font-medium transition-all duration-200 overflow-hidden ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('borderLight')}`
-                        : `w-[80px] lg:w-[120px] rounded-lg border-2 px-2 lg:px-4 py-1.5 lg:py-2 text-xs lg:text-sm font-medium opacity-70 transition-all duration-200 overflow-hidden ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`
+                        ? `w-[140px] scale-95 transform rounded-lg border-2 px-3 py-1.5 ${FONT_SIZES.LEADERBOARD.PRIMARY} font-medium transition-all duration-200 overflow-hidden ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('borderLight')}`
+                        : `w-[140px] rounded-lg border-2 px-3 py-1.5 ${FONT_SIZES.LEADERBOARD.PRIMARY} font-medium opacity-70 transition-all duration-200 overflow-hidden ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`
                   }
                 >
                   <span className='block truncate'>
-                    {item.category === 'total' ? 'Total'
+                    {item.category === 'work' ? 'Work'
                     : item.category === 'Development' ? 'Development'
                     : item.category === 'Documentation' ? 'Documentation'
                     : item.category === 'LLM' ? 'LLM'
@@ -81,7 +81,7 @@ export default function CategoryFilter({
       </div>
 
       {/* Bottom: indicator - responsive */}
-      <div className='mt-3 lg:mt-4 flex justify-center'>
+      <div className='mt-4 flex justify-center'>
         <div className='flex items-center gap-1'>
           {categories.map((_, index) => {
             const selectedIndex = categories.indexOf(selectedCategory);
@@ -91,8 +91,8 @@ export default function CategoryFilter({
                 key={index}
                 className={
                   index === selectedIndex
-                    ? 'h-1.5 w-4 lg:h-2 lg:w-6 rounded-full bg-purple-500 border border-purple-600 transition-all duration-200'
-                    : `h-1 w-1 lg:h-1.5 lg:w-1.5 rounded-full border transition-all duration-200 ${getThemeClass('borderLight')} border-purple-300`
+                    ? 'h-2 w-6 rounded-full bg-purple-500 border border-purple-600 transition-all duration-200'
+                    : `h-1.5 w-1.5 rounded-full border transition-all duration-200 ${getThemeClass('borderLight')} border-purple-300`
                 }
               />
             );
@@ -101,17 +101,17 @@ export default function CategoryFilter({
       </div>
 
       {/* Current category info - responsive */}
-      <div className='mt-2 lg:mt-3 text-center'>
-        <div className={`text-xs lg:text-sm ${getThemeTextColor('secondary')}`}>
+      <div className='mt-3 text-center'>
+        <div className={`${FONT_SIZES.LEADERBOARD.PRIMARY} ${getThemeTextColor('secondary')}`}>
           <span className='font-semibold text-purple-600'>
-            {selectedCategory === 'total' ? 'Total'
+            {selectedCategory === 'work' ? 'Work'
             : selectedCategory === 'Development' ? 'Development'
             : selectedCategory === 'Documentation' ? 'Documentation'
             : selectedCategory === 'LLM' ? 'LLM'
             : selectedCategory === 'Design' ? 'Design'
             : selectedCategory}
           </span>
-          <span className='mx-1 lg:mx-2'>•</span>
+          <span className='mx-2'>•</span>
           <span>
             {categories.indexOf(selectedCategory) + 1} / {categories.length}
           </span>

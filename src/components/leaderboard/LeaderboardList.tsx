@@ -1,14 +1,15 @@
 'use client';
 
-import { useCurrentUser, User } from '@/stores/userStore';
+import ErrorState from '@/components/common/ErrorState';
+import { LeaderboardListSkeleton } from '@/components/common/LeaderboardSkeleton';
+import { useTheme } from '@/hooks/useTheme';
+import { cn } from '@/shadcn/lib/utils';
+import { LEADERBOARD_CONFIG } from '@/shared/constants/infinite-scroll';
+import { useCurrentUser } from '@/stores/userStore';
+import { FONT_SIZES } from '@/styles/font-sizes';
 import { useRef } from 'react';
 import EmptyState from './EmptyState';
-import ErrorState from '@/components/common/ErrorState';
 import UserCard from './UserCard';
-import { useTheme } from '@/hooks/useTheme';
-import { componentSizes, componentStates, spacing } from '@/styles/design-system';
-import { LeaderboardListSkeleton } from '@/components/common/LeaderboardSkeleton';
-import { cn } from '@/shadcn/lib/utils';
 
 // 리더보드 표시용 확장된 User 타입
 type LeaderboardUser = LeaderBoard.LeaderBoardResponse & {
@@ -43,13 +44,16 @@ export default function LeaderboardList({
 }: LeaderboardListProps) {
   const currentUser = useCurrentUser();
   const { getThemeClass, getThemeTextColor } = useTheme();
+  
+  // 작은 사이즈 기준으로 통일된 컨테이너 높이
+  const containerHeight = LEADERBOARD_CONFIG.CONTAINER_HEIGHT.MOBILE;
 
   // 현재 유저 하이라이트를 위한 ref
   const currentUserRef = useRef<HTMLDivElement>(null);
 
   // Loading state
   if (isLoading) {
-    return <LeaderboardListSkeleton itemCount={15} />;
+    return <LeaderboardListSkeleton itemCount={LEADERBOARD_CONFIG.SKELETON_ITEM_COUNT} />;
   }
 
   // Error state
@@ -84,14 +88,17 @@ export default function LeaderboardList({
     <div 
       ref={containerRef}
       className={cn(
-        "h-[700px] lg:h-[750px] overflow-y-auto rounded-lg border p-4",
+        "overflow-y-auto rounded-lg border p-4",
         getThemeClass('border'),
         getThemeClass('component'),
         "activity-scroll-hide"
       )}
+      style={{ 
+        height: `${containerHeight}px` 
+      }}
     >
       {/* Leaderboard list */}
-      <div className='space-y-2 lg:space-y-3'>
+      <div className="space-y-3">
         {users.map((user: LeaderboardUser, index: number) => {
           // 현재 유저인지 확인
           const isCurrentUser = currentUser && user.userId === currentUser.id;
@@ -111,10 +118,10 @@ export default function LeaderboardList({
 
       {/* Infinite scroll loading indicator */}
       {isFetchingNextPage && (
-        <div className='flex justify-center mt-4 mb-4'>
+        <div className="flex justify-center mt-4 mb-4">
           <div className={`rounded-lg border-2 p-4 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
             <div className='mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-purple-600'></div>
-            <p className={`text-sm ${getThemeTextColor('secondary')}`}>
+            <p className={`${FONT_SIZES.LEADERBOARD.PRIMARY} ${getThemeTextColor('secondary')}`}>
               Loading more competitors...
             </p>
           </div>

@@ -1,11 +1,12 @@
 'use client';
 
+import NoData from '@/components/common/NoData';
 import { useMyRank } from '@/hooks/useMyRank';
 import { useTheme } from '@/hooks/useTheme';
-import { componentSizes, componentStates, spacing } from '@/styles/design-system';
 import { themeColors } from '@/styles/colors';
-import NoData from '@/components/common/NoData';
-import { processLeaderboardDetails, ProcessedDetail, getCategoryDisplayName, formatScoreToMinutes } from '@/utils/leaderboard';
+import { componentSizes, componentStates, spacing } from '@/styles/design-system';
+import { FONT_SIZES } from '@/styles/font-sizes';
+import { processLeaderboardDetails } from '@/utils/leaderboard';
 import {
   getKSTDate,
   getKSTDateStringFromDate,
@@ -13,11 +14,8 @@ import {
   getKSTWeeklyDateString,
 } from '@/utils/timezone';
 import {
-  Award,
-  ChevronUp,
-  Clock,
   Crown,
-  Star,
+  Eye,
   TrendingUp
 } from 'lucide-react';
 
@@ -53,6 +51,7 @@ interface MyRankBannerProps {
   onScrollToMyRank?: () => void;
   totalUsers?: number;
   userId?: string; // 고정된 userId를 props로 받음
+  isLoadingToMyRank?: boolean; // 스크롤 로딩 상태
 }
 
 export default function MyRankBanner({
@@ -62,6 +61,7 @@ export default function MyRankBanner({
   onScrollToMyRank,
   totalUsers = 1000,
   userId, //
+  isLoadingToMyRank = false,
 }: MyRankBannerProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
 
@@ -132,7 +132,7 @@ export default function MyRankBanner({
     );
   }
 
-  if (isError || (!isLoading && !myRank)) {
+  if (isError || (!isLoading && !myRank && !rank)) {
     return (
       <div className={`relative ${spacing.section.normal}`} style={{ zIndex: 1 }}>
         <div className={`border rounded-lg p-6 ${
@@ -155,7 +155,7 @@ export default function MyRankBanner({
   return (
     <>
       <div
-        className={`mb-3 lg:mb-4 rounded-lg border p-3 lg:p-4 ${getRankStyle()}`}
+        className={`mb-4 rounded-lg border p-4 ${getRankStyle()}`}
         style={{ zIndex: 1 }}
       >
 
@@ -165,34 +165,60 @@ export default function MyRankBanner({
             {/* 핵심 정보만 */}
             <div>
               <div className='flex items-center space-x-2'>
-                <h3 className={`text-sm lg:text-base font-bold ${getThemeTextColor('primary')}`}>
-                  {myRank?.nickname}
+                <h3 className={`${FONT_SIZES.LEADERBOARD.PRIMARY} font-bold ${getThemeTextColor('primary')}`}>
+                  {myRank?.nickname || '내 닉네임'}
                 </h3>
               </div>
               <div className='flex items-center space-x-2 mt-0.5'>
-                <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                <span className={`${FONT_SIZES.LEADERBOARD.SECONDARY} ${getThemeTextColor('secondary')}`}>
                   {category === 'total' ? 'Total Time' : 'Activity Time'}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* 우측 - 등수만 표시 */}
-          {rank && (
-            <div className='flex items-center'>
-              <div className={`text-lg lg:text-xl font-bold whitespace-nowrap ${getThemeTextColor('primary')}`}>
-                {rank === 1 ? '1st'
-                : rank === 2 ? '2nd' 
-                : rank === 3 ? '3rd'
-                : `${rank}th`}
+          {/* 우측 - 등수 표시 또는 내 순위 찾기 버튼 */}
+          <div className='flex items-center space-x-3'>
+            {rank ? (
+              // rank가 있을 때
+              <>
+                <div className={`${FONT_SIZES.LEADERBOARD.RANK} font-bold whitespace-nowrap ${getThemeTextColor('primary')}`}>
+                  {rank === 1 ? '1st'
+                  : rank === 2 ? '2nd' 
+                  : rank === 3 ? '3rd'
+                  : `${rank}th`}
+                </div>
+                {onScrollToMyRank && (
+                  <button
+                    onClick={onScrollToMyRank}
+                    disabled={isLoadingToMyRank}
+                    className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg border ${FONT_SIZES.LEADERBOARD.BUTTON} font-medium transition-all duration-200 ${
+                      isLoadingToMyRank 
+                        ? `cursor-not-allowed opacity-50 ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`
+                        : `${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('borderLight')} hover:scale-105 active:scale-95`
+                    }`}
+                  >
+                    {isLoadingToMyRank ? (
+                      <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Eye size={12} />
+                    )}
+                    <span>{isLoadingToMyRank ? '찾는 중...' : '내 순위 찾기'}</span>
+                  </button>
+                )}
+              </>
+            ) : (
+              // rank가 없을 때
+              <div className={`${FONT_SIZES.LEADERBOARD.SECONDARY} ${getThemeTextColor('secondary')}`}>
+                순위 정보 없음
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
       {/* 미니멀 구분선 */}
-      <div className='mb-2 lg:mb-3'>
+      <div className='mb-3'>
         <div 
           className='h-px w-full'
           style={{
