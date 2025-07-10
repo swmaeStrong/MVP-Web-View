@@ -1,12 +1,12 @@
 'use client';
 
+import NoData from '@/components/common/NoData';
 import { useMyRank } from '@/hooks/useMyRank';
 import { useTheme } from '@/hooks/useTheme';
-import { componentSizes, componentStates, spacing } from '@/styles/design-system';
 import { themeColors } from '@/styles/colors';
-import NoData from '@/components/common/NoData';
+import { componentSizes, componentStates, spacing } from '@/styles/design-system';
 import { FONT_SIZES } from '@/styles/font-sizes';
-import { processLeaderboardDetails, ProcessedDetail, getCategoryDisplayName, formatScoreToMinutes } from '@/utils/leaderboard';
+import { processLeaderboardDetails } from '@/utils/leaderboard';
 import {
   getKSTDate,
   getKSTDateStringFromDate,
@@ -14,13 +14,9 @@ import {
   getKSTWeeklyDateString,
 } from '@/utils/timezone';
 import {
-  Award,
-  ChevronUp,
-  Clock,
   Crown,
-  Star,
-  TrendingUp,
-  Eye
+  Eye,
+  TrendingUp
 } from 'lucide-react';
 
 // Function to convert seconds to hours, minutes format
@@ -159,7 +155,7 @@ export default function MyRankBanner({
   return (
     <>
       <div
-        className={`mb-3 lg:mb-4 rounded-lg border p-3 lg:p-4 ${getRankStyle()}`}
+        className={`mb-4 rounded-lg border p-4 ${getRankStyle()}`}
         style={{ zIndex: 1 }}
       >
 
@@ -218,7 +214,7 @@ export default function MyRankBanner({
       </div>
 
       {/* 미니멀 구분선 */}
-      <div className='mb-2 lg:mb-3'>
+      <div className='mb-3'>
         <div 
           className='h-px w-full'
           style={{
