@@ -29,9 +29,14 @@ export default function PeriodSelector({
     weekly: 'Weekly',
     monthly: 'Monthly',
   };
+  
+  // 최소 허용 날짜: 2025년 7월 7일
+  const MIN_DATE = new Date('2025-07-07T00:00:00+09:00'); // KST 시간대
 
   const handlePreviousDate = () => {
-    setSelectedDateIndex(selectedDateIndex + 1);
+    if (canGoPrevious()) {
+      setSelectedDateIndex(selectedDateIndex + 1);
+    }
   };
 
   const handleNextDate = () => {
@@ -41,7 +46,30 @@ export default function PeriodSelector({
   };
 
   const canGoPrevious = () => {
-    return selectedDateIndex < 30;
+    // 기본 제한: 30일
+    if (selectedDateIndex >= 30) return false;
+    
+    const kstCurrentDate = getKSTDate();
+    let targetDate: Date;
+    
+    if (selectedPeriod === 'daily') {
+      targetDate = new Date(
+        kstCurrentDate.getTime() - (selectedDateIndex + 1) * 24 * 60 * 60 * 1000
+      );
+    } else if (selectedPeriod === 'weekly') {
+      targetDate = new Date(
+        kstCurrentDate.getTime() - (selectedDateIndex + 1) * 7 * 24 * 60 * 60 * 1000
+      );
+    } else if (selectedPeriod === 'monthly') {
+      const nextMonthDate = new Date(kstCurrentDate);
+      nextMonthDate.setMonth(nextMonthDate.getMonth() - (selectedDateIndex + 1));
+      targetDate = nextMonthDate;
+    } else {
+      return false;
+    }
+    
+    // 2025-07-07 이전으로는 갈 수 없음
+    return targetDate >= MIN_DATE;
   };
 
   const canGoNext = () => {
