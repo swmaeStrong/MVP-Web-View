@@ -1,12 +1,11 @@
 'use client';
 
-import { formatKSTDate, getKSTDate } from '@/utils/timezone';
 import { useTheme } from '@/hooks/useTheme';
-import { componentSizes, componentStates, spacing } from '@/styles/design-system';
-import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { Button } from '@/shadcn/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
 import { FONT_SIZES } from '@/styles/font-sizes';
+import { formatKSTDate, getKSTDate } from '@/utils/timezone';
+import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
 
 interface PeriodSelectorProps {
   selectedPeriod: 'daily' | 'weekly' | 'monthly';
@@ -107,7 +106,7 @@ export default function PeriodSelector({
     <div className={`mb-6 rounded-lg border p-4 shadow-sm transition-all duration-200 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')} relative`}>
       {/* Information Tooltip - 우측 하단에 위치 */}
       <div className='absolute bottom-2 right-2'>
-        <Tooltip>
+        <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
             <div 
               className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full transition-all duration-200 cursor-pointer ${FONT_SIZES.LEADERBOARD.SECONDARY} border hover:shadow-sm ${
@@ -116,8 +115,8 @@ export default function PeriodSelector({
                   : 'bg-gray-50 border-gray-200 text-[rgb(142,142,142)] hover:text-[rgb(43,43,43)] hover:border-gray-300'
               }`} 
             >
-              <Info className="h-3 w-3" />
-              <span>Info</span>
+              <Info className={`h-3 w-3 ${getThemeTextColor('primary')}`} />
+              <span className={`${getThemeTextColor('primary')}`}>Info</span>
             </div>
           </TooltipTrigger>
           <TooltipContent side="top" align="end" className="max-w-xs text-sm leading-relaxed">

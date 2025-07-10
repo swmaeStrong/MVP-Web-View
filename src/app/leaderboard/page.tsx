@@ -197,8 +197,8 @@ export default function Leaderboard() {
   const isInitialLoading = isLoading && users.length === 0;
 
   return (
-    <div className={`min-h-screen p-4 lg:p-8 ${getThemeClass('background')}`}>
-      <div className='mx-auto max-w-6xl space-y-6 lg:space-y-8'>
+    <div className={`min-h-screen p-4 ${getThemeClass('background')}`}>
+      <div className='mx-auto max-w-6xl space-y-6'>
 
         {/* 기간 선택 탭 */}
         <PeriodSelector

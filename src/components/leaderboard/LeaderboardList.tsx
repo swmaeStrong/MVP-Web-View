@@ -1,7 +1,7 @@
 'use client';
 
 import { useCurrentUser, User } from '@/stores/userStore';
-import { useRef, useEffect, useState } from 'react';
+import { useRef } from 'react';
 import EmptyState from './EmptyState';
 import ErrorState from '@/components/common/ErrorState';
 import UserCard from './UserCard';
@@ -46,23 +46,8 @@ export default function LeaderboardList({
   const currentUser = useCurrentUser();
   const { getThemeClass, getThemeTextColor } = useTheme();
   
-  // 반응형 컨테이너 높이
-  const [containerHeight, setContainerHeight] = useState(LEADERBOARD_CONFIG.CONTAINER_HEIGHT.DESKTOP);
-  
-  useEffect(() => {
-    const updateHeight = () => {
-      const isDesktop = window.innerWidth >= 1024; // lg 브레이크포인트
-      setContainerHeight(
-        isDesktop 
-          ? LEADERBOARD_CONFIG.CONTAINER_HEIGHT.DESKTOP 
-          : LEADERBOARD_CONFIG.CONTAINER_HEIGHT.MOBILE
-      );
-    };
-    
-    updateHeight();
-    window.addEventListener('resize', updateHeight);
-    return () => window.removeEventListener('resize', updateHeight);
-  }, []);
+  // 작은 사이즈 기준으로 통일된 컨테이너 높이
+  const containerHeight = LEADERBOARD_CONFIG.CONTAINER_HEIGHT.MOBILE;
 
   // 현재 유저 하이라이트를 위한 ref
   const currentUserRef = useRef<HTMLDivElement>(null);

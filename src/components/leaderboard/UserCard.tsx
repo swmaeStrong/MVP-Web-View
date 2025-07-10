@@ -3,9 +3,9 @@
 import { useTheme } from '@/hooks/useTheme';
 import { extendedRankColors, rankColors } from '@/styles';
 import { componentSizes, componentStates, getPriorityStyle, getRankPriority } from '@/styles/design-system';
+import { FONT_SIZES } from '@/styles/font-sizes';
 import { ProcessedDetail, formatScoreToMinutes, getCategoryDisplayName, processLeaderboardDetails } from '@/utils/leaderboard';
 import { Medal } from 'lucide-react';
-import { FONT_SIZES } from '@/styles/font-sizes';
 
 interface UserCardProps {
   user: LeaderBoard.LeaderBoardResponse & { id?: string; isMe?: boolean };
@@ -62,7 +62,7 @@ export default function UserCard({
     <div
       key={`rank-${rank}-${user.userId || user.nickname || index}`}
       data-user-id={user.userId}
-      className={`group relative flex items-center justify-between rounded-lg border p-3 lg:p-4 shadow-sm ${componentStates.hoverable.transition} ${getThemeClass('border')} ${getThemeClass('component')} ${
+      className={`group relative flex items-center justify-between rounded-lg border p-3 shadow-sm ${componentStates.hoverable.transition} ${getThemeClass('border')} ${getThemeClass('component')} ${
         isCurrentUser
           ? `ring-2 ${isDarkMode ? 'ring-purple-400' : 'ring-purple-300'}`
           : ''
@@ -70,17 +70,17 @@ export default function UserCard({
       style={{}}
     >
       {/* 좌측 - 순위 & 특별 아이콘 & 사용자 정보 */}
-      <div className='flex items-center space-x-2 lg:space-x-3'>
+      <div className='flex items-center space-x-2'>
         {/* 순위 표시 */}
         <div
-          className={`flex h-6 w-6 lg:h-8 lg:w-8 items-center justify-center ${rank <= 3 ? '' : ''}`}
+          className={`flex h-6 w-6 items-center justify-center ${rank <= 3 ? '' : ''}`}
         >
           {rank === 1 ? (
-            <Medal className="w-4 h-4 lg:w-5 lg:h-5 text-yellow-500" />
+            <Medal className="w-4 h-4 text-yellow-500" />
           ) : rank === 2 ? (
-            <Medal className="w-4 h-4 lg:w-5 lg:h-5 text-gray-400" />
+            <Medal className="w-4 h-4 text-gray-400" />
           ) : rank === 3 ? (
-            <Medal className="w-4 h-4 lg:w-5 lg:h-5 text-amber-600" />
+            <Medal className="w-4 h-4 text-amber-600" />
           ) : (
             <span className={`${FONT_SIZES.LEADERBOARD.RANK} font-bold ${getThemeTextColor('secondary')}`}>{rank}</span>
           )}
@@ -107,16 +107,16 @@ export default function UserCard({
       </div>
 
       {/* Right - score info */}
-      <div className='flex items-center gap-1 flex-shrink-0'>
+      <div className='flex items-center gap-4 flex-shrink-0'>
         {/* Details for total category - Fixed position */}
-        <div className='w-48 lg:w-56 flex items-center justify-start'>
+        <div className='lg:w-56 flex items-center justify-start'>
           {category === 'total' && user.details && user.details.length > 0 && (() => {
             const processedDetails = processLeaderboardDetails(user.details);
             
             return (
-              <div className='flex items-center gap-2'>
+              <div className='flex items-center gap-4'>
                 {/* Stacked progress bar */}
-                <div className={`relative h-4 w-16 lg:w-20 rounded-md overflow-hidden ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                <div className={`relative h-4 w-20 rounded-md overflow-hidden ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
                   <div className='flex h-full'>
                     {processedDetails.map((detail: ProcessedDetail, detailIndex: number) => {
                       // 카테고리 색상 가져오기 - 조화로운 색상 팔레트
@@ -179,9 +179,9 @@ export default function UserCard({
                 </div>
                 
                 {/* Details breakdown */}
-                <div className='flex flex-col gap-0.5 text-xs w-28 lg:w-32'>
+                <div className='flex flex-col gap-1.5 text-xs w-32'>
                   {processedDetails.slice(0, 2).map((detail: ProcessedDetail, detailIndex: number) => (
-                    <div key={detailIndex} className='flex items-center gap-1'>
+                    <div key={detailIndex} className='flex items-center gap-2'>
                       <div className={`w-1 h-1 rounded flex-shrink-0 ${
                         (() => {
                           switch (detail.category) {
@@ -209,7 +209,7 @@ export default function UserCard({
                     </div>
                   ))}
                   {processedDetails.length > 2 && (
-                    <div className='flex items-center gap-1'>
+                    <div className='flex items-center gap-2'>
                       <div className='w-1 h-1 rounded flex-shrink-0 bg-gray-400' />
                       <span className={`${getThemeTextColor('secondary')} ${FONT_SIZES.LEADERBOARD.SECONDARY} whitespace-nowrap`}>Others</span>
                       <span className={`${getThemeTextColor('primary')} font-medium ${FONT_SIZES.LEADERBOARD.SECONDARY} whitespace-nowrap ml-auto`}>
@@ -224,7 +224,7 @@ export default function UserCard({
         </div>
         
         {/* Score display - Fixed width */}
-        <div className='w-16 lg:w-20 text-right'>
+        <div className='w-16 text-right'>
           <div
             className={`${FONT_SIZES.LEADERBOARD.RANK} font-bold ${getThemeTextColor('primary')} whitespace-nowrap`}
           >
