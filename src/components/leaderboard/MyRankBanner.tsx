@@ -132,7 +132,7 @@ export default function MyRankBanner({
     );
   }
 
-  if (isError || (!isLoading && !myRank)) {
+  if (isError || (!isLoading && !myRank && !rank)) {
     return (
       <div className={`relative ${spacing.section.normal}`} style={{ zIndex: 1 }}>
         <div className={`border rounded-lg p-6 ${
@@ -166,7 +166,7 @@ export default function MyRankBanner({
             <div>
               <div className='flex items-center space-x-2'>
                 <h3 className={`${FONT_SIZES.LEADERBOARD.PRIMARY} font-bold ${getThemeTextColor('primary')}`}>
-                  {myRank?.nickname}
+                  {myRank?.nickname || '내 닉네임'}
                 </h3>
               </div>
               <div className='flex items-center space-x-2 mt-0.5'>
@@ -177,39 +177,43 @@ export default function MyRankBanner({
             </div>
           </div>
 
-          {/* 우측 - 등수와 버튼 */}
-          {rank && (
-            <div className='flex items-center space-x-3'>
-              <div className={`${FONT_SIZES.LEADERBOARD.RANK} font-bold whitespace-nowrap ${getThemeTextColor('primary')}`}>
-                {rank === 1 ? '1st'
-                : rank === 2 ? '2nd' 
-                : rank === 3 ? '3rd'
-                : `${rank}th`}
+          {/* 우측 - 등수 표시 또는 내 순위 찾기 버튼 */}
+          <div className='flex items-center space-x-3'>
+            {rank ? (
+              // rank가 있을 때
+              <>
+                <div className={`${FONT_SIZES.LEADERBOARD.RANK} font-bold whitespace-nowrap ${getThemeTextColor('primary')}`}>
+                  {rank === 1 ? '1st'
+                  : rank === 2 ? '2nd' 
+                  : rank === 3 ? '3rd'
+                  : `${rank}th`}
+                </div>
+                {onScrollToMyRank && (
+                  <button
+                    onClick={onScrollToMyRank}
+                    disabled={isLoadingToMyRank}
+                    className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg border ${FONT_SIZES.LEADERBOARD.BUTTON} font-medium transition-all duration-200 ${
+                      isLoadingToMyRank 
+                        ? `cursor-not-allowed opacity-50 ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`
+                        : `${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('borderLight')} hover:scale-105 active:scale-95`
+                    }`}
+                  >
+                    {isLoadingToMyRank ? (
+                      <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Eye size={12} />
+                    )}
+                    <span>{isLoadingToMyRank ? '찾는 중...' : '내 순위 찾기'}</span>
+                  </button>
+                )}
+              </>
+            ) : (
+              // rank가 없을 때
+              <div className={`${FONT_SIZES.LEADERBOARD.SECONDARY} ${getThemeTextColor('secondary')}`}>
+                순위 정보 없음
               </div>
-              
-              {/* View My Rank 버튼 */}
-              {onScrollToMyRank && (
-                <button
-                  onClick={onScrollToMyRank}
-                  disabled={isLoadingToMyRank}
-                  className={`flex items-center space-x-1 px-3 py-1.5 rounded-md ${FONT_SIZES.LEADERBOARD.BUTTON} font-medium transition-colors ${
-                    isLoadingToMyRank 
-                      ? (isDarkMode ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-500 cursor-not-allowed')
-                      : (isDarkMode 
-                          ? 'bg-purple-600 hover:bg-purple-700 text-white' 
-                          : 'bg-purple-100 hover:bg-purple-200 text-purple-800')
-                  }`}
-                >
-                  {isLoadingToMyRank ? (
-                    <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <Eye size={12} />
-                  )}
-                  <span>{isLoadingToMyRank ? 'Loading...' : 'View'}</span>
-                </button>
-              )}
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
