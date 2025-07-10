@@ -182,7 +182,7 @@ export default function UserCard({
                 <div className='flex flex-col gap-1.5 text-xs w-32'>
                   {processedDetails.slice(0, 2).map((detail: ProcessedDetail, detailIndex: number) => (
                     <div key={detailIndex} className='flex items-center gap-2'>
-                      <div className={`w-1 h-1 rounded flex-shrink-0 ${
+                      <div className={`w-2 h-2 rounded flex-shrink-0 ${
                         (() => {
                           switch (detail.category) {
                             case 'others': return 'bg-gray-400';
@@ -210,7 +210,7 @@ export default function UserCard({
                   ))}
                   {processedDetails.length > 2 && (
                     <div className='flex items-center gap-2'>
-                      <div className='w-1 h-1 rounded flex-shrink-0 bg-gray-400' />
+                      <div className='w-2 h-2 rounded flex-shrink-0 bg-gray-400' />
                       <span className={`${getThemeTextColor('secondary')} ${FONT_SIZES.LEADERBOARD.SECONDARY} whitespace-nowrap`}>Others</span>
                       <span className={`${getThemeTextColor('primary')} font-medium ${FONT_SIZES.LEADERBOARD.SECONDARY} whitespace-nowrap ml-auto`}>
                         {processedDetails.find(d => d.category === 'others')?.percentage || 0}%
