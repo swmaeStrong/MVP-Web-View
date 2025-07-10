@@ -135,7 +135,7 @@ export default function MyRankBanner({
   if (isError || (!isLoading && !myRank)) {
     return (
       <div className={`relative ${spacing.section.normal}`} style={{ zIndex: 1 }}>
-        <div className={`border border-dashed rounded-lg p-6 ${
+        <div className={`border rounded-lg p-6 ${
           isDarkMode ? `${themeColors.dark.classes.borderLight} ${themeColors.dark.classes.componentSecondary}/50` : `${themeColors.light.classes.borderLight} ${themeColors.light.classes.componentSecondary}/50`
         }`}>
           <NoData
