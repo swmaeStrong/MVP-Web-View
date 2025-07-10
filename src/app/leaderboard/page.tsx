@@ -1,10 +1,11 @@
 'use client';
 
 import { useLeaderboardInfiniteScroll } from '@/hooks/useLeaderboardInfiniteScroll';
-import { useScrollToMyRank } from '@/hooks/useScrollToMyRank';
+// import { useScrollToMyRank } from '@/hooks/useScrollToMyRank'; // Not needed anymore
 import { useTheme } from '@/hooks/useTheme';
+import { INFINITE_SCROLL_CONFIG } from '@/shared/constants/infinite-scroll';
 import { CATEGORIES, LEADERBOARD_CATEGORIES } from '@/utils/categories';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 // 컴포넌트 임포트
 import CategoryFilter from '@/components/leaderboard/CategoryFilter';
@@ -14,25 +15,23 @@ import PeriodSelector from '@/components/leaderboard/PeriodSelector';
 
 // User 타입은 userStore에서 import
 import {
-  CategoryFilterSkeleton,
   LeaderboardListSkeleton,
-  MyRankBannerSkeleton,
-  PeriodSelectorSkeleton
+  MyRankBannerSkeleton
 } from '@/components/common/LeaderboardSkeleton';
-import { useCurrentUser, User } from '@/stores/userStore';
+import { useCurrentUser } from '@/stores/userStore';
 import { useInitUser } from '../../hooks/useInitUser';
 
 // LeaderBoard.LeaderBoardResponse 타입을 직접 사용
 
 // 필요한 유틸리티 함수들 import
 import { useMyRank } from '@/hooks/useMyRank';
-import { getKSTDate, getKSTDateStringFromDate, getKSTWeeklyDateString, getKSTMonthlyDateString } from '@/utils/timezone';
+import { getKSTDate, getKSTDateStringFromDate, getKSTMonthlyDateString, getKSTWeeklyDateString } from '@/utils/timezone';
 
 export default function Leaderboard() {
   // Hook 순서를 항상 동일하게 유지
   const currentUser = useCurrentUser();
   const { initializeUser } = useInitUser();
-  const { scrollToMyRank } = useScrollToMyRank();
+  // scrollToMyRank is now defined locally instead of using the hook
   const { getThemeClass, getThemeTextColor } = useTheme();
 
   // Handle user initialization with useEffect
@@ -94,13 +93,8 @@ export default function Leaderboard() {
     userId: currentUser?.id,
   });
   
-  // 랭크를 기준으로 초기 페이지 계산 (한 페이지에 10개씩)
-  const calculateInitialPage = (rank: number | null) => {
-    if (!rank || rank <= 0) return 1;
-    return Math.max(1, Math.floor((rank - 1) / 10) + 1);
-  };
-  
-  const initialPage = calculateInitialPage(rank);
+  // 페이지 로딩 상태 관리
+  const [isLoadingToMyRank, setIsLoadingToMyRank] = useState(false);
 
   // 무한 스크롤 훅 사용
   const {
@@ -110,14 +104,92 @@ export default function Leaderboard() {
     error,
     isFetchingNextPage,
     hasNextPage,
+    fetchNextPage,
     refetch,
   } = useLeaderboardInfiniteScroll({
     category: selectedCategory,
     period: selectedPeriod,
     selectedDateIndex,
     containerRef: leaderboardContainerRef,
-    initialPage, // 계산된 초기 페이지 전달
   });
+  
+  // 내 랭크로 스크롤하는 함수 (데이터 완전 로드 후 스크롤)
+  const scrollToMyRank = useCallback(async () => {
+    if (!rank || !currentUser) return;
+    
+    setIsLoadingToMyRank(true);
+    
+    try {
+      const currentLoadedUsers = users.length;
+      
+      // 내 페이지까지 필요한 추가 페이지 계산
+      const myPage = Math.ceil(rank / INFINITE_SCROLL_CONFIG.ITEMS_PER_PAGE);
+      const currentPages = Math.ceil(currentLoadedUsers / INFINITE_SCROLL_CONFIG.ITEMS_PER_PAGE);
+      console.log('currentPages', currentPages);
+      // 중앙 정렬을 위해 항상 다음 페이지까지 로드
+      const targetPages = Math.max(myPage + 1, currentPages + 1); // 내 페이지 + 1 또는 현재+1 중 큰 값
+      const pagesToLoad = targetPages - currentPages;
+      console.log('pagesToLoad', pagesToLoad);
+      console.log('페이지 로딩 정보:', {
+        rank,
+        myPage,
+        currentPages,
+        targetPages,
+        pagesToLoad,
+        currentLoadedUsers
+      });
+      
+      // 필요한 데이터가 있으면 완전히 로드
+      if (pagesToLoad > 0 && hasNextPage) {
+        console.log(`${pagesToLoad}페이지 순차 로딩 시작...`);
+        
+        // 필요한 페이지를 순차적으로 로드 (fetchNextPage는 다음 페이지 하나씩만 가져옴)
+        for (let i = 0; i < pagesToLoad && hasNextPage; i++) {
+          console.log(`페이지 ${i + 1}/${pagesToLoad} 로딩 중...`);
+          await fetchNextPage();
+        }
+        
+        console.log('모든 페이지 로딩 완료');
+        
+        // 데이터 로딩 완료 후 DOM 업데이트 대기
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      
+      // 모든 데이터 로딩이 완료된 후 스크롤 실행
+      console.log('스크롤 시작...');
+      
+      const userElement = document.querySelector(`[data-user-id="${currentUser.id}"]`);
+      
+      if (userElement) {
+        // 스크롤 실행과 동시에 로딩 상태 해제
+        setIsLoadingToMyRank(false);
+        
+        userElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'nearest'
+        });
+        
+        // 하이라이트 효과
+        userElement.classList.add('animate-pulse');
+        setTimeout(() => userElement.classList.remove('animate-pulse'), 2000);
+        
+        console.log('스크롤 완료');
+      } else {
+        console.log('유저 요소를 찾을 수 없음:', {
+          userId: currentUser.id,
+          loadedUsers: users.length,
+          rank,
+          expectedInPage: `${myPage}페이지`
+        });
+        setIsLoadingToMyRank(false);
+      }
+      
+    } catch (error) {
+      console.error('스크롤 중 오류:', error);
+      setIsLoadingToMyRank(false);
+    }
+  }, [rank, currentUser, users.length, hasNextPage, fetchNextPage]);
 
   const categories = LEADERBOARD_CATEGORIES;
 
@@ -125,8 +197,8 @@ export default function Leaderboard() {
   const isInitialLoading = isLoading && users.length === 0;
 
   return (
-    <div className={`min-h-screen p-4 lg:p-8 ${getThemeClass('background')}`}>
-      <div className='mx-auto max-w-6xl space-y-6 lg:space-y-8'>
+    <div className={`min-h-screen p-4 ${getThemeClass('background')}`}>
+      <div className='mx-auto max-w-6xl space-y-6'>
 
         {/* 기간 선택 탭 */}
         <PeriodSelector
@@ -159,6 +231,7 @@ export default function Leaderboard() {
             onScrollToMyRank={scrollToMyRank}
             totalUsers={users.length} // 전체 사용자 수 전달
             userId={currentUser?.id} // 고정된 userId 전달로 중복 호출 방지
+            isLoadingToMyRank={isLoadingToMyRank} // 로딩 상태 전달
           />
         )}
 

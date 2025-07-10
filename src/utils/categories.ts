@@ -4,7 +4,7 @@ export const CATEGORIES = {
   LLM: 'LLM', 
   DOCUMENTATION: 'Documentation',
   DESIGN: 'Design',
-  TOTAL: 'total',
+  TOTAL: 'work',
 } as const;
 
 // 📊 Leaderboard categories list
@@ -19,7 +19,7 @@ export const LEADERBOARD_CATEGORIES = [
 // 🏷️ Get category display name
 export const getCategoryDisplayName = (category: string): string => {
   const displayNames: { [key: string]: string } = {
-    'total': 'Total',
+    'work': 'Work',
     'Development': 'Development',
     'Documentation': 'Documentation', 
     'LLM': 'LLM',

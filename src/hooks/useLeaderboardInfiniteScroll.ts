@@ -7,6 +7,7 @@ import {
   getKSTWeeklyDateString,
 } from '@/utils/timezone';
 import { useInfiniteScroll } from './useInfiniteScroll';
+import { INFINITE_SCROLL_CONFIG } from '@/shared/constants/infinite-scroll';
 
 // User 타입은 userStore에서 import
 import { User } from '@/stores/userStore';
@@ -18,7 +19,6 @@ interface UseLeaderboardInfiniteScrollParams {
   period: 'daily' | 'weekly' | 'monthly';
   selectedDateIndex: number;
   containerRef?: React.RefObject<HTMLDivElement | null>;
-  initialPage?: number; // 초기 페이지 번호 추가
 }
 
 export function useLeaderboardInfiniteScroll({
@@ -26,7 +26,6 @@ export function useLeaderboardInfiniteScroll({
   period,
   selectedDateIndex,
   containerRef,
-  initialPage = 1,
 }: UseLeaderboardInfiniteScrollParams) {
   const categories = LEADERBOARD_CATEGORIES;
 
@@ -37,7 +36,7 @@ export function useLeaderboardInfiniteScroll({
     if (period === 'daily') {
       // 일간: selectedDateIndex에 따라 과거 날짜로
       const targetDate = new Date(
-        today.getTime() - selectedDateIndex * 24 * 60 * 60 * 1000
+        today.getTime() - selectedDateIndex * INFINITE_SCROLL_CONFIG.TIME_CONSTANTS.MILLISECONDS_PER_DAY
       );
       return getKSTDateStringFromDate(targetDate);
     } else if (period === 'weekly') {
@@ -75,7 +74,7 @@ export function useLeaderboardInfiniteScroll({
         categoryParam,
         apiType,
         pageParam,
-        10,
+        INFINITE_SCROLL_CONFIG.ITEMS_PER_PAGE,
         dateParam
       );
 
@@ -83,7 +82,7 @@ export function useLeaderboardInfiniteScroll({
 
       if (response && Array.isArray(response)) {
         return response.map((apiUser, index) =>
-          transformAPIUser(apiUser, (pageParam - 1) * 10 + index)
+          transformAPIUser(apiUser, (pageParam - 1) * INFINITE_SCROLL_CONFIG.ITEMS_PER_PAGE + index)
         );
       }
 
@@ -113,17 +112,26 @@ export function useLeaderboardInfiniteScroll({
     ],
     queryFn,
     getNextPageParam: (lastPage, allPages) => {
-      // 마지막 페이지에 데이터가 10개 미만이면 더 이상 페이지가 없음
-      if (lastPage.length < 10) {
+      console.log('getNextPageParam 호출:', {
+        lastPageLength: lastPage.length,
+        totalPages: allPages.length,
+        itemsPerPage: INFINITE_SCROLL_CONFIG.ITEMS_PER_PAGE
+      });
+      
+      // 마지막 페이지에 데이터가 ITEMS_PER_PAGE 미만이면 더 이상 페이지가 없음
+      if (lastPage.length < INFINITE_SCROLL_CONFIG.ITEMS_PER_PAGE) {
         console.log(`페이지 끝 도달 - 마지막 페이지 크기: ${lastPage.length}`);
         return undefined;
       }
-      return allPages.length + 1;
+      
+      const nextPage = allPages.length + 1;
+      console.log(`다음 페이지: ${nextPage}`);
+      return nextPage;
     },
     enabled: true,
-    staleTime: 2 * 60 * 1000, // 2분
+    staleTime: INFINITE_SCROLL_CONFIG.LEADERBOARD_STALE_TIME,
     containerRef,
-    initialPageParam: initialPage, // 초기 페이지 설정
+    initialPageParam: INFINITE_SCROLL_CONFIG.INITIAL_PAGE,
   });
 
   return {
