@@ -97,7 +97,7 @@ export default function UserCard({
       <div className='flex items-center gap-4 flex-shrink-0'>
         {/* Details for total category - Fixed position */}
         <div className='lg:w-56 flex items-center justify-start'>
-          {category === 'total' && user.details && user.details.length > 0 && (() => {
+          {category === 'work' && user.details && user.details.length > 0 && (() => {
             const processedDetails = processLeaderboardDetails(user.details);
             
             return (
@@ -175,10 +175,10 @@ export default function UserCard({
           <div
             className={`${FONT_SIZES.LEADERBOARD.RANK} font-bold ${getThemeTextColor('primary')} whitespace-nowrap`}
           >
-            {category === 'total' ? formatScoreToMinutes(user.score) : formatTime(user.score)}
+            {category === 'work' ? formatScoreToMinutes(user.score) : formatTime(user.score)}
           </div>
           <div className={`${FONT_SIZES.LEADERBOARD.SECONDARY} ${getThemeTextColor('secondary')} whitespace-nowrap`}>
-            {category === 'total' ? 'Total Time' : 'Activity Time'}
+            {category === 'work' ? 'Work Time' : 'Activity Time'}
           </div>
         </div>
       </div>

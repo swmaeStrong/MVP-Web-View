@@ -93,7 +93,7 @@ export const categoryColors = {
     bgOpacity: 'from-slate-600/5 to-purple-600/5',
     solid: '#6366f1', // indigo-500
   },
-  total: {
+  work: {
     bg: 'bg-purple-500',
     hover: 'hover:bg-purple-600',
     dot: 'bg-purple-500',

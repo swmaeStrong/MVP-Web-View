@@ -156,7 +156,7 @@ export default function PeriodSelector({
                 <span className="text-[rgb(153,153,153)]">All user data is updated every 20-30 seconds</span>
               </div>
               <div className="leading-relaxed">
-                <span className='font-semibold text-[rgb(220,220,220)]'>Total Category:</span>
+                <span className='font-semibold text-[rgb(220,220,220)]'>Work Category:</span>
                 <br />
                 <span className="text-[rgb(153,153,153)]">Only work activities (Development, Design, LLM, Documentation, etc.)</span>
                 <br />

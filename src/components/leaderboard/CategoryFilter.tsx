@@ -66,7 +66,7 @@ export default function CategoryFilter({
                   }
                 >
                   <span className='block truncate'>
-                    {item.category === 'total' ? 'Total'
+                    {item.category === 'work' ? 'Work'
                     : item.category === 'Development' ? 'Development'
                     : item.category === 'Documentation' ? 'Documentation'
                     : item.category === 'LLM' ? 'LLM'
@@ -104,7 +104,7 @@ export default function CategoryFilter({
       <div className='mt-3 text-center'>
         <div className={`${FONT_SIZES.LEADERBOARD.PRIMARY} ${getThemeTextColor('secondary')}`}>
           <span className='font-semibold text-purple-600'>
-            {selectedCategory === 'total' ? 'Total'
+            {selectedCategory === 'work' ? 'Work'
             : selectedCategory === 'Development' ? 'Development'
             : selectedCategory === 'Documentation' ? 'Documentation'
             : selectedCategory === 'LLM' ? 'LLM'
