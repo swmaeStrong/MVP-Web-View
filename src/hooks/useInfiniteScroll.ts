@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
+import { INFINITE_SCROLL_CONFIG } from '@/shared/constants/infinite-scroll';
 
 interface UseInfiniteScrollOptions<T> {
   queryKey: unknown[];
@@ -29,10 +30,10 @@ export function useInfiniteScroll<T>({
   getNextPageParam = (lastPage, allPages) =>
     lastPage.length > 0 ? allPages.length + 1 : undefined,
   enabled = true,
-  staleTime = 5 * 60 * 1000, // 5분
+  staleTime = INFINITE_SCROLL_CONFIG.STALE_TIME,
   refetchOnWindowFocus = false,
   containerRef,
-  initialPageParam = 1,
+  initialPageParam = INFINITE_SCROLL_CONFIG.INITIAL_PAGE,
 }: UseInfiniteScrollOptions<T>): UseInfiniteScrollReturn<T> {
   const {
     data,
@@ -54,9 +55,9 @@ export function useInfiniteScroll<T>({
     retry: (failureCount, error) => {
       // 무한 스크롤에서는 더 보수적으로 재시도
       console.warn(`무한 스크롤 에러 (${failureCount}번째):`, error);
-      return failureCount < 1; // 1번만 재시도
+      return failureCount < INFINITE_SCROLL_CONFIG.MAX_RETRY_COUNT;
     },
-    retryDelay: 2000, // 2초 대기
+    retryDelay: INFINITE_SCROLL_CONFIG.RETRY_DELAY,
   });
 
   // 스크롤 이벤트 핸들러
@@ -66,7 +67,7 @@ export function useInfiniteScroll<T>({
     if (containerRef?.current) {
       // 컨테이너 스크롤
       const container = containerRef.current;
-      const threshold = 100; // 컨테이너 하단에서 100px 전에 로드
+      const threshold = INFINITE_SCROLL_CONFIG.SCROLL_THRESHOLD;
       
       console.log('컨테이너 스크롤 감지:', {
         scrollTop: container.scrollTop,
@@ -87,7 +88,7 @@ export function useInfiniteScroll<T>({
       // 윈도우 스크롤 (기존 로직)
       if (
         window.innerHeight + window.scrollY >=
-          document.body.offsetHeight - 1000
+          document.body.offsetHeight - INFINITE_SCROLL_CONFIG.WINDOW_SCROLL_THRESHOLD
       ) {
         fetchNextPage();
       }

@@ -9,6 +9,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, spacing } from '@/styles/design-system';
 import { LeaderboardListSkeleton } from '@/components/common/LeaderboardSkeleton';
 import { cn } from '@/shadcn/lib/utils';
+import { LEADERBOARD_CONFIG } from '@/shared/constants/infinite-scroll';
 
 // 리더보드 표시용 확장된 User 타입
 type LeaderboardUser = LeaderBoard.LeaderBoardResponse & {
@@ -49,7 +50,7 @@ export default function LeaderboardList({
 
   // Loading state
   if (isLoading) {
-    return <LeaderboardListSkeleton itemCount={15} />;
+    return <LeaderboardListSkeleton itemCount={LEADERBOARD_CONFIG.SKELETON_ITEM_COUNT} />;
   }
 
   // Error state
@@ -84,14 +85,14 @@ export default function LeaderboardList({
     <div 
       ref={containerRef}
       className={cn(
-        "h-[700px] lg:h-[750px] overflow-y-auto rounded-lg border p-4",
+        `h-[${LEADERBOARD_CONFIG.CONTAINER_HEIGHT.MOBILE}px] lg:h-[${LEADERBOARD_CONFIG.CONTAINER_HEIGHT.DESKTOP}px] overflow-y-auto rounded-lg border p-4`,
         getThemeClass('border'),
         getThemeClass('component'),
         "activity-scroll-hide"
       )}
     >
       {/* Leaderboard list */}
-      <div className='space-y-2 lg:space-y-3'>
+      <div className={`space-y-${LEADERBOARD_CONFIG.SPACING.LIST_ITEM_MOBILE} lg:space-y-${LEADERBOARD_CONFIG.SPACING.LIST_ITEM_DESKTOP}`}>
         {users.map((user: LeaderboardUser, index: number) => {
           // 현재 유저인지 확인
           const isCurrentUser = currentUser && user.userId === currentUser.id;
@@ -111,7 +112,7 @@ export default function LeaderboardList({
 
       {/* Infinite scroll loading indicator */}
       {isFetchingNextPage && (
-        <div className='flex justify-center mt-4 mb-4'>
+        <div className={`flex justify-center mt-${LEADERBOARD_CONFIG.SPACING.LOADING_INDICATOR_MARGIN} mb-${LEADERBOARD_CONFIG.SPACING.LOADING_INDICATOR_MARGIN}`}>
           <div className={`rounded-lg border-2 p-4 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
             <div className='mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-purple-600'></div>
             <p className={`text-sm ${getThemeTextColor('secondary')}`}>
