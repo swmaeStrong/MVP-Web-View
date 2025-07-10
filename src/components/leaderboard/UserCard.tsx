@@ -29,8 +29,7 @@ const formatTime = (seconds: number) => {
 };
 
 // 순위 정보 가져오기
-const getRankInfo = (index: number) => {
-  const rank = index + 1;
+const getRankInfo = (rank: number) => {
   if (rank <= 10) {
     return rankColors[rank as keyof typeof rankColors];
   } else if (rank <= 20) {
@@ -50,8 +49,8 @@ export default function UserCard({
   category,
 }: UserCardProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
-  const rank = index + 1;
-  const rankInfo = getRankInfo(index);
+  const rank = user.rank; // API에서 받은 실제 rank 값 사용
+  const rankInfo = getRankInfo(rank);
   
   // 디자인 시스템 적용 - 일관된 스타일
   const priorityStyle = getPriorityStyle(rank);
@@ -73,16 +72,16 @@ export default function UserCard({
       <div className='flex items-center space-x-2 lg:space-x-3'>
         {/* 순위 표시 */}
         <div
-          className={`flex h-7 w-7 lg:h-10 lg:w-10 items-center justify-center ${rank <= 3 ? '' : ''}`}
+          className={`flex h-6 w-6 lg:h-8 lg:w-8 items-center justify-center ${rank <= 3 ? '' : ''}`}
         >
           {rank === 1 ? (
-            <Medal className="w-5 h-5 lg:w-7 lg:h-7 text-yellow-500" />
+            <Medal className="w-4 h-4 lg:w-5 lg:h-5 text-yellow-500" />
           ) : rank === 2 ? (
-            <Medal className="w-5 h-5 lg:w-7 lg:h-7 text-gray-400" />
+            <Medal className="w-4 h-4 lg:w-5 lg:h-5 text-gray-400" />
           ) : rank === 3 ? (
-            <Medal className="w-5 h-5 lg:w-7 lg:h-7 text-amber-600" />
+            <Medal className="w-4 h-4 lg:w-5 lg:h-5 text-amber-600" />
           ) : (
-            <span className={`text-base lg:text-lg font-bold ${getThemeTextColor('secondary')}`}>{rank}</span>
+            <span className={`text-sm lg:text-base font-bold ${getThemeTextColor('secondary')}`}>{rank}</span>
           )}
         </div>
 
@@ -91,14 +90,14 @@ export default function UserCard({
         <div className='flex-1 min-w-0'>
           <div className='flex items-center space-x-2'>
             <h3
-              className={`text-sm lg:text-base font-bold truncate ${getThemeTextColor('primary')}`}
+              className={`text-xs lg:text-sm font-bold truncate ${getThemeTextColor('primary')}`}
             >
               {user.nickname}
             </h3>
 
             {/* 사용자 표시 - 컴팩트 */}
             {isCurrentUser && (
-              <span className={`rounded-full border px-2 py-0.5 text-xs font-bold shadow-sm ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
+              <span className={`rounded-full border px-1.5 py-0.5 text-xs font-bold shadow-sm ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
                 YOU
               </span>
             )}
@@ -107,16 +106,16 @@ export default function UserCard({
       </div>
 
       {/* Right - score info */}
-      <div className='flex items-center gap-2 flex-shrink-0'>
+      <div className='flex items-center gap-1 flex-shrink-0'>
         {/* Details for total category - Fixed position */}
-        <div className='w-64 lg:w-72 flex items-center justify-start'>
+        <div className='w-48 lg:w-56 flex items-center justify-start'>
           {category === 'total' && user.details && user.details.length > 0 && (() => {
             const processedDetails = processLeaderboardDetails(user.details);
             
             return (
-              <div className='flex items-center gap-3'>
+              <div className='flex items-center gap-2'>
                 {/* Stacked progress bar */}
-                <div className={`relative h-6 w-20 lg:w-24 rounded-lg overflow-hidden ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                <div className={`relative h-4 w-16 lg:w-20 rounded-md overflow-hidden ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
                   <div className='flex h-full'>
                     {processedDetails.map((detail: ProcessedDetail, detailIndex: number) => {
                       // 카테고리 색상 가져오기 - 조화로운 색상 팔레트
@@ -179,10 +178,10 @@ export default function UserCard({
                 </div>
                 
                 {/* Details breakdown */}
-                <div className='flex flex-col gap-0.5 text-xs w-36 lg:w-40'>
+                <div className='flex flex-col gap-0.5 text-xs w-28 lg:w-32'>
                   {processedDetails.slice(0, 2).map((detail: ProcessedDetail, detailIndex: number) => (
                     <div key={detailIndex} className='flex items-center gap-1'>
-                      <div className={`w-1.5 h-1.5 rounded flex-shrink-0 ${
+                      <div className={`w-1 h-1 rounded flex-shrink-0 ${
                         (() => {
                           switch (detail.category) {
                             case 'others': return 'bg-gray-400';
@@ -200,7 +199,7 @@ export default function UserCard({
                           }
                         })()
                       }`} />
-                      <span className={`text-xs ${getThemeTextColor('secondary')} whitespace-nowrap`}>
+                      <span className={`text-xs ${getThemeTextColor('secondary')} whitespace-nowrap truncate`}>
                         {getCategoryDisplayName(detail.category)}
                       </span>
                       <span className={`${getThemeTextColor('primary')} font-medium text-xs whitespace-nowrap ml-auto`}>
@@ -210,7 +209,7 @@ export default function UserCard({
                   ))}
                   {processedDetails.length > 2 && (
                     <div className='flex items-center gap-1'>
-                      <div className='w-1.5 h-1.5 rounded flex-shrink-0 bg-gray-400' />
+                      <div className='w-1 h-1 rounded flex-shrink-0 bg-gray-400' />
                       <span className={`${getThemeTextColor('secondary')} text-xs whitespace-nowrap`}>Others</span>
                       <span className={`${getThemeTextColor('primary')} font-medium text-xs whitespace-nowrap ml-auto`}>
                         {processedDetails.find(d => d.category === 'others')?.percentage || 0}%
@@ -224,9 +223,9 @@ export default function UserCard({
         </div>
         
         {/* Score display - Fixed width */}
-        <div className='w-20 lg:w-24 text-right'>
+        <div className='w-16 lg:w-20 text-right'>
           <div
-            className={`text-sm lg:text-xl font-bold ${getThemeTextColor('primary')} whitespace-nowrap`}
+            className={`text-xs lg:text-base font-bold ${getThemeTextColor('primary')} whitespace-nowrap`}
           >
             {category === 'total' ? formatScoreToMinutes(user.score) : formatTime(user.score)}
           </div>

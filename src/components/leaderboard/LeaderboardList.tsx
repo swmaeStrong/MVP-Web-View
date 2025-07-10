@@ -85,14 +85,14 @@ export default function LeaderboardList({
     <div 
       ref={containerRef}
       className={cn(
-        `h-[${LEADERBOARD_CONFIG.CONTAINER_HEIGHT.MOBILE}px] lg:h-[${LEADERBOARD_CONFIG.CONTAINER_HEIGHT.DESKTOP}px] overflow-y-auto rounded-lg border p-4`,
+        "h-[550px] overflow-y-auto rounded-lg border p-4",
         getThemeClass('border'),
         getThemeClass('component'),
         "activity-scroll-hide"
       )}
     >
       {/* Leaderboard list */}
-      <div className={`space-y-${LEADERBOARD_CONFIG.SPACING.LIST_ITEM_MOBILE} lg:space-y-${LEADERBOARD_CONFIG.SPACING.LIST_ITEM_DESKTOP}`}>
+      <div className="space-y-2 lg:space-y-3">
         {users.map((user: LeaderboardUser, index: number) => {
           // 현재 유저인지 확인
           const isCurrentUser = currentUser && user.userId === currentUser.id;
@@ -112,7 +112,7 @@ export default function LeaderboardList({
 
       {/* Infinite scroll loading indicator */}
       {isFetchingNextPage && (
-        <div className={`flex justify-center mt-${LEADERBOARD_CONFIG.SPACING.LOADING_INDICATOR_MARGIN} mb-${LEADERBOARD_CONFIG.SPACING.LOADING_INDICATOR_MARGIN}`}>
+        <div className="flex justify-center mt-4 mb-4">
           <div className={`rounded-lg border-2 p-4 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
             <div className='mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-purple-600'></div>
             <p className={`text-sm ${getThemeTextColor('secondary')}`}>

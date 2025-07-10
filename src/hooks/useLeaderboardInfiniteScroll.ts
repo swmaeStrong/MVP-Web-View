@@ -19,7 +19,6 @@ interface UseLeaderboardInfiniteScrollParams {
   period: 'daily' | 'weekly' | 'monthly';
   selectedDateIndex: number;
   containerRef?: React.RefObject<HTMLDivElement | null>;
-  initialPage?: number; // 초기 페이지 번호 추가
 }
 
 export function useLeaderboardInfiniteScroll({
@@ -27,7 +26,6 @@ export function useLeaderboardInfiniteScroll({
   period,
   selectedDateIndex,
   containerRef,
-  initialPage = INFINITE_SCROLL_CONFIG.INITIAL_PAGE,
 }: UseLeaderboardInfiniteScrollParams) {
   const categories = LEADERBOARD_CATEGORIES;
 
@@ -114,17 +112,26 @@ export function useLeaderboardInfiniteScroll({
     ],
     queryFn,
     getNextPageParam: (lastPage, allPages) => {
+      console.log('getNextPageParam 호출:', {
+        lastPageLength: lastPage.length,
+        totalPages: allPages.length,
+        itemsPerPage: INFINITE_SCROLL_CONFIG.ITEMS_PER_PAGE
+      });
+      
       // 마지막 페이지에 데이터가 ITEMS_PER_PAGE 미만이면 더 이상 페이지가 없음
       if (lastPage.length < INFINITE_SCROLL_CONFIG.ITEMS_PER_PAGE) {
         console.log(`페이지 끝 도달 - 마지막 페이지 크기: ${lastPage.length}`);
         return undefined;
       }
-      return allPages.length + 1;
+      
+      const nextPage = allPages.length + 1;
+      console.log(`다음 페이지: ${nextPage}`);
+      return nextPage;
     },
     enabled: true,
     staleTime: INFINITE_SCROLL_CONFIG.LEADERBOARD_STALE_TIME,
     containerRef,
-    initialPageParam: initialPage, // 초기 페이지 설정
+    initialPageParam: INFINITE_SCROLL_CONFIG.INITIAL_PAGE,
   });
 
   return {

@@ -18,7 +18,8 @@ import {
   Clock,
   Crown,
   Star,
-  TrendingUp
+  TrendingUp,
+  Eye
 } from 'lucide-react';
 
 // Function to convert seconds to hours, minutes format
@@ -53,6 +54,7 @@ interface MyRankBannerProps {
   onScrollToMyRank?: () => void;
   totalUsers?: number;
   userId?: string; // 고정된 userId를 props로 받음
+  isLoadingToMyRank?: boolean; // 스크롤 로딩 상태
 }
 
 export default function MyRankBanner({
@@ -62,6 +64,7 @@ export default function MyRankBanner({
   onScrollToMyRank,
   totalUsers = 1000,
   userId, //
+  isLoadingToMyRank = false,
 }: MyRankBannerProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
 
@@ -165,7 +168,7 @@ export default function MyRankBanner({
             {/* 핵심 정보만 */}
             <div>
               <div className='flex items-center space-x-2'>
-                <h3 className={`text-sm lg:text-base font-bold ${getThemeTextColor('primary')}`}>
+                <h3 className={`text-xs lg:text-sm font-bold ${getThemeTextColor('primary')}`}>
                   {myRank?.nickname}
                 </h3>
               </div>
@@ -177,15 +180,37 @@ export default function MyRankBanner({
             </div>
           </div>
 
-          {/* 우측 - 등수만 표시 */}
+          {/* 우측 - 등수와 버튼 */}
           {rank && (
-            <div className='flex items-center'>
-              <div className={`text-lg lg:text-xl font-bold whitespace-nowrap ${getThemeTextColor('primary')}`}>
+            <div className='flex items-center space-x-3'>
+              <div className={`text-sm lg:text-base font-bold whitespace-nowrap ${getThemeTextColor('primary')}`}>
                 {rank === 1 ? '1st'
                 : rank === 2 ? '2nd' 
                 : rank === 3 ? '3rd'
                 : `${rank}th`}
               </div>
+              
+              {/* View My Rank 버튼 */}
+              {onScrollToMyRank && (
+                <button
+                  onClick={onScrollToMyRank}
+                  disabled={isLoadingToMyRank}
+                  className={`flex items-center space-x-1 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                    isLoadingToMyRank 
+                      ? (isDarkMode ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-500 cursor-not-allowed')
+                      : (isDarkMode 
+                          ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                          : 'bg-purple-100 hover:bg-purple-200 text-purple-800')
+                  }`}
+                >
+                  {isLoadingToMyRank ? (
+                    <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Eye size={12} />
+                  )}
+                  <span>{isLoadingToMyRank ? 'Loading...' : 'View'}</span>
+                </button>
+              )}
             </div>
           )}
         </div>

@@ -62,7 +62,17 @@ export function useInfiniteScroll<T>({
 
   // 스크롤 이벤트 핸들러
   const handleScroll = useCallback(() => {
-    if (!hasNextPage || isFetchingNextPage || isError) return;
+    console.log('스크롤 이벤트 발생:', {
+      hasNextPage,
+      isFetchingNextPage,
+      isError,
+      containerExists: !!containerRef?.current
+    });
+    
+    if (!hasNextPage || isFetchingNextPage || isError) {
+      console.log('스크롤 조건 미충족:', { hasNextPage, isFetchingNextPage, isError });
+      return;
+    }
 
     if (containerRef?.current) {
       // 컨테이너 스크롤
@@ -99,12 +109,25 @@ export function useInfiniteScroll<T>({
   useEffect(() => {
     const container = containerRef?.current;
     
+    console.log('스크롤 리스너 등록:', {
+      hasContainer: !!container,
+      containerRef: !!containerRef
+    });
+    
     if (container) {
+      console.log('컨테이너 스크롤 리스너 등록');
       container.addEventListener('scroll', handleScroll);
-      return () => container.removeEventListener('scroll', handleScroll);
+      return () => {
+        console.log('컨테이너 스크롤 리스너 제거');
+        container.removeEventListener('scroll', handleScroll);
+      };
     } else {
+      console.log('윈도우 스크롤 리스너 등록');
       window.addEventListener('scroll', handleScroll);
-      return () => window.removeEventListener('scroll', handleScroll);
+      return () => {
+        console.log('윈도우 스크롤 리스너 제거');
+        window.removeEventListener('scroll', handleScroll);
+      };
     }
   }, [handleScroll, containerRef]);
 
