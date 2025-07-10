@@ -7,38 +7,36 @@ export * from './font-sizes';
 
 // 편의를 위한 통합 객체들
 import {
-    brandColors,
-    categoryColors,
-    extendedRankColors,
-    rankColors,
-    themeColors,
+  brandColors,
+  categoryColors,
+  themeColors,
 } from './colors';
 
 import {
-    animations,
-    customAnimations,
-    enterExit,
-    interactions,
+  animations,
+  customAnimations,
+  enterExit,
+  interactions,
 } from './animations';
 
 import {
-    badges,
-    borders,
-    buttons,
-    cards,
-    inputs,
-    layout,
-    overlays,
-    shadows,
-    typography,
+  badges,
+  borders,
+  buttons,
+  cards,
+  inputs,
+  layout,
+  overlays,
+  shadows,
+  typography,
 } from './common';
 
 import {
-    buttonSystem,
-    cardSystem,
-    badgeSystem,
-    componentSizes,
-    componentStates,
+  badgeSystem,
+  buttonSystem,
+  cardSystem,
+  componentSizes,
+  componentStates,
 } from './design-system';
 
 // 통합 스타일 객체 (새로운 구조)
@@ -47,8 +45,6 @@ export const styles = {
   colors: {
     brand: brandColors,
     category: categoryColors,
-    rank: rankColors,
-    extendedRank: extendedRankColors,
     theme: themeColors,
   },
 
