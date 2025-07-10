@@ -1,7 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/useTheme';
-import { extendedRankColors, rankColors } from '@/styles';
+import { categoryColors } from '@/styles';
 import { componentSizes, componentStates, getPriorityStyle, getRankPriority } from '@/styles/design-system';
 import { FONT_SIZES } from '@/styles/font-sizes';
 import { ProcessedDetail, formatScoreToMinutes, getCategoryDisplayName, processLeaderboardDetails } from '@/utils/leaderboard';
@@ -29,18 +29,6 @@ const formatTime = (seconds: number) => {
   }
 };
 
-// 순위 정보 가져오기
-const getRankInfo = (rank: number) => {
-  if (rank <= 10) {
-    return rankColors[rank as keyof typeof rankColors];
-  } else if (rank <= 20) {
-    return extendedRankColors.expert;
-  } else if (rank <= 35) {
-    return extendedRankColors.challenger;
-  } else {
-    return extendedRankColors.rookie;
-  }
-};
 
 export default function UserCard({
   user,
@@ -51,7 +39,6 @@ export default function UserCard({
 }: UserCardProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
   const rank = user.rank; // API에서 받은 실제 rank 값 사용
-  const rankInfo = getRankInfo(rank);
   
   // 디자인 시스템 적용 - 일관된 스타일
   const priorityStyle = getPriorityStyle(rank);
@@ -119,34 +106,9 @@ export default function UserCard({
                 <div className={`relative h-4 w-20 rounded-md overflow-hidden ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
                   <div className='flex h-full'>
                     {processedDetails.map((detail: ProcessedDetail, detailIndex: number) => {
-                      // 카테고리 색상 가져오기 - 조화로운 색상 팔레트
+                      // 카테고리 색상 가져오기 - styles/colors.ts에서 정의된 공통 색상 사용
                       const getCategoryColors = (category: string) => {
-                        switch (category) {
-                          case 'others':
-                            return { bg: 'bg-gray-400', hover: 'hover:bg-gray-500' };
-                          case 'Development':
-                            return { bg: 'bg-purple-500', hover: 'hover:bg-purple-600' };
-                          case 'Documentation':
-                            return { bg: 'bg-indigo-400', hover: 'hover:bg-indigo-500' };
-                          case 'LLM':
-                            return { bg: 'bg-violet-400', hover: 'hover:bg-violet-500' };
-                          case 'Design':
-                            return { bg: 'bg-blue-400', hover: 'hover:bg-blue-500' };
-                          case 'Communication':
-                            return { bg: 'bg-emerald-400', hover: 'hover:bg-emerald-500' };
-                          case 'Education':
-                            return { bg: 'bg-teal-400', hover: 'hover:bg-teal-500' };
-                          case 'Entertainment':
-                            return { bg: 'bg-pink-400', hover: 'hover:bg-pink-500' };
-                          case 'System & Utilities':
-                            return { bg: 'bg-cyan-500', hover: 'hover:bg-cyan-600' };
-                          case 'SNS':
-                            return { bg: 'bg-amber-400', hover: 'hover:bg-amber-500' };
-                          case 'Productivity':
-                            return { bg: 'bg-rose-400', hover: 'hover:bg-rose-500' };
-                          default:
-                            return { bg: 'bg-slate-400', hover: 'hover:bg-slate-500' };
-                        }
+                        return categoryColors[category as keyof typeof categoryColors] || categoryColors.default;
                       };
                       
                       const colors = getCategoryColors(detail.category);
@@ -183,22 +145,7 @@ export default function UserCard({
                   {processedDetails.slice(0, 2).map((detail: ProcessedDetail, detailIndex: number) => (
                     <div key={detailIndex} className='flex items-center gap-2'>
                       <div className={`w-2 h-2 rounded flex-shrink-0 ${
-                        (() => {
-                          switch (detail.category) {
-                            case 'others': return 'bg-gray-400';
-                            case 'Development': return 'bg-purple-500';
-                            case 'Documentation': return 'bg-indigo-400';
-                            case 'LLM': return 'bg-violet-400';
-                            case 'Design': return 'bg-blue-400';
-                            case 'Communication': return 'bg-emerald-400';
-                            case 'Education': return 'bg-teal-400';
-                            case 'Entertainment': return 'bg-pink-400';
-                            case 'System & Utilities': return 'bg-cyan-500';
-                            case 'SNS': return 'bg-amber-400';
-                            case 'Productivity': return 'bg-rose-400';
-                            default: return 'bg-slate-400';
-                          }
-                        })()
+                        (categoryColors[detail.category as keyof typeof categoryColors] || categoryColors.default).dot
                       }`} />
                       <span className={`${FONT_SIZES.LEADERBOARD.SECONDARY} ${getThemeTextColor('secondary')} whitespace-nowrap truncate`}>
                         {getCategoryDisplayName(detail.category)}
@@ -210,7 +157,7 @@ export default function UserCard({
                   ))}
                   {processedDetails.length > 2 && (
                     <div className='flex items-center gap-2'>
-                      <div className='w-2 h-2 rounded flex-shrink-0 bg-gray-400' />
+                      <div className={`w-2 h-2 rounded flex-shrink-0 ${categoryColors.others.dot}`} />
                       <span className={`${getThemeTextColor('secondary')} ${FONT_SIZES.LEADERBOARD.SECONDARY} whitespace-nowrap`}>Others</span>
                       <span className={`${getThemeTextColor('primary')} font-medium ${FONT_SIZES.LEADERBOARD.SECONDARY} whitespace-nowrap ml-auto`}>
                         {processedDetails.find(d => d.category === 'others')?.percentage || 0}%

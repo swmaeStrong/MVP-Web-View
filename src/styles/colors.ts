@@ -79,211 +79,260 @@ export const brandColors = {
   },
 };
 
-// 카테고리별 컬러 시스템 - leaderboard와 statistics 통합
+// 카테고리별 통합 컬러 시스템 - 진행바, 배지, 인디케이터 등 모든 UI 요소에 사용
 export const categoryColors = {
+  // 특별 카테고리
   all: {
+    bg: 'bg-slate-400',
+    hover: 'hover:bg-slate-500',
+    dot: 'bg-slate-400',
     gradient: 'from-slate-600 via-purple-600 to-indigo-600',
     buttonGradient: 'from-slate-600 to-purple-600',
     badgeClass: 'bg-slate-100 text-slate-700 border-slate-200',
     borderGradient: 'from-slate-400 to-purple-400',
     bgOpacity: 'from-slate-600/5 to-purple-600/5',
-    solid: '#6366f1', // indigo-500, 브랜드성+중립적
+    solid: '#6366f1', // indigo-500
   },
   total: {
+    bg: 'bg-purple-500',
+    hover: 'hover:bg-purple-600',
+    dot: 'bg-purple-500',
     gradient: 'from-purple-600 via-violet-600 to-indigo-600',
     buttonGradient: 'from-purple-600 to-violet-600',
     badgeClass: 'bg-purple-100 text-purple-700 border-purple-200',
     borderGradient: 'from-purple-400 to-violet-400',
     bgOpacity: 'from-purple-600/5 to-violet-600/5',
-    solid: '#7c3aed', // violet-600, 종합 점수를 나타내는 보라색
+    solid: '#7c3aed', // violet-600
   },
-  development: {
-    gradient: 'from-blue-500 via-indigo-500 to-violet-500',
-    buttonGradient: 'from-blue-500 to-indigo-500',
-    badgeClass: 'bg-blue-100 text-blue-700 border-blue-200',
-    borderGradient: 'from-blue-400 to-indigo-400',
-    bgOpacity: 'from-blue-600/5 to-indigo-600/5',
-    solid: '#1d4ed8', // blue-700, 더 진한 블루로 변경
-  },
-  llm: {
-    gradient: 'from-purple-500 via-violet-500 to-indigo-500',
-    buttonGradient: 'from-purple-500 to-violet-500',
-    badgeClass: 'bg-purple-100 text-purple-700 border-purple-200',
-    borderGradient: 'from-purple-400 to-violet-400',
-    bgOpacity: 'from-purple-600/5 to-violet-600/5',
-    solid: '#7c3aed', // violet-600, 좀 더 진한 보라
-  },
-  documentation: {
-    gradient: 'from-green-500 via-emerald-500 to-teal-500',
-    buttonGradient: 'from-green-500 to-emerald-500',
-    badgeClass: 'bg-green-100 text-green-700 border-green-200',
-    borderGradient: 'from-green-400 to-emerald-400',
-    bgOpacity: 'from-green-600/5 to-emerald-600/5',
-    solid: '#059669', // emerald-600, 한 톤 다운된 녹색
-  },
-  design: {
-    gradient: 'from-pink-500 via-rose-500 to-red-500',
-    buttonGradient: 'from-pink-500 to-rose-500',
-    badgeClass: 'bg-pink-100 text-pink-700 border-pink-200',
-    borderGradient: 'from-pink-400 to-rose-400',
-    bgOpacity: 'from-pink-600/5 to-rose-600/5',
-    solid: '#db2777', // pink-600, 고급진 핑크
-  },
-  communication: {
-    gradient: 'from-orange-500 via-amber-500 to-yellow-500',
-    buttonGradient: 'from-orange-500 to-amber-500',
-    badgeClass: 'bg-orange-100 text-orange-700 border-orange-200',
-    borderGradient: 'from-orange-400 to-amber-400',
-    bgOpacity: 'from-orange-600/5 to-amber-600/5',
-    solid: '#f59e42', // orange-400, 좀 더 밝은 오렌지 (amber는 너무 노랗고 촌스러울 수 있음)
-  },
-  youtube: {
-    gradient: 'from-red-500 via-rose-500 to-pink-500',
-    buttonGradient: 'from-red-500 to-rose-500',
-    badgeClass: 'bg-red-100 text-red-700 border-red-200',
-    borderGradient: 'from-red-400 to-rose-400',
-    bgOpacity: 'from-red-600/5 to-rose-600/5',
-    solid: '#dc2626', // red-600, 더 진한 레드(유튜브 브랜드색과 유사)
-  },
-  sns: {
-    gradient: 'from-cyan-500 via-blue-500 to-indigo-500',
-    buttonGradient: 'from-cyan-500 to-blue-500',
-    badgeClass: 'bg-cyan-100 text-cyan-700 border-cyan-200',
-    borderGradient: 'from-cyan-400 to-blue-400',
-    bgOpacity: 'from-cyan-600/5 to-blue-600/5',
-    solid: '#0ea5e9', // sky-500, cyan보다 조금 더 밝고 세련된 파랑
-  },
-  uncategorized: {
+  others: {
+    bg: 'bg-gray-400',
+    hover: 'hover:bg-gray-500',
+    dot: 'bg-gray-400',
     gradient: 'from-gray-500 via-slate-500 to-zinc-500',
     buttonGradient: 'from-gray-500 to-slate-500',
     badgeClass: 'bg-gray-100 text-gray-700 border-gray-200',
     borderGradient: 'from-gray-400 to-slate-400',
     bgOpacity: 'from-gray-600/5 to-slate-600/5',
-    solid: '#71717a', // zinc-500, 더 차분한 회색으로 변경
+    solid: '#71717a', // zinc-500
+  },
+  
+  // 주요 작업 카테고리
+  Development: {
+    bg: 'bg-purple-500',
+    hover: 'hover:bg-purple-600',
+    dot: 'bg-purple-500',
+    gradient: 'from-blue-500 via-indigo-500 to-violet-500',
+    buttonGradient: 'from-blue-500 to-indigo-500',
+    badgeClass: 'bg-blue-100 text-blue-700 border-blue-200',
+    borderGradient: 'from-blue-400 to-indigo-400',
+    bgOpacity: 'from-blue-600/5 to-indigo-600/5',
+    solid: '#1d4ed8', // blue-700
+  },
+  Documentation: {
+    bg: 'bg-indigo-400',
+    hover: 'hover:bg-indigo-500',
+    dot: 'bg-indigo-400',
+    gradient: 'from-green-500 via-emerald-500 to-teal-500',
+    buttonGradient: 'from-green-500 to-emerald-500',
+    badgeClass: 'bg-green-100 text-green-700 border-green-200',
+    borderGradient: 'from-green-400 to-emerald-400',
+    bgOpacity: 'from-green-600/5 to-emerald-600/5',
+    solid: '#059669', // emerald-600
+  },
+  LLM: {
+    bg: 'bg-violet-400',
+    hover: 'hover:bg-violet-500',
+    dot: 'bg-violet-400',
+    gradient: 'from-purple-500 via-violet-500 to-indigo-500',
+    buttonGradient: 'from-purple-500 to-violet-500',
+    badgeClass: 'bg-purple-100 text-purple-700 border-purple-200',
+    borderGradient: 'from-purple-400 to-violet-400',
+    bgOpacity: 'from-purple-600/5 to-violet-600/5',
+    solid: '#7c3aed', // violet-600
+  },
+  Design: {
+    bg: 'bg-blue-400',
+    hover: 'hover:bg-blue-500',
+    dot: 'bg-blue-400',
+    gradient: 'from-pink-500 via-rose-500 to-red-500',
+    buttonGradient: 'from-pink-500 to-rose-500',
+    badgeClass: 'bg-pink-100 text-pink-700 border-pink-200',
+    borderGradient: 'from-pink-400 to-rose-400',
+    bgOpacity: 'from-pink-600/5 to-rose-600/5',
+    solid: '#db2777', // pink-600
+  },
+  
+  // 일반 활동 카테고리
+  Communication: {
+    bg: 'bg-emerald-400',
+    hover: 'hover:bg-emerald-500',
+    dot: 'bg-emerald-400',
+    gradient: 'from-orange-500 via-amber-500 to-yellow-500',
+    buttonGradient: 'from-orange-500 to-amber-500',
+    badgeClass: 'bg-orange-100 text-orange-700 border-orange-200',
+    borderGradient: 'from-orange-400 to-amber-400',
+    bgOpacity: 'from-orange-600/5 to-amber-600/5',
+    solid: '#f59e42', // orange-400
+  },
+  Education: {
+    bg: 'bg-teal-400',
+    hover: 'hover:bg-teal-500',
+    dot: 'bg-teal-400',
+    gradient: 'from-teal-500 via-cyan-500 to-blue-500',
+    buttonGradient: 'from-teal-500 to-cyan-500',
+    badgeClass: 'bg-teal-100 text-teal-700 border-teal-200',
+    borderGradient: 'from-teal-400 to-cyan-400',
+    bgOpacity: 'from-teal-600/5 to-cyan-600/5',
+    solid: '#0d9488', // teal-600
+  },
+  Entertainment: {
+    bg: 'bg-pink-400',
+    hover: 'hover:bg-pink-500',
+    dot: 'bg-pink-400',
+    gradient: 'from-red-500 via-rose-500 to-pink-500',
+    buttonGradient: 'from-red-500 to-rose-500',
+    badgeClass: 'bg-red-100 text-red-700 border-red-200',
+    borderGradient: 'from-red-400 to-rose-400',
+    bgOpacity: 'from-red-600/5 to-rose-600/5',
+    solid: '#dc2626', // red-600
+  },
+  'System & Utilities': {
+    bg: 'bg-cyan-500',
+    hover: 'hover:bg-cyan-600',
+    dot: 'bg-cyan-500',
+    gradient: 'from-cyan-500 via-blue-500 to-indigo-500',
+    buttonGradient: 'from-cyan-500 to-blue-500',
+    badgeClass: 'bg-cyan-100 text-cyan-700 border-cyan-200',
+    borderGradient: 'from-cyan-400 to-blue-400',
+    bgOpacity: 'from-cyan-600/5 to-blue-600/5',
+    solid: '#0ea5e9', // sky-500
+  },
+  SNS: {
+    bg: 'bg-amber-400',
+    hover: 'hover:bg-amber-500',
+    dot: 'bg-amber-400',
+    gradient: 'from-cyan-500 via-blue-500 to-indigo-500',
+    buttonGradient: 'from-cyan-500 to-blue-500',
+    badgeClass: 'bg-cyan-100 text-cyan-700 border-cyan-200',
+    borderGradient: 'from-cyan-400 to-blue-400',
+    bgOpacity: 'from-cyan-600/5 to-blue-600/5',
+    solid: '#0ea5e9', // sky-500
+  },
+  Productivity: {
+    bg: 'bg-rose-400',
+    hover: 'hover:bg-rose-500',
+    dot: 'bg-rose-400',
+    gradient: 'from-rose-500 via-pink-500 to-purple-500',
+    buttonGradient: 'from-rose-500 to-pink-500',
+    badgeClass: 'bg-rose-100 text-rose-700 border-rose-200',
+    borderGradient: 'from-rose-400 to-pink-400',
+    bgOpacity: 'from-rose-600/5 to-pink-600/5',
+    solid: '#e11d48', // rose-600
+  },
+  
+  // 레거시 호환성 (소문자)
+  development: {
+    bg: 'bg-purple-500',
+    hover: 'hover:bg-purple-600',
+    dot: 'bg-purple-500',
+    gradient: 'from-blue-500 via-indigo-500 to-violet-500',
+    buttonGradient: 'from-blue-500 to-indigo-500',
+    badgeClass: 'bg-blue-100 text-blue-700 border-blue-200',
+    borderGradient: 'from-blue-400 to-indigo-400',
+    bgOpacity: 'from-blue-600/5 to-indigo-600/5',
+    solid: '#1d4ed8', // blue-700
+  },
+  llm: {
+    bg: 'bg-violet-400',
+    hover: 'hover:bg-violet-500',
+    dot: 'bg-violet-400',
+    gradient: 'from-purple-500 via-violet-500 to-indigo-500',
+    buttonGradient: 'from-purple-500 to-violet-500',
+    badgeClass: 'bg-purple-100 text-purple-700 border-purple-200',
+    borderGradient: 'from-purple-400 to-violet-400',
+    bgOpacity: 'from-purple-600/5 to-violet-600/5',
+    solid: '#7c3aed', // violet-600
+  },
+  documentation: {
+    bg: 'bg-indigo-400',
+    hover: 'hover:bg-indigo-500',
+    dot: 'bg-indigo-400',
+    gradient: 'from-green-500 via-emerald-500 to-teal-500',
+    buttonGradient: 'from-green-500 to-emerald-500',
+    badgeClass: 'bg-green-100 text-green-700 border-green-200',
+    borderGradient: 'from-green-400 to-emerald-400',
+    bgOpacity: 'from-green-600/5 to-emerald-600/5',
+    solid: '#059669', // emerald-600
+  },
+  design: {
+    bg: 'bg-blue-400',
+    hover: 'hover:bg-blue-500',
+    dot: 'bg-blue-400',
+    gradient: 'from-pink-500 via-rose-500 to-red-500',
+    buttonGradient: 'from-pink-500 to-rose-500',
+    badgeClass: 'bg-pink-100 text-pink-700 border-pink-200',
+    borderGradient: 'from-pink-400 to-rose-400',
+    bgOpacity: 'from-pink-600/5 to-rose-600/5',
+    solid: '#db2777', // pink-600
+  },
+  communication: {
+    bg: 'bg-emerald-400',
+    hover: 'hover:bg-emerald-500',
+    dot: 'bg-emerald-400',
+    gradient: 'from-orange-500 via-amber-500 to-yellow-500',
+    buttonGradient: 'from-orange-500 to-amber-500',
+    badgeClass: 'bg-orange-100 text-orange-700 border-orange-200',
+    borderGradient: 'from-orange-400 to-amber-400',
+    bgOpacity: 'from-orange-600/5 to-amber-600/5',
+    solid: '#f59e42', // orange-400
+  },
+  youtube: {
+    bg: 'bg-pink-400',
+    hover: 'hover:bg-pink-500',
+    dot: 'bg-pink-400',
+    gradient: 'from-red-500 via-rose-500 to-pink-500',
+    buttonGradient: 'from-red-500 to-rose-500',
+    badgeClass: 'bg-red-100 text-red-700 border-red-200',
+    borderGradient: 'from-red-400 to-rose-400',
+    bgOpacity: 'from-red-600/5 to-rose-600/5',
+    solid: '#dc2626', // red-600
+  },
+  sns: {
+    bg: 'bg-amber-400',
+    hover: 'hover:bg-amber-500',
+    dot: 'bg-amber-400',
+    gradient: 'from-cyan-500 via-blue-500 to-indigo-500',
+    buttonGradient: 'from-cyan-500 to-blue-500',
+    badgeClass: 'bg-cyan-100 text-cyan-700 border-cyan-200',
+    borderGradient: 'from-cyan-400 to-blue-400',
+    bgOpacity: 'from-cyan-600/5 to-blue-600/5',
+    solid: '#0ea5e9', // sky-500
+  },
+  uncategorized: {
+    bg: 'bg-gray-400',
+    hover: 'hover:bg-gray-500',
+    dot: 'bg-gray-400',
+    gradient: 'from-gray-500 via-slate-500 to-zinc-500',
+    buttonGradient: 'from-gray-500 to-slate-500',
+    badgeClass: 'bg-gray-100 text-gray-700 border-gray-200',
+    borderGradient: 'from-gray-400 to-slate-400',
+    bgOpacity: 'from-gray-600/5 to-slate-600/5',
+    solid: '#71717a', // zinc-500
+  },
+  
+  // 기본값
+  default: {
+    bg: 'bg-slate-400',
+    hover: 'hover:bg-slate-500',
+    dot: 'bg-slate-400',
+    gradient: 'from-gray-500 via-slate-500 to-zinc-500',
+    buttonGradient: 'from-gray-500 to-slate-500',
+    badgeClass: 'bg-gray-100 text-gray-700 border-gray-200',
+    borderGradient: 'from-gray-400 to-slate-400',
+    bgOpacity: 'from-gray-600/5 to-slate-600/5',
+    solid: '#71717a', // zinc-500
   },
 };
 
-// 순위별 컬러 시스템
-export const rankColors = {
-  1: {
-    title: '1위',
-    textColor: 'text-yellow-600',
-    bgColor: 'bg-yellow-50',
-    borderColor: 'border-yellow-200',
-    ringColor: 'ring-yellow-400',
-    shadowColor: 'shadow-yellow-200',
-    avatarClass: 'bg-yellow-100 text-yellow-800',
-  },
-  2: {
-    title: '2위',
-    textColor: 'text-gray-600',
-    bgColor: 'bg-gray-50',
-    borderColor: 'border-gray-200',
-    ringColor: 'ring-gray-400',
-    shadowColor: 'shadow-gray-200',
-    avatarClass: 'bg-gray-100 text-gray-800',
-  },
-  3: {
-    title: '3위',
-    textColor: 'text-amber-600',
-    bgColor: 'bg-amber-50',
-    borderColor: 'border-amber-200',
-    ringColor: 'ring-amber-400',
-    shadowColor: 'shadow-amber-200',
-    avatarClass: 'bg-amber-100 text-amber-800',
-  },
-  4: {
-    title: '4위',
-    textColor: 'text-red-600',
-    bgColor: 'bg-red-50',
-    borderColor: 'border-red-200',
-    ringColor: 'ring-red-400',
-    shadowColor: 'shadow-red-200',
-    avatarClass: 'bg-red-100 text-red-800',
-  },
-  5: {
-    title: '5위',
-    textColor: 'text-blue-600',
-    bgColor: 'bg-blue-50',
-    borderColor: 'border-blue-200',
-    ringColor: 'ring-blue-400',
-    shadowColor: 'shadow-blue-200',
-    avatarClass: 'bg-blue-100 text-blue-800',
-  },
-  6: {
-    title: '6위',
-    textColor: 'text-cyan-600',
-    bgColor: 'bg-cyan-50',
-    borderColor: 'border-cyan-200',
-    ringColor: 'ring-cyan-400',
-    shadowColor: 'shadow-cyan-200',
-    avatarClass: 'bg-cyan-100 text-cyan-800',
-  },
-  7: {
-    title: '7위',
-    textColor: 'text-indigo-600',
-    bgColor: 'bg-indigo-50',
-    borderColor: 'border-indigo-200',
-    ringColor: 'ring-indigo-400',
-    shadowColor: 'shadow-indigo-200',
-    avatarClass: 'bg-indigo-100 text-indigo-800',
-  },
-  8: {
-    title: '8위',
-    textColor: 'text-purple-600',
-    bgColor: 'bg-purple-50',
-    borderColor: 'border-purple-200',
-    ringColor: 'ring-purple-400',
-    shadowColor: 'shadow-purple-200',
-    avatarClass: 'bg-purple-100 text-purple-800',
-  },
-  9: {
-    title: '9위',
-    textColor: 'text-pink-600',
-    bgColor: 'bg-pink-50',
-    borderColor: 'border-pink-200',
-    ringColor: 'ring-pink-400',
-    shadowColor: 'shadow-pink-200',
-    avatarClass: 'bg-pink-100 text-pink-800',
-  },
-  10: {
-    title: '10위',
-    textColor: 'text-green-600',
-    bgColor: 'bg-green-50',
-    borderColor: 'border-green-200',
-    ringColor: 'ring-green-400',
-    shadowColor: 'shadow-green-200',
-    avatarClass: 'bg-green-100 text-green-800',
-  },
-};
 
-// 확장 순위 컬러 (11위~)
-export const extendedRankColors = {
-  expert: {
-    title: '상위권',
-    textColor: 'text-orange-600',
-    bgColor: 'bg-orange-50',
-    borderColor: 'border-orange-200',
-    ringColor: 'ring-orange-400',
-    shadowColor: 'shadow-orange-200',
-    avatarClass: 'bg-orange-100 text-orange-800',
-  },
-  challenger: {
-    title: '중위권',
-    textColor: 'text-teal-600',
-    bgColor: 'bg-teal-50',
-    borderColor: 'border-teal-200',
-    ringColor: 'ring-teal-400',
-    shadowColor: 'shadow-teal-200',
-    avatarClass: 'bg-teal-100 text-teal-800',
-  },
-  rookie: {
-    title: '참가자',
-    textColor: 'text-lime-600',
-    bgColor: 'bg-lime-50',
-    borderColor: 'border-lime-200',
-    ringColor: 'ring-lime-400',
-    shadowColor: 'shadow-lime-200',
-    avatarClass: 'bg-lime-100 text-lime-800',
-  },
-};
+
