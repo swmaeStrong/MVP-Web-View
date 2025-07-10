@@ -3,6 +3,7 @@
 import { categoryColors } from '@/styles';
 import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, spacing } from '@/styles/design-system';
+import { FONT_SIZES } from '@/styles/font-sizes';
 
 interface CategoryFilterProps {
   categories: string[];
@@ -59,10 +60,10 @@ export default function CategoryFilter({
                   onClick={() => setSelectedCategory(item.category)}
                   className={
                     item.isSelected
-                      ? `w-[100px] lg:w-[140px] rounded-lg border-2 scale-105 transform px-2 lg:px-4 py-2 lg:py-2.5 text-xs lg:text-sm font-semibold transition-all duration-200 overflow-hidden ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')} ${getThemeTextColor('primary')}`
+                      ? `w-[100px] lg:w-[140px] rounded-lg border-2 scale-105 transform px-2 lg:px-4 py-2 lg:py-2.5 ${FONT_SIZES.LEADERBOARD.PRIMARY} font-semibold transition-all duration-200 overflow-hidden ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')} ${getThemeTextColor('primary')}`
                       : item.position === -1 || item.position === 1
-                        ? `w-[80px] lg:w-[120px] scale-95 transform rounded-lg border-2 px-2 lg:px-4 py-1.5 lg:py-2 text-xs lg:text-sm font-medium transition-all duration-200 overflow-hidden ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('borderLight')}`
-                        : `w-[80px] lg:w-[120px] rounded-lg border-2 px-2 lg:px-4 py-1.5 lg:py-2 text-xs lg:text-sm font-medium opacity-70 transition-all duration-200 overflow-hidden ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`
+                        ? `w-[80px] lg:w-[120px] scale-95 transform rounded-lg border-2 px-2 lg:px-4 py-1.5 lg:py-2 ${FONT_SIZES.LEADERBOARD.PRIMARY} font-medium transition-all duration-200 overflow-hidden ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('borderLight')}`
+                        : `w-[80px] lg:w-[120px] rounded-lg border-2 px-2 lg:px-4 py-1.5 lg:py-2 ${FONT_SIZES.LEADERBOARD.PRIMARY} font-medium opacity-70 transition-all duration-200 overflow-hidden ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`
                   }
                 >
                   <span className='block truncate'>
@@ -102,7 +103,7 @@ export default function CategoryFilter({
 
       {/* Current category info - responsive */}
       <div className='mt-2 lg:mt-3 text-center'>
-        <div className={`text-xs lg:text-sm ${getThemeTextColor('secondary')}`}>
+        <div className={`${FONT_SIZES.LEADERBOARD.SECONDARY} ${getThemeTextColor('secondary')}`}>
           <span className='font-semibold text-purple-600'>
             {selectedCategory === 'total' ? 'Total'
             : selectedCategory === 'Development' ? 'Development'

@@ -6,6 +6,7 @@ import { componentSizes, componentStates, spacing } from '@/styles/design-system
 import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { Button } from '@/shadcn/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
+import { FONT_SIZES } from '@/styles/font-sizes';
 
 interface PeriodSelectorProps {
   selectedPeriod: 'daily' | 'weekly' | 'monthly';
@@ -109,7 +110,7 @@ export default function PeriodSelector({
         <Tooltip>
           <TooltipTrigger asChild>
             <div 
-              className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full transition-all duration-200 cursor-pointer text-xs border hover:shadow-sm ${
+              className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full transition-all duration-200 cursor-pointer ${FONT_SIZES.LEADERBOARD.SECONDARY} border hover:shadow-sm ${
                 isDarkMode 
                   ? 'bg-[#2D2D2D] border-[rgb(80,80,80)] text-[rgb(153,153,153)] hover:text-[rgb(220,220,220)] hover:border-[rgb(120,120,120)]' 
                   : 'bg-gray-50 border-gray-200 text-[rgb(142,142,142)] hover:text-[rgb(43,43,43)] hover:border-gray-300'
@@ -146,8 +147,8 @@ export default function PeriodSelector({
                 key={period}
                 className={
                   selectedPeriod === period
-                    ? `rounded-lg px-4 py-2 text-sm font-semibold border-2 transition-all duration-200 ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')} ${getThemeTextColor('primary')}`
-                    : `rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('borderLight')}`
+                    ? `rounded-lg px-4 py-2 ${FONT_SIZES.LEADERBOARD.PRIMARY} font-semibold border-2 transition-all duration-200 ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')} ${getThemeTextColor('primary')}`
+                    : `rounded-lg px-4 py-2 ${FONT_SIZES.LEADERBOARD.PRIMARY} font-medium transition-all duration-200 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} hover:${getThemeClass('borderLight')}`
                 }
                 onClick={() => setSelectedPeriod(period as any)}
               >
@@ -182,7 +183,7 @@ export default function PeriodSelector({
         {/* 현재 선택된 기간 표시 */}
         <div className='flex justify-center'>
           <div className={`inline-block rounded-lg px-4 py-2 border ${getThemeClass('border')} ${getThemeClass('component')}`}>
-            <span className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
+            <span className={`${FONT_SIZES.LEADERBOARD.PRIMARY} font-semibold ${getThemeTextColor('primary')}`}>
               {getPeriodLabel()}
             </span>
           </div>

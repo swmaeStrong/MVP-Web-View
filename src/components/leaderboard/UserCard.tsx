@@ -5,6 +5,7 @@ import { extendedRankColors, rankColors } from '@/styles';
 import { componentSizes, componentStates, getPriorityStyle, getRankPriority } from '@/styles/design-system';
 import { ProcessedDetail, formatScoreToMinutes, getCategoryDisplayName, processLeaderboardDetails } from '@/utils/leaderboard';
 import { Medal } from 'lucide-react';
+import { FONT_SIZES } from '@/styles/font-sizes';
 
 interface UserCardProps {
   user: LeaderBoard.LeaderBoardResponse & { id?: string; isMe?: boolean };
@@ -81,7 +82,7 @@ export default function UserCard({
           ) : rank === 3 ? (
             <Medal className="w-4 h-4 lg:w-5 lg:h-5 text-amber-600" />
           ) : (
-            <span className={`text-sm lg:text-base font-bold ${getThemeTextColor('secondary')}`}>{rank}</span>
+            <span className={`${FONT_SIZES.LEADERBOARD.RANK} font-bold ${getThemeTextColor('secondary')}`}>{rank}</span>
           )}
         </div>
 
@@ -90,14 +91,14 @@ export default function UserCard({
         <div className='flex-1 min-w-0'>
           <div className='flex items-center space-x-2'>
             <h3
-              className={`text-xs lg:text-sm font-bold truncate ${getThemeTextColor('primary')}`}
+              className={`${FONT_SIZES.LEADERBOARD.PRIMARY} font-bold truncate ${getThemeTextColor('primary')}`}
             >
               {user.nickname}
             </h3>
 
             {/* 사용자 표시 - 컴팩트 */}
             {isCurrentUser && (
-              <span className={`rounded-full border px-1.5 py-0.5 text-xs font-bold shadow-sm ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
+              <span className={`rounded-full border px-1.5 py-0.5 ${FONT_SIZES.LEADERBOARD.BUTTON} font-bold shadow-sm ${isDarkMode ? 'border-purple-400' : 'border-purple-300'} ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
                 YOU
               </span>
             )}
@@ -199,10 +200,10 @@ export default function UserCard({
                           }
                         })()
                       }`} />
-                      <span className={`text-xs ${getThemeTextColor('secondary')} whitespace-nowrap truncate`}>
+                      <span className={`${FONT_SIZES.LEADERBOARD.SECONDARY} ${getThemeTextColor('secondary')} whitespace-nowrap truncate`}>
                         {getCategoryDisplayName(detail.category)}
                       </span>
-                      <span className={`${getThemeTextColor('primary')} font-medium text-xs whitespace-nowrap ml-auto`}>
+                      <span className={`${getThemeTextColor('primary')} font-medium ${FONT_SIZES.LEADERBOARD.SECONDARY} whitespace-nowrap ml-auto`}>
                         {detail.percentage}%
                       </span>
                     </div>
@@ -210,8 +211,8 @@ export default function UserCard({
                   {processedDetails.length > 2 && (
                     <div className='flex items-center gap-1'>
                       <div className='w-1 h-1 rounded flex-shrink-0 bg-gray-400' />
-                      <span className={`${getThemeTextColor('secondary')} text-xs whitespace-nowrap`}>Others</span>
-                      <span className={`${getThemeTextColor('primary')} font-medium text-xs whitespace-nowrap ml-auto`}>
+                      <span className={`${getThemeTextColor('secondary')} ${FONT_SIZES.LEADERBOARD.SECONDARY} whitespace-nowrap`}>Others</span>
+                      <span className={`${getThemeTextColor('primary')} font-medium ${FONT_SIZES.LEADERBOARD.SECONDARY} whitespace-nowrap ml-auto`}>
                         {processedDetails.find(d => d.category === 'others')?.percentage || 0}%
                       </span>
                     </div>
@@ -225,11 +226,11 @@ export default function UserCard({
         {/* Score display - Fixed width */}
         <div className='w-16 lg:w-20 text-right'>
           <div
-            className={`text-xs lg:text-base font-bold ${getThemeTextColor('primary')} whitespace-nowrap`}
+            className={`${FONT_SIZES.LEADERBOARD.RANK} font-bold ${getThemeTextColor('primary')} whitespace-nowrap`}
           >
             {category === 'total' ? formatScoreToMinutes(user.score) : formatTime(user.score)}
           </div>
-          <div className={`text-xs ${getThemeTextColor('secondary')} whitespace-nowrap`}>
+          <div className={`${FONT_SIZES.LEADERBOARD.SECONDARY} ${getThemeTextColor('secondary')} whitespace-nowrap`}>
             {category === 'total' ? 'Total Time' : 'Activity Time'}
           </div>
         </div>

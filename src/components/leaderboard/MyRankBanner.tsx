@@ -5,6 +5,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { componentSizes, componentStates, spacing } from '@/styles/design-system';
 import { themeColors } from '@/styles/colors';
 import NoData from '@/components/common/NoData';
+import { FONT_SIZES } from '@/styles/font-sizes';
 import { processLeaderboardDetails, ProcessedDetail, getCategoryDisplayName, formatScoreToMinutes } from '@/utils/leaderboard';
 import {
   getKSTDate,
@@ -168,12 +169,12 @@ export default function MyRankBanner({
             {/* 핵심 정보만 */}
             <div>
               <div className='flex items-center space-x-2'>
-                <h3 className={`text-xs lg:text-sm font-bold ${getThemeTextColor('primary')}`}>
+                <h3 className={`${FONT_SIZES.LEADERBOARD.PRIMARY} font-bold ${getThemeTextColor('primary')}`}>
                   {myRank?.nickname}
                 </h3>
               </div>
               <div className='flex items-center space-x-2 mt-0.5'>
-                <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                <span className={`${FONT_SIZES.LEADERBOARD.SECONDARY} ${getThemeTextColor('secondary')}`}>
                   {category === 'total' ? 'Total Time' : 'Activity Time'}
                 </span>
               </div>
@@ -183,7 +184,7 @@ export default function MyRankBanner({
           {/* 우측 - 등수와 버튼 */}
           {rank && (
             <div className='flex items-center space-x-3'>
-              <div className={`text-sm lg:text-base font-bold whitespace-nowrap ${getThemeTextColor('primary')}`}>
+              <div className={`${FONT_SIZES.LEADERBOARD.RANK} font-bold whitespace-nowrap ${getThemeTextColor('primary')}`}>
                 {rank === 1 ? '1st'
                 : rank === 2 ? '2nd' 
                 : rank === 3 ? '3rd'
@@ -195,7 +196,7 @@ export default function MyRankBanner({
                 <button
                   onClick={onScrollToMyRank}
                   disabled={isLoadingToMyRank}
-                  className={`flex items-center space-x-1 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                  className={`flex items-center space-x-1 px-3 py-1.5 rounded-md ${FONT_SIZES.LEADERBOARD.BUTTON} font-medium transition-colors ${
                     isLoadingToMyRank 
                       ? (isDarkMode ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-500 cursor-not-allowed')
                       : (isDarkMode 

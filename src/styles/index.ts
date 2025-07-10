@@ -3,6 +3,7 @@ export * from './animations';
 export * from './colors';
 export * from './common';
 export * from './design-system';
+export * from './font-sizes';
 
 // 편의를 위한 통합 객체들
 import {

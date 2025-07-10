@@ -1,7 +1,7 @@
 'use client';
 
 import { useCurrentUser, User } from '@/stores/userStore';
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import EmptyState from './EmptyState';
 import ErrorState from '@/components/common/ErrorState';
 import UserCard from './UserCard';
@@ -10,6 +10,7 @@ import { componentSizes, componentStates, spacing } from '@/styles/design-system
 import { LeaderboardListSkeleton } from '@/components/common/LeaderboardSkeleton';
 import { cn } from '@/shadcn/lib/utils';
 import { LEADERBOARD_CONFIG } from '@/shared/constants/infinite-scroll';
+import { FONT_SIZES } from '@/styles/font-sizes';
 
 // 리더보드 표시용 확장된 User 타입
 type LeaderboardUser = LeaderBoard.LeaderBoardResponse & {
@@ -44,6 +45,24 @@ export default function LeaderboardList({
 }: LeaderboardListProps) {
   const currentUser = useCurrentUser();
   const { getThemeClass, getThemeTextColor } = useTheme();
+  
+  // 반응형 컨테이너 높이
+  const [containerHeight, setContainerHeight] = useState(LEADERBOARD_CONFIG.CONTAINER_HEIGHT.DESKTOP);
+  
+  useEffect(() => {
+    const updateHeight = () => {
+      const isDesktop = window.innerWidth >= 1024; // lg 브레이크포인트
+      setContainerHeight(
+        isDesktop 
+          ? LEADERBOARD_CONFIG.CONTAINER_HEIGHT.DESKTOP 
+          : LEADERBOARD_CONFIG.CONTAINER_HEIGHT.MOBILE
+      );
+    };
+    
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, []);
 
   // 현재 유저 하이라이트를 위한 ref
   const currentUserRef = useRef<HTMLDivElement>(null);
@@ -85,11 +104,14 @@ export default function LeaderboardList({
     <div 
       ref={containerRef}
       className={cn(
-        "h-[550px] overflow-y-auto rounded-lg border p-4",
+        "overflow-y-auto rounded-lg border p-4",
         getThemeClass('border'),
         getThemeClass('component'),
         "activity-scroll-hide"
       )}
+      style={{ 
+        height: `${containerHeight}px` 
+      }}
     >
       {/* Leaderboard list */}
       <div className="space-y-2 lg:space-y-3">
@@ -115,7 +137,7 @@ export default function LeaderboardList({
         <div className="flex justify-center mt-4 mb-4">
           <div className={`rounded-lg border-2 p-4 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
             <div className='mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-purple-600'></div>
-            <p className={`text-sm ${getThemeTextColor('secondary')}`}>
+            <p className={`${FONT_SIZES.LEADERBOARD.PRIMARY} ${getThemeTextColor('secondary')}`}>
               Loading more competitors...
             </p>
           </div>

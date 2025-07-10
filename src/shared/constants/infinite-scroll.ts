@@ -47,4 +47,5 @@ export const LEADERBOARD_CONFIG = {
     LIST_ITEM_DESKTOP: 3, // space-y-3
     LOADING_INDICATOR_MARGIN: 4, // mt-4, mb-4
   },
+  
 } as const;
