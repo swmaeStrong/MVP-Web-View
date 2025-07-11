@@ -30,7 +30,7 @@ export default function StatisticsPieChart({
   };
 
   // Extract only top 3 categories and group the rest as "Others"
-  const top3Categories = data.categories.slice(0, 3).map((category, index) => ({
+  const top3Categories = data.categories.slice(0, 5).map((category, index) => ({
     ...category,
     color: getCategoryColor(category.name), // Use colors from colors.ts
   }));
