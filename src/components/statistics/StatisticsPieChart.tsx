@@ -128,7 +128,7 @@ export default function StatisticsPieChart({
                   return (
                     <div className={`rounded-xl border-2 p-3 shadow-lg ${getThemeClass('border')} ${getThemeClass('component')}`}>
                       <div className='flex flex-col gap-2'>
-                        <div className='flex items-center gap-2'>
+                        <div className='flex items-center gap-1'>
                           <div
                             className='h-3 w-3 rounded-full'
                             style={{
@@ -139,13 +139,13 @@ export default function StatisticsPieChart({
                             {categoryDisplayName}
                           </span>
                         </div>
-                        <div className={`ml-5 text-sm ${getThemeTextColor('secondary')}`}>
+                        <div className={`ml-2 text-sm ${getThemeTextColor('secondary')}`}>
                           Time:{' '}
                           <span className={`font-semibold ${getThemeTextColor('primary')}`}>
                             {data.payload.fullTime}
                           </span>
                         </div>
-                        <div className={`ml-5 text-sm ${getThemeTextColor('secondary')}`}>
+                        <div className={`ml-2 text-sm ${getThemeTextColor('secondary')}`}>
                           Rate:{' '}
                           <span className={`font-semibold ${getThemeTextColor('primary')}`}>
                             {percentage ? percentage.toFixed(1) : '0.0'}%
