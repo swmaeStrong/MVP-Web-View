@@ -1,18 +1,18 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { PeriodType, StatisticsCategory } from '@/types/statistics';
+import { useEffect, useState } from 'react';
 
 // 컴포넌트 임포트
 import ActivityList from '@/components/statistics/ActivityList';
+import TotalTimeCard from '@/components/statistics/DateNavigationCard';
 import HourlyUsageComparison from '@/components/statistics/HourlyUsageComparison';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
 import TimelineChart from '@/components/statistics/TimelineChart';
-import TotalTimeCard from '@/components/statistics/TotalTimeCard';
 
 // Hook 모킹을 위한 임포트
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // 데모용 더미 데이터 - 더 다양한 카테고리 (초 단위로 수정)
 const generateDummyData = () => ({

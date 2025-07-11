@@ -18,10 +18,10 @@ import {
 } from '@/components/common/StatisticsSkeleton';
 import ActivityList from '@/components/statistics/ActivityList';
 import DailyGoalCard from '@/components/statistics/DailyGoalCard';
+import TotalTimeCard from '@/components/statistics/DateNavigationCard';
 import HourlyUsageComparison from '@/components/statistics/HourlyUsageComparison';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
 import TimelineChart from '@/components/statistics/TimelineChart';
-import TotalTimeCard from '@/components/statistics/TotalTimeCard';
 import { useInitUser } from '@/hooks/useInitUser';
 import ErrorState from '../../components/common/ErrorState';
 
