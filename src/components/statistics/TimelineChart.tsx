@@ -205,23 +205,84 @@ export default function TimelineChart({
     }
   };
 
-  // Function to convert time to minutes (HH:MM format or ISO string)
-  const timeToMinutes = (time: string): number => {
+  // Function to convert time to seconds (HH:MM:SS format or ISO string)
+  const timeToSeconds = (time: string): number => {
     if (!time) return 0;
     
     if (time.includes('T')) {
       // If ISO string
       const date = new Date(time);
       if (isNaN(date.getTime())) return 0;
-      return date.getHours() * 60 + date.getMinutes();
+      return date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
     } else {
-      // If HH:MM format
+      // If HH:MM or HH:MM:SS format
       const parts = time.split(':');
-      if (parts.length !== 2) return 0;
-      const [hours, minutes] = parts.map(Number);
-      if (isNaN(hours) || isNaN(minutes)) return 0;
-      return hours * 60 + minutes;
+      if (parts.length === 2) {
+        // HH:MM format
+        const [hours, minutes] = parts.map(Number);
+        if (isNaN(hours) || isNaN(minutes)) return 0;
+        return hours * 3600 + minutes * 60;
+      } else if (parts.length === 3) {
+        // HH:MM:SS format
+        const [hours, minutes, seconds] = parts.map(Number);
+        if (isNaN(hours) || isNaN(minutes) || isNaN(seconds)) return 0;
+        return hours * 3600 + minutes * 60 + seconds;
+      }
+      return 0;
     }
+  };
+
+  // Legacy function for backward compatibility (converts to minutes)
+  const timeToMinutes = (time: string): number => {
+    return Math.floor(timeToSeconds(time) / 60);
+  };
+
+  // Function to format time for display (with seconds)
+  const formatTime = (time: string): string => {
+    if (!time) return '';
+    
+    if (time.includes('T')) {
+      // If ISO string
+      const date = new Date(time);
+      if (isNaN(date.getTime())) return '';
+      return date.toLocaleTimeString('ko-KR', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false 
+      });
+    } else {
+      // If HH:MM or HH:MM:SS format
+      const parts = time.split(':');
+      if (parts.length === 2) {
+        // Add seconds if not present
+        return `${time}:00`;
+      } else if (parts.length === 3) {
+        // Already has seconds
+        return time;
+      }
+      return time;
+    }
+  };
+
+  // Function to calculate duration (with seconds precision)
+  const calculateDuration = (startTime: string, endTime: string): string => {
+    const startSeconds = timeToSeconds(startTime);
+    const endSeconds = timeToSeconds(endTime);
+    const durationSeconds = endSeconds - startSeconds;
+    
+    if (durationSeconds <= 0) return '0초';
+    
+    const hours = Math.floor(durationSeconds / 3600);
+    const minutes = Math.floor((durationSeconds % 3600) / 60);
+    const seconds = durationSeconds % 60;
+    
+    const parts = [];
+    if (hours > 0) parts.push(`${hours}시간`);
+    if (minutes > 0) parts.push(`${minutes}분`);
+    if (seconds > 0) parts.push(`${seconds}초`);
+    
+    return parts.length > 0 ? parts.join(' ') : '0초';
   };
 
 
@@ -247,12 +308,12 @@ export default function TimelineChart({
     if (schedules && schedules.length > 0) return schedules;
     if (!timelineData || !Array.isArray(timelineData)) return [];
     
-    // Work와 Breaks 시간 집계 (mergedCategory 기준)
+    // Work와 Breaks 시간 집계 (mergedCategory 기준) - 초 단위로 정확하게 계산
     const workTotal = timelineData.reduce((sum, item) => {
       if (item && item.startedAt && item.endedAt && item.mergedCategory === 'work') {
-        const startMinutes = timeToMinutes(item.startedAt);
-        const endMinutes = timeToMinutes(item.endedAt);
-        const duration = endMinutes - startMinutes;
+        const startSeconds = timeToSeconds(item.startedAt);
+        const endSeconds = timeToSeconds(item.endedAt);
+        const duration = endSeconds - startSeconds;
         return sum + (duration > 0 ? duration : 0);
       }
       return sum;
@@ -260,9 +321,9 @@ export default function TimelineChart({
     
     const breakTotal = timelineData.reduce((sum, item) => {
       if (item && item.startedAt && item.endedAt && item.mergedCategory === 'breaks') {
-        const startMinutes = timeToMinutes(item.startedAt);
-        const endMinutes = timeToMinutes(item.endedAt);
-        const duration = endMinutes - startMinutes;
+        const startSeconds = timeToSeconds(item.startedAt);
+        const endSeconds = timeToSeconds(item.endedAt);
+        const duration = endSeconds - startSeconds;
         return sum + (duration > 0 ? duration : 0);
       }
       return sum;
@@ -270,10 +331,10 @@ export default function TimelineChart({
     
     const totalTime = workTotal + breakTotal;
     
-    console.log('⏰ 시간 집계 (mergedCategory 기준):');
-    console.log('📊 Work 시간:', (workTotal / 60).toFixed(2) + '시간', totalTime > 0 ? `(${((workTotal / totalTime) * 100).toFixed(1)}%)` : '');
-    console.log('☕ Breaks 시간:', (breakTotal / 60).toFixed(2) + '시간', totalTime > 0 ? `(${((breakTotal / totalTime) * 100).toFixed(1)}%)` : '');
-    console.log('🎯 전체 시간:', (totalTime / 60).toFixed(2) + '시간');
+    console.log('⏰ 시간 집계 (mergedCategory 기준, 초 단위):');
+    console.log('📊 Work 시간:', (workTotal / 3600).toFixed(3) + '시간', totalTime > 0 ? `(${((workTotal / totalTime) * 100).toFixed(1)}%)` : '');
+    console.log('☕ Breaks 시간:', (breakTotal / 3600).toFixed(3) + '시간', totalTime > 0 ? `(${((breakTotal / totalTime) * 100).toFixed(1)}%)` : '');
+    console.log('🎯 전체 시간:', (totalTime / 3600).toFixed(3) + '시간');
     
     return timelineData
       .filter(item => item && item.startedAt && item.endedAt)
@@ -290,9 +351,9 @@ export default function TimelineChart({
         };
       })
       .sort((a, b) => {
-        // Sort by start time
-        const timeA = timeToMinutes(a.startTime);
-        const timeB = timeToMinutes(b.startTime);
+        // Sort by start time with seconds precision
+        const timeA = timeToSeconds(a.startTime);
+        const timeB = timeToSeconds(b.startTime);
         return timeA - timeB;
       });
   }, [schedules, timelineData]);
@@ -541,14 +602,15 @@ export default function TimelineChart({
 
                   {/* Activity blocks - for full 24 hours */}
                   {convertedSchedules.map((schedule, index) => {
-                    const startMinutes = timeToMinutes(schedule.startTime);
-                    const endMinutes = timeToMinutes(schedule.endTime);
-                    const timelineStart = TIMELINE_CONSTANTS.TIMELINE_START * 60; // 0:00
-                    const timelineEnd = TIMELINE_CONSTANTS.TIMELINE_END * 60; // 24:00
+                    // Use seconds for more precise positioning
+                    const startSeconds = timeToSeconds(schedule.startTime);
+                    const endSeconds = timeToSeconds(schedule.endTime);
+                    const timelineStart = TIMELINE_CONSTANTS.TIMELINE_START * 3600; // 0:00 in seconds
+                    const timelineEnd = TIMELINE_CONSTANTS.TIMELINE_END * 3600; // 24:00 in seconds
                     const timelineWidth = timelineEnd - timelineStart;
 
-                    const left = ((startMinutes - timelineStart) / timelineWidth) * 100;
-                    const width = ((endMinutes - startMinutes) / timelineWidth) * 100;
+                    const left = ((startSeconds - timelineStart) / timelineWidth) * 100;
+                    const width = ((endSeconds - startSeconds) / timelineWidth) * 100;
 
                   const category = schedule.mergedCategory || 'others';
                   const colorInfo = getCategoryColor(category);
@@ -567,13 +629,14 @@ export default function TimelineChart({
                     zIndex: zIndex,
                     backgroundColor: colorInfo?.color || '#9ca3af',
                     opacity: 1, // 완전 불투명
-                    cursor: 'default'
+                    cursor: 'pointer'
                   };
 
                   return (
                     <div
                       key={`${schedule.id}-${index}`}
                       style={blockStyle}
+                      className="transition-opacity duration-200 hover:opacity-80"
                     />
                   );
                 })}
