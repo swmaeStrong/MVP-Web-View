@@ -3,6 +3,7 @@
 import { useTheme } from '@/hooks/useTheme';
 import { ChartConfig, ChartContainer, ChartTooltip } from '@/shadcn/ui/chart';
 import { categoryColors } from '@/styles/colors';
+import { componentSizes, spacing } from '@/styles/design-system';
 import { DailyStatistics } from '@/types/statistics';
 import { getCategoryDisplayName } from '@/utils/leaderboard';
 import { formatTime } from '@/utils/statisticsUtils';
@@ -105,9 +106,9 @@ export default function StatisticsPieChart({
   }, {} as ChartConfig);
 
   return (
-    <div className='h-full flex flex-col items-center justify-center p-4'>
+    <div className={`h-full flex flex-col items-center justify-center ${componentSizes.medium.padding}`}>
       {/* Top - Pie Chart */}
-      <div className='flex-shrink-0 mb-4'>
+      <div className={`flex-shrink-0 ${spacing.section.normal}`}>
         <ChartContainer
           config={chartConfig}
           className='aspect-square w-[200px] h-[200px]'
@@ -199,9 +200,9 @@ export default function StatisticsPieChart({
 
       {/* Bottom - Category Details in 2 columns */}
       <div className='w-full max-w-md'>
-        <div className='grid grid-cols-2 gap-x-6 gap-y-3'>
+        <div className={`grid grid-cols-2 ${spacing.between.normal} gap-y-2`}>
           {finalCategories.map((category, index) => (
-            <div key={index} className='flex items-center gap-2'>
+            <div key={index} className={`flex items-center ${spacing.between.tight}`}>
               <div
                 className='w-3 h-3 rounded-full flex-shrink-0'
                 style={{ backgroundColor: category.color }}
@@ -210,7 +211,7 @@ export default function StatisticsPieChart({
                 <div className={`text-sm font-medium truncate ${getThemeTextColor('primary')}`}>
                   {category.name === 'Others' ? 'Others' : getCategoryDisplayName(category.name)}
                 </div>
-                <div className='flex items-center gap-2 text-xs'>
+                <div className={`flex items-center ${spacing.between.tight} text-xs`}>
                   <span className={`font-semibold ${getThemeTextColor('primary')}`}>
                     {formatTime(category.time)}
                   </span>
