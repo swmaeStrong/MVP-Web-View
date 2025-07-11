@@ -3,7 +3,6 @@
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/shadcn/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
 import { cardSystem, componentStates, spacing } from '@/styles/design-system';
 import { Activity, ZoomIn, ZoomOut } from 'lucide-react';
 import { useMemo, useRef, useState, useEffect } from 'react';
@@ -634,47 +633,11 @@ export default function TimelineChart({
                   };
 
                   return (
-                    <Tooltip key={`${schedule.id}-${index}`} delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <div
-                          style={blockStyle}
-                          className="transition-opacity duration-200 hover:opacity-80"
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent 
-                        side="top" 
-                        align="center"
-                        className="max-w-xs p-3"
-                      >
-                        <div className="space-y-2">
-                          <div className="font-semibold text-sm">
-                            {schedule.title || schedule.app || 'Activity'}
-                          </div>
-                          <div className="space-y-1 text-xs">
-                            <div className="flex justify-between gap-4">
-                              <span className="text-gray-400">App:</span>
-                              <span className="font-medium">{schedule.app || 'Unknown'}</span>
-                            </div>
-                            <div className="flex justify-between gap-4">
-                              <span className="text-gray-400">Category:</span>
-                              <span className="font-medium capitalize">{schedule.mergedCategory || 'Unknown'}</span>
-                            </div>
-                            <div className="flex justify-between gap-4">
-                              <span className="text-gray-400">Time:</span>
-                              <span className="font-medium">
-                                {formatTime(schedule.startTime)} - {formatTime(schedule.endTime)}
-                              </span>
-                            </div>
-                            <div className="flex justify-between gap-4">
-                              <span className="text-gray-400">Duration:</span>
-                              <span className="font-medium">
-                                {calculateDuration(schedule.startTime, schedule.endTime)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </TooltipContent>
-                    </Tooltip>
+                    <div
+                      key={`${schedule.id}-${index}`}
+                      style={blockStyle}
+                      className="transition-opacity duration-200 hover:opacity-80"
+                    />
                   );
                 })}
               </div>
