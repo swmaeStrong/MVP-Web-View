@@ -17,6 +17,7 @@ import {
   TotalTimeCardSkeleton
 } from '@/components/common/StatisticsSkeleton';
 import ActivityList from '@/components/statistics/ActivityList';
+import DailyGoalCard from '@/components/statistics/DailyGoalCard';
 import HourlyUsageComparison from '@/components/statistics/HourlyUsageComparison';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
 import TimelineChart from '@/components/statistics/TimelineChart';
@@ -224,27 +225,34 @@ export default function StatisticsPage() {
       <div className='mx-auto max-w-6xl space-y-4 sm:space-y-6'>
         {/* 메인 콘텐츠 */}
         <div className='grid gap-4 sm:gap-6 lg:grid-cols-2 min-h-[500px]'>
-          {/* 왼쪽: 총 작업시간 & 상위 카테고리 */}
+          {/* 왼쪽: 날짜 네비게이션, 목표 설정, 카테고리 분석 */}
           <div className='flex flex-col space-y-3'>
-            {/* 작업시간 카드 - 컴팩트하게 */}
+            {/* 날짜 네비게이션 카드 */}
             <div className='flex-shrink-0'>
-            <TotalTimeCard
-              totalTime={dailyData?.totalTime || 0}
-              currentDate={selectedDate}
-              onPrevious={handlePreviousDate}
-              onNext={handleNextDate}
-              canGoPrevious={canGoPrevious}
-              canGoNext={canGoNext}
+              <TotalTimeCard
+                totalTime={dailyData?.totalTime || 0}
+                currentDate={selectedDate}
+                onPrevious={handlePreviousDate}
+                onNext={handleNextDate}
+                canGoPrevious={canGoPrevious}
+                canGoNext={canGoNext}
               />
             </div>
 
-            {/* Activity 목록 */}
+            {/* 목표 설정 카드 */}
+            <div className='flex-shrink-0'>
+              <DailyGoalCard
+                totalTime={dailyData?.totalTime || 0}
+              />
+            </div>
+
+            {/* 카테고리 분석 차트 */}
             <div className='flex-1'>
-            <StatisticsChart
-            selectedPeriod={selectedPeriod}
-            data={dailyData || null}
-            currentDate={selectedDate}
-          />
+              <StatisticsChart
+                selectedPeriod={selectedPeriod}
+                data={dailyData || null}
+                currentDate={selectedDate}
+              />
             </div>
           </div>
 

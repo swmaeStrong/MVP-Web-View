@@ -28,24 +28,6 @@ export default function TotalTimeCard({
 }: TotalTimeCardProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
   
-  // Time formatting
-  const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-
-    if (hours === 0) {
-      return `${minutes}m`;
-    }
-    if (minutes === 0) {
-      return `${hours}h`;
-    }
-    return `${hours}h ${minutes}m`;
-  };
-
-  // Always display total time
-  const displayTime = totalTime;
-  const displayTitle = 'Total Activity Time';
-  
   // Format current date for display
   const formattedDate = formatKSTDate(new Date(currentDate + 'T00:00:00Z'));
 
@@ -54,23 +36,11 @@ export default function TotalTimeCard({
       <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${componentStates.default.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardContent className={`${cardSystem.content} ${spacing.inner.normal}`}>
           {/* Date navigation header skeleton */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between">
             <div className={`h-7 w-32 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
             <div className='flex gap-2'>
               <div className={`h-8 w-8 animate-pulse rounded-lg ${getThemeClass('componentSecondary')}`}></div>
               <div className={`h-8 w-8 animate-pulse rounded-lg ${getThemeClass('componentSecondary')}`}></div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            {/* Left: title skeleton */}
-            <div className="flex items-center gap-3">
-              <div className={`h-7 w-40 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-            </div>
-
-            {/* Right: time skeleton */}
-            <div className="text-right">
-              <div className={`h-9 w-20 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
             </div>
           </div>
         </CardContent>
@@ -82,7 +52,7 @@ export default function TotalTimeCard({
     <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${componentStates.default.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <CardContent className={`${cardSystem.content} ${spacing.inner.normal}`}>
         {/* Date navigation header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
               {formattedDate}
@@ -109,24 +79,6 @@ export default function TotalTimeCard({
             >
               <ChevronRight className='h-4 w-4' />
             </Button>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          {/* Left: title display */}
-          <div className="flex items-center gap-3">
-            <div>
-              <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
-                {displayTitle}
-              </h3>
-            </div>
-          </div>
-
-          {/* Right: time display */}
-          <div className="text-right">
-            <div className={`text-3xl font-bold ${getThemeTextColor('primary')}`}>
-              {formatTime(displayTime)}
-            </div>
           </div>
         </div>
       </CardContent>
