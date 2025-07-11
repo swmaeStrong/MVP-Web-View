@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import NoData from '../common/NoData';
 import StatisticsBarChart from './StatisticsBarChart';
-import StatisticsRadarChart from './StatisticsRadarChart';
+import StatisticsPieChart from './StatisticsPieChart';
 import { useTheme } from '@/hooks/useTheme';
 
 interface StatisticsChartProps {
@@ -39,7 +39,7 @@ export default function StatisticsChart({
 
         <CardContent className='flex-1 min-h-0 p-2 pt-0'>
           {selectedPeriod === 'daily' ? (
-            // Radar chart skeleton
+            // Pie chart skeleton
             <div className='h-full flex items-center justify-center'>
               <div className='relative w-full h-full flex items-center justify-center'>
                 <div className={`aspect-square w-full h-full min-h-[180px] max-h-[350px] min-w-[180px] max-w-[350px] animate-pulse rounded-full ${getThemeClass('componentSecondary')}`}></div>
@@ -80,7 +80,7 @@ export default function StatisticsChart({
   const getChartTitle = () => {
     switch (selectedPeriod) {
       case 'daily':
-        return 'Top 6 Category Analysis';
+        return 'Category Analysis';
       case 'weekly':
         return 'Weekly Work Patterns';
       case 'monthly':
@@ -100,17 +100,19 @@ export default function StatisticsChart({
 
   return (
     <Card className={`h-full rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <CardHeader className='pb-2'>
-        <div className='flex items-center justify-between'>
-          <CardTitle className={`text-lg font-semibold ${getThemeClass('textPrimary')}`}>
-            {getChartTitle()}
-          </CardTitle>
-        </div>
-      </CardHeader>
+      {selectedPeriod !== 'daily' && (
+        <CardHeader className='pb-2'>
+          <div className='flex items-center justify-between'>
+            <CardTitle className={`text-lg font-semibold ${getThemeClass('textPrimary')}`}>
+              {getChartTitle()}
+            </CardTitle>
+          </div>
+        </CardHeader>
+      )}
 
       <CardContent className='flex-1 min-h-0 p-2 pt-0'>
           {selectedPeriod === 'daily' && data && data.categories.length > 0 ? (
-            <StatisticsRadarChart data={data} />
+            <StatisticsPieChart data={data} />
           ) : selectedPeriod === 'weekly' || selectedPeriod === 'monthly' ? (
             <StatisticsBarChart period={selectedPeriod} />
           ) : (
