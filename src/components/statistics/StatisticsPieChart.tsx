@@ -13,6 +13,7 @@ import {
   Pie,
   PieChart,
 } from 'recharts';
+import { getThemeColor } from '../../utils/theme-detector';
 import NoData from '../common/NoData';
 
 interface StatisticsPieChartProps {
@@ -106,7 +107,7 @@ export default function StatisticsPieChart({
   }, {} as ChartConfig);
 
   return (
-    <div className={`h-full flex flex-col items-center justify-center ${componentSizes.medium.padding}`}>
+    <div className={`h-full flex flex-col items-center justify-center ${componentSizes.small.padding}`}>
       {/* Top - Pie Chart */}
       <div className={`flex-shrink-0 ${spacing.section.normal}`}>
         <ChartContainer
@@ -166,7 +167,7 @@ export default function StatisticsPieChart({
               innerRadius={70} // Make it a donut chart (hollow)
               fill='#8884d8'
               dataKey='time'
-              stroke={isDarkMode ? '#374151' : '#ffffff'}
+              stroke={`${getThemeColor('component')}`}
               strokeWidth={2}
             >
               {chartData.map((entry, index) => (
