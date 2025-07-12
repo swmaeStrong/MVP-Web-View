@@ -60,7 +60,7 @@ export default function StatisticsPieChart({
 
   if (!hasValidData) {
     return (
-      <div className='flex h-full items-center justify-center p-4'>
+      <div className={`flex items-center justify-center p-4`}>
         <NoData
           title='No categories to analyze'
           message='Cannot display pie chart due to lack of activity data.'
@@ -74,7 +74,7 @@ export default function StatisticsPieChart({
 
   if (!hasMinimumData) {
     return (
-      <div className='flex h-full items-center justify-center p-4'>
+      <div className={`flex items-center justify-center p-4`}>
         <NoData
           title='Insufficient categories'
           message='At least 2 categories are needed for meaningful pie chart analysis.'
@@ -106,9 +106,9 @@ export default function StatisticsPieChart({
   }, {} as ChartConfig);
 
   return (
-    <div className={`flex justify-center items-center p-3`}>
+    <div className={`flex items-center p-4 gap-6`}>
       {/* Left - Pie Chart */}
-      <div className={`flex-shrink-0 flex items-center justify-center`}>
+      <div className={`flex-shrink-0`}>
         <ChartContainer
           config={chartConfig}
           className='aspect-square w-[140px] h-[140px]'
@@ -199,8 +199,8 @@ export default function StatisticsPieChart({
       </div>
 
       {/* Right - Category Details */}
-      <div className='flex-1 ml-4 flex items-center justify-center'>
-        <div className={`w-full ml-16 space-y-2`}>
+      <div className='flex-1'>
+        <div className={`space-y-2`}>
           {finalCategories.map((category, index) => (
             <div key={index} className={`flex items-center gap-2`}>
               <div

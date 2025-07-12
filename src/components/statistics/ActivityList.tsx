@@ -179,8 +179,8 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
 
         {/* 로딩 상태 */}
         {loading ? (
-          <div className="flex-1 overflow-y-auto space-y-2 pr-2">
-            {[...Array(8)].map((_, index) => (
+          <div className="flex-1 overflow-y-auto space-y-2 pr-2 h-[315px]">
+            {[...Array(5)].map((_, index) => (
               <div 
                 key={index} 
                 className={`group rounded-lg border p-2 h-14 ${getThemeClass('border')} ${getThemeClass('component')}`}
@@ -213,7 +213,7 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
           </div>
         ) : filteredData.length === 0 ? (
           /* 데이터 없음 */
-          <div className="flex h-[300px] items-center justify-center">
+          <div className="flex h-[315px] items-center justify-center">
             <NoData
               title={selectedCategory === 'all' ? "No Recent Activity" : `No ${selectedCategory} Activity`}
               message={error || (selectedCategory === 'all' 
@@ -229,7 +229,7 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
           /* 스크롤 가능한 활동 목록 */
           <div 
             className={cn(
-              "flex-1 overflow-y-auto overflow-x-hidden space-y-2 pr-2 max-h-[325px]",
+              "flex-1 overflow-y-auto overflow-x-hidden space-y-2 pr-2 max-h-[315px]",
               "activity-scroll-hide"
             )}
           >

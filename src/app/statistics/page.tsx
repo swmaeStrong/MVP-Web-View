@@ -180,8 +180,8 @@ export default function StatisticsPage() {
               </div>
             </div>
 
-            {/* 오른쪽: 차트 스켈레톤 */}
-            <StatisticsChartSkeleton />
+            {/* 오른쪽: 활동 리스트 (자체 로딩 상태 사용) */}
+            <ActivityList date={selectedDate} />
           </div>
 
           {/* 사이클 캐러셀 스켈레톤 */}

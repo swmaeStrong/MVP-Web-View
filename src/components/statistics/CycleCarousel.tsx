@@ -107,7 +107,7 @@ export default function SessionCarousel({
   const renderCycleCard = React.useCallback((cycle: CycleData, workTime: number, mergedSegments: CycleSegment[]) => {
     
     return (
-      <div className="rounded-lg p-4 h-[320px] w-full">
+      <div className="rounded-lg p-4 h-[240px] w-full">
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div>
@@ -202,7 +202,7 @@ export default function SessionCarousel({
 
   if (isLoading) {
     return (
-      <div className={`${getThemeClass('component')} rounded-lg p-6 h-[400px] flex items-center justify-center`}>
+      <div className={`${getThemeClass('component')} rounded-lg p-6 h-[280px] flex items-center justify-center`}>
         <div className="animate-pulse flex flex-col items-center">
           <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-32 mb-2"></div>
           <div className="h-2 bg-gray-300 dark:bg-gray-700 rounded w-24"></div>
@@ -213,7 +213,7 @@ export default function SessionCarousel({
 
   if (!cycles || cycles.length === 0) {
     return (
-      <div className={`${getThemeClass('component')} rounded-lg p-6 h-[400px] flex items-center justify-center`}>
+      <div className={`${getThemeClass('component')} rounded-lg p-6 h-[280px] flex items-center justify-center`}>
         <p className={getThemeClass('textPrimary')}>No session data available</p>
       </div>
     );
@@ -248,7 +248,7 @@ export default function SessionCarousel({
       </div>
 
       {!showTimeline ? (
-        <div className="relative h-[380px] flex items-center justify-center overflow-hidden">
+        <div className="relative h-[260px] flex items-center justify-center overflow-hidden">
           <Swiper
             ref={swiperRef}
             modules={[EffectCoverflow, Navigation, Pagination, Mousewheel, FreeMode]}
