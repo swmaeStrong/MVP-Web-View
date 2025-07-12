@@ -8,7 +8,7 @@ import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { EffectCoverflow, Mousewheel, Navigation, Pagination, FreeMode } from 'swiper/modules';
+import { EffectCoverflow, FreeMode, Mousewheel, Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import InlineTimeline from './InlineTimeline';
 
@@ -107,7 +107,7 @@ export default function SessionCarousel({
   const renderCycleCard = React.useCallback((cycle: CycleData, workTime: number, mergedSegments: CycleSegment[]) => {
     
     return (
-      <div className={`${getThemeClass('component')} rounded-lg p-4 h-[320px] shadow-lg w-full`}>
+      <div className="rounded-lg p-4 h-[320px] w-full">
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div>
@@ -257,11 +257,11 @@ export default function SessionCarousel({
             slidesPerView="auto"
             effect="coverflow"
             coverflowEffect={{
-              rotate: 30,
+              rotate: 0,
               stretch: 0,
-              depth: 150,
+              depth: 100,
               modifier: 1,
-              slideShadows: true,
+              slideShadows: false,
             }}
             mousewheel={{
               enabled: true,
