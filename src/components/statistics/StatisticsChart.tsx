@@ -1,8 +1,8 @@
 'use client';
 
+import { useTheme } from '@/hooks/useTheme';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import { DailyStatistics, PeriodType } from '@/types/statistics';
-import { formatKSTDate } from '@/utils/timezone';
 import {
   Activity,
   BarChart3,
@@ -11,7 +11,6 @@ import {
 import NoData from '../common/NoData';
 import StatisticsBarChart from './StatisticsBarChart';
 import StatisticsPieChart from './StatisticsPieChart';
-import { useTheme } from '@/hooks/useTheme';
 
 interface StatisticsChartProps {
   selectedPeriod: PeriodType;
@@ -99,7 +98,7 @@ export default function StatisticsChart({
   };
 
   return (
-    <Card className={`h-full rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+    <Card className={`h-full flex items-center justify-center rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
       {selectedPeriod !== 'daily' && (
         <CardHeader className='pb-2'>
           <div className='flex items-center justify-between'>
@@ -110,7 +109,7 @@ export default function StatisticsChart({
         </CardHeader>
       )}
 
-      <CardContent className='flex-1 min-h-0 p-2 pt-0'>
+      <CardContent className='flex flex-1 justify-center items-center h-full p-2 pt-0'>
           {selectedPeriod === 'daily' && data && data.categories.length > 0 ? (
             <StatisticsPieChart data={data} />
           ) : selectedPeriod === 'weekly' || selectedPeriod === 'monthly' ? (

@@ -137,7 +137,7 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
       <CardContent className={`${cardSystem.content} ${spacing.inner.normal} flex-1 flex flex-col overflow-hidden`}>
         {/* 제목 */}
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 ">
             <h4 className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
               Recent Activity
             </h4>
@@ -229,7 +229,7 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
           /* 스크롤 가능한 활동 목록 */
           <div 
             className={cn(
-              "flex-1 overflow-y-auto overflow-x-hidden space-y-2 pr-2 min-h-0 max-h-[525px]",
+              "flex-1 overflow-y-auto overflow-x-hidden space-y-2 pr-2 max-h-[325px]",
               "activity-scroll-hide"
             )}
           >

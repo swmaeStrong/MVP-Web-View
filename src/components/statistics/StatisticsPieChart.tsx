@@ -3,7 +3,6 @@
 import { useTheme } from '@/hooks/useTheme';
 import { ChartConfig, ChartContainer, ChartTooltip } from '@/shadcn/ui/chart';
 import { categoryColors } from '@/styles/colors';
-import { componentSizes, spacing } from '@/styles/design-system';
 import { DailyStatistics } from '@/types/statistics';
 import { getCategoryDisplayName } from '@/utils/leaderboard';
 import { formatTime } from '@/utils/statisticsUtils';
@@ -32,7 +31,7 @@ export default function StatisticsPieChart({
   };
 
   // Extract only top 3 categories and group the rest as "Others"
-  const top3Categories = data.categories.slice(0, 5).map((category, index) => ({
+  const top3Categories = data.categories.slice(0, 4).map((category, index) => ({
     ...category,
     color: getCategoryColor(category.name), // Use colors from colors.ts
   }));
@@ -107,12 +106,12 @@ export default function StatisticsPieChart({
   }, {} as ChartConfig);
 
   return (
-    <div className={`h-full flex flex-col items-center justify-center ${componentSizes.small.padding}`}>
-      {/* Top - Pie Chart */}
-      <div className={`flex-shrink-0 ${spacing.section.normal}`}>
+    <div className={`flex justify-center items-center p-3`}>
+      {/* Left - Pie Chart */}
+      <div className={`flex-shrink-0 flex items-center justify-center`}>
         <ChartContainer
           config={chartConfig}
-          className='aspect-square w-[200px] h-[200px]'
+          className='aspect-square w-[140px] h-[140px]'
         >
           <PieChart>
             <ChartTooltip
@@ -163,8 +162,8 @@ export default function StatisticsPieChart({
               cx='50%'
               cy='50%'
               labelLine={false}
-              outerRadius={100}
-              innerRadius={70} // Make it a donut chart (hollow)
+              outerRadius={70}
+              innerRadius={50} // Make it a donut chart (hollow)
               fill='#8884d8'
               dataKey='time'
               stroke={`${getThemeColor('component')}`}
@@ -180,7 +179,7 @@ export default function StatisticsPieChart({
               y="45%" 
               textAnchor="middle" 
               dominantBaseline="middle" 
-              className={`text-lg font-bold ${getThemeTextColor('primary')}`}
+              className={`text-sm font-bold ${getThemeTextColor('primary')}`}
               fill={isDarkMode ? '#ffffff' : '#000000'}
             >
               {formatTime(totalTime)}
@@ -199,11 +198,11 @@ export default function StatisticsPieChart({
         </ChartContainer>
       </div>
 
-      {/* Bottom - Category Details in 2 columns */}
-      <div className='w-full max-w-md'>
-        <div className={`grid grid-cols-2 ${spacing.between.normal} gap-y-2`}>
+      {/* Right - Category Details */}
+      <div className='flex-1 ml-4 flex items-center justify-center'>
+        <div className={`w-full ml-16 space-y-2`}>
           {finalCategories.map((category, index) => (
-            <div key={index} className={`flex items-center ${spacing.between.tight}`}>
+            <div key={index} className={`flex items-center gap-2`}>
               <div
                 className='w-3 h-3 rounded-full flex-shrink-0'
                 style={{ backgroundColor: category.color }}
@@ -212,7 +211,7 @@ export default function StatisticsPieChart({
                 <div className={`text-sm font-medium truncate ${getThemeTextColor('primary')}`}>
                   {category.name === 'Others' ? 'Others' : getCategoryDisplayName(category.name)}
                 </div>
-                <div className={`flex items-center ${spacing.between.tight} text-xs`}>
+                <div className={`flex items-center gap-2 text-xs`}>
                   <span className={`font-semibold ${getThemeTextColor('primary')}`}>
                     {formatTime(category.time)}
                   </span>

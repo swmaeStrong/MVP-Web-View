@@ -14,14 +14,12 @@ import {
   TotalTimeCardSkeleton
 } from '@/components/common/StatisticsSkeleton';
 import ActivityList from '@/components/statistics/ActivityList';
-import DailyGoalCard from '@/components/statistics/DailyGoalCard';
+import SessionCarousel from '@/components/statistics/CycleCarousel';
 import TotalTimeCard from '@/components/statistics/DateNavigationCard';
 import HourlyUsageComparison from '@/components/statistics/HourlyUsageComparison';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
-import SessionCarousel from '@/components/statistics/CycleCarousel';
-import InlineTimeline from '@/components/statistics/InlineTimeline';
-import { generateMockCycles } from '@/utils/mockCycleData';
 import { useInitUser } from '@/hooks/useInitUser';
+import { generateMockCycles } from '@/utils/mockCycleData';
 import ErrorState from '../../components/common/ErrorState';
 
 export default function StatisticsPage() {
@@ -171,7 +169,7 @@ export default function StatisticsPage() {
       <div className={`min-h-screen p-3 sm:p-4 lg:p-6 ${getThemeClass('background')}`}>
         <div className='mx-auto max-w-6xl space-y-4 sm:space-y-6'>
           {/* 메인 콘텐츠 스켈레톤 */}
-          <div className='grid gap-4 sm:gap-6 lg:grid-cols-2 min-h-[500px]'>
+          <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
             {/* 왼쪽: 총 작업시간 & 상위 카테고리 스켈레톤 */}
             <div className='flex flex-col space-y-3'>
               <div className='flex-shrink-0'>
@@ -224,7 +222,7 @@ export default function StatisticsPage() {
     <div className={`min-h-screen p-3 sm:p-4 lg:p-6 ${getThemeClass('background')}`}>
       <div className='mx-auto max-w-6xl space-y-4 sm:space-y-6'>
         {/* 메인 콘텐츠 */}
-        <div className='grid gap-4 sm:gap-6 lg:grid-cols-2 min-h-[500px]'>
+        <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
           {/* 왼쪽: 날짜 네비게이션, 목표 설정, 카테고리 분석 */}
           <div className='flex flex-col space-y-3'>
             {/* 날짜 네비게이션 카드 */}
@@ -236,13 +234,7 @@ export default function StatisticsPage() {
                 onNext={handleNextDate}
                 canGoPrevious={canGoPrevious}
                 canGoNext={canGoNext}
-              />
-            </div>
-
-            {/* 목표 설정 카드 */}
-            <div className='flex-shrink-0'>
-              <DailyGoalCard
-                totalTime={dailyData?.totalTime || 0}
+                goalTime={8 * 3600} // 8 hours default goal
               />
             </div>
 
