@@ -2,14 +2,14 @@
 
 import { useDesignSystem } from '@/hooks/useDesignSystem';
 import { useTheme } from '@/hooks/useTheme';
+import { cn } from '@/shadcn/lib/utils';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/ui/select';
 import { getRecentUsageLog } from '@/shared/api/get';
 import { cardSystem, componentStates, spacing } from '@/styles/design-system';
-import { Activity, RotateCcw, Filter } from 'lucide-react';
-import { useEffect, useState, useMemo } from 'react';
-import { cn } from '@/shadcn/lib/utils';
+import { Activity, RotateCcw } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import NoData from '../common/NoData';
 
 interface ActivityListProps {

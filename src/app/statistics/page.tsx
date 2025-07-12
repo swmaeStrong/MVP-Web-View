@@ -2,18 +2,15 @@
 
 import { useAvailableDates, useUsageStatistics } from '@/hooks/useStatistics';
 import { useTheme } from '@/hooks/useTheme';
-import { getTimeline } from '@/shared/api/get';
 import { useCurrentUser } from '@/stores/userStore';
 import { PeriodType, StatisticsCategory } from '@/types/statistics';
 import { getDateString } from '@/utils/statisticsUtils';
-import { useQuery } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // 컴포넌트 임포트
 import {
   HourlyUsageComparisonSkeleton,
   StatisticsChartSkeleton,
-  TimelineChartSkeleton,
   TotalTimeCardSkeleton
 } from '@/components/common/StatisticsSkeleton';
 import ActivityList from '@/components/statistics/ActivityList';
@@ -21,7 +18,9 @@ import DailyGoalCard from '@/components/statistics/DailyGoalCard';
 import TotalTimeCard from '@/components/statistics/DateNavigationCard';
 import HourlyUsageComparison from '@/components/statistics/HourlyUsageComparison';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
-import TimelineChart from '@/components/statistics/TimelineChart';
+import SessionCarousel from '@/components/statistics/CycleCarousel';
+import InlineTimeline from '@/components/statistics/InlineTimeline';
+import { generateMockCycles } from '@/utils/mockCycleData';
 import { useInitUser } from '@/hooks/useInitUser';
 import ErrorState from '../../components/common/ErrorState';
 
@@ -34,6 +33,8 @@ export default function StatisticsPage() {
   const [selectedDate, setSelectedDate] = useState(getDateString(new Date()));
   const [selectedCategory, setSelectedCategory] =
     useState<StatisticsCategory | null>(null);
+  const [showTimeline, setShowTimeline] = useState(false);
+  const [selectedSessionIndex, setSelectedSessionIndex] = useState(0);
 
   // Hook 순서를 항상 동일하게 유지
   const currentUser = useCurrentUser();
@@ -59,23 +60,10 @@ export default function StatisticsPage() {
     refetch,
   } = useUsageStatistics(selectedDate, currentUser?.id || '');
 
-  // 타임라인 데이터 조회
-  const {
-    data: timelineData,
-    isLoading: isTimelineLoading,
-    isError: isTimelineError,
-  } = useQuery({
-    queryKey: ['timeline', currentUser?.id, selectedDate],
-    queryFn: async () => {
-      if (!currentUser?.id) {
-        throw new Error('User ID is required');
-      }
-      return getTimeline(currentUser.id, selectedDate);
-    },
-    enabled: !!currentUser?.id && !!selectedDate,
-    staleTime: 5 * 60 * 1000, // 5분
-    retry: false, // 타임라인은 선택적 기능이므로 재시도하지 않음
-  });
+  // 사이클 목업 데이터 생성
+  const cycleData = useMemo(() => {
+    return generateMockCycles(selectedDate);
+  }, [selectedDate]);
 
   // availableDates 변경 모니터링
   React.useEffect(() => {
@@ -164,6 +152,18 @@ export default function StatisticsPage() {
     setSelectedCategory(category);
   };
 
+  const handleViewTimeline = () => {
+    setShowTimeline(true);
+  };
+
+  const handleBackToSessions = () => {
+    setShowTimeline(false);
+  };
+
+  const handleSessionSelect = (sessionIndex: number) => {
+    setSelectedSessionIndex(sessionIndex);
+  };
+
 
   // 로딩 상태
   if (isLoading) {
@@ -186,9 +186,9 @@ export default function StatisticsPage() {
             <StatisticsChartSkeleton />
           </div>
 
-          {/* 타임라인 차트 스켈레톤 */}
+          {/* 사이클 캐러셀 스켈레톤 */}
           <div className='col-span-1 lg:col-span-2'>
-            <TimelineChartSkeleton />
+            <SessionCarousel cycles={[]} isLoading={true} onViewTimeline={handleViewTimeline} />
           </div>
 
           {/* 시간별 사용량 비교 차트 스켈레톤 */}
@@ -261,11 +261,17 @@ export default function StatisticsPage() {
 
         </div>
 
-        {/* 타임라인 차트 - 전체 너비 사용 */}
+        {/* 세션 캐러셀 - 전체 너비 사용 */}
         <div className='col-span-1 lg:col-span-2'>
-          <TimelineChart 
-            timelineData={timelineData}
-            isLoading={isTimelineLoading}
+          <SessionCarousel 
+            cycles={cycleData}
+            isLoading={false}
+            onViewTimeline={handleViewTimeline}
+            showTimeline={showTimeline}
+            onBackToSessions={handleBackToSessions}
+            selectedDate={selectedDate}
+            currentSessionIndex={selectedSessionIndex}
+            onSessionSelect={handleSessionSelect}
           />
         </div>
 
@@ -279,6 +285,7 @@ export default function StatisticsPage() {
           </div>
         )}
       </div>
+
     </div>
   );
 }
