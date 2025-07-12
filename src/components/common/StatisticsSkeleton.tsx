@@ -1,7 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/useTheme';
-import { componentSizes, spacing } from '@/styles/design-system';
+import { componentSizes } from '@/styles/design-system';
 
 export function TotalTimeCardSkeleton() {
   const { getThemeClass } = useTheme();
@@ -56,29 +56,31 @@ export function StatisticsChartSkeleton() {
   const { getThemeClass } = useTheme();
   
   return (
-    <div className={`h-full ${componentSizes.large.borderRadius} ${componentSizes.medium.border} ${componentSizes.medium.padding} ${componentSizes.small.shadow} ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      {/* Pie chart skeleton - horizontal layout */}
-      <div className="flex items-center p-4 gap-6">
-        {/* Left - Pie Chart skeleton */}
-        <div className="flex-shrink-0">
-          <div className={`w-[140px] h-[140px] animate-pulse rounded-full ${getThemeClass('componentSecondary')}`}></div>
-        </div>
-        
-        {/* Right - Category Details skeleton */}
-        <div className="flex-1">
-          <div className="space-y-2">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex items-center gap-2">
-                <div className={`w-3 h-3 animate-pulse rounded-full ${getThemeClass('componentSecondary')}`}></div>
-                <div className="flex-1 min-w-0">
-                  <div className={`h-4 w-20 animate-pulse rounded ${getThemeClass('componentSecondary')} mb-1`}></div>
-                  <div className="flex items-center gap-2">
-                    <div className={`h-3 w-12 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-                    <div className={`h-3 w-8 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+    <div className={`h-full flex items-center justify-center ${componentSizes.large.borderRadius} ${componentSizes.medium.border} ${componentSizes.small.shadow} ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <div className="flex flex-1 justify-center items-center h-full p-2 pt-0">
+        {/* Pie chart skeleton - horizontal layout */}
+        <div className="flex items-center p-4 gap-24">
+          {/* Left - Pie Chart skeleton */}
+          <div className="flex-shrink-0">
+            <div className={`w-[140px] h-[140px] animate-pulse rounded-full ${getThemeClass('componentSecondary')}`}></div>
+          </div>
+          
+          {/* Right - Category Details skeleton */}
+          <div className="flex-1">
+            <div className="space-y-2">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <div className={`w-3 h-3 animate-pulse rounded-full ${getThemeClass('componentSecondary')}`}></div>
+                  <div className="flex-1 min-w-0">
+                    <div className={`h-4 w-20 animate-pulse rounded ${getThemeClass('componentSecondary')} mb-1`}></div>
+                    <div className="flex items-center gap-2">
+                      <div className={`h-3 w-12 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+                      <div className={`h-3 w-8 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
