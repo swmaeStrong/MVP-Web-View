@@ -6,7 +6,7 @@ import { StatisticsCategory } from '@/types/domains/usage/statistics';
 import { useTheme } from '@/hooks/useTheme';
 // import { useDesignSystem } from '@/hooks/useDesignSystem'; // 제거됨
 import { cardSystem, componentStates, spacing, layouts, buttonSystem } from '@/styles/design-system';
-import NoData from '@/components/common/NoData';
+import StateDisplay from '@/components/common/StateDisplay';
 import { getCategoryColor } from '@/utils/categories';
 
 interface CategoryListProps {
@@ -68,7 +68,8 @@ const CategoryList = memo(function CategoryList({
 
   if (top6Categories.length === 0) {
     return (
-      <NoData 
+      <StateDisplay 
+        type="empty"
         title="No Category Data"
         message="No category data available for analysis."
         size="medium"

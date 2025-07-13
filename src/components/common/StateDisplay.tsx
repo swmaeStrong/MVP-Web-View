@@ -1,12 +1,15 @@
 'use client';
 
 import { cn } from '@/shadcn/lib/utils';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { AlertTriangle, Inbox, RefreshCw } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import type { ComponentSize } from '@/hooks/useDesignSystem';
-import { cardSystem, buttonSystem, componentSizes, componentStates } from '@/styles/design-system';
+import { cardSystem, buttonSystem, componentSizes, componentStates, spacing } from '@/styles/design-system';
 
-interface ErrorStateProps {
+type StateType = 'error' | 'empty';
+
+interface StateDisplayProps {
+  type: StateType;
   title?: string;
   message?: string;
   size?: ComponentSize;
@@ -17,23 +20,49 @@ interface ErrorStateProps {
   showBorder?: boolean;
 }
 
-export default function ErrorState({
-  title = 'Error Occurred',
-  message = 'Something went wrong. Please try again.',
+const defaultConfig: Record<StateType, {
+  title: string;
+  message: string;
+  icon: React.ComponentType<{ className?: string }>;
+  iconColor: string;
+  iconBg: string;
+}> = {
+  error: {
+    title: 'Error Occurred',
+    message: 'Something went wrong. Please try again.',
+    icon: AlertTriangle,
+    iconColor: 'text-red-500',
+    iconBg: 'bg-red-50 dark:bg-red-900/20',
+  },
+  empty: {
+    title: 'No Data Available',
+    message: 'No data to display.',
+    icon: Inbox,
+    iconColor: 'text-gray-500',
+    iconBg: 'bg-gray-50 dark:bg-gray-900/20',
+  },
+};
+
+export default function StateDisplay({
+  type,
+  title,
+  message,
   size = 'medium',
-  icon: Icon = AlertTriangle,
+  icon: CustomIcon,
   className,
   onRetry,
   retryText = 'Try Again',
   showBorder = true,
-}: ErrorStateProps) {
+}: StateDisplayProps) {
   const { getThemeClass } = useTheme();
-  // const { getCardStyle, getButtonStyle, spacing } = useDesignSystem(); // 제거됨
-
-  // 디자인 시스템에 맞춘 스타일 적용 - 단순화됨
-  // const cardStyle = getCardStyle(size, 'default'); // 제거됨
+  
+  const config = defaultConfig[type];
+  const Icon = CustomIcon || config.icon;
+  const displayTitle = title || config.title;
+  const displayMessage = message || config.message;
+  
   const sizeStyles = componentSizes[size];
-  // const buttonStyle = getButtonStyle('small', 'secondary'); // 제거됨
+  const isError = type === 'error';
 
   return (
     <div
@@ -52,18 +81,18 @@ export default function ErrorState({
             sizeStyles.borderRadius,
             sizeStyles.padding,
             sizeStyles.shadow,
-            'border-red-200 dark:border-red-900/50'
+            isError && 'border-red-200 dark:border-red-900/50'
           ],
           !showBorder && sizeStyles.padding,
           componentStates.default.transition
         )}
       >
         {/* Icon */}
-        <div className="space-y-4">
+        <div className={cn(isError ? "space-y-4" : "mb-6")}>
           <div
             className={cn(
               'flex items-center justify-center rounded-full',
-              'bg-red-50 dark:bg-red-900/20',
+              CustomIcon ? getThemeClass('componentSecondary') : config.iconBg,
               sizeStyles.padding
             )}
           >
@@ -72,14 +101,14 @@ export default function ErrorState({
                 sizeStyles.text === 'text-sm' ? 'h-8 w-8' :
                 sizeStyles.text === 'text-base' ? 'h-12 w-12' :
                 sizeStyles.text === 'text-lg' ? 'h-16 w-16' : 'h-20 w-20',
-                'text-red-500'
+                CustomIcon ? getThemeClass('textSecondary') : config.iconColor
               )} 
             />
           </div>
         </div>
 
         {/* Text */}
-        <div className="space-y-2">
+        <div className={cn(isError ? "space-y-2" : spacing.inner.tight)}>
           <h3
             className={cn(
               sizeStyles.text,
@@ -87,7 +116,7 @@ export default function ErrorState({
               getThemeClass('textPrimary')
             )}
           >
-            {title}
+            {displayTitle}
           </h3>
           <p className={cn(
             sizeStyles.text === 'text-sm' ? 'text-xs' :
@@ -95,7 +124,7 @@ export default function ErrorState({
             sizeStyles.text === 'text-lg' ? 'text-base' : 'text-lg',
             getThemeClass('textSecondary')
           )}>
-            {message}
+            {displayMessage}
           </p>
         </div>
 
@@ -106,7 +135,7 @@ export default function ErrorState({
               onClick={onRetry}
               className={cn(
                 buttonSystem.base,
-                buttonSystem.variants.destructive,
+                isError ? buttonSystem.variants.destructive : buttonSystem.variants.default,
                 buttonSystem.sizes.sm,
                 componentStates.clickable.transition,
                 componentStates.clickable.cursor

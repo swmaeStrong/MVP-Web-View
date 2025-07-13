@@ -8,7 +8,7 @@ import {
   BarChart3,
   Target,
 } from 'lucide-react';
-import NoData from '../common/NoData';
+import StateDisplay from '../common/StateDisplay';
 import StatisticsBarChart from './StatisticsBarChart';
 import StatisticsPieChart from './StatisticsPieChart';
 
@@ -116,7 +116,8 @@ export default function StatisticsChart({
             <StatisticsBarChart period={selectedPeriod} />
           ) : (
             <div className='flex h-full items-center justify-center p-4'>
-              <NoData
+              <StateDisplay
+                type="empty"
                 title='No Activity Data'
                 message='No activities recorded for the selected date.'
                 icon={Activity}

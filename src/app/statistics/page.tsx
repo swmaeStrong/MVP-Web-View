@@ -20,7 +20,7 @@ import HourlyUsageComparison from '@/components/statistics/HourlyUsageComparison
 import StatisticsChart from '@/components/statistics/StatisticsChart';
 import { useInitUser } from '@/hooks/useInitUser';
 import { generateMockCycles } from '@/utils/mockCycleData';
-import ErrorState from '../../components/common/ErrorState';
+import StateDisplay from '../../components/common/StateDisplay';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<PeriodType>('daily');
@@ -203,7 +203,8 @@ export default function StatisticsPage() {
     return (
       <div className={`min-h-screen p-4 sm:p-6 lg:p-8 ${getThemeClass('background')}`}>
         <div className='mx-auto max-w-6xl'>
-          <ErrorState
+          <StateDisplay
+            type="error"
             title='Unable to load statistics data'
             message={
               error?.message ||

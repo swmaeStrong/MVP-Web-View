@@ -13,7 +13,7 @@ import {
   PieChart,
 } from 'recharts';
 // import { getThemeColor } from '../../utils/theme-detector'; // 제거됨 - useTheme 사용
-import NoData from '../common/NoData';
+import StateDisplay from '../common/StateDisplay';
 
 interface StatisticsPieChartProps {
   data: DailyStatistics;
@@ -62,7 +62,8 @@ export default function StatisticsPieChart({
     return (
       <div className={`flex items-center p-4 gap-24`}>
         <div className={`flex-shrink-0 w-[140px] h-[140px] flex items-center justify-center`}>
-          <NoData
+          <StateDisplay
+            type='empty'
             title='No categories to analyze'
             message='Cannot display pie chart due to lack of activity data.'
             icon={Activity}
@@ -79,7 +80,8 @@ export default function StatisticsPieChart({
     return (
       <div className={`flex items-center p-4 gap-24`}>
         <div className={`flex-shrink-0 w-[140px] h-[140px] flex items-center justify-center`}>
-          <NoData
+          <StateDisplay
+            type='empty'
             title='Insufficient categories'
             message='At least 2 categories are needed for meaningful pie chart analysis.'
             icon={Activity}

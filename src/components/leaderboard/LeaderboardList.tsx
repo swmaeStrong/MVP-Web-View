@@ -1,6 +1,6 @@
 'use client';
 
-import ErrorState from '@/components/common/ErrorState';
+import StateDisplay from '@/components/common/StateDisplay';
 import { LeaderboardListSkeleton } from '@/components/common/LeaderboardSkeleton';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/shadcn/lib/utils';
@@ -60,7 +60,8 @@ export default function LeaderboardList({
   if (isError) {
     return (
       <div className='mb-8'>
-        <ErrorState
+        <StateDisplay
+          type="error"
           title="Failed to load leaderboard"
           message={error.message || 'Unable to load ranking data. Please check your connection and try again.'}
           size="medium"

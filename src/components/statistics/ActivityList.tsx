@@ -10,7 +10,7 @@ import { getRecentUsageLog } from '@/shared/api/get';
 import { cardSystem, componentStates, spacing } from '@/styles/design-system';
 import { Activity, RotateCcw } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import NoData from '../common/NoData';
+import StateDisplay from '../common/StateDisplay';
 
 interface ActivityListProps {
   activities?: UsageLog.RecentUsageLogItem[];
@@ -214,7 +214,8 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
         ) : filteredData.length === 0 ? (
           /* 데이터 없음 */
           <div className="flex h-[315px] items-center justify-center">
-            <NoData
+            <StateDisplay
+              type="empty"
               title={selectedCategory === 'all' ? "No Recent Activity" : `No ${selectedCategory} Activity`}
               message={error || (selectedCategory === 'all' 
                 ? "No recent activity records. Start tracking your usage."
