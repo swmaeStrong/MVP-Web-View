@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
-import { ArrowLeft, Clock, Coffee, UserX } from 'lucide-react';
-import { CycleData, CycleSegment } from '@/types/cycle';
 import { useTheme } from '@/hooks/useTheme';
+import { CycleData, CycleSegment } from '@/types/cycle';
+import { ArrowLeft, Clock, Coffee, UserX } from 'lucide-react';
+import React from 'react';
 
 interface InlineTimelineProps {
   cycles: CycleData[];
@@ -15,6 +15,7 @@ interface InlineTimelineProps {
 
 export default function InlineTimeline({ cycles, date, onBack, showHeader = true, onSessionClick }: InlineTimelineProps) {
   const { getThemeClass, isDarkMode } = useTheme();
+  const [hoveredSessionId, setHoveredSessionId] = React.useState<string | null>(null);
 
   // 24시간 타임라인 생성 (0시부터 24시까지)
   const generateHourlyTimeline = () => {
@@ -159,8 +160,8 @@ export default function InlineTimeline({ cycles, date, onBack, showHeader = true
       )}
 
       {/* Timeline Content */}
-      <div className="overflow-x-auto">
-        <div className="min-w-[1200px]">
+      <div className="w-full">
+        <div className="w-full">
           {/* Hour labels */}
           <div className="flex mb-2">
             {Array.from({ length: 24 }, (_, hour) => (
@@ -188,12 +189,14 @@ export default function InlineTimeline({ cycles, date, onBack, showHeader = true
                           return (
                             <div
                               key={segIndex}
-                              className="h-full relative group flex items-center justify-center cursor-pointer hover:brightness-110 transition-all"
+                              className="h-full relative group cursor-pointer transition-all hover:brightness-110"
                               style={{
                                 width: `${Math.min(widthPercentage, 100)}%`,
                                 backgroundColor: getSegmentColor(segment),
                                 borderRight: segIndex < mergeConsecutiveSegments(segments).length - 1 ? '1px solid rgba(255,255,255,0.2)' : 'none'
                               }}
+                              onMouseEnter={() => setHoveredSessionId(segment.sessionId)}
+                              onMouseLeave={() => setHoveredSessionId(null)}
                               onClick={() => {
                                 const sessionIndex = cycles.findIndex(cycle => cycle.id === segment.sessionId);
                                 if (sessionIndex !== -1 && onSessionClick) {
@@ -201,6 +204,28 @@ export default function InlineTimeline({ cycles, date, onBack, showHeader = true
                                 }
                               }}
                             >
+                              {/* Session start/end markers for timeline blocks */}
+                              {hoveredSessionId === segment.sessionId && (
+                                <>
+                                  {/* Check if this is the first segment of the session */}
+                                  {(() => {
+                                    const sessionSegments = cycles.find(c => c.id === segment.sessionId)?.segments || [];
+                                    const isFirstSegment = sessionSegments[0]?.startTime === segment.startTime;
+                                    const isLastSegment = sessionSegments[sessionSegments.length - 1]?.endTime === segment.endTime;
+                                    
+                                    return (
+                                      <>
+                                        {isFirstSegment && (
+                                          <div className="absolute left-0 top-0 w-0.5 h-full bg-white opacity-80 z-20" />
+                                        )}
+                                        {isLastSegment && (
+                                          <div className="absolute right-0 top-0 w-0.5 h-full bg-white opacity-80 z-20" />
+                                        )}
+                                      </>
+                                    );
+                                  })()}
+                                </>
+                              )}
                               
                               {/* Tooltip */}
                               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-30">
@@ -233,6 +258,92 @@ export default function InlineTimeline({ cycles, date, onBack, showHeader = true
             </div>
           </div>
           
+          {/* Session info below timeline */}
+          <div className="mt-3 relative" style={{ height: '40px' }}>
+            {/* Horizontal lines for each session */}
+            {cycles.map((cycle, cycleIndex) => {
+              // Calculate session's time span positions
+              const sessionStart = new Date(cycle.startTime);
+              const sessionEnd = new Date(cycle.endTime);
+              const dayStart = new Date(date);
+              dayStart.setHours(0, 0, 0, 0);
+              const dayEnd = new Date(date);
+              dayEnd.setHours(24, 0, 0, 0);
+              
+              const startPercentage = Math.max(0, (sessionStart.getTime() - dayStart.getTime()) / (dayEnd.getTime() - dayStart.getTime()) * 100);
+              const endPercentage = Math.min(100, (sessionEnd.getTime() - dayStart.getTime()) / (dayEnd.getTime() - dayStart.getTime()) * 100);
+              const widthPercentage = endPercentage - startPercentage;
+              
+              if (widthPercentage <= 0) return null;
+              
+              return (
+                <div 
+                  key={cycle.id} 
+                  className="absolute"
+                  style={{ 
+                    top: `2px`,
+                    width: '100%'
+                  }}
+                >
+                  {/* Session line */}
+                  <div
+                    className="h-1 rounded-full relative transition-all cursor-pointer hover:brightness-110"
+                    style={{
+                      width: `${widthPercentage}%`,
+                      left: `${startPercentage}%`,
+                      backgroundColor: '#9333ea' // Purple for session
+                    }}
+                    onMouseEnter={() => setHoveredSessionId(cycle.id)}
+                    onMouseLeave={() => setHoveredSessionId(null)}
+                    onClick={() => {
+                      const sessionIndex = cycles.findIndex(c => c.id === cycle.id);
+                      if (sessionIndex !== -1 && onSessionClick) {
+                        onSessionClick(sessionIndex);
+                      }
+                    }}
+                  >
+                    {/* Session start marker */}
+                    <div
+                      className={`absolute left-0 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full transition-all ${
+                        hoveredSessionId === cycle.id 
+                          ? 'bg-green-400 ring-2 ring-green-300 scale-125' 
+                          : 'bg-green-500'
+                      }`}
+                    />
+                    
+                    {/* Session end marker */}
+                    <div
+                      className={`absolute right-0 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full transition-all ${
+                        hoveredSessionId === cycle.id 
+                          ? 'bg-red-400 ring-2 ring-red-300 scale-125' 
+                          : 'bg-red-500'
+                      }`}
+                    />
+                  </div>
+                  
+                  {/* Session info - only visible on hover */}
+                  {hoveredSessionId === cycle.id && (
+                    <div
+                      className="absolute text-center transition-all opacity-100 animate-in fade-in duration-200"
+                      style={{
+                        left: `${startPercentage + widthPercentage / 2}%`,
+                        transform: 'translateX(-50%)',
+                        top: '6px'
+                      }}
+                    >
+                      <div className={`text-xs font-medium ${getThemeClass('textPrimary')}`}>
+                        Session #{cycle.id}
+                      </div>
+                      <div className={`text-xs ${getThemeClass('textSecondary')}`}>
+                        {new Date(cycle.startTime).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} - {new Date(cycle.endTime).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          
           {/* Current time indicator (if today) */}
           {new Date(date).toDateString() === new Date().toDateString() && (
             <div className="relative mt-2">
@@ -250,42 +361,6 @@ export default function InlineTimeline({ cycles, date, onBack, showHeader = true
         </div>
       </div>
 
-      {/* Session summary */}
-      {cycles.length > 0 && (
-        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <h3 className={`text-sm font-medium ${getThemeClass('textPrimary')} mb-3`}>
-            Sessions Overview ({cycles.length} sessions)
-          </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {cycles.map((cycle, index) => (
-              <div 
-                key={cycle.id} 
-                className={`p-3 rounded-lg ${getThemeClass('componentSecondary')} cursor-pointer hover:opacity-80 transition-opacity`}
-                onClick={() => {
-                  if (onSessionClick) {
-                    onSessionClick(index);
-                  }
-                }}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className={`text-xs font-medium ${getThemeClass('textPrimary')}`}>
-                    Session #{cycle.id}
-                  </span>
-                  <span className={`text-xs ${getThemeClass('textSecondary')}`}>
-                    {cycle.duration}m
-                  </span>
-                </div>
-                <div className={`text-xs ${getThemeClass('textSecondary')}`}>
-                  {new Date(cycle.startTime).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} - {new Date(cycle.endTime).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
-                </div>
-                <div className={`text-xs ${getThemeClass('textSecondary')} mt-1`}>
-                  Productivity: {cycle.totalProductivity}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
