@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { getRecentUsageLog } from '@/shared/api/get';
 import { cardSystem, componentStates, spacing } from '@/styles/design-system';
 import { Activity, RotateCcw } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import StateDisplay from '../common/StateDisplay';
 
 interface ActivityListProps {
@@ -28,6 +28,13 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
   const [loading, setLoading] = useState(!activities); // props가 없으면 초기에 로딩 상태
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  // 가상화를 위한 상태
+  const [scrollTop, setScrollTop] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const ITEM_HEIGHT = 56; // h-14 = 56px
+  const CONTAINER_HEIGHT = 315; // max-h-[315px]
+  const VISIBLE_ITEMS = Math.ceil(CONTAINER_HEIGHT / ITEM_HEIGHT) + 2; // 버퍼 포함
 
   // 새로고침 함수
   const handleRefresh = async () => {
@@ -129,6 +136,25 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
     return usageData.filter(item => item.category === selectedCategory);
   }, [usageData, selectedCategory]);
 
+  // 가상화를 위한 계산
+  const virtualizedData = useMemo(() => {
+    const startIndex = Math.floor(scrollTop / ITEM_HEIGHT);
+    const endIndex = Math.min(startIndex + VISIBLE_ITEMS, filteredData.length);
+    
+    return {
+      items: filteredData.slice(startIndex, endIndex),
+      startIndex,
+      endIndex,
+      totalHeight: filteredData.length * ITEM_HEIGHT,
+      offsetY: startIndex * ITEM_HEIGHT
+    };
+  }, [filteredData, scrollTop, ITEM_HEIGHT, VISIBLE_ITEMS]);
+
+  // 스크롤 이벤트 핸들러
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    setScrollTop(e.currentTarget.scrollTop);
+  }, []);
+
   // 디자인 시스템 스타일 적용 - 단순화됨
   // const cardStyles = getCardStyle('medium', 'hoverable'); // 제거됨
 
@@ -227,16 +253,30 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
             />
           </div>
         ) : (
-          /* 스크롤 가능한 활동 목록 */
+          /* 가상화된 스크롤 활동 목록 */
           <div 
+            ref={containerRef}
             className={cn(
-              "flex-1 overflow-y-auto overflow-x-hidden space-y-2 pr-2 max-h-[315px]",
+              "flex-1 overflow-y-auto overflow-x-hidden pr-2 max-h-[315px]",
               "activity-scroll-hide"
             )}
+            style={{ height: CONTAINER_HEIGHT }}
+            onScroll={handleScroll}
           >
-            {filteredData.map((activity, index) => (
+            {/* 가상 컨테이너 - 전체 높이를 유지 */}
+            <div style={{ height: virtualizedData.totalHeight, position: 'relative' }}>
+              {/* 실제 렌더링되는 아이템들 */}
+              <div 
+                style={{ 
+                  transform: `translateY(${virtualizedData.offsetY}px)`,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px' // space-y-2
+                }}
+              >
+                {virtualizedData.items.map((activity, index) => (
             <div
-              key={index}
+              key={virtualizedData.startIndex + index}
               className={`group rounded-lg border p-2 h-14 ${componentStates.hoverable.transition} ${componentStates.hoverable.cursor} ${getThemeClass('border')} ${getThemeClass('component')} hover:shadow-md hover:${getThemeClass('borderLight')}`}
               style={{ 
                 display: 'grid',
@@ -286,6 +326,8 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
               </div>
             </div>
             ))}
+              </div>
+            </div>
           </div>
         )}
       </CardContent>
