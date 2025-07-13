@@ -88,18 +88,6 @@ export function StatisticsChartSkeleton() {
   );
 }
 
-export function TimelineChartSkeleton() {
-  const { getThemeClass } = useTheme();
-  
-  return (
-    <div className={`${componentSizes.large.borderRadius} ${componentSizes.medium.border} ${componentSizes.medium.padding} ${componentSizes.small.shadow} ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <div className="space-y-4">
-        <div className={`h-6 w-32 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-        <div className={`h-80 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-      </div>
-    </div>
-  );
-}
 
 export function ActivityListSkeleton() {
   const { getThemeClass } = useTheme();
