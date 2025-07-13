@@ -1,6 +1,6 @@
 // api-utils.ts
 import { AxiosResponse, AxiosError } from 'axios';
-import { ApiResponse } from '../shared/@types/apiResponse';
+import { ApiResponse } from '../types/api/apiResponse';
 import { captureApiError, addBreadcrumb } from './sentry';
 
 export async function parseApi<T>(
