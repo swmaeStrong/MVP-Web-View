@@ -1,7 +1,7 @@
 // 스타일 시스템 사용 예제
 
 import {
-  animations,
+  // animations, // 제거됨 - 사용되지 않음
   categoryColors,
   commonCombinations,
   layout,
@@ -45,13 +45,13 @@ export const examples = {
     </>
   ),
 
-  // 5. 애니메이션 효과
+  // 5. 애니메이션 효과 (단순화됨 - 직접 Tailwind 클래스 사용)
   animatedCard: (
     <div
       className={utils.cn(
         commonCombinations.cardCombos.default,
-        animations.hover.lift,
-        animations.transition.smooth
+        'hover:-translate-y-1 hover:shadow-lg',
+        'transition-all duration-200'
       )}
     >
       호버시 위로 올라가는 카드

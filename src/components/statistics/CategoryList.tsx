@@ -23,11 +23,7 @@ const CategoryList = memo(function CategoryList({
   isLoading = false,
 }: CategoryListProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
-  // const { getCardStyle, getButtonStyle } = useDesignSystem(); // 제거됨
-  
-  // Apply design system styles - 단순화됨
-  // const cardStyles = getCardStyle('medium', 'hoverable'); // 제거됨
-  // const buttonStyles = getButtonStyle('small', 'ghost'); // 제거됨
+  // 스타일 시스템 단순화됨 - 직접 클래스 사용
   // Show only top 6 and assign colors using centralized config
   const top6Categories = categories.slice(0, 6).map((category, index) => ({
     ...category,

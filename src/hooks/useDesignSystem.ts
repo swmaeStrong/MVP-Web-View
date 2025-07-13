@@ -54,17 +54,10 @@ export function useDesignSystem() {
     };
   };
   
-  // 버튼을 위한 헬퍼 (사용되지 않음 - 제거 예정)
-  // const getButtonStyle = (...) => { ... };
-  
-  // 입력 필드를 위한 헬퍼 (사용되지 않음 - 제거 예정)
-  // const getInputStyle = (...) => { ... };
+  // 사용되지 않는 함수들 제거됨 (getButtonStyle, getInputStyle, getAnimation, createComponentClass)
   
   // 텍스트 크기 헬퍼
   const getTextSize = (size: ComponentSize) => componentSizes[size].text;
-  
-  // 애니메이션 헬퍼 (사용되지 않음 - 제거 예정)
-  // const getAnimation = (...) => { ... };
   
   return {
     // 기본 스타일 객체들
@@ -80,12 +73,8 @@ export function useDesignSystem() {
     getSpacing,
     getEffects,
     getRankStyle,
-    // createComponentClass, - 제거됨
     getCardStyle,
-    // getButtonStyle, - 제거됨
-    // getInputStyle, - 제거됨
     getTextSize,
-    // getAnimation, - 제거됨
     
     // 유틸리티 함수들
     getRankPriority,

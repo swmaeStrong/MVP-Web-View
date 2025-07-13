@@ -3,7 +3,7 @@
 import { cn } from '@/shadcn/lib/utils';
 import { Inbox } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
-import { useDesignSystem, type ComponentSize } from '@/hooks/useDesignSystem';
+import type { ComponentSize } from '@/hooks/useDesignSystem';
 import { cardSystem, componentSizes, componentStates, spacing } from '@/styles/design-system';
 
 interface NoDataProps {

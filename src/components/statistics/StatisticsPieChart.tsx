@@ -12,7 +12,7 @@ import {
   Pie,
   PieChart,
 } from 'recharts';
-import { getThemeColor } from '../../utils/theme-detector';
+// import { getThemeColor } from '../../utils/theme-detector'; // 제거됨 - useTheme 사용
 import NoData from '../common/NoData';
 
 interface StatisticsPieChartProps {
@@ -172,7 +172,7 @@ export default function StatisticsPieChart({
               innerRadius={50} // Make it a donut chart (hollow)
               fill='#8884d8'
               dataKey='time'
-              stroke={`${getThemeColor('component')}`}
+              stroke={`${getThemeClass('component')}`}
               strokeWidth={2}
             >
               {chartData.map((entry, index) => (

@@ -1,7 +1,7 @@
 'use client';
 
 import { Construction, Hammer, Sparkles, Star, Wrench } from 'lucide-react';
-import { useDesignSystem, type ComponentSize } from '@/hooks/useDesignSystem';
+import type { ComponentSize } from '@/hooks/useDesignSystem';
 import { cardSystem, componentStates, spacing, componentSizes } from '@/styles/design-system';
 
 interface UnderConstructionProps {

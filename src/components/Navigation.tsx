@@ -1,11 +1,9 @@
 import React from 'react';
 import { Button } from '@/shadcn/ui/button';
-// import { useDesignSystem } from '@/hooks/useDesignSystem'; // 단순화됨
 import { useRouter } from 'next/navigation';
-// import { buttonSystem, componentStates, spacing, layouts } from '@/styles/design-system'; // 단순화됨
 
 export default function Navigation() {
-  // const { getButtonStyle } = useDesignSystem(); // 단순화됨
+  // 스타일 시스템 단순화됨 - 직접 Tailwind 클래스 사용
   const router = useRouter();
   
   return (

@@ -76,17 +76,8 @@ export const transformUsageLogToDaily = (
   };
 };
 
-// 주별 데이터 생성 (일별 데이터들을 모아서)
-export const generateWeeklyData = (dailyDataList: DailyStatistics[]) => {
-  // 구현할 예정 - 일별 데이터들을 주별로 집계
-  return null;
-};
-
-// 월별 데이터 생성 (일별 데이터들을 모아서)
-export const generateMonthlyData = (dailyDataList: DailyStatistics[]) => {
-  // 구현할 예정 - 일별 데이터들을 월별로 집계
-  return null;
-};
+// 주별, 월별 데이터 생성 함수들은 현재 구현되지 않아 제거됨
+// 필요시 향후 구현 예정
 
 import { formatKSTDateWithDay, getKSTDateStringFromDate } from './timezone';
 

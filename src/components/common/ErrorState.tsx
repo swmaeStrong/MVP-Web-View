@@ -3,7 +3,7 @@
 import { cn } from '@/shadcn/lib/utils';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
-import { useDesignSystem, type ComponentSize } from '@/hooks/useDesignSystem';
+import type { ComponentSize } from '@/hooks/useDesignSystem';
 import { cardSystem, buttonSystem, componentSizes, componentStates } from '@/styles/design-system';
 
 interface ErrorStateProps {
