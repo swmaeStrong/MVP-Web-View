@@ -3,7 +3,7 @@
 import { useTheme } from '@/hooks/useTheme';
 import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
 import { ArrowLeft, Calendar } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/navigation';
@@ -23,7 +23,7 @@ interface SessionCarouselProps {
   onSessionSelect?: (sessionIndex: number) => void;
 }
 
-export default function SessionCarousel({ 
+const SessionCarousel = memo(function SessionCarousel({ 
   cycles, 
   isLoading, 
   onViewTimeline, 
@@ -49,12 +49,12 @@ export default function SessionCarousel({
     }
   }, [currentSessionIndex]);
 
-  const handleSlideChange = (swiper: any) => {
+  const handleSlideChange = React.useCallback((swiper: any) => {
     setCurrentIndex(swiper.activeIndex);
     if (onSessionSelect) {
       onSessionSelect(swiper.activeIndex);
     }
-  };
+  }, [onSessionSelect]);
 
   const handleSessionClickFromTimeline = (sessionIndex: number) => {
     if (onSessionSelect) {
@@ -104,10 +104,10 @@ export default function SessionCarousel({
     }));
   }, [cycles]);
 
+  // 메모이제이션으로 렌더링 최적화
   const renderCycleCard = React.useCallback((cycle: CycleData, workTime: number, mergedSegments: CycleSegment[]) => {
-    
     return (
-      <div className="rounded-lg p-4 h-[240px] w-full">
+      <div className="rounded-lg p-4 h-[240px] w-full transform-gpu">
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div>
@@ -133,7 +133,7 @@ export default function SessionCarousel({
               {new Date(cycle.endTime).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
-          <div className="w-full h-10 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden flex relative">
+          <div className="w-full h-10 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden flex relative transform-gpu">
             {mergedSegments.map((segment, index) => {
               const widthPercentage = (segment.duration / cycle.duration) * 100;
               
@@ -265,43 +265,45 @@ export default function SessionCarousel({
             }}
             mousewheel={{
               enabled: true,
-              sensitivity: 1.5,
+              sensitivity: 1.0,
               releaseOnEdges: false,
               forceToAxis: true,
               thresholdDelta: 6,
-              thresholdTime: 300,
+              thresholdTime: 150,
             }}
             freeMode={{
               enabled: true,
               sticky: true,
-              momentumRatio: 0.5,
-              momentumVelocityRatio: 0.5,
-              momentumBounce: true,
-              momentumBounceRatio: 1,
+              momentumRatio: 0.3,
+              momentumVelocityRatio: 0.3,
+              momentumBounce: false,
               minimumVelocity: 0.02,
             }}
             pagination={{
               clickable: true,
               bulletActiveClass: `${isDarkMode ? '!bg-purple-400' : '!bg-purple-600'}`,
-              bulletClass: `${isDarkMode ? 'bg-gray-600' : 'bg-gray-300'} w-2 h-2 rounded-full transition-all duration-300`,
+              bulletClass: `${isDarkMode ? 'bg-gray-600' : 'bg-gray-300'} w-2 h-2 rounded-full transition-all duration-200`,
             }}
             navigation={false}
             onSlideChange={handleSlideChange}
-            speed={800}
+            speed={400}
             className="h-full w-full"
             slideToClickedSlide={true}
             resistance={true}
             resistanceRatio={0.85}
             longSwipesRatio={0.15}
-            longSwipesMs={300}
+            longSwipesMs={200}
             shortSwipes={true}
             touchReleaseOnEdges={true}
+            updateOnWindowResize={false}
+            observer={false}
+            observeParents={false}
           >
             {memoizedCycles.map((cycle, index) => (
               <SwiperSlide key={cycle.id} className="slide-inner" style={{ width: '320px', maxWidth: '380px' }}>
                 {({ isActive, isPrev, isNext }) => (
                   <div 
-                    className={`will-change-transform transition-all duration-500 ease-out cursor-pointer ${
+                    className={`will-change-transform transition-all duration-300 ease-out cursor-pointer transform-gpu ${
                       isActive 
                         ? 'scale-100 opacity-100 z-20' 
                         : 'scale-85 opacity-60 z-10 hover:opacity-80 hover:scale-90'
@@ -337,4 +339,6 @@ export default function SessionCarousel({
       )}
     </div>
   );
-}
+});
+
+export default SessionCarousel;
