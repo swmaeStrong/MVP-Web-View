@@ -9,7 +9,6 @@ import {
   Target,
 } from 'lucide-react';
 import StateDisplay from '../common/StateDisplay';
-import StatisticsBarChart from './StatisticsBarChart';
 import StatisticsPieChart from './StatisticsPieChart';
 
 interface StatisticsChartProps {
@@ -113,7 +112,7 @@ export default function StatisticsChart({
           {selectedPeriod === 'daily' && data && data.categories.length > 0 ? (
             <StatisticsPieChart data={data} />
           ) : selectedPeriod === 'weekly' || selectedPeriod === 'monthly' ? (
-            <StatisticsBarChart period={selectedPeriod} />
+            <>추후 추가 예정</>
           ) : (
             <div className='flex h-full items-center justify-center p-4'>
               <StateDisplay
