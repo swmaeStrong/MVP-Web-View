@@ -1,10 +1,10 @@
 'use client';
 
-import ErrorState from '@/components/common/ErrorState';
+import StateDisplay from '@/components/common/StateDisplay';
 import { LeaderboardListSkeleton } from '@/components/common/LeaderboardSkeleton';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/shadcn/lib/utils';
-import { LEADERBOARD_CONFIG } from '@/shared/constants/infinite-scroll';
+import { LEADERBOARD_CONFIG } from '@/config/constants/infinite-scroll';
 import { useCurrentUser } from '@/stores/userStore';
 import { FONT_SIZES } from '@/styles/font-sizes';
 import { useRef } from 'react';
@@ -12,7 +12,7 @@ import EmptyState from './EmptyState';
 import UserCard from './UserCard';
 
 // 리더보드 표시용 확장된 User 타입
-type LeaderboardUser = LeaderBoard.LeaderBoardResponse & {
+type LeaderboardUser = LeaderBoard.LeaderBoardApiResponse & {
   id?: string;
   isMe?: boolean;
 };
@@ -60,7 +60,8 @@ export default function LeaderboardList({
   if (isError) {
     return (
       <div className='mb-8'>
-        <ErrorState
+        <StateDisplay
+          type="error"
           title="Failed to load leaderboard"
           message={error.message || 'Unable to load ranking data. Please check your connection and try again.'}
           size="medium"

@@ -2,27 +2,24 @@
 
 import { useAvailableDates, useUsageStatistics } from '@/hooks/useStatistics';
 import { useTheme } from '@/hooks/useTheme';
-import { getTimeline } from '@/shared/api/get';
 import { useCurrentUser } from '@/stores/userStore';
-import { PeriodType, StatisticsCategory } from '@/types/statistics';
+import { PeriodType, StatisticsCategory } from '@/types/domains/usage/statistics';
 import { getDateString } from '@/utils/statisticsUtils';
-import { useQuery } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // 컴포넌트 임포트
 import {
   HourlyUsageComparisonSkeleton,
   StatisticsChartSkeleton,
-  TimelineChartSkeleton,
   TotalTimeCardSkeleton
 } from '@/components/common/StatisticsSkeleton';
 import ActivityList from '@/components/statistics/ActivityList';
-import HourlyUsageComparison from '@/components/statistics/HourlyUsageComparison';
+import SessionCarousel from '@/components/statistics/CycleCarousel';
+import TotalTimeCard from '@/components/statistics/DateNavigationCard';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
-import TimelineChart from '@/components/statistics/TimelineChart';
-import TotalTimeCard from '@/components/statistics/TotalTimeCard';
 import { useInitUser } from '@/hooks/useInitUser';
-import ErrorState from '../../components/common/ErrorState';
+import { generateMockCycles } from '@/utils/mockCycleData';
+import StateDisplay from '../../components/common/StateDisplay';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<PeriodType>('daily');
@@ -33,6 +30,8 @@ export default function StatisticsPage() {
   const [selectedDate, setSelectedDate] = useState(getDateString(new Date()));
   const [selectedCategory, setSelectedCategory] =
     useState<StatisticsCategory | null>(null);
+  const [showTimeline, setShowTimeline] = useState(false);
+  const [selectedSessionIndex, setSelectedSessionIndex] = useState(0);
 
   // Hook 순서를 항상 동일하게 유지
   const currentUser = useCurrentUser();
@@ -58,23 +57,10 @@ export default function StatisticsPage() {
     refetch,
   } = useUsageStatistics(selectedDate, currentUser?.id || '');
 
-  // 타임라인 데이터 조회
-  const {
-    data: timelineData,
-    isLoading: isTimelineLoading,
-    isError: isTimelineError,
-  } = useQuery({
-    queryKey: ['timeline', currentUser?.id, selectedDate],
-    queryFn: async () => {
-      if (!currentUser?.id) {
-        throw new Error('User ID is required');
-      }
-      return getTimeline(currentUser.id, selectedDate);
-    },
-    enabled: !!currentUser?.id && !!selectedDate,
-    staleTime: 5 * 60 * 1000, // 5분
-    retry: false, // 타임라인은 선택적 기능이므로 재시도하지 않음
-  });
+  // 사이클 목업 데이터 생성
+  const cycleData = useMemo(() => {
+    return generateMockCycles(selectedDate);
+  }, [selectedDate]);
 
   // availableDates 변경 모니터링
   React.useEffect(() => {
@@ -163,6 +149,18 @@ export default function StatisticsPage() {
     setSelectedCategory(category);
   };
 
+  const handleViewTimeline = () => {
+    setShowTimeline(true);
+  };
+
+  const handleBackToSessions = () => {
+    setShowTimeline(false);
+  };
+
+  const handleSessionSelect = (sessionIndex: number) => {
+    setSelectedSessionIndex(sessionIndex);
+  };
+
 
   // 로딩 상태
   if (isLoading) {
@@ -170,7 +168,7 @@ export default function StatisticsPage() {
       <div className={`min-h-screen p-3 sm:p-4 lg:p-6 ${getThemeClass('background')}`}>
         <div className='mx-auto max-w-6xl space-y-4 sm:space-y-6'>
           {/* 메인 콘텐츠 스켈레톤 */}
-          <div className='grid gap-4 sm:gap-6 lg:grid-cols-2 min-h-[500px]'>
+          <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
             {/* 왼쪽: 총 작업시간 & 상위 카테고리 스켈레톤 */}
             <div className='flex flex-col space-y-3'>
               <div className='flex-shrink-0'>
@@ -181,13 +179,13 @@ export default function StatisticsPage() {
               </div>
             </div>
 
-            {/* 오른쪽: 차트 스켈레톤 */}
-            <StatisticsChartSkeleton />
+            {/* 오른쪽: 활동 리스트 (자체 로딩 상태 사용) */}
+            <ActivityList date={selectedDate} />
           </div>
 
-          {/* 타임라인 차트 스켈레톤 */}
+          {/* 사이클 캐러셀 스켈레톤 */}
           <div className='col-span-1 lg:col-span-2'>
-            <TimelineChartSkeleton />
+            <SessionCarousel cycles={[]} isLoading={true} onViewTimeline={handleViewTimeline} />
           </div>
 
           {/* 시간별 사용량 비교 차트 스켈레톤 */}
@@ -204,7 +202,8 @@ export default function StatisticsPage() {
     return (
       <div className={`min-h-screen p-4 sm:p-6 lg:p-8 ${getThemeClass('background')}`}>
         <div className='mx-auto max-w-6xl'>
-          <ErrorState
+          <StateDisplay
+            type="error"
             title='Unable to load statistics data'
             message={
               error?.message ||
@@ -223,28 +222,29 @@ export default function StatisticsPage() {
     <div className={`min-h-screen p-3 sm:p-4 lg:p-6 ${getThemeClass('background')}`}>
       <div className='mx-auto max-w-6xl space-y-4 sm:space-y-6'>
         {/* 메인 콘텐츠 */}
-        <div className='grid gap-4 sm:gap-6 lg:grid-cols-2 min-h-[500px]'>
-          {/* 왼쪽: 총 작업시간 & 상위 카테고리 */}
+        <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
+          {/* 왼쪽: 날짜 네비게이션, 목표 설정, 카테고리 분석 */}
           <div className='flex flex-col space-y-3'>
-            {/* 작업시간 카드 - 컴팩트하게 */}
+            {/* 날짜 네비게이션 카드 */}
             <div className='flex-shrink-0'>
-            <TotalTimeCard
-              totalTime={dailyData?.totalTime || 0}
-              currentDate={selectedDate}
-              onPrevious={handlePreviousDate}
-              onNext={handleNextDate}
-              canGoPrevious={canGoPrevious}
-              canGoNext={canGoNext}
+              <TotalTimeCard
+                totalTime={dailyData?.totalTime || 0}
+                currentDate={selectedDate}
+                onPrevious={handlePreviousDate}
+                onNext={handleNextDate}
+                canGoPrevious={canGoPrevious}
+                canGoNext={canGoNext}
+                goalTime={8 * 3600} // 8 hours default goal
               />
             </div>
 
-            {/* Activity 목록 */}
+            {/* 카테고리 분석 차트 */}
             <div className='flex-1'>
-            <StatisticsChart
-            selectedPeriod={selectedPeriod}
-            data={dailyData || null}
-            currentDate={selectedDate}
-          />
+              <StatisticsChart
+                selectedPeriod={selectedPeriod}
+                data={dailyData || null}
+                currentDate={selectedDate}
+              />
             </div>
           </div>
 
@@ -253,24 +253,21 @@ export default function StatisticsPage() {
 
         </div>
 
-        {/* 타임라인 차트 - 전체 너비 사용 */}
+        {/* 세션 캐러셀 - 전체 너비 사용 */}
         <div className='col-span-1 lg:col-span-2'>
-          <TimelineChart 
-            timelineData={timelineData}
-            isLoading={isTimelineLoading}
+          <SessionCarousel 
+            cycles={cycleData}
+            isLoading={false}
+            onViewTimeline={handleViewTimeline}
+            showTimeline={showTimeline}
+            onBackToSessions={handleBackToSessions}
+            selectedDate={selectedDate}
+            currentSessionIndex={selectedSessionIndex}
+            onSessionSelect={handleSessionSelect}
           />
         </div>
-
-        {/* 시간별 사용량 비교 차트 - 전체 너비 사용 */}
-        {currentUser && (
-          <div className='col-span-1 lg:col-span-2'>
-            <HourlyUsageComparison
-              userId={currentUser?.id}
-              date={selectedDate}
-            />
-          </div>
-        )}
       </div>
+
     </div>
   );
 }

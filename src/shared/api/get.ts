@@ -1,22 +1,22 @@
 import { parseApi } from '../../utils/api-utils';
 import { getKSTDateString } from '../../utils/timezone';
-import { API } from '../configs/api';
+import { API } from '../../config/api';
 
 // 구독 플랜 조회
 
 export const getAvailableSubscriptionPlans = () =>
-  parseApi<Subscription.AvailableSubscriptionPlansResponse[]>(
+  parseApi<Subscription.AvailableSubscriptionPlansApiResponse[]>(
     API.get('/subscription-plans')
   );
 
 // 유저 구독 내역
 export const getUserCurrentSubscription = () =>
-  parseApi<Subscription.UserSubscriptionResponse>(
+  parseApi<Subscription.UserSubscriptionApiResponse>(
     API.get('/users/subscription/current')
   );
 
 export const getUserSubscriptionHistory = () =>
-  parseApi<Subscription.UserSubscriptionResponse[]>(
+  parseApi<Subscription.UserSubscriptionApiResponse[]>(
     API.get('/users/subscription/history')
   );
 
@@ -28,7 +28,7 @@ export const getLeaderBoard = (
   size: number = 10,
   date: string = getKSTDateString()
 ) =>
-  parseApi<LeaderBoard.LeaderBoardResponse[]>(
+  parseApi<LeaderBoard.LeaderBoardApiResponse[]>(
     API.get(
       `/leaderboard/${category}/${type}?page=${page}&size=${size}&date=${date}`
     )
@@ -40,7 +40,7 @@ export const getMyRank = (
   type: 'daily' | 'weekly' | 'monthly',
   date: string = getKSTDateString()
 ) =>
-  parseApi<LeaderBoard.LeaderBoardResponse>(
+  parseApi<LeaderBoard.LeaderBoardApiResponse>(
     API.get(
       `/leaderboard/${category}/user-info/${type}?userId=${userId}&date=${date}`
     )
@@ -51,7 +51,7 @@ export const getUsageLog = (
   userId: string,
   date: string = getKSTDateString()
 ) =>
-  parseApi<UsageLog.UsageLogResponse[]>(
+  parseApi<UsageLog.UsageLogApiResponse[]>(
     API.get(`/usage-log?userId=${userId}&date=${date}`)
   );
 
@@ -60,7 +60,7 @@ export const getHourlyUsageLog = (
   userId: string,
   binSize: number
 ) =>
-  parseApi<UsageLog.HourlyUsageLogResponse[]>(
+  parseApi<UsageLog.HourlyUsageLogApiResponse[]>(
     API.get(`/usage-log/hour?userId=${userId}&date=${date}&binSize=${binSize}`)
   );
 
@@ -70,7 +70,7 @@ export const getRecentUsageLog = (date: string = getKSTDateString()) =>
   );
 
 export const getUserInfo = () =>
-  parseApi<User.UserResponse>(API.get('/user/my-info'));
+  parseApi<User.UserApiResponse>(API.get('/user/my-info'));
 
 export const getTimeline = (userId: string, date: string = getKSTDateString()) =>
   parseApi<UsageLog.TimelineItem[]>(

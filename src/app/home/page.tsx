@@ -5,7 +5,7 @@ import {
   APP_URL,
   KAKAO_PAY_CHANNEL_KEY,
   PORTONE_STORE_ID,
-} from '../../shared/configs/api/url';
+} from '@/config/api/url';
 
 type PaymentProvider = 'KAKAOPAY';
 

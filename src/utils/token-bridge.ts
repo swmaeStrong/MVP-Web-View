@@ -3,8 +3,8 @@
  */
 
 import { getUserInfo } from '../shared/api/get';
-import { setRccToken } from '../shared/configs/api/csrConfig';
-import { setRscToken } from '../shared/configs/api/ssrConfig';
+import { setRccToken } from '../config/api/csrConfig';
+import { setRscToken } from '../config/api/ssrConfig';
 import { useUserStore } from '../stores/userStore';
 
 // TypeScript 타입 정의

@@ -3,7 +3,7 @@
 import { useLeaderboardInfiniteScroll } from '@/hooks/useLeaderboardInfiniteScroll';
 // import { useScrollToMyRank } from '@/hooks/useScrollToMyRank'; // Not needed anymore
 import { useTheme } from '@/hooks/useTheme';
-import { INFINITE_SCROLL_CONFIG } from '@/shared/constants/infinite-scroll';
+import { INFINITE_SCROLL_CONFIG } from '@/config/constants/infinite-scroll';
 import { CATEGORIES, LEADERBOARD_CATEGORIES } from '@/utils/categories';
 import { useCallback, useEffect, useRef, useState } from 'react';
 

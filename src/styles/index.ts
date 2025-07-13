@@ -1,5 +1,5 @@
 // 모든 스타일 시스템을 통합하여 export
-export * from './animations';
+// export * from './animations'; // 제거됨 - 사용되지 않음
 export * from './colors';
 export * from './common';
 export * from './design-system';
@@ -12,12 +12,12 @@ import {
   themeColors,
 } from './colors';
 
-import {
-  animations,
-  customAnimations,
-  enterExit,
-  interactions,
-} from './animations';
+// import {
+//   animations,
+//   customAnimations,
+//   enterExit,
+//   interactions,
+// } from './animations'; // 제거됨 - 사용되지 않음
 
 import {
   badges,
@@ -67,13 +67,13 @@ export const styles = {
     states: componentStates,
   },
 
-  // 애니메이션 시스템
-  animations: {
-    ...animations,
-    custom: customAnimations,
-    interactions,
-    enterExit,
-  },
+  // 애니메이션 시스템 (제거됨 - 사용되지 않음)
+  // animations: {
+  //   ...animations,
+  //   custom: customAnimations,
+  //   interactions,
+  //   enterExit,
+  // },
 
   // 레이아웃 시스템
   layout,
@@ -94,17 +94,17 @@ export const commonCombinations = {
   cardCombos: {
     default: `${cards.variant.default} ${cards.padding.md} ${cards.hover.lift}`,
     elevated: `${cards.variant.elevated} ${cards.padding.lg} ${cards.hover.glow}`,
-    glass: `${cards.variant.glass} ${cards.padding.md} ${animations.transition.smooth}`,
-    interactive: `${cards.variant.default} ${cards.padding.md} ${cards.hover.scale} ${animations.transition.default}`,
+    glass: `${cards.variant.glass} ${cards.padding.md} transition-all duration-200`,
+    interactive: `${cards.variant.default} ${cards.padding.md} ${cards.hover.scale} transition-all duration-200`,
   },
 
   // 버튼 스타일 조합
   buttonCombos: {
-    primary: `${buttons.base} ${buttons.variant.primary} ${buttons.size.md} ${interactions.click.scale}`,
-    primaryLg: `${buttons.base} ${buttons.variant.primary} ${buttons.size.lg} ${interactions.click.scale}`,
-    secondary: `${buttons.base} ${buttons.variant.secondary} ${buttons.size.md} ${interactions.click.scale}`,
-    outline: `${buttons.base} ${buttons.variant.outline} ${buttons.size.md} ${interactions.click.scale}`,
-    ghost: `${buttons.base} ${buttons.variant.ghost} ${buttons.size.md} ${interactions.click.scale}`,
+    primary: `${buttons.base} ${buttons.variant.primary} ${buttons.size.md} hover:scale-105 transition-transform`,
+    primaryLg: `${buttons.base} ${buttons.variant.primary} ${buttons.size.lg} hover:scale-105 transition-transform`,
+    secondary: `${buttons.base} ${buttons.variant.secondary} ${buttons.size.md} hover:scale-105 transition-transform`,
+    outline: `${buttons.base} ${buttons.variant.outline} ${buttons.size.md} hover:scale-105 transition-transform`,
+    ghost: `${buttons.base} ${buttons.variant.ghost} ${buttons.size.md} hover:scale-105 transition-transform`,
   },
 
   // 입력 필드 조합
@@ -131,13 +131,13 @@ export const commonCombinations = {
     cards: `${layout.grid.cards} ${layout.spacing.section}`,
   },
 
-  // 실시간 표시기 조합
-  liveCombos: {
-    dot: `${animations.live.dot}`,
-    ping: `${animations.live.ping}`,
-    container: `${animations.live.container}`,
-    full: `${animations.live.container}`,
-  },
+  // 실시간 표시기 조합 (제거됨 - 사용되지 않음)
+  // liveCombos: {
+  //   dot: 'animate-pulse',
+  //   ping: 'animate-ping',
+  //   container: 'relative',
+  //   full: 'relative',
+  // },
 };
 
 // 테마별 색상 조합 (다크모드 대비)

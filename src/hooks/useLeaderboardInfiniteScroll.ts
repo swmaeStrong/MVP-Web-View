@@ -7,12 +7,12 @@ import {
   getKSTWeeklyDateString,
 } from '@/utils/timezone';
 import { useInfiniteScroll } from './useInfiniteScroll';
-import { INFINITE_SCROLL_CONFIG } from '@/shared/constants/infinite-scroll';
+import { INFINITE_SCROLL_CONFIG } from '@/config/constants/infinite-scroll';
 
 // User 타입은 userStore에서 import
 import { User } from '@/stores/userStore';
 
-type APILeaderBoardResponse = LeaderBoard.LeaderBoardResponse;
+type APILeaderBoardResponse = LeaderBoard.LeaderBoardApiResponse;
 
 interface UseLeaderboardInfiniteScrollParams {
   category: string;
@@ -55,7 +55,7 @@ export function useLeaderboardInfiniteScroll({
   const transformAPIUser = (
     apiUser: APILeaderBoardResponse,
     index: number
-  ): LeaderBoard.LeaderBoardResponse & { id?: string } => ({
+  ): LeaderBoard.LeaderBoardApiResponse & { id?: string } => ({
     ...apiUser,
     id: apiUser.userId,
   });
@@ -102,7 +102,7 @@ export function useLeaderboardInfiniteScroll({
     hasNextPage,
     fetchNextPage,
     refetch,
-  } = useInfiniteScroll<LeaderBoard.LeaderBoardResponse & { id?: string }>({
+  } = useInfiniteScroll<LeaderBoard.LeaderBoardApiResponse & { id?: string }>({
     queryKey: [
       'leaderboard',
       category,
