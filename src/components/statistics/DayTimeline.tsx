@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { X, Clock, Coffee, UserX } from 'lucide-react';
-import { CycleData, CycleSegment } from '@/types/cycle';
+import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
 import { useTheme } from '@/hooks/useTheme';
 
 interface DayTimelineProps {

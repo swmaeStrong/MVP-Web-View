@@ -2,7 +2,7 @@
 
 import { useTheme } from '@/hooks/useTheme';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
-import { DailyStatistics, PeriodType } from '@/types/statistics';
+import { DailyStatistics, PeriodType } from '@/types/domains/usage/statistics';
 import {
   Activity,
   BarChart3,

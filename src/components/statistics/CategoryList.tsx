@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { StatisticsCategory } from '@/types/statistics';
+import { StatisticsCategory } from '@/types/domains/usage/statistics';
 import { useTheme } from '@/hooks/useTheme';
 import { useDesignSystem } from '@/hooks/useDesignSystem';
 import { cardSystem, componentStates, spacing, layouts, buttonSystem } from '@/styles/design-system';

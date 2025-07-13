@@ -1,4 +1,4 @@
-import { CycleData, CycleSegment } from '@/types/cycle';
+import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
 
 export const generateMockCycles = (date: string): CycleData[] => {
   const cycles: CycleData[] = [];

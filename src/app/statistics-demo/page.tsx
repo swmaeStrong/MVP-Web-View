@@ -1,7 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/useTheme';
-import { PeriodType, StatisticsCategory } from '@/types/statistics';
+import { PeriodType, StatisticsCategory } from '@/types/domains/usage/statistics';
 import { useEffect, useState } from 'react';
 
 // 컴포넌트 임포트

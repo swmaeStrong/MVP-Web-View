@@ -1,5 +1,5 @@
 import { categoryColors } from '@/styles/colors';
-import { DailyStatistics, StatisticsCategory } from '@/types/statistics';
+import { DailyStatistics, StatisticsCategory } from '@/types/domains/usage/statistics';
 
 // 카테고리별 고정 색상 맵 - colors.ts와 통합
 export const categoryColorMap: { [key: string]: string } = {

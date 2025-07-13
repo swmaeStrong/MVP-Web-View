@@ -3,7 +3,7 @@
 import { useAvailableDates, useUsageStatistics } from '@/hooks/useStatistics';
 import { useTheme } from '@/hooks/useTheme';
 import { useCurrentUser } from '@/stores/userStore';
-import { PeriodType, StatisticsCategory } from '@/types/statistics';
+import { PeriodType, StatisticsCategory } from '@/types/domains/usage/statistics';
 import { getDateString } from '@/utils/statisticsUtils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Calendar, ArrowLeft } from 'lucide-react';
-import { CycleData, CycleSegment } from '@/types/cycle';
+import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
 import { useTheme } from '@/hooks/useTheme';
 import InlineTimeline from './InlineTimeline';
 import './FluidCarousel.css';

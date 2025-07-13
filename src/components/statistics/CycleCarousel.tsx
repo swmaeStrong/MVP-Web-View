@@ -1,7 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/useTheme';
-import { CycleData, CycleSegment } from '@/types/cycle';
+import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
 import { ArrowLeft, Calendar } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import 'swiper/css';

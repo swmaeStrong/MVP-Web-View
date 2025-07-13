@@ -7,7 +7,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/shadcn/ui/chart';
-import { PeriodType } from '@/types/statistics';
+import { PeriodType } from '@/types/domains/usage/statistics';
 import { formatTime } from '@/utils/statisticsUtils';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 

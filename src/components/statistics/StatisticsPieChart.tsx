@@ -3,7 +3,7 @@
 import { useTheme } from '@/hooks/useTheme';
 import { ChartConfig, ChartContainer, ChartTooltip } from '@/shadcn/ui/chart';
 import { categoryColors } from '@/styles/colors';
-import { DailyStatistics } from '@/types/statistics';
+import { DailyStatistics } from '@/types/domains/usage/statistics';
 import { getCategoryDisplayName } from '@/utils/leaderboard';
 import { formatTime } from '@/utils/statisticsUtils';
 import { Activity } from 'lucide-react';

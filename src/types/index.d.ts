@@ -1,12 +1,5 @@
-// API 관련 타입들
-export * from './api/leaderBoard';
-export * from './api/user';
-export * from './api/subscription';
-export * from './api/usageLog';
-export * from './api/paymentMethod';
-export * from './api/apiResponse';
+// 공통 타입들 (API 응답, 에러 등)
+export * from './common';
 
-// 글로벌 타입들
-export * from './statistics';
-export * from './cycle';
-export * from './error';
+// 도메인별 타입들
+export * from './domains';

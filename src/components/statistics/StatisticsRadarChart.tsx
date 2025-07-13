@@ -2,7 +2,7 @@
 
 import { useTheme } from '@/hooks/useTheme';
 import { ChartConfig, ChartContainer, ChartTooltip } from '@/shadcn/ui/chart';
-import { DailyStatistics } from '@/types/statistics';
+import { DailyStatistics } from '@/types/domains/usage/statistics';
 import { formatTime } from '@/utils/statisticsUtils';
 import { Activity } from 'lucide-react';
 import {
