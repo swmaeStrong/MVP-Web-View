@@ -4,7 +4,7 @@ import ErrorState from '@/components/common/ErrorState';
 import { LeaderboardListSkeleton } from '@/components/common/LeaderboardSkeleton';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/shadcn/lib/utils';
-import { LEADERBOARD_CONFIG } from '@/shared/constants/infinite-scroll';
+import { LEADERBOARD_CONFIG } from '@/config/constants/infinite-scroll';
 import { useCurrentUser } from '@/stores/userStore';
 import { FONT_SIZES } from '@/styles/font-sizes';
 import { useRef } from 'react';

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { useUserStore } from '@/stores/userStore';
 import { handleApiError } from '@/utils/error-handler';
-import { requestTokenFromSwift } from '../../../utils/token-bridge';
+import { requestTokenFromSwift } from '../../utils/token-bridge';
 import { noAccessTokenCode } from '../errorCode';
 import { removeRscAccess, setRscToken } from './ssrConfig';
 import { BASEURL } from './url';

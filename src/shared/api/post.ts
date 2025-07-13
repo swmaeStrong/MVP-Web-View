@@ -1,6 +1,6 @@
 import { parseApi } from '../../utils/api-utils';
 import { ApiResponse } from '../../types/common/apiResponse';
-import { API } from '../configs/api';
+import { API } from '../../config/api';
 
 // 구독 결제 생성
 

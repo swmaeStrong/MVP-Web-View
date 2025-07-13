@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
-import { INFINITE_SCROLL_CONFIG } from '@/shared/constants/infinite-scroll';
+import { INFINITE_SCROLL_CONFIG } from '@/config/constants/infinite-scroll';
 
 interface UseInfiniteScrollOptions<T> {
   queryKey: unknown[];

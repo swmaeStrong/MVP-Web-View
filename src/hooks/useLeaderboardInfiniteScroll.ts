@@ -7,7 +7,7 @@ import {
   getKSTWeeklyDateString,
 } from '@/utils/timezone';
 import { useInfiniteScroll } from './useInfiniteScroll';
-import { INFINITE_SCROLL_CONFIG } from '@/shared/constants/infinite-scroll';
+import { INFINITE_SCROLL_CONFIG } from '@/config/constants/infinite-scroll';
 
 // User 타입은 userStore에서 import
 import { User } from '@/stores/userStore';

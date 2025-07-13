@@ -1,6 +1,6 @@
 'use server';
 
-import { STORAGE_ACCESS_KEY } from '@/shared/constants/storage';
+import { STORAGE_ACCESS_KEY } from '@/config/constants/storage';
 import { cookies } from 'next/headers';
 
 /**

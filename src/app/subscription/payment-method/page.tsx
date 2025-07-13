@@ -11,7 +11,7 @@ import {
   KAKAO_PAY_CHANNEL_KEY,
   NICE_PAY_CHANNEL_KEY,
   PORTONE_STORE_ID,
-} from '@/shared/configs/api/url';
+} from '@/config/api/url';
 import { useTheme } from '@/hooks/useTheme';
 
 // 타입 정의
