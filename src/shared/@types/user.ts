@@ -1,5 +1,5 @@
 declare namespace User {
-  interface UserResponse {
+  interface UserApiResponse {
     userId: string;
     nickname: string;
   }

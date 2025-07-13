@@ -4,7 +4,7 @@ declare namespace LeaderBoard {
     score: number;
   }
 
-  interface LeaderBoardResponse {
+  interface LeaderBoardApiResponse {
     userId: string;
     nickname: string;
     score: number;

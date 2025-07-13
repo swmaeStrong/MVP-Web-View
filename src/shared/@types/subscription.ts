@@ -1,12 +1,12 @@
 declare namespace Subscription {
-  interface AvailableSubscriptionPlansResponse {
+  interface AvailableSubscriptionPlansApiResponse {
     subscriptionPlanId: string;
     description: string;
     billingCycle: string;
     price: number;
   }
 
-  interface UserSubscriptionResponse {
+  interface UserSubscriptionApiResponse {
     userId: string;
     userSubscriptionId: string;
     subscriptionPlanId: string;
@@ -17,12 +17,12 @@ declare namespace Subscription {
     endTime: string;
   }
 
-  interface CreateSubscriptionWithPaymentMethodRequest {
+  interface CreateSubscriptionWithPaymentMethodApiRequest {
     subscriptionPlanId: string;
     paymentMethodId: string;
   }
 
-  interface CreateSubscriptionWithBillingKeyRequest {
+  interface CreateSubscriptionWithBillingKeyApiRequest {
     subscriptionPlanId: string;
     billingKey: string;
   }

@@ -12,8 +12,8 @@ import PeriodSelector from '@/components/leaderboard/PeriodSelector';
 // 타입 임포트
 import { User, useUserStore } from '@/stores/userStore';
 
-// LeaderBoard.LeaderBoardResponse를 확장하여 사용
-type LeaderboardUser = LeaderBoard.LeaderBoardResponse & {
+// LeaderBoard.LeaderBoardApiResponse를 확장하여 사용
+type LeaderboardUser = LeaderBoard.LeaderBoardApiResponse & {
   id?: string;
 };
 

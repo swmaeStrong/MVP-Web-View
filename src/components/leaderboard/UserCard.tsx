@@ -8,7 +8,7 @@ import { ProcessedDetail, formatScoreToMinutes, getCategoryDisplayName, processL
 import { Medal } from 'lucide-react';
 
 interface UserCardProps {
-  user: LeaderBoard.LeaderBoardResponse & { id?: string; isMe?: boolean };
+  user: LeaderBoard.LeaderBoardApiResponse & { id?: string; isMe?: boolean };
   index: number;
   totalUsers: number;
   isCurrentUser: boolean;

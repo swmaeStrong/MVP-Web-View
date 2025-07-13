@@ -12,7 +12,7 @@ import EmptyState from './EmptyState';
 import UserCard from './UserCard';
 
 // 리더보드 표시용 확장된 User 타입
-type LeaderboardUser = LeaderBoard.LeaderBoardResponse & {
+type LeaderboardUser = LeaderBoard.LeaderBoardApiResponse & {
   id?: string;
   isMe?: boolean;
 };

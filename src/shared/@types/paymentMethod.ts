@@ -1,9 +1,9 @@
 declare namespace PaymentMethod {
-  interface PaymentMethodRequest {
+  interface PaymentMethodApiRequest {
     billingKey: string;
   }
 
-  interface PaymentMethodResponse {
+  interface PaymentMethodApiResponse {
     id: string;
     pgProvider: string;
     issuer: string;

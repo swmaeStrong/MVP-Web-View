@@ -43,7 +43,7 @@ export const secondsToHours = (seconds: number): number => {
 
 // UsageLog 데이터를 DailyStatistics로 변환
 export const transformUsageLogToDaily = (
-  usageData: UsageLog.UsageLogResponse[],
+  usageData: UsageLog.UsageLogApiResponse[],
   date: string
 ): DailyStatistics => {
   const totalTime = usageData.reduce((sum, item) => sum + item.duration, 0);

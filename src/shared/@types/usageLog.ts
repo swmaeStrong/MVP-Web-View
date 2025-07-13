@@ -1,11 +1,11 @@
 declare namespace UsageLog {
-  interface UsageLogResponse {
+  interface UsageLogApiResponse {
     category: string;
     duration: number;
     color: string;
   }
 
-  interface HourlyUsageLogResponse {
+  interface HourlyUsageLogApiResponse {
     hour: string;
     category: string;
     color: string;
@@ -28,7 +28,7 @@ declare namespace UsageLog {
     title: string;
   }
 
-  interface TimelineResponse {
+  interface TimelineApiResponse {
     isSuccess: boolean;
     code: string;
     message: string;
