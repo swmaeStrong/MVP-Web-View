@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { categoryColors } from '@/styles';
 import { componentSizes, componentStates, getPriorityStyle, getRankPriority } from '@/styles/design-system';
@@ -30,7 +31,7 @@ const formatTime = (seconds: number) => {
 };
 
 
-export default function UserCard({
+const UserCard = memo(function UserCard({
   user,
   index,
   totalUsers,
@@ -184,4 +185,15 @@ export default function UserCard({
       </div>
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  // 메모이제이션 최적화: 귀밌한 props만 비교
+  return (
+    prevProps.user.userId === nextProps.user.userId &&
+    prevProps.user.rank === nextProps.user.rank &&
+    prevProps.user.score === nextProps.user.score &&
+    prevProps.isCurrentUser === nextProps.isCurrentUser &&
+    prevProps.category === nextProps.category
+  );
+});
+
+export default UserCard;

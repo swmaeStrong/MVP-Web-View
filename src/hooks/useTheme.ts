@@ -30,6 +30,16 @@ export function useTheme() {
     return colors.text[type];
   };
 
+  // 자주 사용되는 카드 스타일 유틸리티 (스타일 시스템 단순화)
+  const getCommonCardClass = () => {
+    return `bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm bg-white shadow-lg transition-all duration-200 ${getThemeClass('border')} ${getThemeClass('component')}`;
+  };
+
+  // 자주 사용되는 호버 가능한 카드 스타일
+  const getHoverableCardClass = () => {
+    return `${getCommonCardClass()} hover:shadow-xl hover:-translate-y-1`;
+  };
+
   return {
     // 상태
     theme,
@@ -47,5 +57,9 @@ export function useTheme() {
     getThemeTextColorValue,
     getWarningColor: () => themeColors.common.warning,
     getWarningClass: () => themeColors.common.classes.warning,
+    
+    // 단순화된 스타일 유틸리티들
+    getCommonCardClass,
+    getHoverableCardClass,
   };
 } 

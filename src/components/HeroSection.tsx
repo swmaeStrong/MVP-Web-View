@@ -5,7 +5,7 @@ import { useDesignSystem } from '@/hooks/useDesignSystem';
 import { cardSystem, buttonSystem, badgeSystem, componentStates, spacing, layouts } from '@/styles/design-system';
 
 export default function HeroSection() {
-  const { getCardStyle, getButtonStyle } = useDesignSystem();
+  // const { getCardStyle, getButtonStyle } = useDesignSystem(); // 제거됨
   
   const handleCopyCommand = () => {
     const command = 'brew install productivity-tracker';

@@ -20,7 +20,7 @@ export default function DailyGoalCard({
   goalTime = 8 * 3600, // 8 hours default
   isLoading = false,
 }: DailyGoalCardProps) {
-  const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
+  const { getThemeClass, getThemeTextColor, isDarkMode, getCommonCardClass } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [currentGoal, setCurrentGoal] = useState(goalTime / 3600); // Store in hours
   
@@ -103,7 +103,7 @@ export default function DailyGoalCard({
 
   if (isLoading) {
     return (
-      <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${componentStates.default.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <Card className={getCommonCardClass()}>
         <CardContent className={`${cardSystem.content} ${spacing.inner.normal}`}>
           <div className="flex justify-center gap-4">
             {[1, 2, 3].map((i) => (

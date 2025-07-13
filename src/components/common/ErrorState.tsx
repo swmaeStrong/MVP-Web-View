@@ -28,12 +28,12 @@ export default function ErrorState({
   showBorder = true,
 }: ErrorStateProps) {
   const { getThemeClass } = useTheme();
-  const { getCardStyle, getButtonStyle, spacing } = useDesignSystem();
+  // const { getCardStyle, getButtonStyle, spacing } = useDesignSystem(); // 제거됨
 
-  // 디자인 시스템에 맞춘 스타일 적용
-  const cardStyle = getCardStyle(size, 'default');
+  // 디자인 시스템에 맞춘 스타일 적용 - 단순화됨
+  // const cardStyle = getCardStyle(size, 'default'); // 제거됨
   const sizeStyles = componentSizes[size];
-  const buttonStyle = getButtonStyle('small', 'secondary');
+  // const buttonStyle = getButtonStyle('small', 'secondary'); // 제거됨
 
   return (
     <div
@@ -59,7 +59,7 @@ export default function ErrorState({
         )}
       >
         {/* Icon */}
-        <div className={cn(spacing.inner.normal)}>
+        <div className="space-y-4">
           <div
             className={cn(
               'flex items-center justify-center rounded-full',
@@ -79,7 +79,7 @@ export default function ErrorState({
         </div>
 
         {/* Text */}
-        <div className={spacing.inner.tight}>
+        <div className="space-y-2">
           <h3
             className={cn(
               sizeStyles.text,

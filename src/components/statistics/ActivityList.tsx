@@ -21,8 +21,8 @@ interface ActivityListProps {
 
 
 export default function ActivityList({ activities, date }: ActivityListProps) {
-  const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
-  const { getCardStyle } = useDesignSystem();
+  const { getThemeClass, getThemeTextColor, isDarkMode, getHoverableCardClass } = useTheme();
+  // const { getCardStyle } = useDesignSystem(); // 제거됨 - 직접 클래스 사용
   
   const [usageData, setUsageData] = useState<UsageLog.RecentUsageLogItem[]>([]);
   const [loading, setLoading] = useState(!activities); // props가 없으면 초기에 로딩 상태
@@ -129,11 +129,11 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
     return usageData.filter(item => item.category === selectedCategory);
   }, [usageData, selectedCategory]);
 
-  // 디자인 시스템 스타일 적용
-  const cardStyles = getCardStyle('medium', 'hoverable');
+  // 디자인 시스템 스타일 적용 - 단순화됨
+  // const cardStyles = getCardStyle('medium', 'hoverable'); // 제거됨
 
   return (
-    <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${cardSystem.hover.lift} ${componentStates.hoverable.transition} ${getThemeClass('border')} ${getThemeClass('component')} h-full flex flex-col`}>
+    <Card className={`${getHoverableCardClass()} h-full flex flex-col`}>
       <CardContent className={`${cardSystem.content} ${spacing.inner.normal} flex-1 flex flex-col overflow-hidden`}>
         {/* 제목 */}
         <div className="flex items-center justify-between mb-4">

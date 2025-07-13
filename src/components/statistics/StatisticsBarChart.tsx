@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import {
   ChartConfig,
@@ -26,7 +27,7 @@ interface ChartDataItem {
   LLM: number;
 }
 
-export default function StatisticsBarChart({
+const StatisticsBarChart = memo(function StatisticsBarChart({
   period,
 }: StatisticsBarChartProps) {
   const { isDarkMode, getThemeClass, getThemeColor } = useTheme();
@@ -313,4 +314,9 @@ export default function StatisticsBarChart({
       </div>
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  // 메모이제이션: period만 비교
+  return prevProps.period === nextProps.period;
+});
+
+export default StatisticsBarChart;

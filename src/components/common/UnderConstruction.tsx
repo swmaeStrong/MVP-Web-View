@@ -70,10 +70,10 @@ export default function UnderConstruction({
   size = 'medium',
   showAnimation = true,
 }: UnderConstructionProps) {
-  const { getCardStyle } = useDesignSystem();
+  // const { getCardStyle } = useDesignSystem(); // 제거됨 - 직접 클래스 사용
   
-  // 디자인 시스템 스타일 적용
-  const cardStyles = getCardStyle(size, 'hoverable');
+  // 디자인 시스템 스타일 적용 - 단순화됨
+  // const cardStyles = getCardStyle(size, 'hoverable'); // 제거됨
   const sizeStyles = componentSizes[size];
 
   return (

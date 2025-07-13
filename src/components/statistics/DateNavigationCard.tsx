@@ -31,7 +31,7 @@ export default function TotalTimeCard({
   goalTime = 8 * 3600, // 8 hours default
   isLoading = false,
 }: TotalTimeCardProps) {
-  const { getThemeClass, getThemeTextColor } = useTheme();
+  const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const [currentGoal, setCurrentGoal] = useState(goalTime / 3600); // Store in hours
   
   // Format current date for display
@@ -74,7 +74,7 @@ export default function TotalTimeCard({
 
   if (isLoading) {
     return (
-      <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${componentStates.default.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <Card className={getCommonCardClass()}>
         <CardContent className={`${cardSystem.content} ${spacing.inner.normal}`}>
           {/* Date navigation header skeleton */}
           <div className="flex items-center justify-between">

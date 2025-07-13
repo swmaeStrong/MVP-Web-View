@@ -24,10 +24,10 @@ export default function NoData({
   showBorder = true,
 }: NoDataProps) {
   const { getThemeClass } = useTheme();
-  const { getCardStyle } = useDesignSystem();
+  // const { getCardStyle } = useDesignSystem(); // 제거됨
 
   // 디자인 시스템에 맞춘 스타일 적용
-  const cardStyle = getCardStyle(size, 'default');
+  // const cardStyle = getCardStyle(size, 'default'); // 제거됨
   const sizeStyles = componentSizes[size];
 
   return (

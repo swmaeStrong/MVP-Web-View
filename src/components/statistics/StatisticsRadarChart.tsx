@@ -13,6 +13,7 @@ import {
   RadarChart,
 } from 'recharts';
 import NoData from '../common/NoData';
+import { getCategoryColor } from '@/utils/categories';
 
 interface StatisticsRadarChartProps {
   data: DailyStatistics;
@@ -22,20 +23,10 @@ export default function StatisticsRadarChart({
   data,
 }: StatisticsRadarChartProps) {
   const { isDarkMode, getThemeClass, getThemeColor, getThemeTextColor, getThemeTextColorValue } = useTheme();
-  // Define 6 fixed colors
-  const categoryColors = [
-    '#8b5cf6', // Purple
-    '#06b6d4', // Cyan
-    '#10b981', // Green
-    '#f59e0b', // Yellow
-    '#ef4444', // Red
-    '#ec4899', // Pink
-  ];
-
-  // Extract only top 6 categories and assign colors
+  // Extract only top 6 categories and assign colors using centralized config
   const top6Categories = data.categories.slice(0, 6).map((category, index) => ({
     ...category,
-    color: categoryColors[index] || categoryColors[0], // Color override
+    color: getCategoryColor(index), // 중앙화된 색상 설정 사용
   }));
 
   // Data validation
@@ -119,7 +110,7 @@ export default function StatisticsRadarChart({
                               backgroundColor:
                                 top6Categories.find(
                                   cat => cat.name === categoryName
-                                )?.color || categoryColors[0],
+                                )?.color || getCategoryColor(0),
                             }}
                           />
                           <span className={`font-bold ${getThemeTextColor('primary')}`}>
