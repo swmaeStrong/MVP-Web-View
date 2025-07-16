@@ -60,8 +60,8 @@ export default function Sidebar() {
                   }`}
                   title={!isOpen ? item.name : undefined}
                 >
-                  <Icon size={20} />
-                  {isOpen && <span>{item.name}</span>}
+                  <Icon size={20} className="flex-shrink-0" />
+                  {isOpen && <span className="text-sm">{item.name}</span>}
                 </Link>
               );
             })}
@@ -70,9 +70,9 @@ export default function Sidebar() {
           {/* Logo/Title at bottom */}
           <div className="mt-auto pt-4 border-t border-gray-600">
             {isOpen ? (
-              <h2 className={`text-lg font-bold ${getThemeTextColor('primary')} text-center`}>Pawcus</h2>
+              <h2 className={`text-sm font-bold ${getThemeTextColor('primary')} text-center`}>Pawcus</h2>
             ) : (
-              <div className={`text-lg font-bold ${getThemeTextColor('primary')} text-center`}>P</div>
+              <div className={`text-sm font-bold ${getThemeTextColor('primary')} text-center`}>P</div>
             )}
           </div>
         </div>
