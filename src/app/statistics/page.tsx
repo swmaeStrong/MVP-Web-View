@@ -9,7 +9,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // 컴포넌트 임포트
 import {
-  HourlyUsageComparisonSkeleton,
   StatisticsChartSkeleton,
   TotalTimeCardSkeleton
 } from '@/components/common/StatisticsSkeleton';
@@ -186,11 +185,6 @@ export default function StatisticsPage() {
           {/* 사이클 캐러셀 스켈레톤 */}
           <div className='col-span-1 lg:col-span-2'>
             <SessionCarousel cycles={[]} isLoading={true} onViewTimeline={handleViewTimeline} />
-          </div>
-
-          {/* 시간별 사용량 비교 차트 스켈레톤 */}
-          <div className='col-span-1 lg:col-span-2'>
-            <HourlyUsageComparisonSkeleton />
           </div>
         </div>
       </div>
