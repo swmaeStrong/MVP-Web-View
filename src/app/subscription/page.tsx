@@ -1,10 +1,9 @@
 'use client';
-import { Badge } from '@/shadcn/ui/badge';
+import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useTheme } from '@/hooks/useTheme';
 
 // 결제 수단 상태를 시뮬레이션하는 더미 데이터
 const checkPaymentMethods = () => {
@@ -246,6 +245,9 @@ const SubscriptionPage = () => {
           <div className={`mt-6 rounded-lg border p-4 ${getThemeClass('component')} ${getThemeClass('border')}`}>
             <h3 className={`mb-3 text-sm font-semibold ${getThemeTextColor('primary')}`}>교환/환불 규정</h3>
             <div className={`space-y-2 text-xs ${getThemeTextColor('secondary')}`}>
+              <div>
+                <span className='font-medium'>서비스 제공 기간:</span> 온라인 상품 구매 후 바로 사용 가능
+              </div>
               <div>
                 <span className='font-medium'>환불 가능 기간:</span> 서비스 이용 시작일로부터 7일 이내
               </div>
