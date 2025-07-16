@@ -4,6 +4,7 @@ import { useUserStore } from '@/stores/userStore';
 import { handleApiError } from '@/utils/error-handler';
 import { requestTokenFromSwift } from '../../utils/token-bridge';
 import { noAccessTokenCode } from '../errorCode';
+import { getOsEnv } from './osConfig';
 import { removeRscAccess, setRscToken } from './ssrConfig';
 import { BASEURL } from './url';
 
@@ -207,7 +208,14 @@ const performTokenRefresh = async (): Promise<string | null> => {
     removeRscAccess();
 
     // 새 토큰 요청
-    const newAccessToken = await requestTokenFromSwift();
+    const osEnv = getOsEnv();
+    let newAccessToken = null;
+    if (osEnv === 'Mac') {
+      newAccessToken = await requestTokenFromSwift();
+    } else {
+      newAccessToken = await requestTokenFromSwift();
+    }
+
     
     if (newAccessToken) {
       console.log('New token received, updating headers...');

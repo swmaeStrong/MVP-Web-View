@@ -3,7 +3,7 @@
  */
 
 import { setRccToken } from '../config/api/csrConfig';
-import { getOsEnv, setOsEnv } from '../config/api/osConfig';
+import { setOsEnv } from '../config/api/osConfig';
 import { setRscToken } from '../config/api/ssrConfig';
 import { getUserInfo } from '../shared/api/get';
 import { useUserStore } from '../stores/userStore';
@@ -63,10 +63,9 @@ export { initializeTheme };
  * Swift 앱에 토큰 요청
  */
 export const requestTokenFromSwift = (): Promise<string | null> => {
-  const osEnv = getOsEnv();
   return new Promise(resolve => {
     try {
-      if (osEnv === 'Mac' && window.webkit?.messageHandlers?.tokenHandler) {
+      if (window.webkit?.messageHandlers?.tokenHandler) {
         // Swift 앱에 토큰 요청 메시지 전송
         console.log('requestTokenFromSwift', window.webkit.messageHandlers.tokenHandler);
         window.webkit.messageHandlers.tokenHandler.postMessage({
@@ -98,6 +97,15 @@ export const requestTokenFromSwift = (): Promise<string | null> => {
   });
 };
 
+export const requestTokenFromWindows = (): Promise<string | null> => {
+  return new Promise(resolve => {
+    resolve(null);
+  });
+};
+
+
+
+
 /**
  * 전역 토큰 수신 함수 설정
  * Swift 앱에서 window.initAccessToken(token) 형태로 호출 가능
@@ -112,7 +120,6 @@ if (typeof window !== 'undefined') {
       // API 인스턴스에 토큰 설정
       await setRccToken(token);
       await setRscToken(token);
-      console.log('osEnv', osEnv);
       await setOsEnv(osEnv);
       // 유저 정보 초기화 (일반 함수 호출)
       await initializeUserInfo();
