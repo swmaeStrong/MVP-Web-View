@@ -1,4 +1,3 @@
-import Sidebar from '@/components/common/Sidebar';
 import { QueryProvider } from '@/providers/QueryProvider';
 import { SentryProvider } from '@/providers/SentryProvider';
 import type { Metadata } from 'next';
@@ -57,8 +56,7 @@ export default function RootLayout({
         <SentryProvider>
           <QueryProvider>
             <div className='min-h-screen bg-gray-900 text-gray-100'>
-              <Sidebar />
-              <main className='ml-16 transition-all duration-300'>
+              <main className='transition-all duration-300'>
                 {children}
               </main>
             </div>
