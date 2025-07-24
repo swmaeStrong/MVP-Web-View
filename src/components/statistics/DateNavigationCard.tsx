@@ -1,13 +1,11 @@
 'use client';
 
-import { Card, CardContent } from '@/shadcn/ui/card';
-import { Button } from '@/shadcn/ui/button';
 import { useTheme } from '@/hooks/useTheme';
+import { Button } from '@/shadcn/ui/button';
+import { Card, CardContent } from '@/shadcn/ui/card';
 import { cardSystem, componentStates, spacing } from '@/styles/design-system';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatKSTDate } from '@/utils/timezone';
-import { ChartConfig, ChartContainer } from '@/shadcn/ui/chart';
-import { PolarGrid, RadialBar, RadialBarChart } from 'recharts';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
 interface TotalTimeCardProps {
@@ -107,54 +105,6 @@ export default function TotalTimeCard({
               {formattedDate}
             </h3>
             
-            {/* Goal circles */}
-            <div className="flex gap-2">
-              {chartConfigs.map((config, index) => {
-                const percentage = config.data[0].value;
-                const isFilled = percentage >= 100;
-                
-                return (
-                  <div key={index} className="relative">
-                    <ChartContainer
-                      config={{
-                        Progress: {
-                          label: 'Progress',
-                          color: isFilled ? '#10b981' : '#a855f7',
-                        },
-                      }}
-                      className="aspect-square w-12 h-12"
-                    >
-                      <RadialBarChart
-                        data={config.data}
-                        startAngle={90}
-                        endAngle={-270}
-                        innerRadius={18}
-                        outerRadius={24}
-                      >
-                        <PolarGrid
-                          gridType="circle"
-                          radialLines={false}
-                          stroke="none"
-                          className="first:fill-muted last:fill-background"
-                          polarRadius={[20, 16]}
-                        />
-                        <RadialBar
-                          dataKey="value"
-                          background
-                          cornerRadius={6}
-                          fill={isFilled ? '#10b981' : '#a855f7'}
-                        />
-                      </RadialBarChart>
-                    </ChartContainer>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className={`text-xs font-bold ${getThemeTextColor('primary')}`}>
-                        {config.value}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
           </div>
           
           {/* Navigation buttons */}
