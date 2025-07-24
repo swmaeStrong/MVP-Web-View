@@ -2,7 +2,6 @@
 
 import { useTheme } from '@/hooks/useTheme';
 import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
-import { ArrowLeft, Calendar } from 'lucide-react';
 import React, { useEffect, useState, memo } from 'react';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
@@ -10,15 +9,10 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { EffectCoverflow, FreeMode, Mousewheel, Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import InlineTimeline from './InlineTimeline';
 
 interface SessionCarouselProps {
   cycles: CycleData[];
   isLoading?: boolean;
-  onViewTimeline?: () => void;
-  showTimeline?: boolean;
-  onBackToSessions?: () => void;
-  selectedDate?: string;
   currentSessionIndex?: number;
   onSessionSelect?: (sessionIndex: number) => void;
 }
@@ -26,10 +20,6 @@ interface SessionCarouselProps {
 const SessionCarousel = memo(function SessionCarousel({ 
   cycles, 
   isLoading, 
-  onViewTimeline, 
-  showTimeline, 
-  onBackToSessions, 
-  selectedDate,
   currentSessionIndex,
   onSessionSelect
 }: SessionCarouselProps) {
@@ -56,14 +46,6 @@ const SessionCarousel = memo(function SessionCarousel({
     }
   }, [onSessionSelect]);
 
-  const handleSessionClickFromTimeline = (sessionIndex: number) => {
-    if (onSessionSelect) {
-      onSessionSelect(sessionIndex);
-    }
-    if (onBackToSessions) {
-      onBackToSessions();
-    }
-  };
 
   const getSegmentColor = (segment: CycleSegment) => {
     switch (segment.type) {
@@ -220,123 +202,92 @@ const SessionCarousel = memo(function SessionCarousel({
   }
 
   return (
-    <div className={`${getThemeClass('component')} rounded-lg p-6`}>
-      <div className="flex items-center justify-between mb-6">
+    <div className={`${getThemeClass('component')} rounded-lg p-6 w-1/2`}>
+      <div className="flex items-center justify-center mb-6">
         <h2 className={`text-xl font-semibold ${getThemeClass('textPrimary')}`}>
           Total Sessions: {cycles.length} sessions
         </h2>
-        <div className="flex items-center gap-2">
-          {!showTimeline && onViewTimeline && (
-            <button
-              onClick={onViewTimeline}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg ${getThemeClass('componentSecondary')} hover:opacity-80 transition-colors text-sm font-medium`}
-            >
-              <Calendar className="w-4 h-4" />
-              전체보기
-            </button>
-          )}
-          {showTimeline && onBackToSessions && (
-            <button
-              onClick={onBackToSessions}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg ${getThemeClass('componentSecondary')} hover:opacity-80 transition-colors text-sm font-medium`}
-            >
-              <ArrowLeft className="w-4 h-4" />
-              세션별 보기
-            </button>
-          )}
-        </div>
       </div>
 
-      {!showTimeline ? (
-        <div className="relative h-[260px] flex items-center justify-center overflow-hidden">
-          <Swiper
-            ref={swiperRef}
-            modules={[EffectCoverflow, Navigation, Pagination, Mousewheel, FreeMode]}
-            grabCursor={true}
-            centeredSlides={true}
-            slidesPerView="auto"
-            effect="coverflow"
-            coverflowEffect={{
-              rotate: 0,
-              stretch: 0,
-              depth: 100,
-              modifier: 1,
-              slideShadows: false,
-            }}
-            mousewheel={{
-              enabled: true,
-              sensitivity: 1.0,
-              releaseOnEdges: false,
-              forceToAxis: true,
-              thresholdDelta: 6,
-              thresholdTime: 150,
-            }}
-            freeMode={{
-              enabled: true,
-              sticky: true,
-              momentumRatio: 0.3,
-              momentumVelocityRatio: 0.3,
-              momentumBounce: false,
-              minimumVelocity: 0.02,
-            }}
-            pagination={{
-              clickable: true,
-              bulletActiveClass: `${isDarkMode ? '!bg-purple-400' : '!bg-purple-600'}`,
-              bulletClass: `${isDarkMode ? 'bg-gray-600' : 'bg-gray-300'} w-2 h-2 rounded-full transition-all duration-200`,
-            }}
-            navigation={false}
-            onSlideChange={handleSlideChange}
-            speed={400}
-            className="h-full w-full"
-            slideToClickedSlide={true}
-            resistance={true}
-            resistanceRatio={0.85}
-            longSwipesRatio={0.15}
-            longSwipesMs={200}
-            shortSwipes={true}
-            touchReleaseOnEdges={true}
-            updateOnWindowResize={false}
-            observer={false}
-            observeParents={false}
-          >
-            {memoizedCycles.map((cycle, index) => (
-              <SwiperSlide key={cycle.id} className="slide-inner" style={{ width: '320px', maxWidth: '380px' }}>
-                {({ isActive, isPrev, isNext }) => (
-                  <div 
-                    className={`will-change-transform transition-all duration-300 ease-out cursor-pointer transform-gpu ${
-                      isActive 
-                        ? 'scale-100 opacity-100 z-20' 
-                        : 'scale-85 opacity-60 z-10 hover:opacity-80 hover:scale-90'
-                    }`}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      filter: isActive ? 'none' : 'brightness(0.8)',
-                    }}
-                    onClick={() => {
-                      if (!isActive && swiperRef.current) {
-                        swiperRef.current.slideTo(index);
-                      }
-                    }}
-                  >
-                    {renderCycleCard(cycle, cycle.workTime, cycle.mergedSegments)}
-                  </div>
-                )}
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-      ) : (
-        <div className="mt-6">
-          <InlineTimeline 
-            cycles={cycles}
-            date={selectedDate || ''}
-            onBack={() => {}} // 이 버튼은 상단에서 처리하므로 빈 함수
-            showHeader={false}
-            onSessionClick={handleSessionClickFromTimeline}
-          />
-        </div>
-      )}
+      <div className="relative h-[520px] flex items-center justify-center overflow-hidden">
+        <Swiper
+          ref={swiperRef}
+          modules={[EffectCoverflow, Navigation, Pagination, Mousewheel, FreeMode]}
+          grabCursor={true}
+          centeredSlides={true}
+          slidesPerView="auto"
+          direction="vertical"
+          effect="coverflow"
+          coverflowEffect={{
+            rotate: 0,
+            stretch: 0,
+            depth: 100,
+            modifier: 1,
+            slideShadows: false,
+          }}
+          mousewheel={{
+            enabled: true,
+            sensitivity: 1.0,
+            releaseOnEdges: false,
+            forceToAxis: true,
+            thresholdDelta: 6,
+            thresholdTime: 150,
+          }}
+          freeMode={{
+            enabled: true,
+            sticky: true,
+            momentumRatio: 0.3,
+            momentumVelocityRatio: 0.3,
+            momentumBounce: false,
+            minimumVelocity: 0.02,
+          }}
+          pagination={{
+            clickable: true,
+            bulletActiveClass: `${isDarkMode ? '!bg-purple-400' : '!bg-purple-600'}`,
+            bulletClass: `${isDarkMode ? 'bg-gray-600' : 'bg-gray-300'} w-2 h-2 rounded-full transition-all duration-200`,
+          }}
+          navigation={false}
+          onSlideChange={handleSlideChange}
+          speed={400}
+          className="h-full w-full"
+          slideToClickedSlide={true}
+          resistance={true}
+          resistanceRatio={0.85}
+          longSwipesRatio={0.15}
+          longSwipesMs={200}
+          shortSwipes={true}
+          touchReleaseOnEdges={true}
+          updateOnWindowResize={false}
+          observer={false}
+          observeParents={false}
+        >
+          {memoizedCycles.map((cycle, index) => (
+            <SwiperSlide key={cycle.id} className="slide-inner" style={{ height: '240px', maxHeight: '280px' }}>
+              {({ isActive, isPrev, isNext }) => (
+                <div 
+                  className={`will-change-transform transition-all duration-300 ease-out cursor-pointer transform-gpu ${
+                    isActive 
+                      ? 'scale-100 opacity-100 z-20' 
+                      : 'scale-85 opacity-60 z-10 hover:opacity-80 hover:scale-90'
+                  }`}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    filter: isActive ? 'none' : 'brightness(0.8)',
+                  }}
+                  onClick={() => {
+                    if (!isActive && swiperRef.current) {
+                      swiperRef.current.slideTo(index);
+                    }
+                  }}
+                >
+                  {renderCycleCard(cycle, cycle.workTime, cycle.mergedSegments)}
+                </div>
+              )}
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
     </div>
   );
 });
