@@ -89,24 +89,24 @@ const SessionCarousel = memo(function SessionCarousel({
   // 메모이제이션으로 렌더링 최적화
   const renderCycleCard = React.useCallback((cycle: CycleData, workTime: number, mergedSegments: CycleSegment[]) => {
     return (
-      <div className="rounded-lg p-4 h-[240px] w-full transform-gpu">
+      <div className={`rounded-lg p-4 h-[240px] w-full transform-gpu border ${getThemeClass('border')} ${getThemeClass('component')} overflow-hidden`}>
         {/* Header */}
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h3 className={`font-semibold text-lg ${getThemeClass('textPrimary')}`}>
+        <div className="flex justify-between items-start mb-3">
+          <div className="flex-1 min-w-0 pr-2">
+            <h3 className={`font-semibold text-base ${getThemeClass('textPrimary')} truncate`}>
               Session #{cycle.id}
             </h3>
-            <p className={`text-sm ${getThemeClass('textSecondary')}`}>
+            <p className={`text-xs ${getThemeClass('textSecondary')} truncate`}>
               Duration: {cycle.duration} minutes
             </p>
           </div>
-          <div className={`text-2xl font-bold ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>
+          <div className={`text-xl font-bold ${isDarkMode ? 'text-purple-400' : 'text-purple-600'} flex-shrink-0`}>
             {cycle.totalProductivity}
           </div>
         </div>
 
         {/* Timeline Bar */}
-        <div className="mb-4">
+        <div className="mb-3">
           <div className="flex justify-between items-center mb-1">
             <span className={`text-xs ${getThemeClass('textSecondary')}`}>
               {new Date(cycle.startTime).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
@@ -142,37 +142,37 @@ const SessionCarousel = memo(function SessionCarousel({
               );
             })}
           </div>
-          <div className="flex items-center justify-center gap-4 mt-2">
+          <div className="flex items-center justify-center gap-2 mt-1 flex-wrap">
             <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded bg-purple-500"></div>
-              <span className={`text-xs ${getThemeClass('textSecondary')} font-medium`}>Work ({workTime}m)</span>
+              <div className="w-2 h-2 rounded bg-purple-500 flex-shrink-0"></div>
+              <span className={`text-xs ${getThemeClass('textSecondary')}`}>Work ({workTime}m)</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded bg-red-500"></div>
-              <span className={`text-xs ${getThemeClass('textSecondary')} font-medium`}>Break ({cycle.breakTime}m)</span>
+              <div className="w-2 h-2 rounded bg-red-500 flex-shrink-0"></div>
+              <span className={`text-xs ${getThemeClass('textSecondary')}`}>Break ({cycle.breakTime}m)</span>
             </div>
             {cycle.afkTime > 0 && (
               <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-yellow-500"></div>
-                <span className={`text-xs ${getThemeClass('textSecondary')} font-medium`}>AFK ({cycle.afkTime}m)</span>
+                <div className="w-2 h-2 rounded bg-yellow-500 flex-shrink-0"></div>
+                <span className={`text-xs ${getThemeClass('textSecondary')}`}>AFK ({cycle.afkTime}m)</span>
               </div>
             )}
           </div>
         </div>
 
         {/* Top Categories */}
-        <div className="space-y-2">
-          <p className={`text-sm font-medium ${getThemeClass('textPrimary')} mb-2`}>Top Activities</p>
+        <div className="space-y-1">
+          <p className={`text-xs font-medium ${getThemeClass('textPrimary')} mb-1`}>Top Activities</p>
           {cycle.categories.slice(0, 2).map((category, index) => (
-            <div key={index} className="flex items-center gap-2">
+            <div key={index} className="flex items-center gap-2 min-w-0">
               <div 
-                className="w-3 h-3 rounded-full"
+                className="w-2 h-2 rounded-full flex-shrink-0"
                 style={{ backgroundColor: category.color }}
               />
-              <span className={`text-xs ${getThemeClass('textPrimary')} flex-1`}>
+              <span className={`text-xs ${getThemeClass('textPrimary')} flex-1 truncate`}>
                 {category.name}
               </span>
-              <span className={`text-xs ${getThemeClass('textSecondary')}`}>
+              <span className={`text-xs ${getThemeClass('textSecondary')} flex-shrink-0`}>
                 {category.duration}m
               </span>
             </div>
@@ -184,7 +184,7 @@ const SessionCarousel = memo(function SessionCarousel({
 
   if (isLoading) {
     return (
-      <div className={`${getThemeClass('component')} rounded-lg p-6 h-[280px] flex items-center justify-center`}>
+      <div className={`${getThemeClass('component')} rounded-lg p-8 h-[280px] flex items-center justify-center border ${getThemeClass('border')}`}>
         <div className="animate-pulse flex flex-col items-center">
           <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-32 mb-2"></div>
           <div className="h-2 bg-gray-300 dark:bg-gray-700 rounded w-24"></div>
@@ -195,14 +195,14 @@ const SessionCarousel = memo(function SessionCarousel({
 
   if (!cycles || cycles.length === 0) {
     return (
-      <div className={`${getThemeClass('component')} rounded-lg p-6 h-[280px] flex items-center justify-center`}>
+      <div className={`${getThemeClass('component')} rounded-lg p-8 h-[280px] flex items-center justify-center border ${getThemeClass('border')}`}>
         <p className={getThemeClass('textPrimary')}>No session data available</p>
       </div>
     );
   }
 
   return (
-    <div className={`${getThemeClass('component')} rounded-lg p-6`}>
+    <div className={`${getThemeClass('component')} rounded-lg p-8 border ${getThemeClass('border')}`}>
       <div className="flex items-center justify-center mb-6">
         <h2 className={`text-xl font-semibold ${getThemeClass('textPrimary')}`}>
           Total Sessions: {cycles.length} sessions
