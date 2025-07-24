@@ -182,9 +182,10 @@ export default function StatisticsPage() {
             <ActivityList date={selectedDate} />
           </div>
 
-          {/* 사이클 캐러셀 스켈레톤 */}
-          <div className='col-span-1 lg:col-span-2'>
-            <SessionCarousel cycles={[]} isLoading={true} onViewTimeline={handleViewTimeline} />
+          {/* 하단: 스켈레톤 */}
+          <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
+            <SessionCarousel cycles={[]} isLoading={true} />
+            <ActivityList date={selectedDate} />
           </div>
         </div>
       </div>
@@ -242,23 +243,25 @@ export default function StatisticsPage() {
             </div>
           </div>
 
-          {/* 오른쪽: 차트 */}
-          <ActivityList date={selectedDate} />
+          {/* 오른쪽: 빈 컴포넌트 (기존 ActivityList 위치) */}
+          <div className={`${getThemeClass('component')} rounded-lg p-6 h-full flex items-center justify-center`}>
+            <p className={`${getThemeClass('textSecondary')} text-sm`}>Reserved Space</p>
+          </div>
 
         </div>
 
-        {/* 세션 캐러셀 - 전체 너비 사용 */}
-        <div className='col-span-1 lg:col-span-2'>
+        {/* 하단: 세션 캐러셀과 Recent Activities */}
+        <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
+          {/* 왼쪽: 세션 캐러셀 */}
           <SessionCarousel 
             cycles={cycleData}
             isLoading={false}
-            onViewTimeline={handleViewTimeline}
-            showTimeline={showTimeline}
-            onBackToSessions={handleBackToSessions}
-            selectedDate={selectedDate}
             currentSessionIndex={selectedSessionIndex}
             onSessionSelect={handleSessionSelect}
           />
+          
+          {/* 오른쪽: Recent Activities */}
+          <ActivityList date={selectedDate} />
         </div>
       </div>
 

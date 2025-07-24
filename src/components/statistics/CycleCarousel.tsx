@@ -202,14 +202,14 @@ const SessionCarousel = memo(function SessionCarousel({
   }
 
   return (
-    <div className={`${getThemeClass('component')} rounded-lg p-6 w-1/2`}>
+    <div className={`${getThemeClass('component')} rounded-lg p-6`}>
       <div className="flex items-center justify-center mb-6">
         <h2 className={`text-xl font-semibold ${getThemeClass('textPrimary')}`}>
           Total Sessions: {cycles.length} sessions
         </h2>
       </div>
 
-      <div className="relative h-[520px] flex items-center justify-center overflow-hidden">
+      <div className="relative h-[520px] w-full flex items-center justify-center overflow-hidden">
         <Swiper
           ref={swiperRef}
           modules={[EffectCoverflow, Navigation, Pagination, Mousewheel, FreeMode]}
@@ -265,13 +265,14 @@ const SessionCarousel = memo(function SessionCarousel({
             <SwiperSlide key={cycle.id} className="slide-inner" style={{ height: '240px', maxHeight: '280px' }}>
               {({ isActive, isPrev, isNext }) => (
                 <div 
-                  className={`will-change-transform transition-all duration-300 ease-out cursor-pointer transform-gpu ${
+                  className={`will-change-transform transition-all duration-300 ease-out cursor-pointer transform-gpu mx-auto ${
                     isActive 
                       ? 'scale-100 opacity-100 z-20' 
                       : 'scale-85 opacity-60 z-10 hover:opacity-80 hover:scale-90'
                   }`}
                   style={{
                     width: '100%',
+                    maxWidth: '420px',
                     height: '100%',
                     filter: isActive ? 'none' : 'brightness(0.8)',
                   }}
