@@ -92,35 +92,67 @@ export default function MonthlyStreak() {
 
   const activeDates = mockData.activeDates;
   
-  // 연속된 스트릭 분석하여 클래스 할당
+  // 같은 행에서의 연속 스트릭 분석
   const getStreakClasses = () => {
     const streakClasses: { [key: string]: string[] } = {};
+    const start = startOfMonth(currentMonth);
+    const end = endOfMonth(currentMonth);
+    const startWeek = start.getDay();
+    const days = eachDayOfInterval({ start, end });
     
-    activeDates.forEach((date, index) => {
-      const dateStr = date.toDateString();
-      const classes = ['has-activity'];
-      
-      // 이전 날짜 확인
-      const prevDate = index > 0 ? activeDates[index - 1] : null;
-      const nextDate = index < activeDates.length - 1 ? activeDates[index + 1] : null;
-      
-      const isPrevConsecutive = prevDate && 
-        (date.getTime() - prevDate.getTime()) === 86400000; // 하루 차이
-      const isNextConsecutive = nextDate && 
-        (nextDate.getTime() - date.getTime()) === 86400000; // 하루 차이
-      
-      if (isPrevConsecutive && isNextConsecutive) {
-        classes.push('streak-middle');
-      } else if (isPrevConsecutive && !isNextConsecutive) {
-        classes.push('streak-end');
-      } else if (!isPrevConsecutive && isNextConsecutive) {
-        classes.push('streak-start');
-      } else {
-        // 단독 활동일
-        classes.push('streak-single');
-      }
-      
-      streakClasses[dateStr] = classes;
+    // 전체 그리드 생성 (빈 셀 + 날짜)
+    const totalCells: (Date | null)[] = [];
+    for (let i = 0; i < startWeek; i++) {
+      totalCells.push(null);
+    }
+    days.forEach(date => {
+      totalCells.push(date);
+    });
+    
+    // 행별로 분할하여 처리
+    const rows: (Date | null)[][] = [];
+    for (let i = 0; i < totalCells.length; i += 7) {
+      rows.push(totalCells.slice(i, i + 7));
+    }
+    
+    rows.forEach((row, rowIndex) => {
+      row.forEach((date, colIndex) => {
+        if (!date) return;
+        
+        const dateStr = date.toDateString();
+        const isActive = activeDates.some(activeDay => 
+          activeDay.toDateString() === dateStr
+        );
+        
+        if (!isActive) return;
+        
+        const classes = ['has-activity'];
+        
+        // 같은 행에서 이전/다음 날짜 확인
+        const prevDate: Date | null = colIndex > 0 ? row[colIndex - 1] : null;
+        const nextDate: Date | null = colIndex < row.length - 1 ? row[colIndex + 1] : null;
+        
+        // 같은 행 + 연속 날짜 + 활성일 조건 확인
+        const isPrevRowConsecutive = prevDate &&
+          activeDates.some(d => d.toDateString() === prevDate.toDateString()) &&
+          (date.getTime() - prevDate.getTime()) === 86400000;
+          
+        const isNextRowConsecutive = nextDate &&
+          activeDates.some(d => d.toDateString() === nextDate.toDateString()) &&
+          (nextDate.getTime() - date.getTime()) === 86400000;
+        
+        if (isPrevRowConsecutive && isNextRowConsecutive) {
+          classes.push('streak-row-middle');
+        } else if (isPrevRowConsecutive && !isNextRowConsecutive) {
+          classes.push('streak-row-end');
+        } else if (!isPrevRowConsecutive && isNextRowConsecutive) {
+          classes.push('streak-row-start');
+        } else {
+          classes.push('streak-single');
+        }
+        
+        streakClasses[dateStr] = classes;
+      });
     });
     
     return streakClasses;
@@ -190,11 +222,11 @@ export default function MonthlyStreak() {
             </div>
             
             {/* 요일 헤더 */}
-            <div className="grid grid-cols-7 gap-1">
+            <div className="grid grid-cols-7 gap-2">
               {['일', '월', '화', '수', '목', '금', '토'].map((day, index) => (
                 <div
                   key={index}
-                  className={`w-6 h-6 text-center text-xs font-medium ${getThemeClass('textSecondary')} flex items-center justify-center`}
+                  className={`w-7 h-6 text-center text-xs font-medium ${getThemeClass('textSecondary')} flex items-center justify-center`}
                 >
                   {day}
                 </div>
@@ -202,66 +234,179 @@ export default function MonthlyStreak() {
             </div>
             
             {/* 날짜 그리드 */}
-            <div className="grid grid-cols-7 gap-1">
-              {(() => {
-                const start = startOfMonth(currentMonth);
-                const end = endOfMonth(currentMonth);
-                const startWeek = start.getDay(); // 첫 날의 요일 (0=일요일)
-                const days = eachDayOfInterval({ start, end });
-                const today = new Date();
-                
-                // 빈 셀 추가 (월 시작 전)
-                const emptyCells = [];
-                for (let i = 0; i < startWeek; i++) {
-                  emptyCells.push(
-                    <div key={`empty-${i}`} className="w-6 h-6" />
-                  );
-                }
-                
-                // 날짜 셀들
-                const dateCells = days.map(date => {
-                  const dateStr = date.toDateString();
-                  const isToday = date.toDateString() === today.toDateString();
-                  const isActive = activeDates.some(activeDay => 
-                    activeDay.toDateString() === dateStr
-                  );
-                  const streakClass = streakClasses[dateStr];
+            <div className="relative">
+              {/* 백그라운드 스트릭 레이어 */}
+              <div className="absolute inset-0 grid grid-cols-7 gap-2 pointer-events-none">
+                {(() => {
+                  const start = startOfMonth(currentMonth);
+                  const end = endOfMonth(currentMonth);
+                  const startWeek = start.getDay();
+                  const days = eachDayOfInterval({ start, end });
                   
-                  let cellClass = `w-6 h-6 text-xs font-medium flex items-center justify-center transition-all duration-200 ${getThemeClass('border')}`;
+                  // 전체 그리드 생성
+                  const totalCells: (Date | null)[] = [];
+                  for (let i = 0; i < startWeek; i++) {
+                    totalCells.push(null);
+                  }
+                  days.forEach(date => {
+                    totalCells.push(date);
+                  });
                   
-                  if (isActive) {
-                    // 스트릭 타입에 따른 스타일링
-                    if (streakClass?.includes('streak-start')) {
-                      cellClass += ` bg-gradient-to-br from-orange-400 to-red-500 text-white rounded-l-md border-r-0`;
-                    } else if (streakClass?.includes('streak-middle')) {
-                      cellClass += ` bg-gradient-to-br from-orange-400 to-red-500 text-white border-r-0 border-l-0`;
-                    } else if (streakClass?.includes('streak-end')) {
-                      cellClass += ` bg-gradient-to-br from-orange-400 to-red-500 text-white rounded-r-md border-l-0`;
-                    } else {
-                      // 단독 활동일
-                      cellClass += ` bg-gradient-to-br from-orange-400 to-red-500 text-white rounded-md`;
+                  // 행별로 처리하여 연속 스트릭 블록 생성
+                  const backgroundCells: React.ReactNode[] = [];
+                  const rows: (Date | null)[][] = [];
+                  for (let i = 0; i < totalCells.length; i += 7) {
+                    rows.push(totalCells.slice(i, i + 7));
+                  }
+                  
+                  rows.forEach((row, rowIndex) => {
+                    let streakStart = -1;
+                    let currentStreak: Date[] = [];
+                    
+                    row.forEach((date, colIndex) => {
+                      const cellIndex = rowIndex * 7 + colIndex;
+                      
+                      if (!date) {
+                        // 빈 셀
+                        backgroundCells.push(<div key={`bg-empty-${cellIndex}`} className="w-7 h-7" />);
+                        return;
+                      }
+                      
+                      const isActive = activeDates.some(activeDay => 
+                        activeDay.toDateString() === date.toDateString()
+                      );
+                      
+                      if (isActive) {
+                        if (currentStreak.length === 0) {
+                          streakStart = colIndex;
+                          currentStreak = [date];
+                        } else {
+                          // 연속성 확인
+                          const lastDate = currentStreak[currentStreak.length - 1];
+                          if ((date.getTime() - lastDate.getTime()) === 86400000) {
+                            currentStreak.push(date);
+                          } else {
+                            // 이전 스트릭 완료하고 새 스트릭 시작
+                            if (currentStreak.length > 1) {
+                              // 연속 스트릭 블록 추가
+                              backgroundCells.push(
+                                <div
+                                  key={`bg-streak-${rowIndex}-${streakStart}`}
+                                  className="bg-gradient-to-br from-orange-400 to-red-500 rounded-md"
+                                  style={{
+                                    gridColumn: `${streakStart + 1} / span ${currentStreak.length}`,
+                                    height: '28px'
+                                  }}
+                                />
+                              );
+                            } else {
+                              // 단독 활동일
+                              backgroundCells.push(<div key={`bg-single-${cellIndex}`} className="w-7 h-7 bg-gradient-to-br from-orange-400 to-red-500 rounded-md" />);
+                            }
+                            streakStart = colIndex;
+                            currentStreak = [date];
+                          }
+                        }
+                      } else {
+                        // 스트릭 종료
+                        if (currentStreak.length > 1) {
+                          // 연속 스트릭 블록 추가
+                          backgroundCells.push(
+                            <div
+                              key={`bg-streak-${rowIndex}-${streakStart}`}
+                              className="bg-gradient-to-br from-orange-400 to-red-500 rounded-md"
+                              style={{
+                                gridColumn: `${streakStart + 1} / span ${currentStreak.length}`,
+                                height: '28px'
+                              }}
+                            />
+                          );
+                        } else if (currentStreak.length === 1) {
+                          // 단독 활동일
+                          const singleIndex = rowIndex * 7 + streakStart;
+                          backgroundCells.push(<div key={`bg-single-${singleIndex}`} className="w-7 h-7 bg-gradient-to-br from-orange-400 to-red-500 rounded-md" />);
+                        }
+                        
+                        // 비활성일은 투명
+                        backgroundCells.push(<div key={`bg-inactive-${cellIndex}`} className="w-7 h-7" />);
+                        currentStreak = [];
+                        streakStart = -1;
+                      }
+                    });
+                    
+                    // 행 끝에서 스트릭 처리
+                    if (currentStreak.length > 1) {
+                      backgroundCells.push(
+                        <div
+                          key={`bg-streak-end-${rowIndex}-${streakStart}`}
+                          className="bg-gradient-to-br from-orange-400 to-red-500 rounded-md"
+                          style={{
+                            gridColumn: `${streakStart + 1} / span ${currentStreak.length}`,
+                            height: '28px'
+                          }}
+                        />
+                      );
+                    } else if (currentStreak.length === 1) {
+                      const singleIndex = rowIndex * 7 + streakStart;
+                      backgroundCells.push(<div key={`bg-single-end-${singleIndex}`} className="w-7 h-7 bg-gradient-to-br from-orange-400 to-red-500 rounded-md" />);
                     }
-                  } else {
-                    cellClass += ` ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-100 hover:bg-gray-200'} ${getThemeClass('textSecondary')} rounded-md`;
+                  });
+                  
+                  return backgroundCells;
+                })()}
+              </div>
+
+              {/* 전경 날짜 레이어 */}
+              <div className="relative grid grid-cols-7 gap-2">
+                {(() => {
+                  const start = startOfMonth(currentMonth);
+                  const end = endOfMonth(currentMonth);
+                  const startWeek = start.getDay();
+                  const days = eachDayOfInterval({ start, end });
+                  const today = new Date();
+                  
+                  // 빈 셀 추가
+                  const emptyCells = [];
+                  for (let i = 0; i < startWeek; i++) {
+                    emptyCells.push(
+                      <div key={`empty-${i}`} className="w-7 h-7" />
+                    );
                   }
                   
-                  if (isToday) {
-                    cellClass += ` ring-2 ring-offset-1 ${isDarkMode ? 'ring-indigo-400 ring-offset-gray-900' : 'ring-indigo-500 ring-offset-white'}`;
-                  }
+                  // 날짜 셀들 - 투명 배경
+                  const dateCells = days.map(date => {
+                    const dateStr = date.toDateString();
+                    const isToday = date.toDateString() === today.toDateString();
+                    const isActive = activeDates.some(activeDay => 
+                      activeDay.toDateString() === dateStr
+                    );
+                    
+                    let cellClass = `w-7 h-7 text-xs font-medium flex items-center justify-center transition-all duration-200 relative z-10`;
+                    
+                    if (isActive) {
+                      cellClass += ` text-white font-semibold`;
+                    } else {
+                      cellClass += ` ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-100 hover:bg-gray-200'} ${getThemeClass('textSecondary')} rounded-md`;
+                    }
+                    
+                    if (isToday) {
+                      cellClass += ` ring-2 ring-offset-1 ${isDarkMode ? 'ring-indigo-400 ring-offset-gray-900' : 'ring-indigo-500 ring-offset-white'}`;
+                    }
+                    
+                    return (
+                      <div
+                        key={date.toISOString()}
+                        className={cellClass}
+                        title={`${date.getDate()}일${isActive ? ' - 활동일' : ''}${isToday ? ' (오늘)' : ''}`}
+                      >
+                        {date.getDate()}
+                      </div>
+                    );
+                  });
                   
-                  return (
-                    <div
-                      key={date.toISOString()}
-                      className={cellClass}
-                      title={`${date.getDate()}일${isActive ? ' - 활동일' : ''}${isToday ? ' (오늘)' : ''}`}
-                    >
-                      {date.getDate()}
-                    </div>
-                  );
-                });
-                
-                return [...emptyCells, ...dateCells];
-              })()}
+                  return [...emptyCells, ...dateCells];
+                })()}
+              </div>
             </div>
             
             {/* 범례 - 캘린더 아래 */}
