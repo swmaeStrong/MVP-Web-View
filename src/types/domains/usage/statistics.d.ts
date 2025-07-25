@@ -35,4 +35,10 @@ declare namespace Statistics {
     date: string; // YYYY-MM-DD format
     activityCount: number;
   }
+
+  // 스트릭 카운트 관련 타입 정의
+  interface StreakCountApiResponse {
+    currentStreak: number;
+    maxStreak: number;
+  }
 }

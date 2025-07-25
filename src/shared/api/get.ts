@@ -82,3 +82,9 @@ export const getStreakCalendar = (date: string = getKSTDateString()) =>
   parseApi<Statistics.StreakCalendarApiResponse[]>(
     API.get(`/streak/calendar?date=${date}`)
   );
+
+// 스트릭 카운트 조회
+export const getStreakCount = () =>
+  parseApi<Statistics.StreakCountApiResponse>(
+    API.get('/streak/count')
+  );
