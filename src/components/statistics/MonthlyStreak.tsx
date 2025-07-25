@@ -38,11 +38,23 @@ export default function MonthlyStreak() {
       .map(item => new Date(item.date));
   }, [streakData]);
 
-  // 총 활동일 계산 (달력에 표시할 때만 사용)
-  const totalActiveDays = useMemo(() => {
-    if (!streakData) return 0;
-    return streakData.filter(item => item.activityCount > 0).length;
-  }, [streakData]);
+  // 응원 문구 생성
+  const encouragementMessage = useMemo(() => {
+    if (!streakCountData) return '';
+    
+    const { currentStreak, maxStreak } = streakCountData;
+    
+    if (currentStreak === 0) {
+      return 'Start your new streak!';
+    } else if (currentStreak === maxStreak && currentStreak > 0) {
+      return 'Breaking your record! 🔥';
+    } else if (currentStreak > 0) {
+      const remaining = maxStreak - currentStreak;
+      return `${remaining} days to your best streak!`;
+    }
+    
+    return '';
+  }, [streakCountData]);
   
   // 같은 행에서의 연속 스트릭 분석
   const getStreakClasses = () => {
@@ -380,29 +392,31 @@ export default function MonthlyStreak() {
           </div>
 
           {/* 우측: 통계 정보 */}
-          <div className="flex flex-col justify-center space-y-2">
-            <div className={`p-2 rounded-lg text-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+          <div className="flex flex-col justify-center space-y-3">
+            <div className={`p-3 rounded-lg text-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
               <div className={`text-xs ${getThemeClass('textSecondary')} mb-1`}>현재 스트릭</div>
-              <div className={`text-lg font-bold ${getThemeClass('textPrimary')} flex items-center justify-center gap-1`}>
+              <div className={`text-xl font-bold ${getThemeClass('textPrimary')} flex items-center justify-center gap-1`}>
                 {isCountLoading ? '-' : streakCountData?.currentStreak || 0}
-                <Flame className="h-3 w-3 text-orange-500" />
+                <Flame className="h-4 w-4 text-orange-500" />
               </div>
             </div>
             
-            <div className={`p-2 rounded-lg text-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+            <div className={`p-3 rounded-lg text-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
               <div className={`text-xs ${getThemeClass('textSecondary')} mb-1`}>최장 스트릭</div>
-              <div className={`text-lg font-bold ${getThemeClass('textPrimary')} flex items-center justify-center gap-1`}>
+              <div className={`text-xl font-bold ${getThemeClass('textPrimary')} flex items-center justify-center gap-1`}>
                 {isCountLoading ? '-' : streakCountData?.maxStreak || 0}
-                <TrendingUp className="h-3 w-3 text-green-500" />
+                <TrendingUp className="h-4 w-4 text-green-500" />
               </div>
             </div>
             
-            <div className={`p-2 rounded-lg text-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-              <div className={`text-xs ${getThemeClass('textSecondary')} mb-1`}>활동일</div>
-              <div className={`text-lg font-bold ${getThemeClass('textPrimary')}`}>
-                {isCalendarLoading ? '-' : totalActiveDays}일
+            {/* 응원 문구 */}
+            {encouragementMessage && (
+              <div className={`p-3 rounded-lg text-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
+                <div className={`text-xs font-medium ${getThemeClass('textSecondary')}`}>
+                  {encouragementMessage}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </CardContent>
