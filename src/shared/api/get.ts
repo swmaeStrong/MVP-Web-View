@@ -55,6 +55,15 @@ export const getUsageLog = (
     API.get(`/usage-log?userId=${userId}&date=${date}`)
   );
 
+// 포모도로 사용 기록 조회
+export const getPomodoroUsageLog = (
+  userId: string,
+  date: string = getKSTDateString()
+) =>
+  parseApi<UsageLog.UsageLogApiResponse[]>(
+    API.get(`/usage-log/pomodoro?userId=${userId}&date=${date}`)
+  );
+
 export const getHourlyUsageLog = (
   date: string = getKSTDateString(),
   userId: string,

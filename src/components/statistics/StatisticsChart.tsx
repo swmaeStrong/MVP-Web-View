@@ -101,7 +101,6 @@ export default function StatisticsChart({
       <CardHeader className='pb-2'>
         <div className='flex items-center justify-between'>
           <CardTitle className={`flex items-center gap-2 text-sm font-semibold ${getThemeClass('textPrimary')} truncate`}>
-            <Target className="h-4 w-4 text-purple-500 flex-shrink-0" />
             <span className="truncate">{getChartTitle()}</span>
           </CardTitle>
         </div>

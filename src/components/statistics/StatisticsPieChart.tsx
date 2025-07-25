@@ -31,7 +31,7 @@ export default function StatisticsPieChart({
   };
 
   // Extract only top 3 categories and group the rest as "Others"
-  const top3Categories = data.categories.slice(0, 4).map((category, index) => ({
+  const top3Categories = data.categories.slice(0, 3).map((category, index) => ({
     ...category,
     color: getCategoryColor(category.name), // Use colors from colors.ts
   }));
@@ -114,7 +114,7 @@ export default function StatisticsPieChart({
   }, {} as ChartConfig);
 
   return (
-    <div className={`flex flex-col items-center justify-center gap-2 w-full`}>
+    <div className={`flex items-center justify-center gap-8 w-full`}>
       {/* Pie Chart */}
       <div className={`flex-shrink-0`}>
         <ChartContainer
@@ -206,21 +206,24 @@ export default function StatisticsPieChart({
         </ChartContainer>
       </div>
 
-      {/* Category Details - Compact */}
-      <div className='w-full px-2'>
-        <div className={`flex flex-wrap gap-x-3 gap-y-1 justify-center`}>
-          {finalCategories.slice(0, 3).map((category, index) => (
-            <div key={index} className={`flex items-center gap-1 min-w-0`}>
-              <div
-                className='w-2 h-2 rounded-full flex-shrink-0'
-                style={{ backgroundColor: category.color }}
-              />
-              <span className={`text-xs ${getThemeTextColor('secondary')} truncate max-w-[60px]`}>
+      {/* Category Details - Right side */}
+      <div className='flex flex-col gap-2'>
+        {finalCategories.map((category, index) => (
+          <div key={index} className={`flex items-center gap-2`}>
+            <div
+              className='w-3 h-3 rounded-full flex-shrink-0'
+              style={{ backgroundColor: category.color }}
+            />
+            <div className='flex flex-col'>
+              <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
                 {category.name === 'Others' ? 'Others' : getCategoryDisplayName(category.name)}
               </span>
+              <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                {formatTime(category.time)} ({category.percentage.toFixed(1)}%)
+              </span>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   );
