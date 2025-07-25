@@ -17,7 +17,7 @@ import SessionCarousel from '@/components/statistics/CycleCarousel';
 import MonthlyStreak from '@/components/statistics/MonthlyStreak';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
 import { useInitUser } from '@/hooks/useInitUser';
-import { generateMockCycles } from '@/utils/mockCycleData';
+// generateMockCycles import 제거 - API 사용으로 대체됨
 import StateDisplay from '../../components/common/StateDisplay';
 import TotalTimeCard from '../../components/statistics/DateNavigationCard';
 
@@ -57,10 +57,7 @@ export default function StatisticsPage() {
     refetch,
   } = useUsageStatistics(selectedDate, currentUser?.id || '');
 
-  // 사이클 목업 데이터 생성
-  const cycleData = useMemo(() => {
-    return generateMockCycles(selectedDate);
-  }, [selectedDate]);
+  // cycleData 제거 - SessionCarousel에서 직접 API 호출
 
   // availableDates 변경 모니터링
   React.useEffect(() => {
@@ -185,7 +182,7 @@ export default function StatisticsPage() {
 
           {/* 하단: 스켈레톤 */}
           <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
-            <SessionCarousel cycles={[]} isLoading={true} />
+            <SessionCarousel selectedDate={selectedDate} />
             <ActivityList date={selectedDate} />
           </div>
         </div>
@@ -244,8 +241,7 @@ export default function StatisticsPage() {
         <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
           {/* 왼쪽: 세션 캐러셀 */}
           <SessionCarousel 
-            cycles={cycleData}
-            isLoading={false}
+            selectedDate={selectedDate}
             currentSessionIndex={selectedSessionIndex}
             onSessionSelect={handleSessionSelect}
           />

@@ -97,3 +97,9 @@ export const getStreakCount = () =>
   parseApi<Statistics.StreakCountApiResponse>(
     API.get('/streak/count')
   );
+
+// 세션 데이터 조회
+export const getSession = (date: string = getKSTDateString()) =>
+  parseApi<Session.SessionApiResponse[]>(
+    API.get(`/session?date=${date}`)
+  );

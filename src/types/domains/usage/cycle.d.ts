@@ -1,5 +1,6 @@
 export interface CycleSegment {
-  type: 'work' | 'break' | 'afk';
+  id?: string;
+  type: 'work' | 'distraction' | 'afk';
   category?: string;
   startTime: string;
   endTime: string;
@@ -13,17 +14,18 @@ export interface CycleData {
   endTime: string;
   duration: number; // minutes
   segments: CycleSegment[];
-  categories: {
+  categories?: {
     name: string;
     duration: number; // minutes
     percentage: number;
     color: string;
   }[];
   totalProductivity: number; // 0-100
-  focusScore: number; // 0-100
+  focusScore?: number; // 0-100
   breakTime: number; // minutes
   afkTime: number; // minutes
-  transitionTime: number; // minutes
+  transitionTime?: number; // minutes
+  title?: string; // 세션 제목
 }
 
 export interface CycleCarouselProps {
