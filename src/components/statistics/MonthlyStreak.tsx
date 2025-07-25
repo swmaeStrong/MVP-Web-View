@@ -170,9 +170,6 @@ export default function MonthlyStreak() {
     setCurrentMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1));
   };
 
-  const handleToday = () => {
-    setCurrentMonth(new Date());
-  };
 
 
 
@@ -184,42 +181,37 @@ export default function MonthlyStreak() {
             <Flame className="h-4 w-4 text-orange-500" />
             월간 스트릭
           </CardTitle>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handlePreviousMonth}
-              className={`h-6 w-6 p-0 ${getThemeClass('textPrimary')}`}
-            >
-              <ChevronLeft className="h-3 w-3" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleToday}
-              className={`h-6 px-2 text-xs ${getThemeClass('textPrimary')} ${getThemeClass('border')}`}
-            >
-              오늘
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleNextMonth}
-              className={`h-6 w-6 p-0 ${getThemeClass('textPrimary')}`}
-            >
-              <ChevronRight className="h-3 w-3" />
-            </Button>
-          </div>
         </div>
       </CardHeader>
       <CardContent className="flex-1 p-3 pt-0">
         <div className="grid grid-cols-2 gap-3 w-full h-full items-start">
           {/* 좌측: 히트맵 스타일 캘린더 */}
           <div className="flex flex-col items-center space-y-2">
-            {/* 월 표시 */}
-            <div className={`text-sm font-medium ${getThemeClass('textPrimary')}`}>
-              {currentMonth.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' })}
+            {/* 월 표시 및 네비게이션 */}
+            <div className="flex items-center justify-between w-full">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handlePreviousMonth}
+                className={`h-6 w-6 p-0 ${getThemeClass('textPrimary')}`}
+              >
+                <ChevronLeft className="h-3 w-3" />
+              </Button>
+              
+              <div className={`text-sm font-medium ${getThemeClass('textPrimary')}`}>
+                {currentMonth.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' })}
+              </div>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleNextMonth}
+                className={`h-6 w-6 p-0 ${getThemeClass('textPrimary')}`}
+              >
+                <ChevronRight className="h-3 w-3" />
+              </Button>
             </div>
+            
             
             {/* 요일 헤더 */}
             <div className="grid grid-cols-7 gap-2">
@@ -376,7 +368,6 @@ export default function MonthlyStreak() {
                   // 날짜 셀들 - 투명 배경
                   const dateCells = days.map(date => {
                     const dateStr = date.toDateString();
-                    const isToday = date.toDateString() === today.toDateString();
                     const isActive = activeDates.some(activeDay => 
                       activeDay.toDateString() === dateStr
                     );
@@ -389,15 +380,11 @@ export default function MonthlyStreak() {
                       cellClass += ` ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-100 hover:bg-gray-200'} ${getThemeClass('textSecondary')} rounded-md`;
                     }
                     
-                    if (isToday) {
-                      cellClass += ` ring-2 ring-offset-1 ${isDarkMode ? 'ring-indigo-400 ring-offset-gray-900' : 'ring-indigo-500 ring-offset-white'}`;
-                    }
-                    
                     return (
                       <div
                         key={date.toISOString()}
                         className={cellClass}
-                        title={`${date.getDate()}일${isActive ? ' - 활동일' : ''}${isToday ? ' (오늘)' : ''}`}
+                        title={`${date.getDate()}일${isActive ? ' - 활동일' : ''}`}
                       >
                         {date.getDate()}
                       </div>
@@ -414,10 +401,6 @@ export default function MonthlyStreak() {
               <div className="flex items-center gap-1">
                 <div className="h-2 w-2 rounded bg-gradient-to-br from-orange-400 to-red-500" />
                 <span className={getThemeClass('textSecondary')}>활동일</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className={`h-2 w-2 rounded ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
-                <span className={getThemeClass('textSecondary')}>오늘</span>
               </div>
             </div>
           </div>
