@@ -1,15 +1,14 @@
 'use client';
 
-import { eachDayOfInterval, endOfMonth, startOfMonth } from 'date-fns';
-import { ChevronLeft, ChevronRight, Flame, TrendingUp } from 'lucide-react';
-import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { eachDayOfInterval, endOfMonth, startOfMonth } from 'date-fns';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useMemo, useState } from 'react';
 
 import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import { getStreakCalendar, getStreakCount } from '@/shared/api/get';
-import { getKSTDateString } from '@/utils/timezone';
 
 export default function MonthlyStreak() {
   const { getThemeClass, isDarkMode } = useTheme();
@@ -269,7 +268,7 @@ export default function MonthlyStreak() {
                               backgroundCells.push(
                                 <div
                                   key={`bg-streak-${rowIndex}-${streakStart}`}
-                                  className="bg-gradient-to-br from-orange-400 to-red-500 rounded-md"
+                                  className="bg-gradient-to-br from-orange-300 to-orange-400 rounded-md"
                                   style={{
                                     gridColumn: `${streakStart + 1} / span ${currentStreak.length}`,
                                     height: '28px'
@@ -278,7 +277,7 @@ export default function MonthlyStreak() {
                               );
                             } else {
                               // 단독 활동일
-                              backgroundCells.push(<div key={`bg-single-${cellIndex}`} className="w-7 h-7 bg-gradient-to-br from-orange-400 to-red-500 rounded-md" />);
+                              backgroundCells.push(<div key={`bg-single-${cellIndex}`} className="w-7 h-7 bg-gradient-to-br from-orange-300 to-orange-400 rounded-md" />);
                             }
                             streakStart = colIndex;
                             currentStreak = [date];
@@ -291,7 +290,7 @@ export default function MonthlyStreak() {
                           backgroundCells.push(
                             <div
                               key={`bg-streak-${rowIndex}-${streakStart}`}
-                              className="bg-gradient-to-br from-orange-400 to-red-500 rounded-md"
+                              className="bg-gradient-to-br from-orange-300 to-orange-400 rounded-md"
                               style={{
                                 gridColumn: `${streakStart + 1} / span ${currentStreak.length}`,
                                 height: '28px'
@@ -301,7 +300,7 @@ export default function MonthlyStreak() {
                         } else if (currentStreak.length === 1) {
                           // 단독 활동일
                           const singleIndex = rowIndex * 7 + streakStart;
-                          backgroundCells.push(<div key={`bg-single-${singleIndex}`} className="w-7 h-7 bg-gradient-to-br from-orange-400 to-red-500 rounded-md" />);
+                          backgroundCells.push(<div key={`bg-single-${singleIndex}`} className="w-7 h-7 bg-gradient-to-br from-orange-300 to-orange-400 rounded-md" />);
                         }
                         
                         // 비활성일은 투명
@@ -316,7 +315,7 @@ export default function MonthlyStreak() {
                       backgroundCells.push(
                         <div
                           key={`bg-streak-end-${rowIndex}-${streakStart}`}
-                          className="bg-gradient-to-br from-orange-400 to-red-500 rounded-md"
+                          className="bg-gradient-to-br from-orange-300 to-orange-400 rounded-md"
                           style={{
                             gridColumn: `${streakStart + 1} / span ${currentStreak.length}`,
                             height: '28px'
@@ -325,7 +324,7 @@ export default function MonthlyStreak() {
                       );
                     } else if (currentStreak.length === 1) {
                       const singleIndex = rowIndex * 7 + streakStart;
-                      backgroundCells.push(<div key={`bg-single-end-${singleIndex}`} className="w-7 h-7 bg-gradient-to-br from-orange-400 to-red-500 rounded-md" />);
+                      backgroundCells.push(<div key={`bg-single-end-${singleIndex}`} className="w-7 h-7 bg-gradient-to-br from-orange-300 to-orange-400 rounded-md" />);
                     }
                   });
                   
@@ -353,6 +352,7 @@ export default function MonthlyStreak() {
                   // 날짜 셀들 - 투명 배경
                   const dateCells = days.map(date => {
                     const dateStr = date.toDateString();
+                    const isToday = date.toDateString() === today.toDateString();
                     const isActive = activeDates.some(activeDay => 
                       activeDay.toDateString() === dateStr
                     );
@@ -365,11 +365,19 @@ export default function MonthlyStreak() {
                       cellClass += ` ${getThemeClass('textSecondary')}`;
                     }
                     
+                    // 오늘 날짜 강조 - 진한 주황색 원  
+                    if (isToday && !isActive) {
+                      cellClass += ` border-2 ${isDarkMode ? 'border-orange-500' : 'border-orange-600'} rounded-full w-6 h-6`;
+                    } else if (isToday && isActive) {
+                      // 오늘이면서 활동일인 경우 더 진한 배경색 적용
+                      cellClass = cellClass.replace('text-white', `text-white bg-gradient-to-br from-orange-500 to-orange-600 rounded-md`);
+                    }
+                    
                     return (
                       <div
                         key={date.toISOString()}
                         className={cellClass}
-                        title={`${date.getDate()}${isActive ? ' - Active Day' : ''}`}
+                        title={`${date.getDate()}${isActive ? ' - Active Day' : ''}${isToday ? ' (Today)' : ''}`}
                       >
                         {date.getDate()}
                       </div>
@@ -384,7 +392,7 @@ export default function MonthlyStreak() {
             {/* 범례 - 캘린더 아래 */}
             <div className="flex items-center justify-center gap-2 text-xs mt-1">
               <div className="flex items-center gap-1">
-                <div className="h-2 w-2 rounded bg-gradient-to-br from-orange-400 to-red-500" />
+                <div className="h-2 w-2 rounded bg-gradient-to-br from-orange-300 to-orange-400" />
                 <span className={getThemeClass('textSecondary')}>Active</span>
               </div>
             </div>
