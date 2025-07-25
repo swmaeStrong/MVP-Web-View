@@ -195,7 +195,7 @@ export default function MonthlyStreak() {
         </div>
       </CardHeader>
       <CardContent className="flex-1 p-3 pt-0">
-        <div className="grid grid-cols-2 gap-3 w-full h-full items-start">
+        <div className="grid grid-cols-2 gap-3 w-full h-full items-stretch">
           {/* 좌측: 히트맵 스타일 캘린더 */}
           <div className="flex flex-col items-center space-y-2">
             {/* 월 표시 및 네비게이션 */}
@@ -428,7 +428,7 @@ export default function MonthlyStreak() {
           </div>
 
           {/* 우측: 통계 정보 */}
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col justify-center space-y-2">
             <div className={`p-2 rounded-lg text-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
               <div className={`text-xs ${getThemeClass('textSecondary')} mb-1`}>현재 스트릭</div>
               <div className={`text-lg font-bold ${getThemeClass('textPrimary')} flex items-center justify-center gap-1`}>
