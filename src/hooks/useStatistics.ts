@@ -1,6 +1,6 @@
 'use client';
 
-import { getUsageLog } from '@/shared/api/get';
+import { getUsageLog, getPomodoroUsageLog } from '@/shared/api/get';
 import {
   getDateString,
   transformUsageLogToDaily,
@@ -12,7 +12,7 @@ export const useUsageStatistics = (selectedDate: string, userId: string) => {
   return useQuery({
     queryKey: ['usage-statistics', selectedDate, userId],
     queryFn: async () => {
-      const usageData = await getUsageLog(userId, selectedDate);
+      const usageData = await getPomodoroUsageLog(userId, selectedDate);
 
       // API에서 받은 데이터를 DailyStatistics로 변환
       return transformUsageLogToDaily(usageData, selectedDate);
@@ -40,7 +40,7 @@ export const useMultiDateStatistics = (dates: string[], userId: string) => {
     queryFn: async () => {
       // 현재는 단일 API만 있어서 같은 데이터를 반환
       // 향후 날짜별 API가 추가되면 수정 필요
-      const usageData = await getUsageLog(userId, dates[0] || '');
+      const usageData = await getPomodoroUsageLog(userId, dates[0] || '');
 
       // 각 날짜별로 데이터 생성 (현재는 동일한 데이터)
       return dates.map(date => transformUsageLogToDaily(usageData, date));

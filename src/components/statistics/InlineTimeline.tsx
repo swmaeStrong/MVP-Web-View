@@ -64,7 +64,7 @@ export default function InlineTimeline({ cycles, date, onBack, showHeader = true
     switch (segment.type) {
       case 'work':
         return '#9333ea'; // 보라색
-      case 'break':
+      case 'distraction':
         return '#ef4444'; // 빨간색
       case 'afk':
         return '#eab308'; // 노란색

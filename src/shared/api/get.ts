@@ -1,6 +1,6 @@
+import { API } from '../../config/api';
 import { parseApi } from '../../utils/api-utils';
 import { getKSTDateString } from '../../utils/timezone';
-import { API } from '../../config/api';
 
 // 구독 플랜 조회
 
@@ -55,6 +55,15 @@ export const getUsageLog = (
     API.get(`/usage-log?userId=${userId}&date=${date}`)
   );
 
+// 포모도로 사용 기록 조회
+export const getPomodoroUsageLog = (
+  userId: string,
+  date: string = getKSTDateString()
+) =>
+  parseApi<UsageLog.UsageLogApiResponse[]>(
+    API.get(`/usage-log/pomodoro?userId=${userId}&date=${date}`)
+  );
+
 export const getHourlyUsageLog = (
   date: string = getKSTDateString(),
   userId: string,
@@ -75,4 +84,22 @@ export const getUserInfo = () =>
 export const getTimeline = (userId: string, date: string = getKSTDateString()) =>
   parseApi<UsageLog.TimelineItem[]>(
     API.get(`/usage-log/time-line?userId=${userId}&date=${date}`)
+  );
+
+// 스트릭 캘린더 조회
+export const getStreakCalendar = (date: string = getKSTDateString()) =>
+  parseApi<Statistics.StreakCalendarApiResponse[]>(
+    API.get(`/streak/calendar?date=${date}`)
+  );
+
+// 스트릭 카운트 조회
+export const getStreakCount = () =>
+  parseApi<Statistics.StreakCountApiResponse>(
+    API.get('/streak/count')
+  );
+
+// 세션 데이터 조회
+export const getSession = (date: string = getKSTDateString()) =>
+  parseApi<Session.SessionApiResponse[]>(
+    API.get(`/session?date=${date}`)
   );

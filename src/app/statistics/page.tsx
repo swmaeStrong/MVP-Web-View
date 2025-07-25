@@ -3,7 +3,7 @@
 import { useAvailableDates, useUsageStatistics } from '@/hooks/useStatistics';
 import { useTheme } from '@/hooks/useTheme';
 import { useCurrentUser } from '@/stores/userStore';
-import { PeriodType, StatisticsCategory } from '@/types/domains/usage/statistics';
+// namespace로 변경됨
 import { getDateString } from '@/utils/statisticsUtils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -14,21 +14,22 @@ import {
 } from '@/components/common/StatisticsSkeleton';
 import ActivityList from '@/components/statistics/ActivityList';
 import SessionCarousel from '@/components/statistics/CycleCarousel';
-import TotalTimeCard from '@/components/statistics/DateNavigationCard';
+import MonthlyStreak from '@/components/statistics/MonthlyStreak';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
 import { useInitUser } from '@/hooks/useInitUser';
-import { generateMockCycles } from '@/utils/mockCycleData';
+// generateMockCycles import 제거 - API 사용으로 대체됨
 import StateDisplay from '../../components/common/StateDisplay';
+import TotalTimeCard from '../../components/statistics/DateNavigationCard';
 
 export default function StatisticsPage() {
-  const [selectedPeriod] = useState<PeriodType>('daily');
+  const [selectedPeriod] = useState<Statistics.PeriodType>('daily');
   // 가용한 날짜 목록 (최근 30일)
   const availableDates = useAvailableDates();
 
   // 초기 날짜 설정
   const [selectedDate, setSelectedDate] = useState(getDateString(new Date()));
   const [selectedCategory, setSelectedCategory] =
-    useState<StatisticsCategory | null>(null);
+    useState<Statistics.StatisticsCategory | null>(null);
   const [showTimeline, setShowTimeline] = useState(false);
   const [selectedSessionIndex, setSelectedSessionIndex] = useState(0);
 
@@ -56,10 +57,7 @@ export default function StatisticsPage() {
     refetch,
   } = useUsageStatistics(selectedDate, currentUser?.id || '');
 
-  // 사이클 목업 데이터 생성
-  const cycleData = useMemo(() => {
-    return generateMockCycles(selectedDate);
-  }, [selectedDate]);
+  // cycleData 제거 - SessionCarousel에서 직접 API 호출
 
   // availableDates 변경 모니터링
   React.useEffect(() => {
@@ -144,7 +142,7 @@ export default function StatisticsPage() {
     return canGo;
   }, [availableDates, selectedDate]);
 
-  const handleCategorySelect = (category: StatisticsCategory | null) => {
+  const handleCategorySelect = (category: Statistics.StatisticsCategory | null) => {
     setSelectedCategory(category);
   };
 
@@ -182,9 +180,10 @@ export default function StatisticsPage() {
             <ActivityList date={selectedDate} />
           </div>
 
-          {/* 사이클 캐러셀 스켈레톤 */}
-          <div className='col-span-1 lg:col-span-2'>
-            <SessionCarousel cycles={[]} isLoading={true} onViewTimeline={handleViewTimeline} />
+          {/* 하단: 스켈레톤 */}
+          <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
+            <SessionCarousel selectedDate={selectedDate} />
+            <ActivityList date={selectedDate} />
           </div>
         </div>
       </div>
@@ -216,12 +215,7 @@ export default function StatisticsPage() {
     <div className={`min-h-screen p-3 sm:p-4 lg:p-6 ${getThemeClass('background')}`}>
       <div className='mx-auto max-w-6xl space-y-4 sm:space-y-6'>
         {/* 메인 콘텐츠 */}
-        <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
-          {/* 왼쪽: 날짜 네비게이션, 목표 설정, 카테고리 분석 */}
-          <div className='flex flex-col space-y-3'>
-            {/* 날짜 네비게이션 카드 */}
-            <div className='flex-shrink-0'>
-              <TotalTimeCard
+        <TotalTimeCard
                 totalTime={dailyData?.totalTime || 0}
                 currentDate={selectedDate}
                 onPrevious={handlePreviousDate}
@@ -230,35 +224,30 @@ export default function StatisticsPage() {
                 canGoNext={canGoNext}
                 goalTime={8 * 3600} // 8 hours default goal
               />
-            </div>
-
-            {/* 카테고리 분석 차트 */}
-            <div className='flex-1'>
+        <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
+          {/* 왼쪽: 날짜 네비게이션, 목표 설정, 카테고리 분석 */}
+          
               <StatisticsChart
                 selectedPeriod={selectedPeriod}
                 data={dailyData || null}
                 currentDate={selectedDate}
               />
-            </div>
-          </div>
-
-          {/* 오른쪽: 차트 */}
-          <ActivityList date={selectedDate} />
+          {/* 오른쪽: 월별 스트릭 컴포넌트 (기존 ActivityList 위치) */}
+          <MonthlyStreak />
 
         </div>
 
-        {/* 세션 캐러셀 - 전체 너비 사용 */}
-        <div className='col-span-1 lg:col-span-2'>
+        {/* 하단: 세션 캐러셀과 Recent Activities */}
+        <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
+          {/* 왼쪽: 세션 캐러셀 */}
           <SessionCarousel 
-            cycles={cycleData}
-            isLoading={false}
-            onViewTimeline={handleViewTimeline}
-            showTimeline={showTimeline}
-            onBackToSessions={handleBackToSessions}
             selectedDate={selectedDate}
             currentSessionIndex={selectedSessionIndex}
             onSessionSelect={handleSessionSelect}
           />
+          
+          {/* 오른쪽: Recent Activities */}
+          <ActivityList date={selectedDate} />
         </div>
       </div>
 

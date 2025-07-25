@@ -3,7 +3,7 @@
 import { useTheme } from '@/hooks/useTheme';
 import { ChartConfig, ChartContainer, ChartTooltip } from '@/shadcn/ui/chart';
 import { categoryColors } from '@/styles/colors';
-import { DailyStatistics } from '@/types/domains/usage/statistics';
+// namespace로 변경됨
 import { getCategoryDisplayName } from '@/utils/leaderboard';
 import { formatTime } from '@/utils/statisticsUtils';
 import { Activity } from 'lucide-react';
@@ -16,7 +16,7 @@ import {
 import StateDisplay from '../common/StateDisplay';
 
 interface StatisticsPieChartProps {
-  data: DailyStatistics;
+  data: Statistics.DailyStatistics;
 }
 
 export default function StatisticsPieChart({
@@ -31,7 +31,7 @@ export default function StatisticsPieChart({
   };
 
   // Extract only top 3 categories and group the rest as "Others"
-  const top3Categories = data.categories.slice(0, 4).map((category, index) => ({
+  const top3Categories = data.categories.slice(0, 3).map((category, index) => ({
     ...category,
     color: getCategoryColor(category.name), // Use colors from colors.ts
   }));
@@ -114,8 +114,8 @@ export default function StatisticsPieChart({
   }, {} as ChartConfig);
 
   return (
-    <div className={`flex items-center p-4 gap-24`}>
-      {/* Left - Pie Chart */}
+    <div className={`flex items-center justify-center gap-8 w-full`}>
+      {/* Pie Chart */}
       <div className={`flex-shrink-0`}>
         <ChartContainer
           config={chartConfig}
@@ -206,31 +206,24 @@ export default function StatisticsPieChart({
         </ChartContainer>
       </div>
 
-      {/* Right - Category Details */}
-      <div className='flex-1'>
-        <div className={`space-y-2`}>
-          {finalCategories.map((category, index) => (
-            <div key={index} className={`flex items-center gap-2`}>
-              <div
-                className='w-3 h-3 rounded-full flex-shrink-0'
-                style={{ backgroundColor: category.color }}
-              />
-              <div className='flex-1 min-w-0'>
-                <div className={`text-sm font-medium truncate ${getThemeTextColor('primary')}`}>
-                  {category.name === 'Others' ? 'Others' : getCategoryDisplayName(category.name)}
-                </div>
-                <div className={`flex items-center gap-2 text-xs`}>
-                  <span className={`font-semibold ${getThemeTextColor('primary')}`}>
-                    {formatTime(category.time)}
-                  </span>
-                  <span className={getThemeTextColor('secondary')}>
-                    {category.percentage.toFixed(1)}%
-                  </span>
-                </div>
-              </div>
+      {/* Category Details - Right side */}
+      <div className='flex flex-col gap-2'>
+        {finalCategories.map((category, index) => (
+          <div key={index} className={`flex items-center gap-2`}>
+            <div
+              className='w-3 h-3 rounded-full flex-shrink-0'
+              style={{ backgroundColor: category.color }}
+            />
+            <div className='flex flex-col'>
+              <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
+                {category.name === 'Others' ? 'Others' : getCategoryDisplayName(category.name)}
+              </span>
+              <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                {formatTime(category.time)} ({category.percentage.toFixed(1)}%)
+              </span>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -2,13 +2,13 @@ import { themeColors } from '@/styles/colors';
 
 /**
  * 테마 관리를 위한 통합 React Hook
- * 다크모드 고정 적용
+ * 라이트모드 고정 적용
  */
 export function useTheme() {
-  // 다크모드 고정
-  const isDarkMode = true;
-  const theme = 'dark' as const;
-  const isClient = true; // SSR에서도 다크모드 고정이므로 항상 true
+  // 라이트모드 고정
+  const isDarkMode = false;
+  const theme = 'light' as const;
+  const isClient = true; // SSR에서도 라이트모드 고정이므로 항상 true
 
   // 현재 테마의 컬러 객체
   const colors = themeColors[theme];
@@ -44,7 +44,7 @@ export function useTheme() {
     // 상태
     theme,
     isDarkMode,
-    isLight: false, // 항상 다크모드
+    isLight: true, // 항상 라이트모드
     isClient,
 
     // 컬러 객체

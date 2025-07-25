@@ -2,7 +2,7 @@
 
 import { useTheme } from '@/hooks/useTheme';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
-import { DailyStatistics, PeriodType } from '@/types/domains/usage/statistics';
+// 이제 namespace 사용으로 인해 직접 import 불가능
 import {
   Activity,
   BarChart3,
@@ -12,8 +12,8 @@ import StateDisplay from '../common/StateDisplay';
 import StatisticsPieChart from './StatisticsPieChart';
 
 interface StatisticsChartProps {
-  selectedPeriod: PeriodType;
-  data: DailyStatistics | null;
+  selectedPeriod: Statistics.PeriodType;
+  data: Statistics.DailyStatistics | null;
   currentDate: string;
   isLoading?: boolean;
 }
@@ -28,14 +28,14 @@ export default function StatisticsChart({
   
   if (isLoading) {
     return (
-      <Card className={`h-full rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <Card className={`h-[400px] flex flex-col rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardHeader className='pb-2'>
           <div className='flex items-center justify-between'>
-            <div className={`h-7 w-48 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+            <div className={`h-6 w-32 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
           </div>
         </CardHeader>
 
-        <CardContent className='flex-1 min-h-0 p-2 pt-0'>
+        <CardContent className='flex-1 flex flex-col justify-center items-center p-3 pt-0 overflow-hidden'>
           {selectedPeriod === 'daily' ? (
             // Pie chart skeleton
             <div className='h-full flex items-center justify-center'>
@@ -97,33 +97,29 @@ export default function StatisticsChart({
   };
 
   return (
-    <Card className={`h-full flex items-center justify-center rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      {selectedPeriod !== 'daily' && (
-        <CardHeader className='pb-2'>
-          <div className='flex items-center justify-between'>
-            <CardTitle className={`text-lg font-semibold ${getThemeClass('textPrimary')}`}>
-              {getChartTitle()}
-            </CardTitle>
-          </div>
-        </CardHeader>
-      )}
+    <Card className={`h-[400px] flex flex-col rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <CardHeader className='pb-2'>
+        <div className='flex items-center justify-between'>
+          <CardTitle className={`flex items-center gap-2 text-sm font-semibold ${getThemeClass('textPrimary')} truncate`}>
+            <span className="truncate">{getChartTitle()}</span>
+          </CardTitle>
+        </div>
+      </CardHeader>
 
-      <CardContent className='flex flex-1 justify-center items-center h-full p-2 pt-0'>
+      <CardContent className='flex-1 flex flex-col justify-center items-center p-3 pt-0 overflow-hidden'>
           {selectedPeriod === 'daily' && data && data.categories.length > 0 ? (
             <StatisticsPieChart data={data} />
           ) : selectedPeriod === 'weekly' || selectedPeriod === 'monthly' ? (
             <>추후 추가 예정</>
           ) : (
-            <div className='flex h-full items-center justify-center p-4'>
-              <StateDisplay
-                type="empty"
-                title='No Activity Data'
-                message='No activities recorded for the selected date.'
-                icon={Activity}
-                showBorder={false}
-                size='large'
-              />
-            </div>
+            <StateDisplay
+              type="empty"
+              title='No Activity Data'
+              message='No activities recorded for the selected date.'
+              icon={Activity}
+              showBorder={false}
+              size='large'
+            />
           )}
       </CardContent>
     </Card>

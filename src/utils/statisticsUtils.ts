@@ -1,5 +1,5 @@
 import { categoryColors } from '@/styles/colors';
-import { DailyStatistics, StatisticsCategory } from '@/types/domains/usage/statistics';
+// namespace로 변경됨
 
 // 카테고리별 고정 색상 맵 - colors.ts와 통합
 export const categoryColorMap: { [key: string]: string } = {
@@ -45,7 +45,7 @@ export const secondsToHours = (seconds: number): number => {
 export const transformUsageLogToDaily = (
   usageData: UsageLog.UsageLogApiResponse[],
   date: string
-): DailyStatistics => {
+): Statistics.DailyStatistics => {
   const totalTime = usageData.reduce((sum, item) => sum + item.duration, 0);
 
   // 카테고리별 데이터 집계
@@ -56,7 +56,7 @@ export const transformUsageLogToDaily = (
   });
 
   // 카테고리 배열로 변환
-  const categories: StatisticsCategory[] = Array.from(
+  const categories: Statistics.StatisticsCategory[] = Array.from(
     categoryMap.entries()
   ).map(([name, time]) => ({
     name,

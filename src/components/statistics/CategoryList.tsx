@@ -2,7 +2,7 @@
 
 import { memo } from 'react';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { StatisticsCategory } from '@/types/domains/usage/statistics';
+// namespace로 변경됨
 import { useTheme } from '@/hooks/useTheme';
 // import { useDesignSystem } from '@/hooks/useDesignSystem'; // 제거됨
 import { cardSystem, componentStates, spacing, layouts, buttonSystem } from '@/styles/design-system';
@@ -10,9 +10,9 @@ import StateDisplay from '@/components/common/StateDisplay';
 import { getCategoryColor } from '@/utils/categories';
 
 interface CategoryListProps {
-  categories: StatisticsCategory[];
-  selectedCategory: StatisticsCategory | null;
-  onCategorySelect: (category: StatisticsCategory | null) => void;
+  categories: Statistics.StatisticsCategory[];
+  selectedCategory: Statistics.StatisticsCategory | null;
+  onCategorySelect: (category: Statistics.StatisticsCategory | null) => void;
   isLoading?: boolean;
 }
 
