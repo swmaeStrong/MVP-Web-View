@@ -14,11 +14,12 @@ import {
 } from '@/components/common/StatisticsSkeleton';
 import ActivityList from '@/components/statistics/ActivityList';
 import SessionCarousel from '@/components/statistics/CycleCarousel';
-import TotalTimeCard from '@/components/statistics/DateNavigationCard';
+import MonthlyStreak from '@/components/statistics/MonthlyStreak';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
 import { useInitUser } from '@/hooks/useInitUser';
 import { generateMockCycles } from '@/utils/mockCycleData';
 import StateDisplay from '../../components/common/StateDisplay';
+import TotalTimeCard from '../../components/statistics/DateNavigationCard';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<PeriodType>('daily');
@@ -217,12 +218,7 @@ export default function StatisticsPage() {
     <div className={`min-h-screen p-3 sm:p-4 lg:p-6 ${getThemeClass('background')}`}>
       <div className='mx-auto max-w-6xl space-y-4 sm:space-y-6'>
         {/* 메인 콘텐츠 */}
-        <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
-          {/* 왼쪽: 날짜 네비게이션, 목표 설정, 카테고리 분석 */}
-          <div className='flex flex-col space-y-3'>
-            {/* 날짜 네비게이션 카드 */}
-            <div className='flex-shrink-0'>
-              <TotalTimeCard
+        <TotalTimeCard
                 totalTime={dailyData?.totalTime || 0}
                 currentDate={selectedDate}
                 onPrevious={handlePreviousDate}
@@ -231,22 +227,16 @@ export default function StatisticsPage() {
                 canGoNext={canGoNext}
                 goalTime={8 * 3600} // 8 hours default goal
               />
-            </div>
-
-            {/* 카테고리 분석 차트 */}
-            <div className='flex-1'>
+        <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
+          {/* 왼쪽: 날짜 네비게이션, 목표 설정, 카테고리 분석 */}
+          
               <StatisticsChart
                 selectedPeriod={selectedPeriod}
                 data={dailyData || null}
                 currentDate={selectedDate}
               />
-            </div>
-          </div>
-
-          {/* 오른쪽: 빈 컴포넌트 (기존 ActivityList 위치) */}
-          <div className={`${getThemeClass('component')} rounded-lg p-6 h-full flex items-center justify-center`}>
-            <p className={`${getThemeClass('textSecondary')} text-sm`}>Reserved Space</p>
-          </div>
+          {/* 오른쪽: 월별 스트릭 컴포넌트 (기존 ActivityList 위치) */}
+          <MonthlyStreak />
 
         </div>
 

@@ -114,8 +114,8 @@ export default function StatisticsPieChart({
   }, {} as ChartConfig);
 
   return (
-    <div className={`flex items-center p-4 gap-24`}>
-      {/* Left - Pie Chart */}
+    <div className={`flex flex-col items-center justify-center gap-2 w-full`}>
+      {/* Pie Chart */}
       <div className={`flex-shrink-0`}>
         <ChartContainer
           config={chartConfig}
@@ -206,28 +206,18 @@ export default function StatisticsPieChart({
         </ChartContainer>
       </div>
 
-      {/* Right - Category Details */}
-      <div className='flex-1'>
-        <div className={`space-y-2`}>
-          {finalCategories.map((category, index) => (
-            <div key={index} className={`flex items-center gap-2`}>
+      {/* Category Details - Compact */}
+      <div className='w-full px-2'>
+        <div className={`flex flex-wrap gap-x-3 gap-y-1 justify-center`}>
+          {finalCategories.slice(0, 3).map((category, index) => (
+            <div key={index} className={`flex items-center gap-1 min-w-0`}>
               <div
-                className='w-3 h-3 rounded-full flex-shrink-0'
+                className='w-2 h-2 rounded-full flex-shrink-0'
                 style={{ backgroundColor: category.color }}
               />
-              <div className='flex-1 min-w-0'>
-                <div className={`text-sm font-medium truncate ${getThemeTextColor('primary')}`}>
-                  {category.name === 'Others' ? 'Others' : getCategoryDisplayName(category.name)}
-                </div>
-                <div className={`flex items-center gap-2 text-xs`}>
-                  <span className={`font-semibold ${getThemeTextColor('primary')}`}>
-                    {formatTime(category.time)}
-                  </span>
-                  <span className={getThemeTextColor('secondary')}>
-                    {category.percentage.toFixed(1)}%
-                  </span>
-                </div>
-              </div>
+              <span className={`text-xs ${getThemeTextColor('secondary')} truncate max-w-[60px]`}>
+                {category.name === 'Others' ? 'Others' : getCategoryDisplayName(category.name)}
+              </span>
             </div>
           ))}
         </div>
