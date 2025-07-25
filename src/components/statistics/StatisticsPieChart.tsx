@@ -3,7 +3,7 @@
 import { useTheme } from '@/hooks/useTheme';
 import { ChartConfig, ChartContainer, ChartTooltip } from '@/shadcn/ui/chart';
 import { categoryColors } from '@/styles/colors';
-import { DailyStatistics } from '@/types/domains/usage/statistics';
+// namespace로 변경됨
 import { getCategoryDisplayName } from '@/utils/leaderboard';
 import { formatTime } from '@/utils/statisticsUtils';
 import { Activity } from 'lucide-react';
@@ -16,7 +16,7 @@ import {
 import StateDisplay from '../common/StateDisplay';
 
 interface StatisticsPieChartProps {
-  data: DailyStatistics;
+  data: Statistics.DailyStatistics;
 }
 
 export default function StatisticsPieChart({

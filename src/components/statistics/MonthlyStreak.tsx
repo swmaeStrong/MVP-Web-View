@@ -3,94 +3,98 @@
 import { eachDayOfInterval, endOfMonth, startOfMonth } from 'date-fns';
 import { ChevronLeft, ChevronRight, Flame, TrendingUp } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
+import { getStreakCalendar } from '@/shared/api/get';
+import { getKSTDateString } from '@/utils/timezone';
 
 export default function MonthlyStreak() {
   const { getThemeClass, isDarkMode } = useTheme();
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  // 고정된 목업 데이터 생성 - 뷰 확인용
-  const generateMockStreakData = (month: Date) => {
-    const year = month.getFullYear();
-    const monthNum = month.getMonth();
-    const today = new Date();
+  // API 데이터 조회 - 현재 날짜로 요청
+  const { data: streakData, isLoading, error } = useQuery({
+    queryKey: ['streakCalendar', currentMonth.getFullYear(), currentMonth.getMonth()],
+    queryFn: () => getStreakCalendar(),
+    retry: 1,
+  });
+
+  // API 데이터를 활동일 배열로 변환
+  const activeDates = useMemo(() => {
+    if (!streakData) return [];
     
-    // 고정된 활동일 패턴 생성
-    const activeDays: Date[] = [
-      // 월초 3일 스트릭
-      new Date(year, monthNum, 3),
-      new Date(year, monthNum, 4),
-      new Date(year, monthNum, 5),
-      
-      // 단독 활동일
-      new Date(year, monthNum, 8),
-      
-      // 중순 5일 스트릭
-      new Date(year, monthNum, 12),
-      new Date(year, monthNum, 13),
-      new Date(year, monthNum, 14),
-      new Date(year, monthNum, 15),
-      new Date(year, monthNum, 16),
-      
-      // 단독 활동일
-      new Date(year, monthNum, 19),
-      
-      // 월말 현재 진행 중인 4일 스트릭
-      new Date(year, monthNum, 22),
-      new Date(year, monthNum, 23),
-      new Date(year, monthNum, 24),
-      new Date(year, monthNum, 25),
-      
-      // 추가 활동일들 (항상 표시되도록)
-      new Date(year, monthNum, 1),
-      new Date(year, monthNum, 2),
-      new Date(year, monthNum, 10),
-      new Date(year, monthNum, 28),
-    ];
-    
-    // 스트릭 통계 계산
-    let longestStreak = 5; // 중순 5일 스트릭이 최장
-    let currentStreakCount = 0;
-    
+    return streakData
+      .filter(item => item.activityCount > 0)
+      .map(item => new Date(item.date));
+  }, [streakData]);
+
+  // 스트릭 통계 계산
+  const streakStats = useMemo(() => {
+    if (!streakData || streakData.length === 0) {
+      return {
+        currentStreak: 0,
+        longestStreak: 0,
+        totalActiveDays: 0
+      };
+    }
+
+    const activeDays = streakData
+      .filter(item => item.activityCount > 0)
+      .map(item => new Date(item.date))
+      .sort((a, b) => a.getTime() - b.getTime());
+
     // 현재 스트릭 계산 (오늘부터 역순으로)
-    const todayStr = today.toDateString();
+    let currentStreak = 0;
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10);
     
-    // 오늘이 활동일인지 확인
-    if (activeDays.some(date => date.toDateString() === todayStr)) {
-      currentStreakCount = 1;
+    if (streakData.some(item => item.date === todayStr && item.activityCount > 0)) {
+      currentStreak = 1;
       
-      // 연속된 이전 날짜들 확인
-      for (let i = 1; i <= 10; i++) {
+      for (let i = 1; i <= 30; i++) {
         const checkDate = new Date(today);
         checkDate.setDate(today.getDate() - i);
+        const checkDateStr = checkDate.toISOString().slice(0, 10);
         
-        if (activeDays.some(date => date.toDateString() === checkDate.toDateString())) {
-          currentStreakCount++;
+        if (streakData.some(item => item.date === checkDateStr && item.activityCount > 0)) {
+          currentStreak++;
         } else {
           break;
         }
       }
     }
+
+    // 최장 스트릭 계산
+    let longestStreak = 0;
+    let tempStreak = 0;
     
+    for (let i = 0; i < activeDays.length; i++) {
+      if (i === 0) {
+        tempStreak = 1;
+      } else {
+        const prevDate = activeDays[i - 1];
+        const currentDate = activeDays[i];
+        const dayDiff = Math.floor((currentDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (dayDiff === 1) {
+          tempStreak++;
+        } else {
+          longestStreak = Math.max(longestStreak, tempStreak);
+          tempStreak = 1;
+        }
+      }
+    }
+    longestStreak = Math.max(longestStreak, tempStreak);
+
     return {
-      activeDates: activeDays,
-      currentStreak: currentStreakCount,
-      longestStreak: longestStreak,
+      currentStreak,
+      longestStreak,
       totalActiveDays: activeDays.length
     };
-  };
-
-  const mockData = useMemo(() => {
-    const data = generateMockStreakData(currentMonth);
-    console.log('Mock data generated:', data);
-    console.log('Active dates:', data.activeDates.map(d => d.toDateString()));
-    return data;
-  }, [currentMonth]);
-
-  const activeDates = mockData.activeDates;
+  }, [streakData]);
   
   // 같은 행에서의 연속 스트릭 분석
   const getStreakClasses = () => {
@@ -432,7 +436,7 @@ export default function MonthlyStreak() {
             <div className={`p-2 rounded-lg text-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
               <div className={`text-xs ${getThemeClass('textSecondary')} mb-1`}>현재 스트릭</div>
               <div className={`text-lg font-bold ${getThemeClass('textPrimary')} flex items-center justify-center gap-1`}>
-                {mockData.currentStreak}
+                {isLoading ? '-' : streakStats.currentStreak}
                 <Flame className="h-3 w-3 text-orange-500" />
               </div>
             </div>
@@ -440,7 +444,7 @@ export default function MonthlyStreak() {
             <div className={`p-2 rounded-lg text-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
               <div className={`text-xs ${getThemeClass('textSecondary')} mb-1`}>최장 스트릭</div>
               <div className={`text-lg font-bold ${getThemeClass('textPrimary')} flex items-center justify-center gap-1`}>
-                {mockData.longestStreak}
+                {isLoading ? '-' : streakStats.longestStreak}
                 <TrendingUp className="h-3 w-3 text-green-500" />
               </div>
             </div>
@@ -448,7 +452,7 @@ export default function MonthlyStreak() {
             <div className={`p-2 rounded-lg text-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
               <div className={`text-xs ${getThemeClass('textSecondary')} mb-1`}>활동일</div>
               <div className={`text-lg font-bold ${getThemeClass('textPrimary')}`}>
-                {mockData.totalActiveDays}일
+                {isLoading ? '-' : streakStats.totalActiveDays}일
               </div>
             </div>
           </div>

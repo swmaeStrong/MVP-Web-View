@@ -2,7 +2,7 @@
 
 import { useTheme } from '@/hooks/useTheme';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
-import { DailyStatistics, PeriodType } from '@/types/domains/usage/statistics';
+// 이제 namespace 사용으로 인해 직접 import 불가능
 import {
   Activity,
   BarChart3,
@@ -12,8 +12,8 @@ import StateDisplay from '../common/StateDisplay';
 import StatisticsPieChart from './StatisticsPieChart';
 
 interface StatisticsChartProps {
-  selectedPeriod: PeriodType;
-  data: DailyStatistics | null;
+  selectedPeriod: Statistics.PeriodType;
+  data: Statistics.DailyStatistics | null;
   currentDate: string;
   isLoading?: boolean;
 }

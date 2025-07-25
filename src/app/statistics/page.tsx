@@ -3,7 +3,7 @@
 import { useAvailableDates, useUsageStatistics } from '@/hooks/useStatistics';
 import { useTheme } from '@/hooks/useTheme';
 import { useCurrentUser } from '@/stores/userStore';
-import { PeriodType, StatisticsCategory } from '@/types/domains/usage/statistics';
+// namespace로 변경됨
 import { getDateString } from '@/utils/statisticsUtils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -22,14 +22,14 @@ import StateDisplay from '../../components/common/StateDisplay';
 import TotalTimeCard from '../../components/statistics/DateNavigationCard';
 
 export default function StatisticsPage() {
-  const [selectedPeriod] = useState<PeriodType>('daily');
+  const [selectedPeriod] = useState<Statistics.PeriodType>('daily');
   // 가용한 날짜 목록 (최근 30일)
   const availableDates = useAvailableDates();
 
   // 초기 날짜 설정
   const [selectedDate, setSelectedDate] = useState(getDateString(new Date()));
   const [selectedCategory, setSelectedCategory] =
-    useState<StatisticsCategory | null>(null);
+    useState<Statistics.StatisticsCategory | null>(null);
   const [showTimeline, setShowTimeline] = useState(false);
   const [selectedSessionIndex, setSelectedSessionIndex] = useState(0);
 
@@ -145,7 +145,7 @@ export default function StatisticsPage() {
     return canGo;
   }, [availableDates, selectedDate]);
 
-  const handleCategorySelect = (category: StatisticsCategory | null) => {
+  const handleCategorySelect = (category: Statistics.StatisticsCategory | null) => {
     setSelectedCategory(category);
   };
 

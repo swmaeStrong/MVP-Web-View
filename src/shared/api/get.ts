@@ -76,3 +76,9 @@ export const getTimeline = (userId: string, date: string = getKSTDateString()) =
   parseApi<UsageLog.TimelineItem[]>(
     API.get(`/usage-log/time-line?userId=${userId}&date=${date}`)
   );
+
+// 스트릭 캘린더 조회
+export const getStreakCalendar = (date: string = getKSTDateString()) =>
+  parseApi<Statistics.StreakCalendarApiResponse[]>(
+    API.get(`/streak/calendar?date=${date}`)
+  );
