@@ -163,11 +163,22 @@ export default function MonthlyStreak() {
 
 
   const handlePreviousMonth = () => {
-    setCurrentMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1));
+    const prev = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1);
+    const minDate = new Date(2025, 6); // 2025년 7월 (month는 0부터 시작)
+    
+    if (prev >= minDate) {
+      setCurrentMonth(prev);
+    }
   };
 
   const handleNextMonth = () => {
-    setCurrentMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1));
+    const next = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
+    const today = new Date();
+    const maxDate = new Date(today.getFullYear(), today.getMonth());
+    
+    if (next <= maxDate) {
+      setCurrentMonth(next);
+    }
   };
 
 
@@ -193,6 +204,11 @@ export default function MonthlyStreak() {
                 variant="ghost"
                 size="sm"
                 onClick={handlePreviousMonth}
+                disabled={(() => {
+                  const prev = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1);
+                  const minDate = new Date(2025, 6);
+                  return prev < minDate;
+                })()}
                 className={`h-6 w-6 p-0 ${getThemeClass('textPrimary')}`}
               >
                 <ChevronLeft className="h-3 w-3" />
@@ -206,6 +222,12 @@ export default function MonthlyStreak() {
                 variant="ghost"
                 size="sm"
                 onClick={handleNextMonth}
+                disabled={(() => {
+                  const next = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
+                  const today = new Date();
+                  const maxDate = new Date(today.getFullYear(), today.getMonth());
+                  return next > maxDate;
+                })()}
                 className={`h-6 w-6 p-0 ${getThemeClass('textPrimary')}`}
               >
                 <ChevronRight className="h-3 w-3" />
@@ -377,7 +399,7 @@ export default function MonthlyStreak() {
                     if (isActive) {
                       cellClass += ` text-white font-semibold`;
                     } else {
-                      cellClass += ` ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-100 hover:bg-gray-200'} ${getThemeClass('textSecondary')} rounded-md`;
+                      cellClass += ` ${getThemeClass('textSecondary')}`;
                     }
                     
                     return (
