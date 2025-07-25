@@ -47,7 +47,7 @@ export default function MonthlyStreak() {
     if (currentStreak === 0) {
       return 'Start your new streak!';
     } else if (currentStreak === maxStreak && currentStreak > 0) {
-      return 'Breaking your record! 🔥';
+      return 'Breaking your record!';
     } else if (currentStreak > 0) {
       const remaining = maxStreak - currentStreak;
       return `${remaining} days to your best streak!`;
@@ -152,9 +152,8 @@ export default function MonthlyStreak() {
     <Card className={`h-[400px] ${getThemeClass('component')} ${getThemeClass('border')}`}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className={`flex items-center gap-2 text-sm font-semibold ${getThemeClass('textPrimary')}`}>
-            <Flame className="h-4 w-4 text-orange-500" />
-            월간 스트릭
+          <CardTitle className={`text-sm font-semibold ${getThemeClass('textPrimary')}`}>
+            Monthly Streak
           </CardTitle>
         </div>
       </CardHeader>
@@ -179,7 +178,7 @@ export default function MonthlyStreak() {
               </Button>
               
               <div className={`text-sm font-medium ${getThemeClass('textPrimary')}`}>
-                {currentMonth.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' })}
+                {currentMonth.toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
               </div>
               
               <Button
@@ -201,7 +200,7 @@ export default function MonthlyStreak() {
             
             {/* 요일 헤더 */}
             <div className="grid grid-cols-7 gap-2">
-              {['일', '월', '화', '수', '목', '금', '토'].map((day, index) => (
+              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
                 <div
                   key={index}
                   className={`w-7 h-6 text-center text-xs font-medium ${getThemeClass('textSecondary')} flex items-center justify-center`}
@@ -370,7 +369,7 @@ export default function MonthlyStreak() {
                       <div
                         key={date.toISOString()}
                         className={cellClass}
-                        title={`${date.getDate()}일${isActive ? ' - 활동일' : ''}`}
+                        title={`${date.getDate()}${isActive ? ' - Active Day' : ''}`}
                       >
                         {date.getDate()}
                       </div>
@@ -386,7 +385,7 @@ export default function MonthlyStreak() {
             <div className="flex items-center justify-center gap-2 text-xs mt-1">
               <div className="flex items-center gap-1">
                 <div className="h-2 w-2 rounded bg-gradient-to-br from-orange-400 to-red-500" />
-                <span className={getThemeClass('textSecondary')}>활동일</span>
+                <span className={getThemeClass('textSecondary')}>Active</span>
               </div>
             </div>
           </div>
@@ -394,18 +393,16 @@ export default function MonthlyStreak() {
           {/* 우측: 통계 정보 */}
           <div className="flex flex-col justify-center space-y-3">
             <div className={`p-3 rounded-lg text-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-              <div className={`text-xs ${getThemeClass('textSecondary')} mb-1`}>현재 스트릭</div>
-              <div className={`text-xl font-bold ${getThemeClass('textPrimary')} flex items-center justify-center gap-1`}>
+              <div className={`text-xs ${getThemeClass('textSecondary')} mb-1`}>Current Streak</div>
+              <div className={`text-xl font-bold ${getThemeClass('textPrimary')}`}>
                 {isCountLoading ? '-' : streakCountData?.currentStreak || 0}
-                <Flame className="h-4 w-4 text-orange-500" />
               </div>
             </div>
             
             <div className={`p-3 rounded-lg text-center ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-              <div className={`text-xs ${getThemeClass('textSecondary')} mb-1`}>최장 스트릭</div>
-              <div className={`text-xl font-bold ${getThemeClass('textPrimary')} flex items-center justify-center gap-1`}>
+              <div className={`text-xs ${getThemeClass('textSecondary')} mb-1`}>Best Streak</div>
+              <div className={`text-xl font-bold ${getThemeClass('textPrimary')}`}>
                 {isCountLoading ? '-' : streakCountData?.maxStreak || 0}
-                <TrendingUp className="h-4 w-4 text-green-500" />
               </div>
             </div>
             
