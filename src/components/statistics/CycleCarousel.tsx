@@ -12,6 +12,8 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { EffectCoverflow, FreeMode, Mousewheel, Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/shadcn/ui/chart';
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 interface SessionCarouselProps {
   selectedDate?: string;
@@ -346,7 +348,7 @@ const SessionCarousel = memo(function SessionCarousel({
     <div className={`${getThemeClass('component')} rounded-lg p-8 border ${getThemeClass('border')}`}>
       <div className="flex items-center justify-center mb-6">
         <h2 className={`text-xl font-semibold ${getThemeClass('textPrimary')}`}>
-          Total Sessions: {cycles.length} sessions
+          Activity Timeline
         </h2>
       </div>
 
@@ -429,6 +431,57 @@ const SessionCarousel = memo(function SessionCarousel({
             </SwiperSlide>
           ))}
         </Swiper>
+      </div>
+
+      {/* Score Chart */}
+      <div className={`mt-6 ${getThemeClass('component')} rounded-lg p-4 border ${getThemeClass('border')}`}>
+        <h3 className={`text-lg font-semibold ${getThemeClass('textPrimary')} mb-4`}>
+          Session Scores
+        </h3>
+        <div className="h-48 w-full">
+          <ChartContainer
+            config={{
+              score: {
+                label: "Score",
+                color: isDarkMode ? "#9333ea" : "#7c3aed",
+              },
+            }}
+            className="w-full h-full"
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={cycles.map((cycle, index) => ({
+                  session: `S${index + 1}`,
+                  score: cycle.totalProductivity,
+                  title: cycle.title || `Session ${index + 1}`
+                }))}
+                margin={{ top: 20, right: 10, left: 10, bottom: 20 }}
+              >
+                <XAxis 
+                  dataKey="session" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                />
+                <YAxis 
+                  domain={[0, 100]}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                />
+                <ChartTooltip
+                  content={<ChartTooltipContent />}
+                  cursor={{ fill: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}
+                />
+                <Bar 
+                  dataKey="score" 
+                  fill={isDarkMode ? "#9333ea" : "#7c3aed"}
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartContainer>
+        </div>
       </div>
     </div>
   );

@@ -12,7 +12,6 @@ import {
   StatisticsChartSkeleton,
   TotalTimeCardSkeleton
 } from '@/components/common/StatisticsSkeleton';
-import ActivityList from '@/components/statistics/ActivityList';
 import SessionCarousel from '@/components/statistics/CycleCarousel';
 import MonthlyStreak from '@/components/statistics/MonthlyStreak';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
@@ -176,14 +175,20 @@ export default function StatisticsPage() {
               </div>
             </div>
 
-            {/* 오른쪽: 활동 리스트 (자체 로딩 상태 사용) */}
-            <ActivityList date={selectedDate} />
+            {/* 오른쪽: 월별 스트릭 컴포넌트 (스켈레톤) */}
+            <div className={`h-[400px] rounded-lg border-2 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
+              <div className={`h-6 w-32 m-4 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+              <div className="p-4 space-y-3">
+                {[...Array(3)].map((_, index) => (
+                  <div key={index} className={`h-4 w-full animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* 하단: 스켈레톤 */}
-          <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
+          {/* 하단: 세션 캐러셀 스켈레톤 */}
+          <div className="w-full">
             <SessionCarousel selectedDate={selectedDate} />
-            <ActivityList date={selectedDate} />
           </div>
         </div>
       </div>
@@ -237,17 +242,8 @@ export default function StatisticsPage() {
 
         </div>
 
-        {/* 하단: 세션 캐러셀과 Recent Activities */}
-        <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
-          {/* 왼쪽: 세션 캐러셀 */}
-          <SessionCarousel 
-            selectedDate={selectedDate}
-            currentSessionIndex={selectedSessionIndex}
-            onSessionSelect={handleSessionSelect}
-          />
-          
-          {/* 오른쪽: Recent Activities */}
-          <ActivityList date={selectedDate} />
+        {/* 하단: 세션 캐러셀 (전체 너비 사용) */}
+        <div className="w-full">
         </div>
       </div>
 
