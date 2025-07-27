@@ -66,6 +66,96 @@ const getScoreLabel = (score: number) => {
   return 'Needs Improvement';
 };
 
+// Mock data for detailed feedback
+const getSessionFeedback = (score: number) => {
+  if (score >= 80) {
+    return "🎉 Outstanding performance! You maintained excellent focus throughout this session.";
+  } else if (score >= 60) {
+    return "👍 Great job! You had solid focus with minor distractions.";
+  } else if (score >= 40) {
+    return "⚡ Good effort, but there's room for improvement.";
+  } else {
+    return "💪 Don't worry - every expert was once a beginner.";
+  }
+};
+
+// Mock data for score breakdown
+const getScoreBreakdown = (score: number) => {
+  // Simulate what caused point deductions
+  const mockBreakdown = [
+    { 
+      factor: "Social Media", 
+      deduction: 15, 
+      icon: "📱", 
+      timeSpent: "23분", 
+      accessCount: 8 
+    },
+    { 
+      factor: "News Websites", 
+      deduction: 8, 
+      icon: "📰", 
+      timeSpent: "12분", 
+      accessCount: 5 
+    },
+    { 
+      factor: "YouTube", 
+      deduction: 12, 
+      icon: "🎥", 
+      timeSpent: "18분", 
+      accessCount: 3 
+    },
+    { 
+      factor: "Idle Time", 
+      deduction: 10, 
+      icon: "⏱️", 
+      timeSpent: "15분", 
+      accessCount: 1 
+    },
+    { 
+      factor: "Non-work Apps", 
+      deduction: 5, 
+      icon: "📋", 
+      timeSpent: "8분", 
+      accessCount: 4 
+    }
+  ];
+  
+  const totalDeduction = 100 - score;
+  if (totalDeduction <= 0) return [];
+  
+  // Randomly select factors that sum up to the total deduction
+  const factors = [];
+  let remainingDeduction = totalDeduction;
+  
+  for (let i = 0; i < mockBreakdown.length && remainingDeduction > 0; i++) {
+    if (Math.random() > 0.5 && remainingDeduction >= 3) {
+      const deduction = Math.min(mockBreakdown[i].deduction, remainingDeduction);
+      factors.push({
+        ...mockBreakdown[i],
+        deduction
+      });
+      remainingDeduction -= deduction;
+    }
+  }
+  
+  return factors;
+};
+
+// Mock data for most distracting service
+const getMostDistractingService = (score: number) => {
+  const services = [
+    { name: "Instagram", time: "23 minutes", category: "Social Media", icon: "📸" },
+    { name: "YouTube", time: "18 minutes", category: "Entertainment", icon: "🎥" },
+    { name: "Twitter", time: "15 minutes", category: "Social Media", icon: "🐦" },
+    { name: "Reddit", time: "12 minutes", category: "Forum", icon: "🔴" },
+    { name: "Slack", time: "8 minutes", category: "Communication", icon: "💬" }
+  ];
+  
+  if (score >= 80) return null; // High scores have minimal distractions
+  
+  return services[Math.floor(Math.random() * services.length)];
+};
+
 const getCategoryIcon = (category: string) => {
   switch (category.toLowerCase()) {
     case 'development':
@@ -558,45 +648,75 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                   </div>
                 </div>
 
-                {/* Score Analysis */}
-                <div className="space-y-3 mb-4">
-                  <div className="flex items-center gap-2">
-                    <Award className="h-4 w-4 text-purple-600" />
-                    <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                      Performance: {selectedSessionData.scoreLabel}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Timer className="h-4 w-4 text-blue-600" />
-                    <span className={`text-sm ${getThemeTextColor('secondary')}`}>
-                      Duration: {formatTime(selectedSessionData.duration)}
-                    </span>
+
+                {/* Performance Feedback */}
+                <div className="mb-4">
+                  <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')} text-center`}>
+                    <p className={`text-sm ${getThemeTextColor('primary')}`}>
+                      {getSessionFeedback(selectedSessionData.score)}
+                    </p>
                   </div>
                 </div>
 
-                {/* Activity Breakdown */}
-                <div className="space-y-3">
-                  <h5 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                    Activity Breakdown
-                  </h5>
-                  <div className="space-y-2 max-h-32 overflow-y-auto">
-                    {selectedSessionData.details.map((detail, index) => (
-                      <div key={index} className="flex items-center justify-between py-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm">
-                            {getCategoryIcon(detail.categoryDetail || detail.category)}
+                {/* Score Breakdown */}
+                {(() => {
+                  const breakdown = getScoreBreakdown(selectedSessionData.score);
+                  return breakdown.length > 0 ? (
+                    <div className="space-y-3 mb-4">
+                      <h5 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                        What Affected Your Score
+                      </h5>
+                      <div className="space-y-2">
+                        {breakdown.map((factor, index) => (
+                          <div key={index} className="py-2 px-3 rounded-lg bg-red-50 dark:bg-red-900/20">
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm">{factor.icon}</span>
+                                <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
+                                  {factor.factor}
+                                </span>
+                              </div>
+                              <span className="text-xs font-medium text-red-600 dark:text-red-400">
+                                -{factor.deduction} pts
+                              </span>
+                            </div>
+                            <div className="flex gap-4 text-xs text-gray-600 dark:text-gray-400">
+                              <span>체류 시간: {factor.timeSpent}</span>
+                              <span>접근 횟수: {factor.accessCount}회</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
+
+                {/* Most Distracting Service */}
+                {(() => {
+                  const distractingService = getMostDistractingService(selectedSessionData.score);
+                  return distractingService ? (
+                    <div className="space-y-3 mb-4">
+                      <h5 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                        Biggest Distraction
+                      </h5>
+                      <div className={`p-3 rounded-lg border-l-4 border-orange-400 ${getThemeClass('componentSecondary')}`}>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-sm">{distractingService.icon}</span>
+                          <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                            {distractingService.name}
                           </span>
-                          <span className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            {detail.categoryDetail || detail.category}
+                          <span className={`text-xs px-2 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300`}>
+                            {distractingService.category}
                           </span>
                         </div>
-                        <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
-                          {formatTime(detail.duration)}
-                        </span>
+                        <p className={`text-xs ${getThemeTextColor('secondary')}`}>
+                          Spent {distractingService.time} on this during your session
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
+                  ) : null;
+                })()}
+
               </div>
             ) : (
               <div className={`p-4 rounded-lg border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} text-center`}>
