@@ -14,6 +14,7 @@ import {
 } from '@/components/common/StatisticsSkeleton';
 import SessionCarousel from '@/components/statistics/CycleCarousel';
 import MonthlyStreak from '@/components/statistics/MonthlyStreak';
+import SessionTimelineView from '@/components/statistics/SessionTimelineView';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
 import { useInitUser } from '@/hooks/useInitUser';
 // generateMockCycles import 제거 - API 사용으로 대체됨
@@ -186,6 +187,23 @@ export default function StatisticsPage() {
             </div>
           </div>
 
+          {/* 세션 타임라인 스켈레톤 */}
+          <div className={`rounded-lg border-2 shadow-sm p-6 ${getThemeClass('border')} ${getThemeClass('component')}`}>
+            <div className={`h-6 w-40 mb-4 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+            <div className="space-y-4">
+              {[...Array(3)].map((_, index) => (
+                <div key={index} className="flex items-center gap-4">
+                  <div className={`h-12 w-12 animate-pulse rounded-full ${getThemeClass('componentSecondary')}`}></div>
+                  <div className="flex-1 space-y-2">
+                    <div className={`h-4 w-32 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+                    <div className={`h-3 w-24 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+                  </div>
+                  <div className={`h-8 w-16 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* 하단: 세션 캐러셀 스켈레톤 */}
           <div className="w-full">
             <SessionCarousel selectedDate={selectedDate} />
@@ -241,6 +259,9 @@ export default function StatisticsPage() {
           <MonthlyStreak />
 
         </div>
+
+        {/* 세션 타임라인 뷰 */}
+        <SessionTimelineView selectedDate={selectedDate} />
 
         {/* 하단: 세션 캐러셀 (전체 너비 사용) */}
         <div className="w-full">
