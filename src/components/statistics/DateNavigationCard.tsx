@@ -110,20 +110,18 @@ export default function TotalTimeCard({
           {/* Navigation buttons */}
           <div className='flex gap-2'>
             <Button
-              variant='outline'
               size='sm'
               onClick={onPrevious}
               disabled={!canGoPrevious}
-              className={`h-8 w-8 rounded-lg p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeClass('textPrimary')} hover:border-purple-300 hover:bg-purple-50 dark:hover:border-purple-600 dark:hover:bg-purple-900/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:border-current disabled:hover:bg-current`}
+              className={`h-8 w-8 rounded-lg p-0 transition-all duration-200 border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeClass('textPrimary')} ${canGoPrevious ? 'hover:scale-105 hover:shadow-md hover:border-gray-700 dark:hover:border-gray-400 hover:' + getThemeClass('componentSecondary') + ' hover:' + getThemeClass('textPrimary') : 'opacity-50 cursor-not-allowed'}`}
             >
               <ChevronLeft className='h-4 w-4' />
             </Button>
             <Button
-              variant='outline'
               size='sm'
               onClick={onNext}
               disabled={!canGoNext}
-              className={`h-8 w-8 rounded-lg p-0 transition-all duration-200 hover:scale-105 border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeClass('textPrimary')} hover:border-purple-300 hover:bg-purple-50 dark:hover:border-purple-600 dark:hover:bg-purple-900/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:border-current disabled:hover:bg-current`}
+              className={`h-8 w-8 rounded-lg p-0 transition-all duration-200 border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeClass('textPrimary')} ${canGoNext ? 'hover:scale-105 hover:shadow-md hover:border-gray-700 dark:hover:border-gray-400 hover:' + getThemeClass('componentSecondary') + ' hover:' + getThemeClass('textPrimary') : 'opacity-50 cursor-not-allowed'}`}
             >
               <ChevronRight className='h-4 w-4' />
             </Button>
