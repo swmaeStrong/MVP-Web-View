@@ -143,9 +143,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
     const endIndex = startIndex + itemsPerPage;
     const currentChartData = chartData.slice(startIndex, endIndex).map(item => ({
       ...item,
-      fill: selectedSession?.id === item.sessionData.id 
-        ? (isDarkMode ? '#a855f7' : '#9333ea') // Purple for selected
-        : item.fill,
+      fill: item.fill, // Keep original fill, will be overridden in CustomizedBar
       isSelected: selectedSession?.id === item.sessionData.id,
     }));
 
@@ -169,45 +167,77 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
     }
   }, []);
 
+  // State to track hovered session
+  const [hoveredSessionId, setHoveredSessionId] = useState<number | null>(null);
+
   // Custom bar component with proper click handling and score label
   const CustomizedBar = useCallback((props: any) => {
     const { x, y, width, height, payload, index } = props;
     const isSelected = selectedSession?.id === payload.sessionData.id;
+    const isHovered = hoveredSessionId === payload.sessionData.id;
+    const isHighlighted = isSelected || isHovered;
+    
+    // Calculate full chart height (264px total height - 35px top margin - 30px bottom margin = 199px)
+    const chartHeight = 199;
+    const chartTopY = 35; // Top margin from BarChart
     
     return (
       <g>
+        {/* Background wrapper for selected/hovered session - full height */}
+        {isHighlighted && (
+          <rect
+            x={x - 4}
+            y={chartTopY - 35} // Start from very top of chart area
+            width={width + 8}
+            height={chartHeight + 35} // Full height including margins
+            fill={isDarkMode ? 'rgba(139, 92, 246, 0.15)' : 'rgba(124, 58, 237, 0.1)'}
+            stroke={isDarkMode ? 'rgba(196, 132, 252, 0.4)' : 'rgba(124, 58, 237, 0.3)'}
+            strokeWidth="2"
+            rx={6}
+            ry={6}
+            style={{ 
+              filter: 'blur(0.5px)',
+              transition: 'all 0.3s ease'
+            }}
+          />
+        )}
+        
+        {/* Main bar */}
         <rect
           x={x}
           y={y}
           width={width}
           height={height}
-          fill={payload.fill}
-          stroke={isSelected ? (isDarkMode ? '#c084fc' : '#7c3aed') : 'transparent'}
-          strokeWidth={isSelected ? 3 : 0}
+          fill={isHighlighted ? (isDarkMode ? '#8b5cf6' : '#7c3aed') : payload.fill}
+          stroke={isHighlighted ? (isDarkMode ? '#c084fc' : '#6d28d9') : 'transparent'}
+          strokeWidth={isHighlighted ? 3 : 0}
           rx={4}
           ry={4}
           style={{ 
             cursor: 'pointer',
-            filter: isSelected ? 'brightness(1.1)' : 'none',
-            transition: 'all 0.2s ease'
+            filter: isHighlighted ? 'brightness(1.2) drop-shadow(0 4px 12px rgba(139, 92, 246, 0.4))' : 'none',
+            transition: 'all 0.3s ease'
           }}
-          onClick={() => handleBarClick(payload.sessionData)}
         />
+        
+        {/* Score text */}
         <text
           x={x + width / 2}
           y={y - 5}
           textAnchor="middle"
           fontSize="11"
           fontWeight="600"
-          fill={isDarkMode ? '#ffffff' : '#374151'}
-          style={{ cursor: 'pointer' }}
-          onClick={() => handleBarClick(payload.sessionData)}
+          fill={isHighlighted ? (isDarkMode ? '#ffffff' : '#ffffff') : (isDarkMode ? '#ffffff' : '#374151')}
+          style={{ 
+            cursor: 'pointer',
+            textShadow: isHighlighted ? '0 1px 2px rgba(0,0,0,0.3)' : 'none'
+          }}
         >
           {payload.score}
         </text>
       </g>
     );
-  }, [selectedSession, isDarkMode, handleBarClick]);
+  }, [selectedSession, isDarkMode, hoveredSessionId]);
 
   // Pagination handlers
   const handlePrevPage = useCallback(() => {
@@ -442,6 +472,26 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                   }
                 }
               }}
+              onMouseMove={(e) => {
+                // Calculate which bar area is being hovered based on position
+                const rect = chartContainerRef.current?.getBoundingClientRect();
+                if (rect && currentChartData.length > 0) {
+                  const x = e.clientX - rect.left;
+                  const chartWidth = rect.width - 20; // Account for margins
+                  const barWidth = chartWidth / currentChartData.length;
+                  const hoveredIndex = Math.floor(x / barWidth);
+                  
+                  if (hoveredIndex >= 0 && hoveredIndex < currentChartData.length) {
+                    const sessionData = currentChartData[hoveredIndex]?.sessionData;
+                    if (sessionData) {
+                      setHoveredSessionId(sessionData.id);
+                    }
+                  } else {
+                    setHoveredSessionId(null);
+                  }
+                }
+              }}
+              onMouseLeave={() => setHoveredSessionId(null)}
             >
               <ChartContainer config={chartConfig} className="h-full w-full" ref={chartContainerRef}>
               <BarChart
@@ -462,10 +512,6 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 12, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
-                />
-                <ChartTooltip
-                  content={<ChartTooltipContent />}
-                  cursor={{ fill: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}
                 />
                 <Bar
                   dataKey="score"
