@@ -446,10 +446,6 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
     return (
       <Card className={`rounded-lg border-2 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardHeader>
-          <CardTitle className={`flex items-center gap-2 text-lg font-semibold ${getThemeTextColor('primary')}`}>
-            <Activity className="h-5 w-5 text-purple-600" />
-            Session Analysis
-          </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
           <StateDisplay
@@ -468,10 +464,6 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
   return (
     <Card className={`rounded-lg border-2 shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <CardHeader className="pb-3">
-        <CardTitle className={`flex items-center gap-2 text-lg font-semibold ${getThemeTextColor('primary')}`}>
-          <Activity className="h-5 w-5 text-purple-600" />
-          Session Analysis
-        </CardTitle>
         
         {/* Summary Stats */}
         {summaryStats && (
@@ -644,7 +636,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                     className="px-3 py-1 rounded-full text-sm font-medium text-white shadow-lg"
                     style={{ backgroundColor: selectedSessionData.scoreColor }}
                   >
-                    {selectedSessionData.score}%
+                    {selectedSessionData.score}
                   </div>
                 </div>
 
