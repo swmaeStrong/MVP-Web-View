@@ -365,12 +365,10 @@ export default function MonthlyStreak() {
                       cellClass += ` ${getThemeClass('textSecondary')}`;
                     }
                     
-                    // 오늘 날짜 강조 - 진한 주황색 원  
-                    if (isToday && !isActive) {
-                      cellClass += ` border-2 ${isDarkMode ? 'border-orange-500' : 'border-orange-600'} rounded-full w-6 h-6`;
-                    } else if (isToday && isActive) {
-                      // 오늘이면서 활동일인 경우 더 진한 배경색 적용
-                      cellClass = cellClass.replace('text-white', `text-white bg-gradient-to-br from-orange-500 to-orange-600 rounded-md`);
+                    // 오늘 날짜 강조 제거
+                    if (isToday && isActive) {
+                      // 오늘이면서 활동일인 경우 일반 활동일과 동일하게 처리
+                      cellClass = cellClass;
                     }
                     
                     return (
