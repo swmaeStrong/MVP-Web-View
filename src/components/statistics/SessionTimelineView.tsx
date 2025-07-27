@@ -356,10 +356,13 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
     };
   }, [processedSessions]);
 
-  // Set first session as default selected when data loads
+  // Set most recent session as default selected when data loads
   React.useEffect(() => {
     if (processedSessions.length > 0 && !selectedSession) {
-      setSelectedSession(processedSessions[0]);
+      const mostRecentSession = processedSessions.reduce((latest, current) => 
+        current.timestamp > latest.timestamp ? current : latest
+      );
+      setSelectedSession(mostRecentSession);
     }
   }, [processedSessions, selectedSession]);
 
