@@ -7,8 +7,8 @@ import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '
 import { getKSTDateString } from '@/utils/timezone';
 import { useQuery } from '@tanstack/react-query';
 import { Activity, Clock, Target, TrendingUp, Award, Timer } from 'lucide-react';
-import { useMemo, useState, useCallback, useRef } from 'react';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import React, { useMemo, useState, useCallback, useRef } from 'react';
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, LabelList } from 'recharts';
 import StateDisplay from '../common/StateDisplay';
 
 interface SessionTimelineViewProps {
@@ -43,6 +43,13 @@ const formatTimestamp = (timestamp: number): string => {
     minute: '2-digit',
     hour12: false
   });
+};
+
+const formatTimeRange = (startTimestamp: number, duration: number): string => {
+  const startTime = formatTimestamp(startTimestamp);
+  const endTimestamp = startTimestamp + duration;
+  const endTime = formatTimestamp(endTimestamp);
+  return `${startTime}-${endTime}`;
 };
 
 const getScoreColor = (score: number, isDarkMode: boolean) => {
@@ -117,14 +124,16 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
         sessionNumber: `S${session.session}`,
         details: session.details,
       }))
-      .sort((a, b) => b.score - a.score); // Sort by score descending (highest to lowest)
+      .sort((a, b) => a.timestamp - b.timestamp); // Sort by time ascending (chronological order)
 
     const chartData = sessions.map((session) => ({
-      session: session.sessionNumber,
+      session: formatTimeRange(session.timestamp, session.duration), // Use start-end time range
+      sessionNumber: session.sessionNumber,
       score: session.score,
       duration: session.duration,
       fill: session.scoreColor,
       sessionData: session,
+      id: session.id,
     }));
 
     // Pagination: 10 items per page
@@ -132,17 +141,73 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
     const totalPages = Math.ceil(sessions.length / itemsPerPage);
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentChartData = chartData.slice(startIndex, endIndex);
+    const currentChartData = chartData.slice(startIndex, endIndex).map(item => ({
+      ...item,
+      fill: selectedSession?.id === item.sessionData.id 
+        ? (isDarkMode ? '#a855f7' : '#9333ea') // Purple for selected
+        : item.fill,
+      isSelected: selectedSession?.id === item.sessionData.id,
+    }));
 
     return { chartData, processedSessions: sessions, totalPages, currentChartData };
-  }, [sessionData, isDarkMode, currentPage]);
+  }, [sessionData, isDarkMode, currentPage, selectedSession]);
 
   // Handle bar click
-  const handleBarClick = useCallback((data: any) => {
-    if (data && data.sessionData) {
-      setSelectedSession(data.sessionData);
+  const handleBarClick = useCallback((sessionData: SessionData) => {
+    console.log('Bar clicked with session:', sessionData); // Debug log
+    setSelectedSession(sessionData);
+  }, []);
+
+  // Handle chart area click (for empty spaces)
+  const handleChartClick = useCallback((data: any) => {
+    console.log('Chart clicked:', data); // Debug log
+    if (data && data.activePayload && data.activePayload[0] && data.activePayload[0].payload) {
+      const sessionData = data.activePayload[0].payload.sessionData;
+      if (sessionData) {
+        setSelectedSession(sessionData);
+      }
     }
   }, []);
+
+  // Custom bar component with proper click handling and score label
+  const CustomizedBar = useCallback((props: any) => {
+    const { x, y, width, height, payload, index } = props;
+    const isSelected = selectedSession?.id === payload.sessionData.id;
+    
+    return (
+      <g>
+        <rect
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          fill={payload.fill}
+          stroke={isSelected ? (isDarkMode ? '#c084fc' : '#7c3aed') : 'transparent'}
+          strokeWidth={isSelected ? 3 : 0}
+          rx={4}
+          ry={4}
+          style={{ 
+            cursor: 'pointer',
+            filter: isSelected ? 'brightness(1.1)' : 'none',
+            transition: 'all 0.2s ease'
+          }}
+          onClick={() => handleBarClick(payload.sessionData)}
+        />
+        <text
+          x={x + width / 2}
+          y={y - 5}
+          textAnchor="middle"
+          fontSize="11"
+          fontWeight="600"
+          fill={isDarkMode ? '#ffffff' : '#374151'}
+          style={{ cursor: 'pointer' }}
+          onClick={() => handleBarClick(payload.sessionData)}
+        >
+          {payload.score}
+        </text>
+      </g>
+    );
+  }, [selectedSession, isDarkMode, handleBarClick]);
 
   // Pagination handlers
   const handlePrevPage = useCallback(() => {
@@ -171,8 +236,15 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
     };
   }, [processedSessions]);
 
-  // Set first session as default selected
-  const selectedSessionData = selectedSession || processedSessions[0];
+  // Set first session as default selected when data loads
+  React.useEffect(() => {
+    if (processedSessions.length > 0 && !selectedSession) {
+      setSelectedSession(processedSessions[0]);
+    }
+  }, [processedSessions, selectedSession]);
+
+  // Get the selected session data
+  const selectedSessionData = selectedSession;
 
   // Chart configuration
   const chartConfig: ChartConfig = {
@@ -350,16 +422,40 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                 </div>
               )}
             </div>
-            <ChartContainer config={chartConfig} className="h-64 w-full" ref={chartContainerRef}>
+            <div 
+              className="h-64 w-full cursor-pointer relative"
+              onClick={(e) => {
+                // Calculate which bar area was clicked based on position
+                const rect = chartContainerRef.current?.getBoundingClientRect();
+                if (rect && currentChartData.length > 0) {
+                  const x = e.clientX - rect.left;
+                  const chartWidth = rect.width - 20; // Account for margins
+                  const barWidth = chartWidth / currentChartData.length;
+                  const clickedIndex = Math.floor(x / barWidth);
+                  
+                  if (clickedIndex >= 0 && clickedIndex < currentChartData.length) {
+                    const sessionData = currentChartData[clickedIndex]?.sessionData;
+                    if (sessionData) {
+                      console.log('Container clicked, selecting session at index:', clickedIndex);
+                      setSelectedSession(sessionData);
+                    }
+                  }
+                }
+              }}
+            >
+              <ChartContainer config={chartConfig} className="h-full w-full" ref={chartContainerRef}>
               <BarChart
                 data={currentChartData}
-                margin={{ top: 20, right: 10, left: 10, bottom: 20 }}
+                margin={{ top: 35, right: 10, left: 10, bottom: 30 }}
+                onClick={handleChartClick}
               >
                 <XAxis
                   dataKey="session"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 12, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                  tick={{ fontSize: 9, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                  height={40}
+                  interval={0}
                 />
                 <YAxis
                   domain={[0, 100]}
@@ -373,12 +469,11 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                 />
                 <Bar
                   dataKey="score"
-                  radius={[4, 4, 0, 0]}
-                  cursor="pointer"
-                  onClick={handleBarClick}
+                  shape={CustomizedBar}
                 />
               </BarChart>
-            </ChartContainer>
+              </ChartContainer>
+            </div>
           </div>
 
           {/* Right: Session Details */}
@@ -388,19 +483,29 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
             </h3>
             
             {selectedSessionData ? (
-              <div className={`p-4 rounded-lg border ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
+              <div className={`p-4 rounded-lg border-2 ${getThemeClass('componentSecondary')} transition-all duration-300`}
+                   style={{ 
+                     borderColor: isDarkMode ? '#c084fc' : '#7c3aed',
+                     boxShadow: `0 0 20px ${isDarkMode ? 'rgba(192, 132, 252, 0.3)' : 'rgba(124, 58, 237, 0.3)'}`
+                   }}>
                 {/* Session Header */}
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h4 className={`font-semibold ${getThemeTextColor('primary')}`}>
-                      {selectedSessionData.title}
-                    </h4>
+                    <div className="flex items-center gap-2">
+                      <h4 className={`font-semibold ${getThemeTextColor('primary')}`}>
+                        {selectedSessionData.title}
+                      </h4>
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                        <span className={`text-xs ${getThemeTextColor('accent')}`}>Selected</span>
+                      </div>
+                    </div>
                     <p className={`text-sm ${getThemeTextColor('secondary')}`}>
                       {selectedSessionData.startTime} • {formatTime(selectedSessionData.duration)}
                     </p>
                   </div>
                   <div 
-                    className="px-3 py-1 rounded-full text-sm font-medium text-white"
+                    className="px-3 py-1 rounded-full text-sm font-medium text-white shadow-lg"
                     style={{ backgroundColor: selectedSessionData.scoreColor }}
                   >
                     {selectedSessionData.score}%
