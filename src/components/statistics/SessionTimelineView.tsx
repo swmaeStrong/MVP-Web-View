@@ -665,7 +665,9 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                   }
                   
                   // Use sessionMinutes as the total allocated time (in seconds)
-                  const totalAllocatedTime = selectedSessionData.duration; // This should be sessionMinutes * 60 if available
+                  // sessionMinutes comes from API and represents target session duration in minutes
+                  const sessionMinutes = sessionData?.find(s => s.session === selectedSessionData.id)?.sessionMinutes || 0;
+                  const totalAllocatedTime = sessionMinutes > 0 ? sessionMinutes * 60 : selectedSessionData.duration;
                   const actualUsedTime = workTime + distractionTime + afkTime;
                   const unusedTime = Math.max(0, totalAllocatedTime - actualUsedTime);
                   
