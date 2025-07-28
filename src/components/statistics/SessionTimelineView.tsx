@@ -1,14 +1,14 @@
 'use client';
 
 import { useTheme } from '@/hooks/useTheme';
+import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
+import { ChartConfig, ChartContainer } from '@/shadcn/ui/chart';
 import { getSession } from '@/shared/api/get';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/shadcn/ui/chart';
 import { getKSTDateString } from '@/utils/timezone';
 import { useQuery } from '@tanstack/react-query';
-import { Activity, Clock, Target, TrendingUp, Award, Timer } from 'lucide-react';
-import React, { useMemo, useState, useCallback, useRef } from 'react';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, LabelList } from 'recharts';
+import { Activity, Target } from 'lucide-react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { Bar, BarChart, XAxis, YAxis } from 'recharts';
 import StateDisplay from '../common/StateDisplay';
 
 interface SessionTimelineViewProps {
@@ -53,7 +53,7 @@ const formatTimeRange = (startTimestamp: number, duration: number): string => {
 };
 
 const getScoreColor = (score: number, isDarkMode: boolean) => {
-  if (score >= 80) return isDarkMode ? '#10b981' : '#059669'; // green
+  if (score >= 80) return isDarkMode ? '#44C743' : '#44C743'; // green
   if (score >= 60) return isDarkMode ? '#f59e0b' : '#d97706'; // yellow
   if (score >= 40) return isDarkMode ? '#f97316' : '#ea580c'; // orange
   return isDarkMode ? '#ef4444' : '#dc2626'; // red
@@ -280,8 +280,8 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
             y={chartTopY - 35} // Start from very top of chart area
             width={width + 8}
             height={chartHeight + 35} // Full height including margins
-            fill={isDarkMode ? 'rgba(139, 92, 246, 0.15)' : 'rgba(124, 58, 237, 0.1)'}
-            stroke={isDarkMode ? 'rgba(196, 132, 252, 0.4)' : 'rgba(124, 58, 237, 0.3)'}
+            fill={isDarkMode ? 'rgba(96, 165, 250, 0.15)' : 'rgba(30, 64, 175, 0.1)'}
+            stroke={isDarkMode ? 'rgba(147, 197, 253, 0.4)' : 'rgba(30, 64, 175, 0.3)'}
             strokeWidth="2"
             rx={6}
             ry={6}
@@ -298,14 +298,14 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
           y={y}
           width={width}
           height={height}
-          fill={isHighlighted ? (isDarkMode ? '#8b5cf6' : '#7c3aed') : payload.fill}
-          stroke={isHighlighted ? (isDarkMode ? '#c084fc' : '#6d28d9') : 'transparent'}
+          fill={isHighlighted ? (isDarkMode ? '#60a5fa' : '#1e40af') : payload.fill}
+          stroke={isHighlighted ? (isDarkMode ? '#93c5fd' : '#1d4ed8') : 'transparent'}
           strokeWidth={isHighlighted ? 3 : 0}
           rx={4}
           ry={4}
           style={{ 
             cursor: 'pointer',
-            filter: isHighlighted ? 'brightness(1.2) drop-shadow(0 4px 12px rgba(139, 92, 246, 0.4))' : 'none',
+            filter: isHighlighted ? 'brightness(1.2) drop-shadow(0 4px 12px rgba(96, 165, 250, 0.4))' : 'none',
             transition: 'all 0.3s ease'
           }}
         />
@@ -614,11 +614,92 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
             </h3>
             
             {selectedSessionData ? (
-              <div className={`p-4 rounded-lg border-2 ${getThemeClass('componentSecondary')} transition-all duration-300`}
-                   style={{ 
-                     borderColor: isDarkMode ? '#c084fc' : '#7c3aed',
-                     boxShadow: `0 0 20px ${isDarkMode ? 'rgba(192, 132, 252, 0.3)' : 'rgba(124, 58, 237, 0.3)'}`
-                   }}>
+              <div className={`p-4 rounded-lg border ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
+                
+                {/* Activity Progress Bar */}
+                {(() => {
+                  // Calculate work, distraction, afk times from session details
+                  let workTime = 0, distractionTime = 0, afkTime = 0;
+                  
+                  selectedSessionData.details.forEach(detail => {
+                    switch (detail.category) {
+                      case 'work':
+                        workTime += detail.duration;
+                        break;
+                      case 'distraction':
+                      case 'break':
+                        distractionTime += detail.duration;
+                        break;
+                      case 'afk':
+                        afkTime += detail.duration;
+                        break;
+                      default:
+                        workTime += detail.duration; // Unknown categories as work
+                        break;
+                    }
+                  });
+                  
+                  const totalTime = workTime + distractionTime + afkTime;
+                  const workPercent = totalTime > 0 ? (workTime / totalTime) * 100 : 0;
+                  const distractionPercent = totalTime > 0 ? (distractionTime / totalTime) * 100 : 0;
+                  const afkPercent = totalTime > 0 ? (afkTime / totalTime) * 100 : 0;
+                  
+                  return (
+                    <div className="mb-4">
+                      {/* Progress Bar */}
+                      <div className="flex h-1 w-full rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+                        {workPercent > 0 && (
+                          <div 
+                            className="bg-green-600 h-full" 
+                            style={{ width: `${workPercent}%` }}
+                            title={`Work: ${formatTime(workTime)}`}
+                          />
+                        )}
+                        {distractionPercent > 0 && (
+                          <div 
+                            className="bg-red-500 h-full" 
+                            style={{ width: `${distractionPercent}%` }}
+                            title={`Distraction: ${formatTime(distractionTime)}`}
+                          />
+                        )}
+                        {afkPercent > 0 && (
+                          <div 
+                            className="bg-yellow-500 h-full" 
+                            style={{ width: `${afkPercent}%` }}
+                            title={`AFK: ${formatTime(afkTime)}`}
+                          />
+                        )}
+                      </div>
+                      
+                      {/* Legend */}
+                      <div className="flex items-center justify-center gap-4 mt-2">
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 rounded bg-green-600"></div>
+                          <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                            Work ({formatTime(workTime)})
+                          </span>
+                        </div>
+                        {distractionTime > 0 && (
+                          <div className="flex items-center gap-1">
+                            <div className="w-2 h-2 rounded bg-red-500"></div>
+                            <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                              Distraction ({formatTime(distractionTime)})
+                            </span>
+                          </div>
+                        )}
+                        {afkTime > 0 && (
+                          <div className="flex items-center gap-1">
+                            <div className="w-2 h-2 rounded bg-yellow-500"></div>
+                            <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                              AFK ({formatTime(afkTime)})
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {/* Session Header */}
                 <div className="flex items-center justify-between mb-4">
                   <div>
@@ -626,10 +707,6 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                       <h4 className={`font-semibold ${getThemeTextColor('primary')}`}>
                         {selectedSessionData.title}
                       </h4>
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-                        <span className={`text-xs ${getThemeTextColor('accent')}`}>Selected</span>
-                      </div>
                     </div>
                     <p className={`text-sm ${getThemeTextColor('secondary')}`}>
                       {selectedSessionData.startTime} • {formatTime(selectedSessionData.duration)}
@@ -681,32 +758,6 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                             </div>
                           </div>
                         ))}
-                      </div>
-                    </div>
-                  ) : null;
-                })()}
-
-                {/* Most Distracting Service */}
-                {(() => {
-                  const distractingService = getMostDistractingService(selectedSessionData.score);
-                  return distractingService ? (
-                    <div className="space-y-3 mb-4">
-                      <h5 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                        Biggest Distraction
-                      </h5>
-                      <div className={`p-3 rounded-lg border-l-4 border-orange-400 ${getThemeClass('componentSecondary')}`}>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-sm">{distractingService.icon}</span>
-                          <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                            {distractingService.name}
-                          </span>
-                          <span className={`text-xs px-2 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300`}>
-                            {distractingService.category}
-                          </span>
-                        </div>
-                        <p className={`text-xs ${getThemeTextColor('secondary')}`}>
-                          Spent {distractingService.time} on this during your session
-                        </p>
                       </div>
                     </div>
                   ) : null;

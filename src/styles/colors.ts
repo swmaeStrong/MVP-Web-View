@@ -12,7 +12,7 @@ export const themeColors = {
     text: {
       primary: 'rgb(220, 220, 220)', // 밝은 텍스트 220,220,220
       secondary: 'rgb(153, 153, 153)', // 약간 어두운 153,153,153
-      accent: 'rgb(168, 85, 247)',   // 보라색 액센트 텍스트
+      accent: '#3F72AF',   // 블루 액센트 텍스트
     },
     // Tailwind 클래스명
     classes: {
@@ -23,7 +23,7 @@ export const themeColors = {
       borderLight: 'border-[rgb(120,120,120)]',
       textPrimary: 'text-[rgb(220,220,220)]',
       textSecondary: 'text-[rgb(153,153,153)]',
-      textAccent: 'text-[rgb(168,85,247)]',
+      textAccent: 'text-[#3F72AF]',
     }
   },
   light: {
@@ -38,7 +38,7 @@ export const themeColors = {
     text: {
       primary: 'rgb(43, 43, 43)',    // 텍스트 43, 43, 43
       secondary: 'rgb(142, 142, 142)', // 회색 텍스트 142,142,142
-      accent: 'rgb(147, 51, 234)',   // 보라색 액센트 텍스트 purple-700
+      accent: '#3F72AF',    // 네이비 액센트 텍스트 blue-700
     },
     // Tailwind 클래스명
     classes: {
@@ -49,7 +49,7 @@ export const themeColors = {
       borderLight: 'border-gray-300',
       textPrimary: 'text-[rgb(43,43,43)]',
       textSecondary: 'text-[rgb(142,142,142)]',
-      textAccent: 'text-purple-700',
+      textAccent: 'text-[#3F72AF]',
     }
   },
   // 공통 색상
