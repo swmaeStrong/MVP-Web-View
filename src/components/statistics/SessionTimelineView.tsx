@@ -724,8 +724,11 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                               >
                                 {workPercent > 0 && (
                                   <div 
-                                    className="bg-green-600 h-full" 
-                                    style={{ width: `${workPercent}%` }}
+                                    className="h-full" 
+                                    style={{ 
+                                      width: `${workPercent}%`,
+                                      backgroundColor: 'rgb(68, 199, 67)'
+                                    }}
                                   />
                                 )}
                                 {distractionPercent > 0 && (
@@ -769,7 +772,10 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                       {/* Legend */}
                       <div className="flex items-center justify-center gap-4 mt-3 flex-wrap">
                         <div className="flex items-center gap-1">
-                          <div className="w-2 h-2 rounded bg-green-600"></div>
+                          <div 
+                            className="w-2 h-2 rounded"
+                            style={{ backgroundColor: 'rgb(68, 199, 67)' }}
+                          ></div>
                           <span className={`text-xs ${getThemeTextColor('secondary')}`}>
                             Work
                           </span>
