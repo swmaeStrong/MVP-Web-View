@@ -632,6 +632,26 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
             {selectedSessionData ? (
               <div className={`p-4 rounded-lg border ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
                 
+                {/* Session Header */}
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className={`font-semibold ${getThemeTextColor('primary')}`}>
+                        {selectedSessionData.title}
+                      </h4>
+                    </div>
+                    <p className={`text-sm ${getThemeTextColor('secondary')}`}>
+                      {selectedSessionData.startTime} • {formatTime(selectedSessionData.duration)}
+                    </p>
+                  </div>
+                  <div 
+                    className="px-3 py-1 rounded-full text-sm font-medium text-white shadow-lg"
+                    style={{ backgroundColor: selectedSessionData.scoreColor }}
+                  >
+                    {selectedSessionData.score}
+                  </div>
+                </div>
+
                 {/* Activity Progress Bar */}
                 {(() => {
                   // Calculate work, distraction, afk times from session details
@@ -739,27 +759,6 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                     </div>
                   );
                 })()}
-
-                {/* Session Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className={`font-semibold ${getThemeTextColor('primary')}`}>
-                        {selectedSessionData.title}
-                      </h4>
-                    </div>
-                    <p className={`text-sm ${getThemeTextColor('secondary')}`}>
-                      {selectedSessionData.startTime} • {formatTime(selectedSessionData.duration)}
-                    </p>
-                  </div>
-                  <div 
-                    className="px-3 py-1 rounded-full text-sm font-medium text-white shadow-lg"
-                    style={{ backgroundColor: selectedSessionData.scoreColor }}
-                  >
-                    {selectedSessionData.score}
-                  </div>
-                </div>
-
 
                 {/* Performance Feedback */}
                 <div className="mb-4">
