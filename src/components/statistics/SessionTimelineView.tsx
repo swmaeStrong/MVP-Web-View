@@ -591,7 +591,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                     }
                     
                     // Create second-by-second timeline array based on allocated time
-                    // 0 = empty/unused, 1 = work, 2 = distraction
+                    // 0 = empty/unused, 1 = work, 2 = distraction, 3 = afk
                     let timeline;
                     try {
                       timeline = new Array(Math.floor(totalAllocatedTime)).fill(0); // Initially all empty/unused time
@@ -625,12 +625,14 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                           return;
                         }
                         
-                        // Mark distraction periods in timeline
+                        // Mark distraction/AFK periods in timeline
                         for (let i = 0; i < detailDuration; i++) {
                           const timelineIndex = detailStartTime + i;
                           if (timelineIndex >= 0 && timelineIndex < timeline.length) {
-                            // Check if this is a distraction category
-                            if (detail.category !== 'work' && detail.category !== 'coding') {
+                            // Categorize based on detail category
+                            if (detail.category === 'afk' || detail.category === 'idle') {
+                              timeline[timelineIndex] = 3; // Mark as AFK
+                            } else if (detail.category !== 'work' && detail.category !== 'coding') {
                               timeline[timelineIndex] = 2; // Mark as distraction
                             }
                           }
@@ -668,7 +670,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                             endTime: segmentEndTime,
                             workTime: currentSegmentType === 1 ? segmentDuration : 0,
                             distractionTime: currentSegmentType === 2 ? segmentDuration : 0,
-                            afkTime: 0,
+                            afkTime: currentSegmentType === 3 ? segmentDuration : 0,
                             unusedTime: currentSegmentType === 0 ? segmentDuration : 0, // New: unused time
                             segmentDuration: segmentDuration
                           });
@@ -718,7 +720,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                                 key={index}
                                 className="flex h-full"
                                 style={{ width: `${segmentPercent}%` }}
-                                title={`${segment.timeRange}: Work ${formatTime(segment.workTime)}, Distraction ${formatTime(segment.distractionTime)}, Unused ${formatTime(segment.unusedTime)}`}
+                                title={`${segment.timeRange}: Work ${formatTime(segment.workTime)}, Distraction ${formatTime(segment.distractionTime)}, AFK ${formatTime(segment.afkTime)}, Unused ${formatTime(segment.unusedTime)}`}
                               >
                                 {workPercent > 0 && (
                                   <div 
@@ -778,12 +780,14 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                             Distraction
                           </span>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <div className="w-2 h-2 rounded bg-yellow-500"></div>
-                          <span className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            AFK
-                          </span>
-                        </div>
+                        {timelineBreakdown.some(segment => segment.afkTime > 0) && (
+                          <div className="flex items-center gap-1">
+                            <div className="w-2 h-2 rounded bg-yellow-500"></div>
+                            <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                              AFK
+                            </span>
+                          </div>
+                        )}
                         <div className="flex items-center gap-1">
                           <div className="w-2 h-2 rounded bg-gray-400"></div>
                           <span className={`text-xs ${getThemeTextColor('secondary')}`}>
