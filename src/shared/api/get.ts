@@ -103,3 +103,9 @@ export const getSession = (date: string = getKSTDateString()) =>
   parseApi<Session.SessionApiResponse[]>(
     API.get(`/session?date=${date}`)
   );
+
+// 세션 상세 데이터 조회
+export const getSessionDetail = (session: number, date: string = getKSTDateString()) =>
+  parseApi<Session.SessionDetailApiResponse[]>(
+    API.get(`/usage-log/pomodoro/details?session=${session}&date=${date}`)
+  );
