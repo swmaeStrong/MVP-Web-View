@@ -368,7 +368,7 @@ export default function MonthlyStreak() {
                     // 오늘 날짜 강조 제거
                     if (isToday && isActive) {
                       // 오늘이면서 활동일인 경우 일반 활동일과 동일하게 처리
-                      cellClass = cellClass;
+                      cellClass = cellClass.replace('text-white', 'text-white bg-gradient-to-br from-orange-500 to-orange-600 rounded-md');
                     }
                     
                     return (
