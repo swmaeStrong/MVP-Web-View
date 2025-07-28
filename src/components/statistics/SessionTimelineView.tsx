@@ -571,27 +571,38 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                     // Create timeline segments using session details
                     const sessionStartTime = selectedSessionFromApi.timestamp;
                     const sessionDuration = selectedSessionFromApi.duration;
+                    const sessionMinutes = selectedSessionFromApi.sessionMinutes;
+                    
+                    // Use sessionMinutes as the total allocated time (in seconds)
+                    const totalAllocatedTime = sessionMinutes * 60; // Convert minutes to seconds
                     
                     // Debug logging
-                    console.log('SessionDuration:', sessionDuration, 'Type:', typeof sessionDuration);
+                    console.log('SessionDuration:', sessionDuration, 'SessionMinutes:', sessionMinutes, 'TotalAllocatedTime:', totalAllocatedTime);
                     
-                    // Ensure valid duration with stricter checks
-                    if (!sessionDuration || 
-                        typeof sessionDuration !== 'number' || 
-                        sessionDuration <= 0 || 
-                        sessionDuration > 86400 || // Max 24 hours
-                        !Number.isFinite(sessionDuration) ||
-                        Number.isNaN(sessionDuration)) {
-                      console.warn('Invalid sessionDuration:', sessionDuration);
+                    // Ensure valid allocated time with stricter checks
+                    if (!totalAllocatedTime || 
+                        typeof totalAllocatedTime !== 'number' || 
+                        totalAllocatedTime <= 0 || 
+                        totalAllocatedTime > 86400 || // Max 24 hours
+                        !Number.isFinite(totalAllocatedTime) ||
+                        Number.isNaN(totalAllocatedTime)) {
+                      console.warn('Invalid totalAllocatedTime:', totalAllocatedTime);
                       return [];
                     }
                     
-                    // Create second-by-second timeline array (1 = work, 0 = distraction)
+                    // Create second-by-second timeline array based on allocated time
+                    // 0 = empty/unused, 1 = work, 2 = distraction
                     let timeline;
                     try {
-                      timeline = new Array(Math.floor(sessionDuration)).fill(1); // Initially all work time
+                      timeline = new Array(Math.floor(totalAllocatedTime)).fill(0); // Initially all empty/unused time
+                      
+                      // Fill actual session duration with work time (up to the actual session duration)
+                      const actualSessionEnd = Math.min(sessionDuration, totalAllocatedTime);
+                      for (let i = 0; i < actualSessionEnd; i++) {
+                        timeline[i] = 1; // Mark as work time
+                      }
                     } catch (error) {
-                      console.error('Failed to create timeline array:', error, 'Duration:', sessionDuration);
+                      console.error('Failed to create timeline array:', error, 'AllocatedTime:', totalAllocatedTime);
                       return [];
                     }
                     
@@ -609,7 +620,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                         const detailDuration = Math.floor(detail.duration);
                         
                         // Validate calculated values
-                        if (detailDuration <= 0 || detailDuration > sessionDuration) {
+                        if (detailDuration <= 0 || detailDuration > totalAllocatedTime) {
                           console.warn(`Invalid detail duration: ${detailDuration}`, detail);
                           return;
                         }
@@ -620,7 +631,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                           if (timelineIndex >= 0 && timelineIndex < timeline.length) {
                             // Check if this is a distraction category
                             if (detail.category !== 'work' && detail.category !== 'coding') {
-                              timeline[timelineIndex] = 0; // Mark as distraction
+                              timeline[timelineIndex] = 2; // Mark as distraction
                             }
                           }
                         }
@@ -656,8 +667,9 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                             startTime: segmentStartTime,
                             endTime: segmentEndTime,
                             workTime: currentSegmentType === 1 ? segmentDuration : 0,
-                            distractionTime: currentSegmentType === 0 ? segmentDuration : 0,
+                            distractionTime: currentSegmentType === 2 ? segmentDuration : 0,
                             afkTime: 0,
+                            unusedTime: currentSegmentType === 0 ? segmentDuration : 0, // New: unused time
                             segmentDuration: segmentDuration
                           });
                         }
@@ -673,7 +685,8 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                   };
                   
                   const timelineBreakdown = getTimelineBreakdown();
-                  const totalSessionTime = selectedSessionData.duration;
+                  const selectedSessionFromApi = sessionData?.find(s => s.session === selectedSessionData.id);
+                  const totalAllocatedTime = selectedSessionFromApi?.sessionMinutes ? selectedSessionFromApi.sessionMinutes * 60 : selectedSessionData.duration;
                   
                   if (timelineBreakdown.length === 0) {
                     return (
@@ -694,17 +707,18 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                         <div className="flex h-3 w-full rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
                           {timelineBreakdown.map((segment, index) => {
                             const segmentTotalTime = segment.segmentDuration;
-                            const segmentPercent = totalSessionTime > 0 ? (segmentTotalTime / totalSessionTime) * 100 : 0;
+                            const segmentPercent = totalAllocatedTime > 0 ? (segmentTotalTime / totalAllocatedTime) * 100 : 0;
                             const workPercent = segmentTotalTime > 0 ? (segment.workTime / segmentTotalTime) * 100 : 0;
                             const distractionPercent = segmentTotalTime > 0 ? (segment.distractionTime / segmentTotalTime) * 100 : 0;
                             const afkPercent = segmentTotalTime > 0 ? (segment.afkTime / segmentTotalTime) * 100 : 0;
+                            const unusedPercent = segmentTotalTime > 0 ? (segment.unusedTime / segmentTotalTime) * 100 : 0;
                             
                             return (
                               <div 
                                 key={index}
                                 className="flex h-full"
                                 style={{ width: `${segmentPercent}%` }}
-                                title={`${segment.timeRange}: Work ${formatTime(segment.workTime)}, Distraction ${formatTime(segment.distractionTime)}`}
+                                title={`${segment.timeRange}: Work ${formatTime(segment.workTime)}, Distraction ${formatTime(segment.distractionTime)}, Unused ${formatTime(segment.unusedTime)}`}
                               >
                                 {workPercent > 0 && (
                                   <div 
@@ -722,6 +736,12 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                                   <div 
                                     className="bg-yellow-500 h-full" 
                                     style={{ width: `${afkPercent}%` }}
+                                  />
+                                )}
+                                {unusedPercent > 0 && (
+                                  <div 
+                                    className="bg-gray-400 h-full" 
+                                    style={{ width: `${unusedPercent}%` }}
                                   />
                                 )}
                               </div>
@@ -762,6 +782,12 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                           <div className="w-2 h-2 rounded bg-yellow-500"></div>
                           <span className={`text-xs ${getThemeTextColor('secondary')}`}>
                             AFK
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 rounded bg-gray-400"></div>
+                          <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                            Unused
                           </span>
                         </div>
                       </div>
