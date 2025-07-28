@@ -376,13 +376,7 @@ export default function MonthlyStreak() {
                       todayStyle = { 
                         backgroundColor: 'rgb(34, 139, 34)', // 더 진한 초록색
                       };
-                    } else if (isToday && !isActive) {
-                      // 오늘이지만 비활성일인 경우 border로만 강조
-                      todayStyle = {
-                        border: '2px solid rgb(34, 139, 34)',
-                        fontWeight: 'bold'
-                      };
-                    }
+                    } 
                     
                     return (
                       <div
