@@ -3,7 +3,7 @@
 import { useTheme } from '@/hooks/useTheme';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { ChartConfig, ChartContainer } from '@/shadcn/ui/chart';
-import { getSession } from '@/shared/api/get';
+import { getSession, getSessionDetail } from '@/shared/api/get';
 import { getKSTDateString } from '@/utils/timezone';
 import { useQuery } from '@tanstack/react-query';
 import { Activity, Target } from 'lucide-react';
@@ -31,9 +31,15 @@ interface SessionData {
 const formatTime = (seconds: number): string => {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
   
-  if (hours === 0) return `${minutes}m`;
-  return `${hours}h ${minutes}m`;
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  } else if (minutes > 0) {
+    return `${minutes}분 ${remainingSeconds}초`;
+  } else {
+    return `${remainingSeconds}초`;
+  }
 };
 
 const formatTimestamp = (timestamp: number): string => {
@@ -156,7 +162,9 @@ const getMostDistractingService = (score: number) => {
   return services[Math.floor(Math.random() * services.length)];
 };
 
-const getCategoryIcon = (category: string) => {
+const getCategoryIcon = (category: string | undefined) => {
+  if (!category) return '📊';
+  
   switch (category.toLowerCase()) {
     case 'development':
     case 'coding':
@@ -188,6 +196,14 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
   const { data: sessionData, isLoading, isError, refetch } = useQuery({
     queryKey: ['sessions', selectedDate],
     queryFn: () => getSession(selectedDate),
+    retry: 1,
+  });
+
+  // Fetch selected session detail data
+  const { data: sessionDetailData, isLoading: isDetailLoading, isError: isDetailError } = useQuery({
+    queryKey: ['sessionDetail', selectedSession?.id, selectedDate],
+    queryFn: () => selectedSession ? getSessionDetail(selectedSession.id, selectedDate) : Promise.resolve([]),
+    enabled: Boolean(selectedSession),
     retry: 1,
   });
 
@@ -621,23 +637,32 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                   // Calculate work, distraction, afk times from session details
                   let workTime = 0, distractionTime = 0, afkTime = 0;
                   
-                  selectedSessionData.details.forEach(detail => {
-                    switch (detail.category) {
-                      case 'work':
-                        workTime += detail.duration;
-                        break;
-                      case 'distraction':
-                      case 'break':
-                        distractionTime += detail.duration;
-                        break;
-                      case 'afk':
-                        afkTime += detail.duration;
-                        break;
-                      default:
-                        workTime += detail.duration; // Unknown categories as work
-                        break;
-                    }
-                  });
+                  if (sessionDetailData && sessionDetailData.length > 0) {
+                    // Use API data - all sessionDetailData entries are distractions
+                    distractionTime = sessionDetailData.reduce((total, detail) => total + detail.duration, 0);
+                    // Work time = total session time - distraction time
+                    workTime = selectedSessionData.duration - distractionTime;
+                    workTime = Math.max(0, workTime); // Ensure non-negative
+                  } else {
+                    // Fallback to mock data
+                    selectedSessionData.details.forEach(detail => {
+                      switch (detail.category) {
+                        case 'work':
+                          workTime += detail.duration;
+                          break;
+                        case 'distraction':
+                        case 'break':
+                          distractionTime += detail.duration;
+                          break;
+                        case 'afk':
+                          afkTime += detail.duration;
+                          break;
+                        default:
+                          workTime += detail.duration; // Unknown categories as work
+                          break;
+                      }
+                    });
+                  }
                   
                   // Use sessionMinutes as the total allocated time (in seconds)
                   const totalAllocatedTime = selectedSessionData.duration; // This should be sessionMinutes * 60 if available
@@ -745,7 +770,15 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
 
                 {/* Score Breakdown */}
                 {(() => {
-                  const breakdown = getScoreBreakdown(selectedSessionData.score);
+                  // Use real API data for breakdown if available
+                  const breakdown = sessionDetailData && sessionDetailData.length > 0 
+                    ? sessionDetailData.map(detail => ({
+                        factor: detail.distractedApp,
+                        timeSpent: formatTime(detail.duration),
+                        accessCount: detail.count
+                      }))
+                    : getScoreBreakdown(selectedSessionData.score);
+                  
                   return breakdown.length > 0 ? (
                     <div className="space-y-3 mb-4">
                       <h5 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
@@ -755,14 +788,8 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                         {breakdown.map((factor, index) => (
                           <div key={index} className="py-2 px-3 rounded-lg bg-red-50 dark:bg-red-900/20">
                             <div className="flex items-center justify-between mb-1">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm">{factor.icon}</span>
-                                <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
-                                  {factor.factor}
-                                </span>
-                              </div>
-                              <span className="text-xs font-medium text-red-600 dark:text-red-400">
-                                -{factor.deduction} pts
+                              <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
+                                {factor.factor}
                               </span>
                             </div>
                             <div className="flex gap-4 text-xs text-gray-600 dark:text-gray-400">
