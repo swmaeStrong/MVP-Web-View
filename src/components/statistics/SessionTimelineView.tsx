@@ -486,18 +486,12 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
         
         {/* Summary Stats */}
         {summaryStats && (
-          <div className={`grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4 p-4 rounded-lg ${getThemeClass('componentSecondary')}`}>
+          <div className={`grid grid-cols-3 gap-4 mt-4 p-4 rounded-lg ${getThemeClass('componentSecondary')}`}>
             <div className="text-center">
               <div className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
                 {summaryStats.totalSessions}
               </div>
               <div className={`text-xs ${getThemeTextColor('secondary')}`}>Sessions</div>
-            </div>
-            <div className="text-center">
-              <div className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-                {formatTime(summaryStats.totalDuration)}
-              </div>
-              <div className={`text-xs ${getThemeTextColor('secondary')}`}>Total Time</div>
             </div>
             <div className="text-center">
               <div className={`text-2xl font-bold ${getThemeTextColor('accent')}`}>
