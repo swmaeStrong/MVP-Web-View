@@ -72,95 +72,6 @@ const getScoreLabel = (score: number) => {
   return 'Needs Improvement';
 };
 
-// Mock data for detailed feedback
-const getSessionFeedback = (score: number) => {
-  if (score >= 80) {
-    return "🎉 Outstanding performance! You maintained excellent focus throughout this session.";
-  } else if (score >= 60) {
-    return "👍 Great job! You had solid focus with minor distractions.";
-  } else if (score >= 40) {
-    return "⚡ Good effort, but there's room for improvement.";
-  } else {
-    return "💪 Don't worry - every expert was once a beginner.";
-  }
-};
-
-// Mock data for score breakdown
-const getScoreBreakdown = (score: number) => {
-  // Simulate what caused point deductions
-  const mockBreakdown = [
-    { 
-      factor: "Social Media", 
-      deduction: 15, 
-      icon: "📱", 
-      timeSpent: "23분", 
-      accessCount: 8 
-    },
-    { 
-      factor: "News Websites", 
-      deduction: 8, 
-      icon: "📰", 
-      timeSpent: "12분", 
-      accessCount: 5 
-    },
-    { 
-      factor: "YouTube", 
-      deduction: 12, 
-      icon: "🎥", 
-      timeSpent: "18분", 
-      accessCount: 3 
-    },
-    { 
-      factor: "Idle Time", 
-      deduction: 10, 
-      icon: "⏱️", 
-      timeSpent: "15분", 
-      accessCount: 1 
-    },
-    { 
-      factor: "Non-work Apps", 
-      deduction: 5, 
-      icon: "📋", 
-      timeSpent: "8분", 
-      accessCount: 4 
-    }
-  ];
-  
-  const totalDeduction = 100 - score;
-  if (totalDeduction <= 0) return [];
-  
-  // Randomly select factors that sum up to the total deduction
-  const factors = [];
-  let remainingDeduction = totalDeduction;
-  
-  for (let i = 0; i < mockBreakdown.length && remainingDeduction > 0; i++) {
-    if (Math.random() > 0.5 && remainingDeduction >= 3) {
-      const deduction = Math.min(mockBreakdown[i].deduction, remainingDeduction);
-      factors.push({
-        ...mockBreakdown[i],
-        deduction
-      });
-      remainingDeduction -= deduction;
-    }
-  }
-  
-  return factors;
-};
-
-// Mock data for most distracting service
-const getMostDistractingService = (score: number) => {
-  const services = [
-    { name: "Instagram", time: "23 minutes", category: "Social Media", icon: "📸" },
-    { name: "YouTube", time: "18 minutes", category: "Entertainment", icon: "🎥" },
-    { name: "Twitter", time: "15 minutes", category: "Social Media", icon: "🐦" },
-    { name: "Reddit", time: "12 minutes", category: "Forum", icon: "🔴" },
-    { name: "Slack", time: "8 minutes", category: "Communication", icon: "💬" }
-  ];
-  
-  if (score >= 80) return null; // High scores have minimal distractions
-  
-  return services[Math.floor(Math.random() * services.length)];
-};
 
 const getCategoryIcon = (category: string | undefined) => {
   if (!category) return '📊';
@@ -646,161 +557,245 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                   </div>
                 </div>
 
-                {/* Activity Progress Bar */}
+                {/* Activity Progress Bar - Timeline-based segments */}
                 {(() => {
-                  // Calculate work, distraction, afk times from session details
-                  let workTime = 0, distractionTime = 0, afkTime = 0;
-                  
-                  if (sessionDetailData && sessionDetailData.length > 0) {
-                    // Use API data - all sessionDetailData entries are distractions
-                    distractionTime = sessionDetailData.reduce((total, detail) => total + detail.duration, 0);
-                    // Work time = total session time - distraction time
-                    workTime = selectedSessionData.duration - distractionTime;
-                    workTime = Math.max(0, workTime); // Ensure non-negative
-                  } else {
-                    // Fallback to mock data
-                    selectedSessionData.details.forEach(detail => {
-                      switch (detail.category) {
-                        case 'work':
-                          workTime += detail.duration;
-                          break;
-                        case 'distraction':
-                        case 'break':
-                          distractionTime += detail.duration;
-                          break;
-                        case 'afk':
-                          afkTime += detail.duration;
-                          break;
-                        default:
-                          workTime += detail.duration; // Unknown categories as work
-                          break;
+                  // Create timeline segments based on session data
+                  const getTimelineBreakdown = () => {
+                    // Get all sessions for the selected date to create timeline segments
+                    const selectedSessionFromApi = sessionData?.find(s => s.session === selectedSessionData.id);
+                    
+                    if (!selectedSessionFromApi) {
+                      return [];
+                    }
+                    
+                    // Create timeline segments using session details
+                    const sessionStartTime = selectedSessionFromApi.timestamp;
+                    const sessionDuration = selectedSessionFromApi.duration;
+                    
+                    // Debug logging
+                    console.log('SessionDuration:', sessionDuration, 'Type:', typeof sessionDuration);
+                    
+                    // Ensure valid duration with stricter checks
+                    if (!sessionDuration || 
+                        typeof sessionDuration !== 'number' || 
+                        sessionDuration <= 0 || 
+                        sessionDuration > 86400 || // Max 24 hours
+                        !Number.isFinite(sessionDuration) ||
+                        Number.isNaN(sessionDuration)) {
+                      console.warn('Invalid sessionDuration:', sessionDuration);
+                      return [];
+                    }
+                    
+                    // Create second-by-second timeline array (1 = work, 0 = distraction)
+                    let timeline;
+                    try {
+                      timeline = new Array(Math.floor(sessionDuration)).fill(1); // Initially all work time
+                    } catch (error) {
+                      console.error('Failed to create timeline array:', error, 'Duration:', sessionDuration);
+                      return [];
+                    }
+                    
+                    // Mark distraction periods using session details from /session API
+                    if (selectedSessionFromApi.details && selectedSessionFromApi.details.length > 0) {
+                      selectedSessionFromApi.details.forEach((detail, detailIndex) => {
+                        // Validate detail data
+                        if (!detail || typeof detail.timestamp !== 'number' || typeof detail.duration !== 'number') {
+                          console.warn(`Invalid detail at index ${detailIndex}:`, detail);
+                          return;
+                        }
+                        
+                        // Calculate relative position within the session
+                        const detailStartTime = Math.floor(detail.timestamp - sessionStartTime); // seconds from session start
+                        const detailDuration = Math.floor(detail.duration);
+                        
+                        // Validate calculated values
+                        if (detailDuration <= 0 || detailDuration > sessionDuration) {
+                          console.warn(`Invalid detail duration: ${detailDuration}`, detail);
+                          return;
+                        }
+                        
+                        // Mark distraction periods in timeline
+                        for (let i = 0; i < detailDuration; i++) {
+                          const timelineIndex = detailStartTime + i;
+                          if (timelineIndex >= 0 && timelineIndex < timeline.length) {
+                            // Check if this is a distraction category
+                            if (detail.category !== 'work' && detail.category !== 'coding') {
+                              timeline[timelineIndex] = 0; // Mark as distraction
+                            }
+                          }
+                        }
+                      });
+                    }
+                    
+                    // Group consecutive seconds into segments for display
+                    const segments = [];
+                    
+                    if (timeline.length === 0) {
+                      console.warn('Timeline is empty');
+                      return [];
+                    }
+                    
+                    let currentSegmentStart = 0;
+                    let currentSegmentType = timeline[0];
+                    
+                    const timelineDuration = timeline.length;
+                    
+                    for (let i = 1; i <= timelineDuration; i++) {
+                      const isEndOfSession = i === timelineDuration;
+                      const typeChanged = !isEndOfSession && timeline[i] !== currentSegmentType;
+                      
+                      if (typeChanged || isEndOfSession) {
+                        const segmentDuration = i - currentSegmentStart;
+                        const segmentStartTime = sessionStartTime + currentSegmentStart;
+                        const segmentEndTime = sessionStartTime + i;
+                        
+                        // Validate segment data
+                        if (segmentDuration > 0 && segmentStartTime >= 0 && segmentEndTime > segmentStartTime) {
+                          segments.push({
+                            timeRange: `${formatTimestamp(segmentStartTime)}-${formatTimestamp(segmentEndTime)}`,
+                            startTime: segmentStartTime,
+                            endTime: segmentEndTime,
+                            workTime: currentSegmentType === 1 ? segmentDuration : 0,
+                            distractionTime: currentSegmentType === 0 ? segmentDuration : 0,
+                            afkTime: 0,
+                            segmentDuration: segmentDuration
+                          });
+                        }
+                        
+                        if (!isEndOfSession) {
+                          currentSegmentStart = i;
+                          currentSegmentType = timeline[i];
+                        }
                       }
-                    });
+                    }
+                    
+                    return segments;
+                  };
+                  
+                  const timelineBreakdown = getTimelineBreakdown();
+                  const totalSessionTime = selectedSessionData.duration;
+                  
+                  if (timelineBreakdown.length === 0) {
+                    return (
+                      <div className="mb-4">
+                        <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')} text-center`}>
+                          <p className={`text-sm ${getThemeTextColor('secondary')}`}>
+                            세션 데이터를 불러올 수 없습니다.
+                          </p>
+                        </div>
+                      </div>
+                    );
                   }
-                  
-                  // Use sessionMinutes as the total allocated time (in seconds)
-                  // sessionMinutes comes from API and represents target session duration in minutes
-                  const sessionMinutes = sessionData?.find(s => s.session === selectedSessionData.id)?.sessionMinutes || 0;
-                  const totalAllocatedTime = sessionMinutes > 0 ? sessionMinutes * 60 : selectedSessionData.duration;
-                  const actualUsedTime = workTime + distractionTime + afkTime;
-                  const unusedTime = Math.max(0, totalAllocatedTime - actualUsedTime);
-                  
-                  // Calculate percentages based on total allocated time
-                  const workPercent = totalAllocatedTime > 0 ? (workTime / totalAllocatedTime) * 100 : 0;
-                  const distractionPercent = totalAllocatedTime > 0 ? (distractionTime / totalAllocatedTime) * 100 : 0;
-                  const afkPercent = totalAllocatedTime > 0 ? (afkTime / totalAllocatedTime) * 100 : 0;
-                  const unusedPercent = totalAllocatedTime > 0 ? (unusedTime / totalAllocatedTime) * 100 : 0;
                   
                   return (
                     <div className="mb-4">
-                      {/* Progress Bar */}
-                      <div className="flex h-1 w-full rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
-                        {workPercent > 0 && (
-                          <div 
-                            className="bg-green-600 h-full" 
-                            style={{ width: `${workPercent}%` }}
-                            title={`Work: ${formatTime(workTime)}`}
-                          />
-                        )}
-                        {distractionPercent > 0 && (
-                          <div 
-                            className="bg-red-500 h-full" 
-                            style={{ width: `${distractionPercent}%` }}
-                            title={`Distraction: ${formatTime(distractionTime)}`}
-                          />
-                        )}
-                        {afkPercent > 0 && (
-                          <div 
-                            className="bg-yellow-500 h-full" 
-                            style={{ width: `${afkPercent}%` }}
-                            title={`AFK: ${formatTime(afkTime)}`}
-                          />
-                        )}
-                        {unusedPercent > 0 && (
-                          <div 
-                            className="bg-gray-400 h-full" 
-                            style={{ width: `${unusedPercent}%` }}
-                            title={`Unused: ${formatTime(unusedTime)}`}
-                          />
-                        )}
+                      {/* Timeline-based Progress Bar */}
+                      <div className="space-y-2">
+                        <div className="flex h-3 w-full rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+                          {timelineBreakdown.map((segment, index) => {
+                            const segmentTotalTime = segment.segmentDuration;
+                            const segmentPercent = totalSessionTime > 0 ? (segmentTotalTime / totalSessionTime) * 100 : 0;
+                            const workPercent = segmentTotalTime > 0 ? (segment.workTime / segmentTotalTime) * 100 : 0;
+                            const distractionPercent = segmentTotalTime > 0 ? (segment.distractionTime / segmentTotalTime) * 100 : 0;
+                            const afkPercent = segmentTotalTime > 0 ? (segment.afkTime / segmentTotalTime) * 100 : 0;
+                            
+                            return (
+                              <div 
+                                key={index}
+                                className="flex h-full"
+                                style={{ width: `${segmentPercent}%` }}
+                                title={`${segment.timeRange}: Work ${formatTime(segment.workTime)}, Distraction ${formatTime(segment.distractionTime)}`}
+                              >
+                                {workPercent > 0 && (
+                                  <div 
+                                    className="bg-green-600 h-full" 
+                                    style={{ width: `${workPercent}%` }}
+                                  />
+                                )}
+                                {distractionPercent > 0 && (
+                                  <div 
+                                    className="bg-red-500 h-full" 
+                                    style={{ width: `${distractionPercent}%` }}
+                                  />
+                                )}
+                                {afkPercent > 0 && (
+                                  <div 
+                                    className="bg-yellow-500 h-full" 
+                                    style={{ width: `${afkPercent}%` }}
+                                  />
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        
+                        {/* Time labels */}
+                        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 overflow-hidden">
+                          {timelineBreakdown.length > 0 && (
+                            <>
+                              <span className="text-[9px] truncate px-1">
+                                {formatTimestamp(timelineBreakdown[0].startTime)}
+                              </span>
+                              <span className="text-[9px] truncate px-1">
+                                {formatTimestamp(timelineBreakdown[timelineBreakdown.length - 1].endTime)}
+                              </span>
+                            </>
+                          )}
+                        </div>
                       </div>
                       
                       {/* Legend */}
-                      <div className="flex items-center justify-center gap-4 mt-2 flex-wrap">
+                      <div className="flex items-center justify-center gap-4 mt-3 flex-wrap">
                         <div className="flex items-center gap-1">
                           <div className="w-2 h-2 rounded bg-green-600"></div>
                           <span className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            Work ({formatTime(workTime)})
+                            Work
                           </span>
                         </div>
-                        {distractionTime > 0 && (
-                          <div className="flex items-center gap-1">
-                            <div className="w-2 h-2 rounded bg-red-500"></div>
-                            <span className={`text-xs ${getThemeTextColor('secondary')}`}>
-                              Distraction ({formatTime(distractionTime)})
-                            </span>
-                          </div>
-                        )}
-                        {afkTime > 0 && (
-                          <div className="flex items-center gap-1">
-                            <div className="w-2 h-2 rounded bg-yellow-500"></div>
-                            <span className={`text-xs ${getThemeTextColor('secondary')}`}>
-                              AFK ({formatTime(afkTime)})
-                            </span>
-                          </div>
-                        )}
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 rounded bg-red-500"></div>
+                          <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                            Distraction
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 rounded bg-yellow-500"></div>
+                          <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                            AFK
+                          </span>
+                        </div>
                       </div>
+                      
                     </div>
                   );
                 })()}
 
-                {/* Performance Feedback */}
-                <div className="mb-4">
-                  <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')} text-center`}>
-                    <p className={`text-sm ${getThemeTextColor('primary')}`}>
-                      {getSessionFeedback(selectedSessionData.score)}
-                    </p>
-                  </div>
-                </div>
-
                 {/* Score Breakdown */}
-                {(() => {
-                  // Use real API data for breakdown if available
-                  const breakdown = sessionDetailData && sessionDetailData.length > 0 
-                    ? sessionDetailData
-                        .map(detail => ({
-                          factor: detail.distractedApp,
-                          timeSpent: formatTime(detail.duration),
-                          accessCount: detail.count,
-                          duration: detail.duration // Keep raw duration for sorting
-                        }))
+                {sessionDetailData && sessionDetailData.length > 0 && (
+                  <div className="space-y-3 mb-4">
+                    <h5 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                      점수에 영향을 준 요소들
+                    </h5>
+                    <div className="space-y-2">
+                      {sessionDetailData
                         .sort((a, b) => b.duration - a.duration) // Sort by duration (longest first)
                         .slice(0, 3) // Take only top 3
-                    : getScoreBreakdown(selectedSessionData.score).slice(0, 3);
-                  
-                  return breakdown.length > 0 ? (
-                    <div className="space-y-3 mb-4">
-                      <h5 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                        What Affected Your Score
-                      </h5>
-                      <div className="space-y-2">
-                        {breakdown.map((factor, index) => (
+                        .map((detail, index) => (
                           <div key={index} className="py-2 px-3 rounded-lg bg-red-50 dark:bg-red-900/20">
                             <div className="flex items-center justify-between mb-1">
                               <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
-                                {factor.factor}
+                                {detail.distractedApp}
                               </span>
                             </div>
                             <div className="flex gap-4 text-xs text-gray-600 dark:text-gray-400">
-                              <span>체류 시간: {factor.timeSpent}</span>
-                              <span>접근 횟수: {factor.accessCount}회</span>
+                              <span>체류 시간: {formatTime(detail.duration)}</span>
+                              <span>접근 횟수: {detail.count}회</span>
                             </div>
                           </div>
                         ))}
-                      </div>
                     </div>
-                  ) : null;
-                })()}
+                  </div>
+                )}
 
               </div>
             ) : (
