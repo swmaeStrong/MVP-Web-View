@@ -639,10 +639,16 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                     }
                   });
                   
-                  const totalTime = workTime + distractionTime + afkTime;
-                  const workPercent = totalTime > 0 ? (workTime / totalTime) * 100 : 0;
-                  const distractionPercent = totalTime > 0 ? (distractionTime / totalTime) * 100 : 0;
-                  const afkPercent = totalTime > 0 ? (afkTime / totalTime) * 100 : 0;
+                  // Use sessionMinutes as the total allocated time (in seconds)
+                  const totalAllocatedTime = selectedSessionData.duration; // This should be sessionMinutes * 60 if available
+                  const actualUsedTime = workTime + distractionTime + afkTime;
+                  const unusedTime = Math.max(0, totalAllocatedTime - actualUsedTime);
+                  
+                  // Calculate percentages based on total allocated time
+                  const workPercent = totalAllocatedTime > 0 ? (workTime / totalAllocatedTime) * 100 : 0;
+                  const distractionPercent = totalAllocatedTime > 0 ? (distractionTime / totalAllocatedTime) * 100 : 0;
+                  const afkPercent = totalAllocatedTime > 0 ? (afkTime / totalAllocatedTime) * 100 : 0;
+                  const unusedPercent = totalAllocatedTime > 0 ? (unusedTime / totalAllocatedTime) * 100 : 0;
                   
                   return (
                     <div className="mb-4">
@@ -669,10 +675,17 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                             title={`AFK: ${formatTime(afkTime)}`}
                           />
                         )}
+                        {unusedPercent > 0 && (
+                          <div 
+                            className="bg-gray-400 h-full" 
+                            style={{ width: `${unusedPercent}%` }}
+                            title={`Unused: ${formatTime(unusedTime)}`}
+                          />
+                        )}
                       </div>
                       
                       {/* Legend */}
-                      <div className="flex items-center justify-center gap-4 mt-2">
+                      <div className="flex items-center justify-center gap-4 mt-2 flex-wrap">
                         <div className="flex items-center gap-1">
                           <div className="w-2 h-2 rounded bg-green-600"></div>
                           <span className={`text-xs ${getThemeTextColor('secondary')}`}>
