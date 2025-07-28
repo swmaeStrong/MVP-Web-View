@@ -767,12 +767,16 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                 {(() => {
                   // Use real API data for breakdown if available
                   const breakdown = sessionDetailData && sessionDetailData.length > 0 
-                    ? sessionDetailData.map(detail => ({
-                        factor: detail.distractedApp,
-                        timeSpent: formatTime(detail.duration),
-                        accessCount: detail.count
-                      }))
-                    : getScoreBreakdown(selectedSessionData.score);
+                    ? sessionDetailData
+                        .map(detail => ({
+                          factor: detail.distractedApp,
+                          timeSpent: formatTime(detail.duration),
+                          accessCount: detail.count,
+                          duration: detail.duration // Keep raw duration for sorting
+                        }))
+                        .sort((a, b) => b.duration - a.duration) // Sort by duration (longest first)
+                        .slice(0, 3) // Take only top 3
+                    : getScoreBreakdown(selectedSessionData.score).slice(0, 3);
                   
                   return breakdown.length > 0 ? (
                     <div className="space-y-3 mb-4">
