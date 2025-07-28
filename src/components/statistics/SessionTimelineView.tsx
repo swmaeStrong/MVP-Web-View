@@ -811,13 +811,13 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                         .sort((a, b) => b.duration - a.duration) // Sort by duration (longest first)
                         .slice(0, 3) // Take only top 3
                         .map((detail, index) => (
-                          <div key={index} className="py-2 px-3 rounded-lg bg-red-50 dark:bg-red-900/20">
+                          <div key={index} className={`py-2 px-3 rounded-lg border ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
                             <div className="flex items-center justify-between mb-1">
                               <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
                                 {detail.distractedApp}
                               </span>
                             </div>
-                            <div className="flex gap-4 text-xs text-gray-600 dark:text-gray-400">
+                            <div className={`flex gap-4 text-xs ${getThemeTextColor('secondary')}`}>
                               <span>Duration: {formatTime(detail.duration)}</span>
                               <span>Access Count: {detail.count} times</span>
                             </div>
