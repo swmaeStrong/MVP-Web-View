@@ -680,7 +680,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                       <div className="mb-4">
                         <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')} text-center`}>
                           <p className={`text-sm ${getThemeTextColor('secondary')}`}>
-                            세션 데이터를 불러올 수 없습니다.
+                            Unable to load session data.
                           </p>
                         </div>
                       </div>
@@ -774,7 +774,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                 {sessionDetailData && sessionDetailData.length > 0 && (
                   <div className="space-y-3 mb-4">
                     <h5 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                      점수에 영향을 준 요소들
+                      Factors Affecting Your Score
                     </h5>
                     <div className="space-y-2">
                       {sessionDetailData
@@ -788,8 +788,8 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                               </span>
                             </div>
                             <div className="flex gap-4 text-xs text-gray-600 dark:text-gray-400">
-                              <span>체류 시간: {formatTime(detail.duration)}</span>
-                              <span>접근 횟수: {detail.count}회</span>
+                              <span>Duration: {formatTime(detail.duration)}</span>
+                              <span>Access Count: {detail.count} times</span>
                             </div>
                           </div>
                         ))}
