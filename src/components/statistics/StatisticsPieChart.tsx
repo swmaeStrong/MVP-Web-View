@@ -30,14 +30,24 @@ export default function StatisticsPieChart({
     return colors.solid;
   };
 
+  // Filter out null or invalid categories first
+  const validCategories = data.categories.filter(category => 
+    category && 
+    category.name && 
+    category.name.trim() !== '' && 
+    category.name !== 'null' && 
+    category.name !== 'undefined' &&
+    category.time > 0
+  );
+
   // Extract only top 3 categories and group the rest as "Others"
-  const top3Categories = data.categories.slice(0, 3).map((category, index) => ({
+  const top3Categories = validCategories.slice(0, 3).map((category, index) => ({
     ...category,
     color: getCategoryColor(category.name), // Use colors from colors.ts
   }));
 
   // Calculate others category from remaining categories
-  const otherCategories = data.categories.slice(3);
+  const otherCategories = validCategories.slice(3);
   const othersTime = otherCategories.reduce((sum, cat) => sum + cat.time, 0);
   const othersPercentage = otherCategories.reduce((sum, cat) => sum + cat.percentage, 0);
 
@@ -94,24 +104,28 @@ export default function StatisticsPieChart({
     );
   }
 
-  // Construct chart data
-  const chartData = finalCategories.map(category => ({
-    category: category.name === 'Others' ? 'Others' : getCategoryDisplayName(category.name), // Use display name
-    originalCategory: category.name, // Keep original for color lookup
-    time: category.time,
-    percentage: category.percentage,
-    fullTime: formatTime(category.time),
-    fill: category.color, // Use assigned color
-  }));
+  // Construct chart data with additional null checks
+  const chartData = finalCategories
+    .filter(category => category && category.name && category.time > 0) // Additional safety check
+    .map(category => ({
+      category: category.name === 'Others' ? 'Others' : getCategoryDisplayName(category.name), // Use display name
+      originalCategory: category.name, // Keep original for color lookup
+      time: category.time,
+      percentage: category.percentage || 0,
+      fullTime: formatTime(category.time),
+      fill: category.color, // Use assigned color
+    }));
 
-  // Chart configuration
-  const chartConfig = finalCategories.reduce((config, category, index) => {
-    config[category.name] = {
-      label: category.name === 'Others' ? 'Others' : getCategoryDisplayName(category.name), // Use display name
-      color: category.color, // Use assigned color
-    };
-    return config;
-  }, {} as ChartConfig);
+  // Chart configuration with null checks
+  const chartConfig = finalCategories
+    .filter(category => category && category.name) // Filter out null categories
+    .reduce((config, category, index) => {
+      config[category.name] = {
+        label: category.name === 'Others' ? 'Others' : getCategoryDisplayName(category.name), // Use display name
+        color: category.color, // Use assigned color
+      };
+      return config;
+    }, {} as ChartConfig);
 
   return (
     <div className={`flex items-center justify-center gap-8 w-full`}>
