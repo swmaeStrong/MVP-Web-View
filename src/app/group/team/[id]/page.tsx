@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { spacing } from '@/styles/design-system';
-import { Trophy, Target, Edit } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Edit, Target, Trophy } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 
@@ -16,6 +16,8 @@ export default function TeamDetailPage() {
 
   const [todayGoal, setTodayGoal] = useState('Complete React refactoring task');
   const [isEditingGoal, setIsEditingGoal] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState<'daily' | 'weekly'>('daily');
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Mock team data - would come from API
   const teamData = {
@@ -47,8 +49,35 @@ export default function TeamDetailPage() {
     // Save goal logic here
   };
 
+  const handleDateChange = (direction: 'prev' | 'next') => {
+    const newDate = new Date(selectedDate);
+    if (selectedPeriod === 'daily') {
+      newDate.setDate(newDate.getDate() + (direction === 'next' ? 1 : -1));
+    } else {
+      newDate.setDate(newDate.getDate() + (direction === 'next' ? 7 : -7));
+    }
+    setSelectedDate(newDate);
+  };
+
+  const formatDate = (date: Date) => {
+    if (selectedPeriod === 'daily') {
+      return date.toLocaleDateString('ko-KR', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        weekday: 'short' 
+      });
+    } else {
+      const startOfWeek = new Date(date);
+      const endOfWeek = new Date(date);
+      startOfWeek.setDate(date.getDate() - date.getDay());
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      return `${startOfWeek.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })} - ${endOfWeek.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}`;
+    }
+  };
+
   return (
-    <div className="h-full grid grid-cols-5 gap-6 p-6" style={{ gridTemplateRows: '1fr 2fr' }}>
+    <div className="h-full grid grid-cols-5 gap-6 p-6" style={{ gridTemplateRows: 'auto auto 1fr' }}>
       {/* 좌측 최상단 - 그룹 이름 및 팀장 정보 (3/5) */}
       <Card className={`${getCommonCardClass()} col-span-3 row-span-1`}>
         <CardContent className={spacing.inner.normal}>
@@ -84,7 +113,7 @@ export default function TeamDetailPage() {
       </Card>
 
       {/* 우측 상단 - 그라운드 룰 (2/5) */}
-      <Card className={`${getCommonCardClass()} col-span-2 row-span-1`}>
+      <Card className={`${getCommonCardClass()} col-span-2 row-span-2`}>
         <CardHeader>
           <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
             Ground Rules
@@ -100,6 +129,60 @@ export default function TeamDetailPage() {
                 </span>
               </div>
             ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Navigation Controls - 별도 컴포넌트 */}
+      <Card className={`${getCommonCardClass()} col-span-3 row-span-1 flex items-center`}>
+        <CardContent className="px-6 w-full">
+          <div className="flex items-center justify-between">
+            {/* Date Navigation */}
+            <div className="flex items-center gap-3">
+              <span className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
+                {formatDate(selectedDate)}
+              </span>
+              <div className='flex gap-2'>
+                <Button
+                  size='sm'
+                  onClick={() => handleDateChange('prev')}
+                  className={`h-8 w-8 rounded-lg p-0 transition-all duration-200 border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')} hover:scale-105 hover:shadow-md`}
+                >
+                  <ChevronLeft className='h-4 w-4' />
+                </Button>
+                <Button
+                  size='sm'
+                  onClick={() => handleDateChange('next')}
+                  className={`h-8 w-8 rounded-lg p-0 transition-all duration-200 border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')} hover:scale-105 hover:shadow-md`}
+                >
+                  <ChevronRight className='h-4 w-4' />
+                </Button>
+              </div>
+            </div>
+
+            {/* Period Selector */}
+            <div className={`flex rounded-md ${getThemeClass('componentSecondary')} p-1`}>
+              <button
+                onClick={() => setSelectedPeriod('daily')}
+                className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
+                  selectedPeriod === 'daily'
+                    ? `${getThemeClass('component')} ${getThemeTextColor('primary')} shadow-sm`
+                    : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
+                }`}
+              >
+                Daily
+              </button>
+              <button
+                onClick={() => setSelectedPeriod('weekly')}
+                className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
+                  selectedPeriod === 'weekly'
+                    ? `${getThemeClass('component')} ${getThemeTextColor('primary')} shadow-sm`
+                    : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
+                }`}
+              >
+                Weekly
+              </button>
+            </div>
           </div>
         </CardContent>
       </Card>
