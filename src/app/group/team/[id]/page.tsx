@@ -21,6 +21,9 @@ export default function TeamDetailPage() {
   const teamData = {
     id: teamId,
     name: teamId === '1' ? 'Team Alpha' : teamId === '2' ? 'Team Beta' : 'Team Gamma',
+    description: teamId === '1' ? 'Frontend development team focused on React and Next.js applications' : 
+                 teamId === '2' ? 'Backend development team specializing in Node.js and Python' : 
+                 'Full-stack development team working on modern web applications',
     leader: { name: 'John Doe', avatar: 'JD' },
     leaderboard: [
       { rank: 1, name: 'John Doe', score: 95, hours: 32 },
@@ -49,15 +52,15 @@ export default function TeamDetailPage() {
       {/* 좌측 최상단 - 그룹 이름 및 팀장 정보 (3/5) */}
       <Card className={`${getCommonCardClass()} col-span-3 row-span-1`}>
         <CardContent className={spacing.inner.normal}>
-          <div className="text-center space-y-4">
+          <div className="space-y-4">
             <h1 className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
               {teamData.name}
             </h1>
             
-            <div className="flex flex-col items-center space-y-2">
-              <Avatar className="w-16 h-16">
+            <div className="flex items-center space-x-3">
+              <Avatar className="w-12 h-12">
                 <AvatarImage src="" />
-                <AvatarFallback className={`text-lg font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+                <AvatarFallback className={`text-sm font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
                   {teamData.leader.avatar}
                 </AvatarFallback>
               </Avatar>
@@ -69,6 +72,12 @@ export default function TeamDetailPage() {
                   Team Leader
                 </p>
               </div>
+            </div>
+            
+            <div className={`mt-4 p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
+              <p className={`text-sm ${getThemeTextColor('secondary')}`}>
+                {teamData.description}
+              </p>
             </div>
           </div>
         </CardContent>
