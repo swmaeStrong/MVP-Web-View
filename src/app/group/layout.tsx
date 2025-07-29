@@ -45,9 +45,6 @@ const GroupSidebar = () => {
   // Team submenu items
   const teamSubMenuItems = [
     { name: 'Main', href: `/group/team/${selectedTeamId}`, icon: TrendingUp },
-    { name: 'Members', href: `/group/team/${selectedTeamId}/members`, icon: Users },
-    { name: 'Activities', href: `/group/team/${selectedTeamId}/activities`, icon: Activity },
-    { name: 'Calendar', href: `/group/team/${selectedTeamId}/calendar`, icon: Calendar },
     { name: 'Settings', href: `/group/team/${selectedTeamId}/settings`, icon: Settings },
   ];
 
@@ -76,9 +73,6 @@ const GroupSidebar = () => {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-2 h-2 rounded-full ${
-                        team.active ? 'bg-green-500' : 'bg-gray-500'
-                      }`}></div>
                       <span className="text-sm truncate">{team.name}</span>
                     </div>
                     <span className={`text-xs ${getThemeTextColor('secondary')}`}>
