@@ -5,9 +5,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { spacing } from '@/styles/design-system';
-import { ChevronLeft, ChevronRight, Edit, Target, Trophy } from 'lucide-react';
+import { Edit, Target, Trophy } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
+import DateNavigation from '@/components/common/DateNavigation';
 
 export default function TeamDetailPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
@@ -61,18 +62,22 @@ export default function TeamDetailPage() {
 
   const formatDate = (date: Date) => {
     if (selectedPeriod === 'daily') {
-      return date.toLocaleDateString('ko-KR', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric',
-        weekday: 'short' 
-      });
+      return date.toISOString().split('T')[0]; // YYYY-MM-DD 형식
     } else {
       const startOfWeek = new Date(date);
       const endOfWeek = new Date(date);
       startOfWeek.setDate(date.getDate() - date.getDay());
       endOfWeek.setDate(startOfWeek.getDate() + 6);
-      return `${startOfWeek.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })} - ${endOfWeek.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}`;
+      
+      const startYear = startOfWeek.getFullYear();
+      const startMonth = String(startOfWeek.getMonth() + 1).padStart(2, '0');
+      const startDay = String(startOfWeek.getDate()).padStart(2, '0');
+      
+      const endYear = endOfWeek.getFullYear();
+      const endMonth = String(endOfWeek.getMonth() + 1).padStart(2, '0');
+      const endDay = String(endOfWeek.getDate()).padStart(2, '0');
+      
+      return `${startYear}-${startMonth}-${startDay} ~ ${endYear}-${endMonth}-${endDay}`;
     }
   };
 
@@ -138,26 +143,13 @@ export default function TeamDetailPage() {
         <CardContent className="px-6 w-full">
           <div className="flex items-center justify-between">
             {/* Date Navigation */}
-            <div className="flex items-center gap-3">
-              <span className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
-                {formatDate(selectedDate)}
-              </span>
-              <div className='flex gap-2'>
-                <Button
-                  size='sm'
-                  onClick={() => handleDateChange('prev')}
-                  className={`h-8 w-8 rounded-lg p-0 transition-all duration-200 border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')} hover:scale-105 hover:shadow-md`}
-                >
-                  <ChevronLeft className='h-4 w-4' />
-                </Button>
-                <Button
-                  size='sm'
-                  onClick={() => handleDateChange('next')}
-                  className={`h-8 w-8 rounded-lg p-0 transition-all duration-200 border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')} hover:scale-105 hover:shadow-md`}
-                >
-                  <ChevronRight className='h-4 w-4' />
-                </Button>
-              </div>
+            <div className="flex-1 flex justify-center">
+              <DateNavigation
+                currentDate={selectedDate.toISOString().split('T')[0]}
+                onPrevious={() => handleDateChange('prev')}
+                onNext={() => handleDateChange('next')}
+                formatDate={(dateString) => formatDate(new Date(dateString))}
+              />
             </div>
 
             {/* Period Selector */}

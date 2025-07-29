@@ -1,12 +1,11 @@
 'use client';
 
 import { useTheme } from '@/hooks/useTheme';
-import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { cardSystem, componentStates, spacing } from '@/styles/design-system';
 import { formatKSTDate } from '@/utils/timezone';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
+import DateNavigation from '@/components/common/DateNavigation';
 
 interface TotalTimeCardProps {
   totalTime: number; // seconds
@@ -99,33 +98,15 @@ export default function TotalTimeCard({
     <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${componentStates.default.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <CardContent className={`${cardSystem.content} ${spacing.inner.normal}`}>
         {/* Date navigation header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
-              {formattedDate}
-            </h3>
-            
-          </div>
-          
-          {/* Navigation buttons */}
-          <div className='flex gap-2'>
-            <Button
-              size='sm'
-              onClick={onPrevious}
-              disabled={!canGoPrevious}
-              className={`h-8 w-8 rounded-lg p-0 transition-all duration-200 border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeClass('textPrimary')} ${canGoPrevious ? 'hover:scale-105 hover:shadow-md hover:border-gray-700 dark:hover:border-gray-400 hover:' + getThemeClass('componentSecondary') + ' hover:' + getThemeClass('textPrimary') : 'opacity-50 cursor-not-allowed'}`}
-            >
-              <ChevronLeft className='h-4 w-4' />
-            </Button>
-            <Button
-              size='sm'
-              onClick={onNext}
-              disabled={!canGoNext}
-              className={`h-8 w-8 rounded-lg p-0 transition-all duration-200 border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} ${getThemeClass('textPrimary')} ${canGoNext ? 'hover:scale-105 hover:shadow-md hover:border-gray-700 dark:hover:border-gray-400 hover:' + getThemeClass('componentSecondary') + ' hover:' + getThemeClass('textPrimary') : 'opacity-50 cursor-not-allowed'}`}
-            >
-              <ChevronRight className='h-4 w-4' />
-            </Button>
-          </div>
+        <div className="flex items-center justify-center w-full">
+          <DateNavigation
+            currentDate={currentDate}
+            onPrevious={onPrevious}
+            onNext={onNext}
+            canGoPrevious={canGoPrevious}
+            canGoNext={canGoNext}
+            formatDate={(date) => date}
+          />
         </div>
       </CardContent>
     </Card>
