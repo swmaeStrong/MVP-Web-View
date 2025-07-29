@@ -244,7 +244,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
           textAnchor="middle"
           fontSize="11"
           fontWeight="600"
-          fill={isHighlighted ? (isDarkMode ? '#ffffff' : '#ffffff') : (isDarkMode ? '#ffffff' : '#374151')}
+          fill={isHighlighted ? (isDarkMode ? '#ffffff' : '#374151') : (isDarkMode ? '#ffffff' : '#374151')}
           style={{ 
             cursor: 'pointer',
             textShadow: isHighlighted ? '0 1px 2px rgba(0,0,0,0.3)' : 'none'
