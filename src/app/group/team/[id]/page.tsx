@@ -240,11 +240,7 @@ export default function TeamDetailPage() {
                 
                 {/* 아바타 */}
                 <div className="relative w-fit mx-auto mb-3">
-                  <Avatar className={`w-16 h-16 ${
-                    member.rank <= 3 
-                      ? 'ring-2 ring-lime-500 dark:ring-lime-400' 
-                      : 'ring-2 ring-red-500 dark:ring-red-400'
-                  }`}>
+                  <Avatar className="w-16 h-16 ring-1 ring-gray-200 dark:ring-gray-700">
                     <AvatarImage src="" />
                     <AvatarFallback className={`text-lg font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
                       {member.name.split(' ').map(n => n[0]).join('')}
@@ -252,8 +248,8 @@ export default function TeamDetailPage() {
                   </Avatar>
                   <span className={`absolute -right-0 -bottom-0 size-4 rounded-full ${
                     member.rank <= 3 
-                      ? 'bg-lime-500 dark:bg-lime-400' 
-                      : 'bg-red-500 dark:bg-red-400'
+                      ? 'bg-green-500 dark:bg-green-400' 
+                      : 'bg-gray-400 dark:bg-gray-500'
                   }`}>
                   </span>
                 </div>
