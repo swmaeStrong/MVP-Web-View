@@ -1,228 +1,196 @@
 'use client';
 
 import { useTheme } from '@/hooks/useTheme';
+import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
+import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { spacing } from '@/styles/design-system';
-import { Users, Activity, Trophy, Calendar, Settings } from 'lucide-react';
+import { Trophy, Target, Edit } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
 
 export default function TeamDetailPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const params = useParams();
   const teamId = params.id;
 
+  const [todayGoal, setTodayGoal] = useState('Complete React refactoring task');
+  const [isEditingGoal, setIsEditingGoal] = useState(false);
+
   // Mock team data - would come from API
   const teamData = {
     id: teamId,
     name: teamId === '1' ? 'Team Alpha' : teamId === '2' ? 'Team Beta' : 'Team Gamma',
-    description: 'A productive development team focused on React and TypeScript projects',
-    members: [
-      { id: 1, name: 'John Doe', role: 'Lead Developer', avatar: 'JD', online: true, weeklyHours: 32 },
-      { id: 2, name: 'Jane Smith', role: 'Frontend Developer', avatar: 'JS', online: false, weeklyHours: 28 },
-      { id: 3, name: 'Mike Johnson', role: 'Backend Developer', avatar: 'MJ', online: true, weeklyHours: 35 },
-      { id: 4, name: 'Sarah Wilson', role: 'UI/UX Designer', avatar: 'SW', online: true, weeklyHours: 30 },
-      { id: 5, name: 'Tom Brown', role: 'DevOps Engineer', avatar: 'TB', online: false, weeklyHours: 25 },
+    leader: { name: 'John Doe', avatar: 'JD' },
+    leaderboard: [
+      { rank: 1, name: 'John Doe', score: 95, hours: 32 },
+      { rank: 2, name: 'Sarah Wilson', score: 88, hours: 30 },
+      { rank: 3, name: 'Mike Johnson', score: 85, hours: 35 },
+      { rank: 4, name: 'Jane Smith', score: 82, hours: 28 },
+      { rank: 5, name: 'Tom Brown', score: 78, hours: 25 },
+      { rank: 6, name: 'Alice Kim', score: 75, hours: 22 },
     ],
-    stats: {
-      totalHours: 150,
-      averageScore: 85,
-      activeSessions: 3,
-      weeklyGoal: 200,
-    },
-    recentActivity: [
-      { user: 'John Doe', action: 'completed a coding session', time: '5 minutes ago', score: 92 },
-      { user: 'Sarah Wilson', action: 'joined a meeting', time: '15 minutes ago', score: null },
-      { user: 'Mike Johnson', action: 'finished debugging task', time: '1 hour ago', score: 88 },
-      { user: 'Jane Smith', action: 'updated project documentation', time: '2 hours ago', score: 78 },
+    groundRules: [
+      'Daily standup at 9:00 AM',
+      'Code reviews within 24 hours',
+      'No meetings on Fridays',
+      'Use proper commit messages',
+      'Test coverage above 80%'
     ]
   };
 
-  const progressPercentage = (teamData.stats.totalHours / teamData.stats.weeklyGoal) * 100;
+  const handleGoalSave = () => {
+    setIsEditingGoal(false);
+    // Save goal logic here
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className={`text-3xl font-bold mb-2 ${getThemeTextColor('primary')}`}>
-            {teamData.name}
-          </h1>
-          <p className={`text-lg ${getThemeTextColor('secondary')}`}>
-            {teamData.description}
-          </p>
-        </div>
-        <Settings className={`h-6 w-6 ${getThemeTextColor('secondary')} cursor-pointer hover:${getThemeTextColor('primary')} transition-colors`} />
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className={getCommonCardClass()}>
-          <CardContent className={spacing.inner.normal}>
-            <div className="flex items-center justify-between">
+    <div className="h-full grid grid-cols-5 gap-6 p-6" style={{ gridTemplateRows: '1fr 2fr' }}>
+      {/* 좌측 최상단 - 그룹 이름 및 팀장 정보 (3/5) */}
+      <Card className={`${getCommonCardClass()} col-span-3 row-span-1`}>
+        <CardContent className={spacing.inner.normal}>
+          <div className="text-center space-y-4">
+            <h1 className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
+              {teamData.name}
+            </h1>
+            
+            <div className="flex flex-col items-center space-y-2">
+              <Avatar className="w-16 h-16">
+                <AvatarImage src="" />
+                <AvatarFallback className={`text-lg font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+                  {teamData.leader.avatar}
+                </AvatarFallback>
+              </Avatar>
               <div>
-                <p className={`text-sm font-medium ${getThemeTextColor('secondary')}`}>
-                  Weekly Hours
+                <p className={`font-medium ${getThemeTextColor('primary')}`}>
+                  {teamData.leader.name}
                 </p>
-                <p className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-                  {teamData.stats.totalHours}h
-                </p>
-                <div className={`w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2`}>
-                  <div 
-                    className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${Math.min(progressPercentage, 100)}%` }}
-                  ></div>
-                </div>
-                <p className={`text-xs mt-1 ${getThemeTextColor('secondary')}`}>
-                  Goal: {teamData.stats.weeklyGoal}h
+                <p className={`text-sm ${getThemeTextColor('secondary')}`}>
+                  Team Leader
                 </p>
               </div>
-              <Activity className={`h-8 w-8 ${getThemeTextColor('secondary')}`} />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
 
-        <Card className={getCommonCardClass()}>
-          <CardContent className={spacing.inner.normal}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-medium ${getThemeTextColor('secondary')}`}>
-                  Average Score
-                </p>
-                <p className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-                  {teamData.stats.averageScore}
-                </p>
-                <p className={`text-xs mt-1 text-green-500`}>
-                  +3 from last week
-                </p>
+      {/* 우측 상단 - 그라운드 룰 (2/5) */}
+      <Card className={`${getCommonCardClass()} col-span-2 row-span-1`}>
+        <CardHeader>
+          <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
+            Ground Rules
+          </h3>
+        </CardHeader>
+        <CardContent className={spacing.inner.normal}>
+          <div className="space-y-3">
+            {teamData.groundRules.map((rule, index) => (
+              <div key={index} className="flex items-start gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
+                <span className={`text-sm ${getThemeTextColor('secondary')}`}>
+                  {rule}
+                </span>
               </div>
-              <Trophy className={`h-8 w-8 ${getThemeTextColor('secondary')}`} />
-            </div>
-          </CardContent>
-        </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
-        <Card className={getCommonCardClass()}>
-          <CardContent className={spacing.inner.normal}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-medium ${getThemeTextColor('secondary')}`}>
-                  Active Members
-                </p>
-                <p className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-                  {teamData.members.filter(m => m.online).length}/{teamData.members.length}
-                </p>
-                <p className={`text-xs mt-1 ${getThemeTextColor('secondary')}`}>
-                  Currently online
-                </p>
-              </div>
-              <Users className={`h-8 w-8 ${getThemeTextColor('secondary')}`} />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className={getCommonCardClass()}>
-          <CardContent className={spacing.inner.normal}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-medium ${getThemeTextColor('secondary')}`}>
-                  Active Sessions
-                </p>
-                <p className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-                  {teamData.stats.activeSessions}
-                </p>
-                <p className={`text-xs mt-1 ${getThemeTextColor('secondary')}`}>
-                  Running now
-                </p>
-              </div>
-              <Calendar className={`h-8 w-8 ${getThemeTextColor('secondary')}`} />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Team Members */}
-        <Card className={getCommonCardClass()}>
-          <CardHeader>
-            <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
-              Team Members
-            </h3>
-          </CardHeader>
-          <CardContent className={spacing.inner.normal}>
-            <div className="space-y-4">
-              {teamData.members.map((member) => (
-                <div key={member.id} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      <div className={`w-10 h-10 rounded-full ${getThemeClass('componentSecondary')} flex items-center justify-center`}>
-                        <span className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
-                          {member.avatar}
-                        </span>
-                      </div>
-                      <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 ${getThemeClass('component')} ${
-                        member.online ? 'bg-green-500' : 'bg-gray-400'
-                      }`}></div>
-                    </div>
-                    <div>
-                      <p className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                        {member.name}
-                      </p>
-                      <p className={`text-xs ${getThemeTextColor('secondary')}`}>
-                        {member.role}
-                      </p>
-                    </div>
+      {/* 좌측 하단 - 리더보드 (3/5) */}
+      <Card className={`${getCommonCardClass()} col-span-3 row-span-1`}>
+        <CardHeader>
+          <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')} flex items-center gap-2`}>
+            <Trophy className="h-5 w-5" />
+            Leaderboard
+          </h3>
+        </CardHeader>
+        <CardContent className={spacing.inner.normal}>
+          <div className="space-y-3">
+            {teamData.leaderboard.map((member) => (
+              <div key={member.rank} className={`flex items-center justify-between p-2 rounded-md ${getThemeClass('componentSecondary')}`}>
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                    member.rank === 1 ? 'bg-yellow-500 text-black' :
+                    member.rank === 2 ? 'bg-gray-400 text-white' :
+                    member.rank === 3 ? 'bg-orange-600 text-white' :
+                    `${getThemeClass('component')} ${getThemeTextColor('secondary')}`
+                  }`}>
+                    {member.rank}
                   </div>
-                  <div className="text-right">
-                    <p className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
-                      {member.weeklyHours}h
+                  <div className="min-w-0 flex-1">
+                    <p className={`text-sm font-medium truncate ${getThemeTextColor('primary')}`}>
+                      {member.name}
                     </p>
                     <p className={`text-xs ${getThemeTextColor('secondary')}`}>
-                      this week
+                      {member.hours}h
                     </p>
                   </div>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <div className="text-right">
+                  <span className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
+                    {member.score}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Recent Activity */}
-        <Card className={getCommonCardClass()}>
-          <CardHeader>
-            <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
-              Recent Activity
-            </h3>
-          </CardHeader>
-          <CardContent className={spacing.inner.normal}>
-            <div className="space-y-4">
-              {teamData.recentActivity.map((activity, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  <div className={`w-2 h-2 rounded-full mt-2 ${
-                    activity.score ? 'bg-green-500' : 'bg-blue-500'
-                  }`}></div>
-                  <div className="flex-1">
-                    <p className={`text-sm ${getThemeTextColor('primary')}`}>
-                      <span className="font-medium">{activity.user}</span> {activity.action}
-                      {activity.score && (
-                        <span className={`ml-2 px-2 py-0.5 rounded text-xs font-semibold ${
-                          activity.score >= 90 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                          activity.score >= 80 ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                          'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
-                        }`}>
-                          Score: {activity.score}
-                        </span>
-                      )}
-                    </p>
-                    <p className={`text-xs ${getThemeTextColor('secondary')}`}>
-                      {activity.time}
-                    </p>
-                  </div>
+      {/* 우측 하단 - 오늘의 목표 설정 (2/5) */}
+      <Card className={`${getCommonCardClass()} col-span-2 row-span-1`}>
+        <CardHeader>
+          <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')} flex items-center gap-2`}>
+            <Target className="h-5 w-5" />
+            Today's Goal
+          </h3>
+        </CardHeader>
+        <CardContent className={spacing.inner.normal}>
+          <div className="space-y-4">
+            {isEditingGoal ? (
+              <div className="space-y-3">
+                <textarea
+                  value={todayGoal}
+                  onChange={(e) => setTodayGoal(e.target.value)}
+                  className={`w-full px-3 py-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} focus:outline-none focus:ring-2 focus:ring-[#3F72AF] resize-none`}
+                  rows={3}
+                  placeholder="Enter today's team goal..."
+                />
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleGoalSave}
+                    className={`${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')} hover:${getThemeClass('component')}`}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsEditingGoal(false)}
+                    className={`${getThemeClass('component')} ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
+                  >
+                    Cancel
+                  </Button>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className={`p-4 rounded-lg ${getThemeClass('componentSecondary')} min-h-[80px] flex items-center`}>
+                  <p className={`text-lg ${getThemeTextColor('primary')}`}>
+                    {todayGoal}
+                  </p>
+                </div>
+                <Button
+                  onClick={() => setIsEditingGoal(true)}
+                  variant="outline"
+                  className={`${getThemeClass('component')} ${getThemeClass('border')} ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')}`}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Goal
+                </Button>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
