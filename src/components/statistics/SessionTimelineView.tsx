@@ -459,7 +459,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
               )}
             </div>
             <div 
-              className="h-64 w-full cursor-pointer relative"
+              className="h-64 w-full cursor-pointer relative overflow-x-auto"
               onClick={(e) => {
                 // Calculate which bar area was clicked based on position
                 const rect = chartContainerRef.current?.getBoundingClientRect();
@@ -499,11 +499,17 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
               }}
               onMouseLeave={() => setHoveredSessionId(null)}
             >
-              <ChartContainer config={chartConfig} className="h-full w-full" ref={chartContainerRef}>
+              <ChartContainer 
+                config={chartConfig} 
+                className="h-full" 
+                style={{ width: Math.max(400, currentChartData.length * 80) }}
+                ref={chartContainerRef}
+              >
               <BarChart
                 data={currentChartData}
                 margin={{ top: 35, right: 10, left: 10, bottom: 30 }}
                 onClick={handleChartClick}
+                width={Math.max(400, currentChartData.length * 80)}
               >
                 <XAxis
                   dataKey="session"
@@ -522,6 +528,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                 <Bar
                   dataKey="score"
                   shape={CustomizedBar}
+                  maxBarSize={60}
                 />
               </BarChart>
               </ChartContainer>
