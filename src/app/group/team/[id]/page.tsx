@@ -7,8 +7,9 @@ import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { spacing } from '@/styles/design-system';
 import { Edit, Target, Trophy } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import DateNavigation from '@/components/common/DateNavigation';
+import { getKSTDateString, getKSTDateStringDaysAgo } from '@/utils/timezone';
 
 export default function TeamDetailPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
@@ -18,7 +19,16 @@ export default function TeamDetailPage() {
   const [todayGoal, setTodayGoal] = useState('Complete React refactoring task');
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<'daily' | 'weekly'>('daily');
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(getKSTDateString());
+
+  // 사용 가능한 날짜 배열 생성 (오늘부터 과거 30일, 한국 시간 기준)
+  const availableDates = useMemo(() => {
+    const dates = [];
+    for (let i = 0; i < 30; i++) {
+      dates.push(getKSTDateStringDaysAgo(i));
+    }
+    return dates;
+  }, []);
 
   // Mock team data - would come from API
   const teamData = {
@@ -50,36 +60,61 @@ export default function TeamDetailPage() {
     // Save goal logic here
   };
 
-  const handleDateChange = (direction: 'prev' | 'next') => {
-    const newDate = new Date(selectedDate);
-    if (selectedPeriod === 'daily') {
-      newDate.setDate(newDate.getDate() + (direction === 'next' ? 1 : -1));
-    } else {
-      newDate.setDate(newDate.getDate() + (direction === 'next' ? 7 : -7));
+  const handlePreviousDate = useCallback(() => {
+    const currentIndex = availableDates.indexOf(selectedDate);
+    if (currentIndex < availableDates.length - 1) {
+      const newDate = availableDates[currentIndex + 1];
+      setSelectedDate(newDate);
     }
-    setSelectedDate(newDate);
-  };
+  }, [availableDates, selectedDate]);
 
-  const formatDate = (date: Date) => {
-    if (selectedPeriod === 'daily') {
-      return date.toISOString().split('T')[0]; // YYYY-MM-DD 형식
+  const handleNextDate = useCallback(() => {
+    const currentIndex = availableDates.indexOf(selectedDate);
+    if (currentIndex > 0) {
+      const newDate = availableDates[currentIndex - 1];
+      setSelectedDate(newDate);
+    }
+  }, [availableDates, selectedDate]);
+
+  const handleDateChange = useCallback((direction: 'prev' | 'next') => {
+    if (direction === 'prev') {
+      handlePreviousDate();
     } else {
+      handleNextDate();
+    }
+  }, [handlePreviousDate, handleNextDate]);
+
+  // 이전/다음 버튼 활성화 상태 체크
+  const canGoPrevious = useMemo(() => {
+    const currentIndex = availableDates.indexOf(selectedDate);
+    return currentIndex < availableDates.length - 1; // 과거 날짜가 더 있으면 true
+  }, [availableDates, selectedDate]);
+
+  const canGoNext = useMemo(() => {
+    const currentIndex = availableDates.indexOf(selectedDate);
+    return currentIndex > 0; // 오늘에 가까울수록 true
+  }, [availableDates, selectedDate]);
+
+  const formatDate = useCallback((dateString: string) => {
+    if (selectedPeriod === 'daily') {
+      return dateString; // 이미 YYYY-MM-DD 형식
+    } else {
+      const date = new Date(dateString);
       const startOfWeek = new Date(date);
       const endOfWeek = new Date(date);
       startOfWeek.setDate(date.getDate() - date.getDay());
       endOfWeek.setDate(startOfWeek.getDate() + 6);
       
-      const startYear = startOfWeek.getFullYear();
-      const startMonth = String(startOfWeek.getMonth() + 1).padStart(2, '0');
-      const startDay = String(startOfWeek.getDate()).padStart(2, '0');
+      const formatDateToString = (d: Date) => {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
       
-      const endYear = endOfWeek.getFullYear();
-      const endMonth = String(endOfWeek.getMonth() + 1).padStart(2, '0');
-      const endDay = String(endOfWeek.getDate()).padStart(2, '0');
-      
-      return `${startYear}-${startMonth}-${startDay} ~ ${endYear}-${endMonth}-${endDay}`;
+      return `${formatDateToString(startOfWeek)} ~ ${formatDateToString(endOfWeek)}`;
     }
-  };
+  }, [selectedPeriod]);
 
   return (
     <div className="h-full grid grid-cols-5 gap-6 p-6" style={{ gridTemplateRows: 'auto auto 1fr' }}>
@@ -145,10 +180,12 @@ export default function TeamDetailPage() {
             {/* Date Navigation */}
             <div className="flex-1 flex justify-center">
               <DateNavigation
-                currentDate={selectedDate.toISOString().split('T')[0]}
+                currentDate={selectedDate}
                 onPrevious={() => handleDateChange('prev')}
                 onNext={() => handleDateChange('next')}
-                formatDate={(dateString) => formatDate(new Date(dateString))}
+                formatDate={formatDate}
+                canGoPrevious={canGoPrevious}
+                canGoNext={canGoNext}
               />
             </div>
 
