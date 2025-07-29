@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { spacing } from '@/styles/design-system';
-import { Edit, Target, Trophy } from 'lucide-react';
+import { CheckIcon, Edit, Target, Trophy } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState, useCallback, useMemo } from 'react';
 import DateNavigation from '@/components/common/DateNavigation';
@@ -239,12 +239,24 @@ export default function TeamDetailPage() {
                 </div>
                 
                 {/* 아바타 */}
-                <Avatar className="w-16 h-16 mx-auto mb-3">
-                  <AvatarImage src="" />
-                  <AvatarFallback className={`text-lg font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')} ring-2 ring-blue-200 dark:ring-blue-800`}>
-                    {member.name.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative w-fit mx-auto mb-3">
+                  <Avatar className={`w-16 h-16 ${
+                    member.rank <= 3 
+                      ? 'ring-2 ring-lime-500 dark:ring-lime-400' 
+                      : 'ring-2 ring-red-500 dark:ring-red-400'
+                  }`}>
+                    <AvatarImage src="" />
+                    <AvatarFallback className={`text-lg font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
+                      {member.name.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className={`absolute -right-0 -bottom-0 size-4 rounded-full ${
+                    member.rank <= 3 
+                      ? 'bg-lime-500 dark:bg-lime-400' 
+                      : 'bg-red-500 dark:bg-red-400'
+                  }`}>
+                  </span>
+                </div>
                 
                 {/* 정보 */}
                 <div>
