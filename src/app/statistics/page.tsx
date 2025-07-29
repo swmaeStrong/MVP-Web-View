@@ -28,15 +28,10 @@ export default function StatisticsPage() {
 
   // 초기 날짜 설정
   const [selectedDate, setSelectedDate] = useState(getDateString(new Date()));
-  const [selectedCategory, setSelectedCategory] =
-    useState<Statistics.StatisticsCategory | null>(null);
-  const [showTimeline, setShowTimeline] = useState(false);
-  const [selectedSessionIndex, setSelectedSessionIndex] = useState(0);
-
   // Hook 순서를 항상 동일하게 유지
   const currentUser = useCurrentUser();
   const { initializeUser } = useInitUser();
-  const { getThemeClass, getThemeTextColor } = useTheme();
+  const { getThemeClass } = useTheme();
 
   // Handle user initialization with useEffect
   useEffect(() => {
@@ -76,18 +71,6 @@ export default function StatisticsPage() {
     }
   }, [availableDates]);
 
-  // 데이터가 로드되면 기본 카테고리를 top1으로 설정
-  React.useEffect(() => {
-    if (dailyData && dailyData.categories.length > 0) {
-      setSelectedCategory(dailyData.categories[0]);
-    }
-  }, [dailyData, selectedDate]);
-
-  // 날짜가 변경될 때마다 selectedCategory 초기화
-  React.useEffect(() => {
-    console.log('selectedDate 변경됨:', selectedDate);
-    setSelectedCategory(null);
-  }, [selectedDate]);
 
   const handlePreviousDate = useCallback(() => {
     const currentIndex = availableDates.indexOf(selectedDate);
@@ -142,21 +125,6 @@ export default function StatisticsPage() {
     return canGo;
   }, [availableDates, selectedDate]);
 
-  const handleCategorySelect = (category: Statistics.StatisticsCategory | null) => {
-    setSelectedCategory(category);
-  };
-
-  const handleViewTimeline = () => {
-    setShowTimeline(true);
-  };
-
-  const handleBackToSessions = () => {
-    setShowTimeline(false);
-  };
-
-  const handleSessionSelect = (sessionIndex: number) => {
-    setSelectedSessionIndex(sessionIndex);
-  };
 
 
   // 로딩 상태
