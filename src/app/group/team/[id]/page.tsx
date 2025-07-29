@@ -178,7 +178,7 @@ export default function TeamDetailPage() {
         <CardContent className="px-6 w-full">
           <div className="flex items-center justify-between">
             {/* Date Navigation */}
-            <div className="flex-1 flex justify-center">
+            <div className="flex justify-start">
               <DateNavigation
                 currentDate={selectedDate}
                 onPrevious={() => handleDateChange('prev')}
