@@ -225,31 +225,38 @@ export default function TeamDetailPage() {
           </h3>
         </CardHeader>
         <CardContent className={spacing.inner.normal}>
-          <div className="space-y-3">
+          <div className="grid grid-cols-3 gap-4">
             {teamData.leaderboard.map((member) => (
-              <div key={member.rank} className={`flex items-center justify-between p-2 rounded-md ${getThemeClass('componentSecondary')}`}>
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                    member.rank === 1 ? 'bg-yellow-500 text-black' :
-                    member.rank === 2 ? 'bg-gray-400 text-white' :
-                    member.rank === 3 ? 'bg-orange-600 text-white' :
-                    `${getThemeClass('component')} ${getThemeTextColor('secondary')}`
-                  }`}>
-                    {member.rank}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className={`text-sm font-medium truncate ${getThemeTextColor('primary')}`}>
-                      {member.name}
-                    </p>
-                    <p className={`text-xs ${getThemeTextColor('secondary')}`}>
-                      {member.hours}h
-                    </p>
-                  </div>
+              <div key={member.rank} className={`p-4 rounded-md ${getThemeClass('componentSecondary')} text-center relative`}>
+                {/* 순위 배지 */}
+                <div className={`absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                  member.rank === 1 ? 'bg-yellow-500 text-black' :
+                  member.rank === 2 ? 'bg-gray-400 text-white' :
+                  member.rank === 3 ? 'bg-orange-600 text-white' :
+                  `${getThemeClass('component')} ${getThemeTextColor('secondary')}`
+                }`}>
+                  {member.rank}
                 </div>
-                <div className="text-right">
-                  <span className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
+                
+                {/* 아바타 */}
+                <Avatar className="w-16 h-16 mx-auto mb-3">
+                  <AvatarImage src="" />
+                  <AvatarFallback className={`text-lg font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')} ring-2 ring-blue-200 dark:ring-blue-800`}>
+                    {member.name.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+                
+                {/* 정보 */}
+                <div>
+                  <p className={`text-sm font-medium truncate ${getThemeTextColor('primary')} mb-1`}>
+                    {member.name}
+                  </p>
+                  <p className={`text-xs ${getThemeTextColor('secondary')} mb-1`}>
+                    {member.hours}h worked
+                  </p>
+                  <p className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
                     {member.score}
-                  </span>
+                  </p>
                 </div>
               </div>
             ))}
