@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/shadcn/ui/card';
 import { Input } from '@/shadcn/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
+import { Dialog, DialogContent, DialogHeader } from '@/shadcn/ui/dialog';
 import { spacing } from '@/styles/design-system';
 import { Calendar, Globe, Hash, Lock, Search, TrendingUp, Users } from 'lucide-react';
 import { useState } from 'react';
@@ -303,137 +303,147 @@ export default function FindTeamPage() {
 
       {/* Team Detail Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className={`max-w-2xl ${getCommonCardClass()}`}>
           {selectedTeam && (
             <>
-              <DialogHeader>
-                <DialogTitle className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
+              <DialogHeader className="pb-4">
+                <div className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
                   Team Details
-                </DialogTitle>
+                </div>
               </DialogHeader>
               
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {/* Team Header */}
-                <div className="flex items-center gap-4">
-                  <Avatar className="w-16 h-16">
-                    <AvatarFallback className={`text-xl font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                      {selectedTeam.name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className={`text-xl font-bold ${getThemeTextColor('primary')}`}>
-                        {selectedTeam.name}
-                      </div>
-                      <Badge variant={selectedTeam.isPublic ? "default" : "secondary"} className={`gap-1 ${
-                        selectedTeam.isPublic 
-                          ? 'bg-green-100 text-green-700 hover:bg-green-100'
-                          : 'bg-amber-100 text-amber-700 hover:bg-amber-100'
-                      }`}>
-                        {selectedTeam.isPublic ? (
-                          <>
-                            <Globe className="h-3 w-3" />
-                            Public
-                          </>
-                        ) : (
-                          <>
-                            <Lock className="h-3 w-3" />
-                            Private
-                          </>
-                        )}
-                      </Badge>
-                    </div>
-                    
+                <Card className={getCommonCardClass()}>
+                  <CardContent className="p-4">
                     <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
-                        <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                          {selectedTeam.members}
+                      <Avatar className="w-16 h-16">
+                        <AvatarFallback className={`text-xl font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+                          {selectedTeam.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className={`text-xl font-bold ${getThemeTextColor('primary')}`}>
+                            {selectedTeam.name}
+                          </div>
+                          <Badge variant={selectedTeam.isPublic ? "default" : "secondary"} className={`gap-1 ${
+                            selectedTeam.isPublic 
+                              ? 'bg-green-100 text-green-700 hover:bg-green-100'
+                              : 'bg-amber-100 text-amber-700 hover:bg-amber-100'
+                          }`}>
+                            {selectedTeam.isPublic ? (
+                              <>
+                                <Globe className="h-3 w-3" />
+                                Public
+                              </>
+                            ) : (
+                              <>
+                                <Lock className="h-3 w-3" />
+                                Private
+                              </>
+                            )}
+                          </Badge>
                         </div>
-                        <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                          members
+                        
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1">
+                            <Users className="h-4 w-4" />
+                            <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                              {selectedTeam.members}
+                            </div>
+                            <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                              members
+                            </div>
+                          </div>
+                          <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                            •
+                          </div>
+                          <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                            Created {new Date(selectedTeam.createdAt).toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: 'long', 
+                              day: 'numeric' 
+                            })}
+                          </div>
                         </div>
-                      </div>
-                      <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                        •
-                      </div>
-                      <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                        Created {new Date(selectedTeam.createdAt).toLocaleDateString('en-US', { 
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric' 
-                        })}
                       </div>
                     </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
                 
                 {/* Description */}
-                <div className="space-y-2">
-                  <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                    About this team
-                  </div>
-                  <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed`}>
-                    {selectedTeam.description}
-                  </p>
-                </div>
+                <Card className={getCommonCardClass()}>
+                  <CardContent className="p-4 space-y-3">
+                    <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
+                      About this team
+                    </div>
+                    <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed`}>
+                      {selectedTeam.description}
+                    </p>
+                  </CardContent>
+                </Card>
                 
                 {/* Tags */}
-                <div className="space-y-3">
-                  <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                    Skills & Technologies
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedTeam.tags.map((tag) => (
-                      <Badge 
-                        key={tag} 
-                        variant="outline" 
-                        className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
-                      >
-                        <Hash className="h-3 w-3" />
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
+                <Card className={getCommonCardClass()}>
+                  <CardContent className="p-4 space-y-3">
+                    <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
+                      Skills & Technologies
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedTeam.tags.map((tag) => (
+                        <Badge 
+                          key={tag} 
+                          variant="outline" 
+                          className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
+                        >
+                          <Hash className="h-3 w-3" />
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
 
                 {/* Additional Info */}
-                <div className="space-y-3">
-                  <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                    Team Information
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
-                      <div className={`text-xs ${getThemeTextColor('secondary')} mb-1`}>
-                        Team Type
+                <Card className={getCommonCardClass()}>
+                  <CardContent className="p-4 space-y-3">
+                    <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
+                      Team Information
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
+                        <div className={`text-xs ${getThemeTextColor('secondary')} mb-1`}>
+                          Team Type
+                        </div>
+                        <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                          {selectedTeam.isPublic ? 'Public Team' : 'Private Team'}
+                        </div>
                       </div>
-                      <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                        {selectedTeam.isPublic ? 'Public Team' : 'Private Team'}
+                      <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
+                        <div className={`text-xs ${getThemeTextColor('secondary')} mb-1`}>
+                          Join Method
+                        </div>
+                        <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                          {selectedTeam.isPublic ? 'Direct Join' : 'Invite Code Required'}
+                        </div>
                       </div>
                     </div>
-                    <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
-                      <div className={`text-xs ${getThemeTextColor('secondary')} mb-1`}>
-                        Join Method
-                      </div>
-                      <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                        {selectedTeam.isPublic ? 'Direct Join' : 'Invite Code Required'}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
                 
                 {/* Action Buttons */}
-                <div className="flex gap-3 pt-4">
+                <div className="flex gap-3 pt-2">
                   <Button
                     variant="outline"
-                    className="flex-1"
+                    className={`flex-1 ${getThemeClass('border')} ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')}`}
                     onClick={handleCloseModal}
                   >
                     Cancel
                   </Button>
                   <Button
-                    className="flex-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90"
+                    className="flex-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
                     onClick={() => handleJoinTeam(selectedTeam)}
                   >
                     {selectedTeam.isPublic ? 'Join Team' : 'Request to Join'}
