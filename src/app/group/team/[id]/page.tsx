@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Separator } from '@/shadcn/ui/separator';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shadcn/ui/tooltip';
 import { spacing } from '@/styles/design-system';
 import { CheckIcon, Edit, Plus, Target, Trophy } from 'lucide-react';
 import { useParams } from 'next/navigation';
@@ -77,6 +78,65 @@ export default function TeamDetailPage() {
 
   const getAvatarInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('');
+  };
+
+  const renderAvatarGroup = (names: string[], isAchieved: boolean) => {
+    const maxVisible = 3;
+    const totalAvatars = names.length;
+    const displayedNames = names.slice(0, maxVisible);
+    const remainingCount = Math.max(totalAvatars - maxVisible, 0);
+
+    return (
+      <div className="flex items-center">
+        {displayedNames.map((name, index) => (
+          <div key={index} className={`-ml-1.5 hover:z-10 relative first:ml-0`} style={{ zIndex: displayedNames.length - index }}>
+            <Avatar className={`w-6 h-6 ring-2 ring-background ${
+              isAchieved ? 'ring-green-500' : 'ring-gray-300'
+            }`}>
+              <AvatarImage src="" />
+              <AvatarFallback className={`text-[8px] font-semibold ${
+                isAchieved 
+                  ? 'bg-green-100 text-green-700' 
+                  : 'bg-gray-100 text-gray-600'
+              }`}>
+                {getAvatarInitials(name)}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+        ))}
+        {remainingCount > 0 && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Avatar className={`w-6 h-6 -ml-1.5 hover:z-10 relative ring-2 ring-background cursor-pointer ${
+                  isAchieved ? 'ring-green-500' : 'ring-gray-300'
+                }`}>
+                  <AvatarFallback className={`text-[8px] font-bold ${
+                    isAchieved 
+                      ? 'bg-green-500 text-white' 
+                      : 'bg-gray-400 text-white'
+                  }`}>
+                    +{remainingCount}
+                  </AvatarFallback>
+                </Avatar>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-xs">
+                <div className="space-y-1">
+                  <div className="text-xs font-medium mb-2">
+                    {isAchieved ? 'Also Achieved:' : 'Also Not Achieved:'}
+                  </div>
+                  {names.slice(maxVisible).map((name, i) => (
+                    <div key={i} className="text-xs">
+                      {name}
+                    </div>
+                  ))}
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </div>
+    );
   };
 
   const handleGoalSave = () => {
@@ -369,18 +429,7 @@ export default function TeamDetailPage() {
                           </span>
                           <div className="w-2 h-2 rounded-full bg-green-500"></div>
                         </div>
-                        <div className="flex flex-wrap gap-1">
-                          {goal.achieved.map((name, i) => (
-                            <div key={i} className="relative">
-                              <Avatar className="w-6 h-6 ring-1 ring-green-500">
-                                <AvatarImage src="" />
-                                <AvatarFallback className={`text-[8px] font-semibold bg-green-100 text-green-700`}>
-                                  {getAvatarInitials(name)}
-                                </AvatarFallback>
-                              </Avatar>
-                            </div>
-                          ))}
-                        </div>
+                        {renderAvatarGroup(goal.achieved, true)}
                       </div>
 
                       <Separator orientation="vertical" className="h-16" />
@@ -393,18 +442,7 @@ export default function TeamDetailPage() {
                           </span>
                           <div className="w-2 h-2 rounded-full bg-gray-400"></div>
                         </div>
-                        <div className="flex flex-wrap gap-1">
-                          {goal.notAchieved.map((name, i) => (
-                            <div key={i} className="relative">
-                              <Avatar className="w-6 h-6 ring-1 ring-gray-300">
-                                <AvatarImage src="" />
-                                <AvatarFallback className={`text-[8px] font-semibold bg-gray-100 text-gray-600`}>
-                                  {getAvatarInitials(name)}
-                                </AvatarFallback>
-                                </Avatar>
-                            </div>
-                          ))}
-                        </div>
+                        {renderAvatarGroup(goal.notAchieved, false)}
                       </div>
                     </div>
                   </div>
