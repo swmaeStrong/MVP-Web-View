@@ -36,9 +36,9 @@ export default function DateNavigation({
       </Button>
       
       {/* Date display */}
-      <h3 className={`text-lg font-semibold px-4 ${getThemeTextColor('primary')}`}>
+      <div className={`text-lg font-bold px-4 ${getThemeTextColor('primary')}`}>
         {formatDate(currentDate)}
-      </h3>
+      </div>
       
       {/* Next button */}
       <Button

@@ -196,9 +196,9 @@ export default function TeamDetailPage() {
         <CardContent className={spacing.inner.normal}>
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <h1 className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
+              <div className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
                 {teamData.name}
-              </h1>
+              </div>
               <div className="flex gap-2">
                 <span className={`px-2 py-1 text-xs font-medium rounded-full ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`}>
                   #Frontend
@@ -238,9 +238,9 @@ export default function TeamDetailPage() {
       {/* 우측 상단 - 그라운드 룰 (2/5) */}
       <Card className={`${getCommonCardClass()} col-span-2 row-span-2`}>
         <CardHeader>
-          <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
+          <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
             Ground Rules
-          </h3>
+          </div>
         </CardHeader>
         <CardContent className={spacing.inner.normal}>
           <div className="space-y-4">
@@ -304,9 +304,9 @@ export default function TeamDetailPage() {
       {/* 좌측 하단 - 리더보드 (3/5) */}
       <Card className={`${getCommonCardClass()} col-span-3 row-span-1`}>
         <CardHeader>
-          <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
+          <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
             Leaderboard
-          </h3>
+          </div>
         </CardHeader>
         <CardContent className={spacing.inner.normal}>
           <div className="grid grid-cols-3 gap-4">
@@ -350,9 +350,9 @@ export default function TeamDetailPage() {
       {/* 우측 하단 - 오늘의 목표 설정 (2/5) */}
       <Card className={`${getCommonCardClass()} col-span-2 row-span-1`}>
         <CardHeader className="flex flex-row items-center justify-between">
-          <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
+          <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
             Today's Goal
-          </h3>
+          </div>
           <Button
             size="sm"
             variant="ghost"
@@ -403,9 +403,9 @@ export default function TeamDetailPage() {
                       <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${getThemeClass('component')} ${getThemeTextColor('secondary')}`}>
                         {index + 1}
                       </div>
-                      <h4 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                      <div className={`text-sm font-bold ${getThemeTextColor('primary')}`}>
                         {goal.title}
-                      </h4>
+                      </div>
                     </div>
                     
                     <div className="flex gap-4">
