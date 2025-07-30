@@ -126,10 +126,10 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors ${
+                className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors duration-200 ${
                   active
-                    ? `text-white bg-[#3F72AF] ring-2 ring-[#3F72AF]`
-                    : `${getThemeTextColor('secondary')} hover:${getThemeClass('border')} hover:${getThemeTextColor('primary')}`
+                    ? `text-white bg-[#3F72AF]`
+                    : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
                 }`}
               >
                 <Icon size={20} className="flex-shrink-0" />
