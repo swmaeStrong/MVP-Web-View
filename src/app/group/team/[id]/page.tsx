@@ -304,8 +304,7 @@ export default function TeamDetailPage() {
       {/* 좌측 하단 - 리더보드 (3/5) */}
       <Card className={`${getCommonCardClass()} col-span-3 row-span-1`}>
         <CardHeader>
-          <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')} flex items-center gap-2`}>
-            <Trophy className="h-5 w-5" />
+          <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
             Leaderboard
           </h3>
         </CardHeader>
