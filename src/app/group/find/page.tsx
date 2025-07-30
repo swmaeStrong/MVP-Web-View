@@ -22,6 +22,9 @@ export default function FindTeamPage() {
   const [sortBy, setSortBy] = useState<'members' | 'created' | 'name'>('members');
   const [selectedTeam, setSelectedTeam] = useState<typeof availableTeams[0] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [inviteCode, setInviteCode] = useState('');
+  const [isJoining, setIsJoining] = useState(false);
+  const [joinError, setJoinError] = useState('');
 
   // Mock data for available teams
   const availableTeams = [
@@ -102,28 +105,63 @@ export default function FindTeamPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedTeam(null);
+    setInviteCode('');
+    setJoinError('');
+    setIsJoining(false);
   };
 
   const handleJoinTeam = async (team: typeof availableTeams[0]) => {
     if (team.isPublic) {
       // Public 팀의 경우 바로 가입 처리 후 팀 상세 페이지로 이동
+      setIsJoining(true);
       try {
         // 실제로는 API 호출로 팀 가입 처리
         // await joinPublicTeam(team.id);
         
-        // Mock: 가입 성공으로 가정하고 팀 상세 페이지로 이동
+        // Mock: 2초 대기 후 성공
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
         handleCloseModal();
         router.push(`/group/team/${team.id}`);
       } catch (error) {
         console.error('Failed to join team:', error);
-        // 에러 처리 로직 추가 가능
+        setJoinError('팀 가입에 실패했습니다. 다시 시도해주세요.');
+      } finally {
+        setIsJoining(false);
       }
     } else {
-      // Private 팀의 경우 초대 코드 입력 페이지로 이동
-      handleCloseModal();
-      router.push(`/group/team/${team.id}/join`);
+      // Private 팀의 경우 초대 코드 확인 후 가입 처리
+      if (!inviteCode.trim()) {
+        setJoinError('초대 코드를 입력해주세요.');
+        return;
+      }
+      
+      setIsJoining(true);
+      setJoinError('');
+      
+      try {
+        // 실제로는 API 호출로 초대 코드 확인 및 팀 가입 처리
+        // await joinPrivateTeam(team.id, inviteCode);
+        
+        // Mock: 2초 대기 후 성공 (간단한 검증)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Mock validation - "1234"가 올바른 코드라고 가정
+        if (inviteCode.trim() !== '1234') {
+          throw new Error('Invalid invite code');
+        }
+        
+        handleCloseModal();
+        router.push(`/group/team/${team.id}`);
+      } catch (error) {
+        console.error('Failed to join team:', error);
+        setJoinError('유효하지 않은 초대 코드입니다.');
+      } finally {
+        setIsJoining(false);
+      }
     }
   };
+
 
   return (
     <div className="space-y-8 p-6">
@@ -430,6 +468,34 @@ export default function FindTeamPage() {
                         ))}
                       </div>
                     </div>
+
+                    {/* Private Team Invite Code Section */}
+                    {!selectedTeam.isPublic && (
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <div className={`text-sm font-medium ${getThemeTextColor('primary')} mb-2`}>
+                          Invite Code Required
+                        </div>
+                        <div className="space-y-2">
+                          <Input
+                            type="text"
+                            placeholder="Enter invite code..."
+                            value={inviteCode}
+                            onChange={(e) => {
+                              setInviteCode(e.target.value);
+                              setJoinError('');
+                            }}
+                            className="text-center font-mono tracking-wider !bg-white !border-gray-200 !text-gray-900 placeholder:!text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:!bg-white dark:!text-gray-900"
+                            disabled={isJoining}
+                          />
+                          {joinError && (
+                            <p className="text-red-500 text-xs">{joinError}</p>
+                          )}
+                          <p className={`text-xs ${getThemeTextColor('secondary')}`}>
+                            💡 This is a private team. You need an invite code from a team member to join.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
                 
@@ -439,14 +505,16 @@ export default function FindTeamPage() {
                     variant="outline"
                     className={`flex-1 ${getThemeClass('border')} ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')}`}
                     onClick={handleCloseModal}
+                    disabled={isJoining}
                   >
                     Cancel
                   </Button>
                   <Button
                     className="flex-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
                     onClick={() => handleJoinTeam(selectedTeam)}
+                    disabled={isJoining || (!selectedTeam.isPublic && !inviteCode.trim())}
                   >
-                    {selectedTeam.isPublic ? 'Join Team' : 'Request to Join'}
+                    {isJoining ? 'Joining...' : 'Join Team'}
                   </Button>
                 </div>
               </div>
