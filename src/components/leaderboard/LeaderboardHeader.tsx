@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { FONT_SIZES } from '@/styles/font-sizes';
 
 export default function LeaderboardHeader() {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { spacing } from '@/styles/design-system';

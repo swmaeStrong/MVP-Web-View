@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { categoryColors } from '@/styles';
 import { componentSizes, componentStates, getPriorityStyle, getRankPriority } from '@/styles/design-system';
 import { FONT_SIZES } from '@/styles/font-sizes';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 // 이제 namespace 사용으로 인해 직접 import 불가능
 import {

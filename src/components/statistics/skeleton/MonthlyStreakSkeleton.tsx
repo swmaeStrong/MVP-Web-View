@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Skeleton } from '@/shadcn/ui/skeleton';
 

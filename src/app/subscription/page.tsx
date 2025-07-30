@@ -4,7 +4,7 @@ import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 
 // 결제 수단 상태를 시뮬레이션하는 더미 데이터
 const checkPaymentMethods = () => {

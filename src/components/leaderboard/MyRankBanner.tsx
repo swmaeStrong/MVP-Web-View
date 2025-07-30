@@ -1,8 +1,8 @@
 'use client';
 
 import StateDisplay from '@/components/common/StateDisplay';
-import { useMyRank } from '@/hooks/useMyRank';
-import { useTheme } from '@/hooks/useTheme';
+import { useMyRank } from '@/hooks/data/useMyRank';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { themeColors } from '@/styles/colors';
 import { componentSizes, componentStates, spacing } from '@/styles/design-system';
 import { FONT_SIZES } from '@/styles/font-sizes';

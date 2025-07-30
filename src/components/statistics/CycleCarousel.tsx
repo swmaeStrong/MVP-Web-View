@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { getSession } from '@/shared/api/get';
 import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
 import { getKSTDateString } from '@/utils/timezone';

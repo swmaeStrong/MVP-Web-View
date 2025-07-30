@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { Button } from '@/shadcn/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 

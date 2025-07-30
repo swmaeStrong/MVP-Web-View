@@ -5,7 +5,7 @@ import { eachDayOfInterval, endOfMonth, startOfMonth } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import { getStreakCalendar, getStreakCount } from '@/shared/api/get';

@@ -1,7 +1,7 @@
 'use client';
 
 import StateDisplay from '@/components/common/StateDisplay';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { themeColors } from '@/styles/colors';
 
 interface EmptyStateProps {

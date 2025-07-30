@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
 import { ArrowLeft, Clock, Coffee, UserX } from 'lucide-react';
 import React from 'react';
