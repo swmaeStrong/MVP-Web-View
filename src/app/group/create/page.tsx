@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
-import { Globe, Lock, Hash, Plus, X, Users, AlertCircle } from 'lucide-react';
+import { Globe, Lock, Hash, Plus, X, Users, AlertCircle, Target, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -443,26 +443,28 @@ export default function CreateGroupPage() {
                   </div>
                   
                   <div className="flex items-start gap-3">
-                    <Plus className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')}`} />
+                    <Target className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')}`} />
                     <div>
                       <div className={`font-medium ${getThemeTextColor('primary')}`}>
-                        Track Progress
+                        Set Common Goals
                       </div>
                       <div className={`text-sm ${getThemeTextColor('secondary')}`}>
-                        Monitor group productivity and achievements
+                        Create shared objectives and track achievement progress
                       </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Stats Card */}
-            <Card className={getCommonCardClass()}>
-              <CardContent className="p-6">
-                <div className={`text-center ${getThemeTextColor('secondary')}`}>
-                  <div className="text-2xl font-bold mb-1">2,450+</div>
-                  <div className="text-sm">Groups created this month</div>
+                  
+                  <div className="flex items-start gap-3">
+                    <TrendingUp className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')}`} />
+                    <div>
+                      <div className={`font-medium ${getThemeTextColor('primary')}`}>
+                        Monitor Progress
+                      </div>
+                      <div className={`text-sm ${getThemeTextColor('secondary')}`}>
+                        View group productivity and goal completion rates
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
