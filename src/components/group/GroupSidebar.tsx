@@ -67,10 +67,10 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
                 <div key={group.id}>
                   <Link
                     href={`/group/team/${group.id}`}
-                    className={`flex items-center justify-between px-4 py-2 rounded-md transition-colors duration-200 ${
+                    className={`flex items-center justify-between px-4 py-2 rounded-md transition-all duration-200 transform ${
                       isGroupSelected
-                        ? `text-white bg-[#3F72AF]`
-                        : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
+                        ? `text-white bg-[#3F72AF] shadow-lg`
+                        : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10 hover:scale-105 hover:shadow-md`
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -89,10 +89,10 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
                           <Link
                             key={item.href}
                             href={item.href}
-                            className={`flex items-center gap-3 px-3 py-1.5 rounded transition-colors duration-150 relative ${
+                            className={`flex items-center gap-3 px-3 py-1.5 rounded transition-all duration-200 transform relative ${
                               active
-                                ? `${getThemeTextColor('primary')} font-medium`
-                                : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
+                                ? `${getThemeTextColor('primary')} font-medium bg-[#3F72AF]/15`
+                                : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10 hover:scale-105 hover:shadow-sm`
                             }`}
                           >
                             {/* Simple active indicator */}
@@ -123,10 +123,10 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors duration-200 ${
+                className={`flex items-center gap-3 px-4 py-2 rounded-md transition-all duration-200 transform ${
                   active
-                    ? `text-white bg-[#3F72AF]`
-                    : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
+                    ? `text-white bg-[#3F72AF] shadow-lg`
+                    : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10 hover:scale-105 hover:shadow-md`
                 }`}
               >
                 <Icon size={20} className="flex-shrink-0" />
