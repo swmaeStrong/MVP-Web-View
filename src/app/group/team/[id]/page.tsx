@@ -280,7 +280,7 @@ export default function TeamDetailPage() {
                 onClick={() => setSelectedPeriod('daily')}
                 className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
                   selectedPeriod === 'daily'
-                    ? `${getThemeClass('component')} ${getThemeTextColor('primary')} shadow-sm`
+                    ? `${getThemeClass('component')} ${getThemeTextColor('primary')}`
                     : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
                 }`}
               >
@@ -290,7 +290,7 @@ export default function TeamDetailPage() {
                 onClick={() => setSelectedPeriod('weekly')}
                 className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
                   selectedPeriod === 'weekly'
-                    ? `${getThemeClass('component')} ${getThemeTextColor('primary')} shadow-sm`
+                    ? `${getThemeClass('component')} ${getThemeTextColor('primary')}`
                     : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
                 }`}
               >
