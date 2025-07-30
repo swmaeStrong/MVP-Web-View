@@ -315,6 +315,7 @@ export default function TeamDetailPage() {
           </Button>
         </CardHeader>
         <CardContent className={spacing.inner.normal}>
+          <Separator className="mb-4" />
           <div className="space-y-4">
             {isEditingGoal ? (
               <div className="space-y-3">
