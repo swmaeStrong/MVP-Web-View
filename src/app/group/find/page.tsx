@@ -1,17 +1,16 @@
 'use client';
 
 import { useTheme } from '@/hooks/useTheme';
-import { Button } from '@/shadcn/ui/button';
-import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
-import { Badge } from '@/shadcn/ui/badge';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
-import { Separator } from '@/shadcn/ui/separator';
-import { spacing } from '@/styles/design-system';
-import { Search, Users, Clock, Filter, TrendingUp, Calendar, Globe, Lock, Hash } from 'lucide-react';
-import { useState } from 'react';
+import { Badge } from '@/shadcn/ui/badge';
+import { Button } from '@/shadcn/ui/button';
+import { Card, CardContent } from '@/shadcn/ui/card';
 import { Input } from '@/shadcn/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
+import { spacing } from '@/styles/design-system';
+import { Calendar, Globe, Hash, Lock, Search, TrendingUp, Users } from 'lucide-react';
+import { useState } from 'react';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
@@ -236,7 +235,7 @@ export default function FindTeamPage() {
                     className="w-full bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
                     size="sm"
                   >
-                    {team.isPublic ? 'Join Team' : 'Request to Join'}
+                    Join Group
                   </Button>
                 </div>
               </CardContent>
