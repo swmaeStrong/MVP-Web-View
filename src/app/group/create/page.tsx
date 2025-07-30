@@ -80,9 +80,9 @@ export default function CreateGroupPage() {
   };
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-3 px-8 py-3">
       {/* Header */}
-      <div className="space-y-4">
+      <div className="space-y-2">
         <div className={`text-3xl font-bold ${getThemeTextColor('primary')}`}>
           Create Group
         </div>
@@ -92,19 +92,19 @@ export default function CreateGroupPage() {
       </div>
 
       <div className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Form */}
           <div className="lg:col-span-2">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
                 {/* Basic Information */}
                 <Card className={getCommonCardClass()}>
-                  <CardContent className="p-4">
-                    <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-4`}>
+                  <CardContent className="px-6 py-3">
+                    <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-2`}>
                       Basic Information
                     </div>
                     
-                    <div className="space-y-4">
+                    <div className="space-y-2">
                       {/* Group Name */}
                       <FormField
                         control={form.control}
@@ -179,8 +179,8 @@ export default function CreateGroupPage() {
 
                 {/* Privacy Settings */}
                 <Card className={getCommonCardClass()}>
-                  <CardContent className="p-4">
-                    <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-4`}>
+                  <CardContent className="px-6 py-3">
+                    <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-2`}>
                       Privacy Settings
                     </div>
                     
@@ -227,8 +227,8 @@ export default function CreateGroupPage() {
 
                 {/* Tags */}
                 <Card className={getCommonCardClass()}>
-                  <CardContent className="p-4">
-                    <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-4`}>
+                  <CardContent className="px-6 py-3">
+                    <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-2`}>
                       Tags
                     </div>
                     
@@ -237,7 +237,7 @@ export default function CreateGroupPage() {
                       name="tags"
                       render={({ field }) => (
                         <FormItem>
-                          <div className="space-y-4">
+                          <div className="space-y-2">
                             {/* Add Tag Input */}
                             <TagInput
                               onAddTag={handleAddTag}
@@ -279,7 +279,7 @@ export default function CreateGroupPage() {
                 </Card>
 
                 {/* Action Buttons */}
-                <div className="flex gap-3">
+                <div className="flex gap-4 mt-2">
                   <Button
                     type="button"
                     variant="outline"
@@ -301,16 +301,16 @@ export default function CreateGroupPage() {
           </div>
 
           {/* Preview */}
-          <div className="lg:col-span-1 space-y-4">
+          <div className="lg:col-span-1 space-y-3">
             <Card className={getCommonCardClass()}>
-              <CardContent className="p-4">
-                <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-4`}>
+              <CardContent className="p-3">
+                <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-2`}>
                   Preview
                 </div>
                 
-                <div className="space-y-4">
+                <div className="space-y-2">
                   {/* Group Header */}
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-6">
                     <Avatar className="w-12 h-12">
                       <AvatarFallback className={`text-lg font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
                         {watchedValues.groupName?.charAt(0) || 'G'}
@@ -318,7 +318,7 @@ export default function CreateGroupPage() {
                     </Avatar>
                     
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-3 mb-1">
                         <div className={`text-sm font-bold ${getThemeTextColor('primary')} truncate`}>
                           {watchedValues.groupName || 'Group Name'}
                         </div>
@@ -341,7 +341,7 @@ export default function CreateGroupPage() {
                         </Badge>
                       </div>
                       
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         <Users className="h-3 w-3" />
                         <div className={`text-xs ${getThemeTextColor('secondary')}`}>
                           Max {watchedValues.maxMembers} members
@@ -357,7 +357,7 @@ export default function CreateGroupPage() {
                   
                   {/* Tags */}
                   {watchedValues.tags && watchedValues.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap gap-2">
                       {watchedValues.tags.map((tag) => (
                         <Badge 
                           key={tag} 
@@ -376,13 +376,13 @@ export default function CreateGroupPage() {
 
             {/* Group Benefits */}
             <Card className={getCommonCardClass()}>
-              <CardContent className="p-4">
-                <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-4`}>
+              <CardContent className="p-3">
+                <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-2`}>
                   Group Benefits
                 </div>
                 
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
+                <div className="space-y-2">
+                  <div className="flex items-start gap-4">
                     <Users className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')}`} />
                     <div>
                       <div className={`font-medium ${getThemeTextColor('primary')}`}>
@@ -394,7 +394,7 @@ export default function CreateGroupPage() {
                     </div>
                   </div>
                   
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-start gap-4">
                     <Target className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')}`} />
                     <div>
                       <div className={`font-medium ${getThemeTextColor('primary')}`}>
@@ -406,7 +406,7 @@ export default function CreateGroupPage() {
                     </div>
                   </div>
                   
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-start gap-4">
                     <TrendingUp className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')}`} />
                     <div>
                       <div className={`font-medium ${getThemeTextColor('primary')}`}>
