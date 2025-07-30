@@ -10,6 +10,7 @@ import { Separator } from '@/shadcn/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shadcn/ui/tooltip';
 import { spacing } from '@/styles/design-system';
 import { Plus } from 'lucide-react';
+import UserProfileTooltip from '@/components/common/UserProfileTooltip';
 
 interface Goal {
   id: number;
@@ -41,12 +42,24 @@ export default function TodayGoals({ goals }: TodayGoalsProps) {
       <div className="flex items-center">
         {displayedNames.map((name, index) => (
           <div key={index} className={`-ml-2 hover:z-10 relative first:ml-0`} style={{ zIndex: displayedNames.length - index }}>
-            <Avatar className="w-6 h-6 ring-1 ring-gray-200 dark:ring-gray-700">
-              <AvatarImage src="" />
-              <AvatarFallback className={`text-[8px] font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
-                {getAvatarInitials(name)}
-              </AvatarFallback>
-            </Avatar>
+            <UserProfileTooltip
+              userStats={{
+                nickname: name,
+                currentStreak: Math.floor(Math.random() * 25) + 3, // Mock data
+                totalScore: Math.floor(Math.random() * 5000) + 1000, // Mock data
+                totalSessions: Math.floor(Math.random() * 30) + 10, // Mock data
+                workTime: `${Math.floor(Math.random() * 8) + 2}h`
+              }}
+              side="top"
+              align="center"
+            >
+              <Avatar className="w-6 h-6 ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-2 hover:ring-[#3F72AF] transition-all duration-200 cursor-pointer">
+                <AvatarImage src="" />
+                <AvatarFallback className={`text-[8px] font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
+                  {getAvatarInitials(name)}
+                </AvatarFallback>
+              </Avatar>
+            </UserProfileTooltip>
           </div>
         ))}
         {remainingCount > 0 && (
