@@ -80,22 +80,20 @@ export default function CreateGroupPage() {
   };
 
   return (
-    <div className="space-y-3 px-8 py-3">
-
-      <div className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="space-y-6 px-6 py-6 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Form */}
           <div className="lg:col-span-2">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 {/* Basic Information */}
                 <Card className={getCommonCardClass()}>
-                  <CardContent className="px-6 py-3">
-                    <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-2`}>
+                  <CardContent className="p-6">
+                    <div className={`text-lg font-semibold ${getThemeTextColor('primary')} mb-4`}>
                       Basic Information
                     </div>
                     
-                    <div className="space-y-2">
+                    <div className="space-y-4">
                       {/* Group Name */}
                       <FormField
                         control={form.control}
@@ -108,7 +106,7 @@ export default function CreateGroupPage() {
                             <FormControl>
                               <Input
                                 placeholder="Enter group name..."
-                                className="!bg-white !border-gray-200 !text-gray-900 placeholder:!text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:!bg-white dark:!text-gray-900"
+                                className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900"
                                 {...field}
                               />
                             </FormControl>
@@ -129,7 +127,7 @@ export default function CreateGroupPage() {
                             <FormControl>
                               <Textarea
                                 placeholder="Describe your group's purpose and goals..."
-                                className="min-h-[100px] !bg-white !border-gray-200 !text-gray-900 placeholder:!text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:!bg-white dark:!text-gray-900"
+                                className="min-h-[100px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900"
                                 {...field}
                               />
                             </FormControl>
@@ -149,7 +147,7 @@ export default function CreateGroupPage() {
                             </FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
-                                <SelectTrigger className="!bg-white !border-gray-200 !text-gray-900 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:!bg-white dark:!border-gray-200 dark:!text-gray-900">
+                                <SelectTrigger className="bg-white border-gray-200 text-gray-900 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900">
                                   <SelectValue />
                                 </SelectTrigger>
                               </FormControl>
@@ -170,8 +168,8 @@ export default function CreateGroupPage() {
 
                 {/* Privacy Settings */}
                 <Card className={getCommonCardClass()}>
-                  <CardContent className="px-6 py-3">
-                    <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-2`}>
+                  <CardContent className="p-6">
+                    <div className={`text-lg font-semibold ${getThemeTextColor('primary')} mb-4`}>
                       Privacy Settings
                     </div>
                     
@@ -185,11 +183,11 @@ export default function CreateGroupPage() {
                               type="single" 
                               value={field.value} 
                               onValueChange={field.onChange}
-                              className="w-full !bg-white border border-gray-200 rounded-md"
+                              className="w-full bg-white border border-gray-200 rounded-md dark:bg-gray-50 dark:border-gray-300"
                             >
                               <ToggleGroupItem 
                                 value="public" 
-                                className="flex-1 gap-3 px-6 py-4 !bg-white !text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:!bg-gray-50"
+                                className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-100"
                               >
                                 <Globe className="h-4 w-4" />
                                 <div className="text-left">
@@ -199,7 +197,7 @@ export default function CreateGroupPage() {
                               </ToggleGroupItem>
                               <ToggleGroupItem 
                                 value="private" 
-                                className="flex-1 gap-3 px-6 py-4 !bg-white !text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:!bg-gray-50"
+                                className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-100"
                               >
                                 <Lock className="h-4 w-4" />
                                 <div className="text-left">
@@ -218,8 +216,8 @@ export default function CreateGroupPage() {
 
                 {/* Tags */}
                 <Card className={getCommonCardClass()}>
-                  <CardContent className="px-6 py-3">
-                    <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-2`}>
+                  <CardContent className="p-6">
+                    <div className={`text-lg font-semibold ${getThemeTextColor('primary')} mb-4`}>
                       Tags
                     </div>
                     
@@ -228,7 +226,7 @@ export default function CreateGroupPage() {
                       name="tags"
                       render={({ field }) => (
                         <FormItem>
-                          <div className="space-y-2">
+                          <div className="space-y-4">
                             {/* Add Tag Input */}
                             <TagInput
                               onAddTag={handleAddTag}
@@ -237,7 +235,7 @@ export default function CreateGroupPage() {
 
                             {/* Current Tags */}
                             {field.value.length > 0 && (
-                              <div className="flex flex-wrap gap-2">
+                              <div className="flex flex-wrap gap-2 mt-3">
                                 {field.value.map((tag) => (
                                   <Badge 
                                     key={tag} 
@@ -270,11 +268,11 @@ export default function CreateGroupPage() {
                 </Card>
 
                 {/* Action Buttons */}
-                <div className="flex gap-4 mt-2">
+                <div className="flex gap-4 pt-2">
                   <Button
                     type="button"
                     variant="outline"
-                    className="flex-1 !bg-white !border-gray-200 !text-gray-900 hover:!bg-gray-50 disabled:!opacity-50"
+                    className="flex-1 bg-white border-gray-200 text-gray-900 hover:bg-gray-50 dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900 dark:hover:bg-gray-100"
                     onClick={() => router.back()}
                   >
                     Cancel
@@ -292,14 +290,14 @@ export default function CreateGroupPage() {
           </div>
 
           {/* Preview */}
-          <div className="lg:col-span-1 space-y-3">
+          <div className="lg:col-span-1 space-y-6">
             <Card className={getCommonCardClass()}>
-              <CardContent className="p-3">
-                <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-2`}>
+              <CardContent className="p-6">
+                <div className={`text-lg font-semibold ${getThemeTextColor('primary')} mb-4`}>
                   Preview
                 </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-4">
                   {/* Group Header */}
                   <div className="flex items-center gap-6">
                     <Avatar className="w-12 h-12">
@@ -367,12 +365,12 @@ export default function CreateGroupPage() {
 
             {/* Group Benefits */}
             <Card className={getCommonCardClass()}>
-              <CardContent className="p-3">
-                <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-2`}>
+              <CardContent className="p-6">
+                <div className={`text-lg font-semibold ${getThemeTextColor('primary')} mb-4`}>
                   Group Benefits
                 </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <div className="flex items-start gap-4">
                     <Users className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')}`} />
                     <div>
@@ -413,7 +411,6 @@ export default function CreateGroupPage() {
             </Card>
           </div>
         </div>
-      </div>
     </div>
   );
 }
@@ -444,7 +441,7 @@ function TagInput({ onAddTag, disabled }: { onAddTag: (tag: string) => void, dis
         value={newTag}
         onChange={(e) => setNewTag(e.target.value)}
         onKeyPress={handleKeyPress}
-        className="flex-1 !bg-white !border-gray-200 !text-gray-900 placeholder:!text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:!bg-white dark:!text-gray-900"
+        className="flex-1 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900"
         disabled={disabled}
       />
       <Button
