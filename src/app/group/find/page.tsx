@@ -503,7 +503,7 @@ export default function FindTeamPage() {
                 <div className="flex gap-3 pt-2">
                   <Button
                     variant="outline"
-                    className={`flex-1 ${getThemeClass('border')} ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')}`}
+                    className="flex-1 !bg-white !border-gray-200 !text-gray-900 hover:!bg-gray-50 disabled:!opacity-50"
                     onClick={handleCloseModal}
                     disabled={isJoining}
                   >
