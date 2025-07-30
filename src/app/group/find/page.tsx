@@ -28,29 +28,44 @@ export default function FindTeamPage() {
     {
       id: 1,
       name: 'Frontend Developers',
-      description: 'React, Next.js, TypeScript enthusiasts',
+      description: 'React, Next.js, TypeScript enthusiasts working on modern web applications',
       members: 12,
       isPublic: true,
       tags: ['React', 'TypeScript', 'Frontend'],
       createdAt: '2024-01-15',
+      leader: {
+        name: 'Alice Kim',
+        nickname: 'alice_dev',
+        avatar: 'AK'
+      }
     },
     {
       id: 2,
       name: 'Backend Warriors',
-      description: 'Node.js, Python, Database experts',
+      description: 'Node.js, Python, Database experts building scalable server architectures',
       members: 8,
       isPublic: true,
       tags: ['Node.js', 'Python', 'Backend'],
       createdAt: '2024-01-20',
+      leader: {
+        name: 'Bob Johnson',
+        nickname: 'bob_backend',
+        avatar: 'BJ'
+      }
     },
     {
       id: 3,
       name: 'DevOps Masters',
-      description: 'Docker, Kubernetes, CI/CD specialists',
+      description: 'Docker, Kubernetes, CI/CD specialists focused on infrastructure automation',
       members: 6,
       isPublic: false,
       tags: ['Docker', 'Kubernetes', 'DevOps'],
       createdAt: '2024-02-01',
+      leader: {
+        name: 'Charlie Lee',
+        nickname: 'charlie_ops',
+        avatar: 'CL'
+      }
     },
   ];
 
@@ -315,8 +330,8 @@ export default function FindTeamPage() {
               <div className="space-y-4">
                 {/* Team Header */}
                 <Card className={getCommonCardClass()}>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-4">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-4 mb-4">
                       <Avatar className="w-16 h-16">
                         <AvatarFallback className={`text-xl font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
                           {selectedTeam.name.charAt(0)}
@@ -370,64 +385,49 @@ export default function FindTeamPage() {
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-                
-                {/* Description */}
-                <Card className={getCommonCardClass()}>
-                  <CardContent className="p-4 space-y-3">
-                    <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
-                      About this team
-                    </div>
-                    <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed`}>
-                      {selectedTeam.description}
-                    </p>
-                  </CardContent>
-                </Card>
-                
-                {/* Tags */}
-                <Card className={getCommonCardClass()}>
-                  <CardContent className="p-4 space-y-3">
-                    <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
-                      Skills & Technologies
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedTeam.tags.map((tag) => (
-                        <Badge 
-                          key={tag} 
-                          variant="outline" 
-                          className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
-                        >
-                          <Hash className="h-3 w-3" />
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
 
-                {/* Additional Info */}
-                <Card className={getCommonCardClass()}>
-                  <CardContent className="p-4 space-y-3">
-                    <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
-                      Team Information
+                    {/* Team Description */}
+                    <div className="mb-4">
+                      <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed`}>
+                        {selectedTeam.description}
+                      </p>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
-                        <div className={`text-xs ${getThemeTextColor('secondary')} mb-1`}>
-                          Team Type
-                        </div>
-                        <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                          {selectedTeam.isPublic ? 'Public Team' : 'Private Team'}
+
+                    {/* Team Leader */}
+                    <div className="mb-4">
+                      <div className={`text-sm font-medium ${getThemeTextColor('primary')} mb-2`}>
+                        Team Leader
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="w-8 h-8">
+                          <AvatarFallback className={`text-sm font-medium ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+                            {selectedTeam.leader.avatar}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                            {selectedTeam.leader.name}
+                          </div>
+                          <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                            @{selectedTeam.leader.nickname}
+                          </div>
                         </div>
                       </div>
-                      <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
-                        <div className={`text-xs ${getThemeTextColor('secondary')} mb-1`}>
-                          Join Method
-                        </div>
-                        <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                          {selectedTeam.isPublic ? 'Direct Join' : 'Invite Code Required'}
-                        </div>
+                    </div>
+
+                    {/* Tags */}
+                    <div>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedTeam.tags.map((tag) => (
+                          <Badge 
+                            key={tag} 
+                            variant="outline" 
+                            className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
+                          >
+                            <Hash className="h-3 w-3" />
+                            {tag}
+                          </Badge>
+                        ))}
                       </div>
                     </div>
                   </CardContent>
