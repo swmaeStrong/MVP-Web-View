@@ -67,10 +67,10 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
                 <div key={group.id}>
                   <Link
                     href={`/group/team/${group.id}`}
-                    className={`flex items-center justify-between px-4 py-2 rounded-md transition-colors ${
+                    className={`flex items-center justify-between px-4 py-2 rounded-md transition-colors duration-200 ${
                       isGroupSelected
-                        ? `text-white bg-[#3F72AF] ring-2 ring-[#3F72AF]`
-                        : `${getThemeTextColor('secondary')} hover:${getThemeClass('border')} hover:${getThemeTextColor('primary')}`
+                        ? `text-white bg-[#3F72AF]`
+                        : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -92,12 +92,17 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
                           <Link
                             key={item.href}
                             href={item.href}
-                            className={`flex items-center gap-3 px-3 py-1.5 transition-colors ${
+                            className={`flex items-center gap-3 px-3 py-1.5 rounded transition-colors duration-150 relative ${
                               active
-                                ? `${getThemeTextColor('primary')} border-b-2 border-[#3F72AF]`
+                                ? `${getThemeTextColor('primary')} font-medium`
                                 : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
                             }`}
                           >
+                            {/* Simple active indicator */}
+                            <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                              active ? 'bg-[#3F72AF]' : 'bg-transparent'
+                            }`} />
+                            
                             <Icon size={14} className="flex-shrink-0" />
                             <span className="text-xs">{item.name}</span>
                           </Link>
