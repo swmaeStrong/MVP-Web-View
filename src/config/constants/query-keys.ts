@@ -22,6 +22,14 @@ export const QUERY_KEYS = {
   USAGE_STATISTICS: 'usage-statistics',
   MULTI_DATE_STATISTICS: 'multi-date-statistics',
   HOURLY_USAGE: 'hourlyUsage',
+  
+  // 세션 관련
+  SESSIONS: 'sessions',
+  SESSION_DETAIL: 'sessionDetail',
+  
+  // 스트릭 관련
+  STREAK_CALENDAR: 'streakCalendar',
+  STREAK_COUNT: 'streakCount',
 } as const;
 
 // =============================================================================
@@ -113,6 +121,52 @@ export const hourlyUsageQueryKey = (
   binSize,
 ] as const;
 
+/**
+ * 세션 쿼리키 생성
+ * @param selectedDate - 선택된 날짜
+ */
+export const sessionsQueryKey = (
+  selectedDate: string
+) => [
+  QUERY_KEYS.SESSIONS,
+  selectedDate,
+] as const;
+
+/**
+ * 세션 상세 쿼리키 생성
+ * @param sessionId - 세션 ID
+ * @param selectedDate - 선택된 날짜
+ */
+export const sessionDetailQueryKey = (
+  sessionId: number | undefined,
+  selectedDate: string
+) => [
+  QUERY_KEYS.SESSION_DETAIL,
+  sessionId,
+  selectedDate,
+] as const;
+
+/**
+ * 스트릭 캘린더 쿼리키 생성
+ * @param year - 연도
+ * @param month - 월 (0부터 시작)
+ */
+export const streakCalendarQueryKey = (
+  year: number,
+  month: number
+) => [
+  QUERY_KEYS.STREAK_CALENDAR,
+  year,
+  month,
+] as const;
+
+/**
+ * 스트릭 카운트 쿼리키 생성
+ */
+export const streakCountQueryKey = () => [
+  QUERY_KEYS.STREAK_COUNT,
+] as const;
+
 // =============================================================================
 // 타입 정의
 // =============================================================================
@@ -127,6 +181,10 @@ export type QueryKeyTypes = {
   usageStatistics: ReturnType<typeof usageStatisticsQueryKey>;
   multiDateStatistics: ReturnType<typeof multiDateStatisticsQueryKey>;
   hourlyUsage: ReturnType<typeof hourlyUsageQueryKey>;
+  sessions: ReturnType<typeof sessionsQueryKey>;
+  sessionDetail: ReturnType<typeof sessionDetailQueryKey>;
+  streakCalendar: ReturnType<typeof streakCalendarQueryKey>;
+  streakCount: ReturnType<typeof streakCountQueryKey>;
 };
 
 // =============================================================================
@@ -148,4 +206,10 @@ export const INVALIDATION_KEYS = {
   
   // 시간별 사용량 관련 모든 쿼리 무효화
   ALL_HOURLY_USAGE: [QUERY_KEYS.HOURLY_USAGE],
+  
+  // 세션 관련 모든 쿼리 무효화
+  ALL_SESSIONS: [QUERY_KEYS.SESSIONS, QUERY_KEYS.SESSION_DETAIL],
+  
+  // 스트릭 관련 모든 쿼리 무효화
+  ALL_STREAK: [QUERY_KEYS.STREAK_CALENDAR, QUERY_KEYS.STREAK_COUNT],
 } as const;

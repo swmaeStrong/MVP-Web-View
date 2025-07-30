@@ -3,13 +3,12 @@
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { ChartConfig, ChartContainer } from '@/shadcn/ui/chart';
-import { getSession, getSessionDetail } from '@/shared/api/get';
 import { getKSTDateString } from '@/utils/timezone';
-import { useQuery } from '@tanstack/react-query';
 import { Activity, Target } from 'lucide-react';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Bar, BarChart, XAxis, YAxis } from 'recharts';
 import StateDisplay from '../common/StateDisplay';
+import { useSessions, useSessionDetail } from '@/hooks/data/useSession';
 
 interface SessionTimelineViewProps {
   selectedDate?: string;
@@ -104,19 +103,10 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
   const chartContainerRef = useRef<HTMLDivElement>(null);
 
   // Fetch session data
-  const { data: sessionData, isLoading, isError, refetch } = useQuery({
-    queryKey: ['sessions', selectedDate],
-    queryFn: () => getSession(selectedDate),
-    retry: 1,
-  });
+  const { data: sessionData, isLoading, isError, refetch } = useSessions(selectedDate);
 
   // Fetch selected session detail data
-  const { data: sessionDetailData, isLoading: isDetailLoading, isError: isDetailError } = useQuery({
-    queryKey: ['sessionDetail', selectedSession?.id, selectedDate],
-    queryFn: () => selectedSession ? getSessionDetail(selectedSession.id, selectedDate) : Promise.resolve([]),
-    enabled: Boolean(selectedSession),
-    retry: 1,
-  });
+  const { data: sessionDetailData, isLoading: isDetailLoading, isError: isDetailError } = useSessionDetail(selectedSession?.id, selectedDate);
 
   // Process sessions for bar chart visualization
   const { chartData, processedSessions, totalPages, currentChartData } = useMemo(() => {

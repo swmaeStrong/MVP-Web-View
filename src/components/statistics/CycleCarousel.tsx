@@ -1,10 +1,8 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
-import { getSession } from '@/shared/api/get';
 import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
 import { getKSTDateString } from '@/utils/timezone';
-import { useQuery } from '@tanstack/react-query';
 import React, { memo, useEffect, useState } from 'react';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
@@ -14,6 +12,7 @@ import { EffectCoverflow, FreeMode, Mousewheel, Navigation, Pagination } from 's
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/shadcn/ui/chart';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { useSessions } from '@/hooks/data/useSession';
 
 interface SessionCarouselProps {
   selectedDate?: string;
@@ -31,11 +30,7 @@ const SessionCarousel = memo(function SessionCarousel({
   const swiperRef = React.useRef<any>(null);
 
   // 세션 데이터 조회
-  const { data: sessionData, isLoading, error } = useQuery({
-    queryKey: ['sessions', selectedDate],
-    queryFn: () => getSession(selectedDate),
-    retry: 1,
-  });
+  const { data: sessionData, isLoading, error } = useSessions(selectedDate);
 
   // Session API 데이터를 CycleData 형태로 변환
   const cycles = React.useMemo(() => {
