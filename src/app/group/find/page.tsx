@@ -155,120 +155,96 @@ export default function FindTeamPage() {
       </Card>
 
       {/* Results */}
-      <div className="space-y-6">
-        <div className="flex items-center justify-between py-4">
-          <div className={`text-xl font-bold ${getThemeTextColor('primary')}`}>
-            Available Teams ({filteredTeams.length})
-          </div>
-          <div className={`text-sm ${getThemeTextColor('secondary')}`}>
-            {filterType !== 'all' && `Showing ${filterType} teams • `}
-            Sorted by {sortBy === 'members' ? 'members' : sortBy === 'created' ? 'date' : 'name'}
-          </div>
-        </div>
-        
-        <div className="grid gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {filteredTeams.map((team) => (
-            <Card key={team.id} className={`${getCommonCardClass()} hover:ring-2 hover:ring-[#3F72AF]/20 transition-all`}>
+            <Card key={team.id} className={`${getCommonCardClass()} hover:ring-2 hover:ring-[#3F72AF]/20 transition-all h-fit`}>
               <CardContent className="p-6">
-                <div className="grid grid-cols-12 gap-6">
-                  {/* Team Info */}
-                  <div className="col-span-12 lg:col-span-8">
-                    <div className="flex items-start gap-4">
-                      {/* Team Avatar */}
-                      <Avatar className="w-16 h-16 flex-shrink-0">
-                        <AvatarFallback className={`text-2xl font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                          {team.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      
-                      {/* Team Details */}
-                      <div className="flex-1 space-y-4">
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-3">
-                            <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
-                              {team.name}
-                            </div>
-                            <Badge variant={team.isPublic ? "default" : "secondary"} className={`gap-1 ${
-                              team.isPublic 
-                                ? 'bg-green-100 text-green-700 hover:bg-green-100'
-                                : 'bg-amber-100 text-amber-700 hover:bg-amber-100'
-                            }`}>
-                              {team.isPublic ? (
-                                <>
-                                  <Globe className="h-3 w-3" />
-                                  Public
-                                </>
-                              ) : (
-                                <>
-                                  <Lock className="h-3 w-3" />
-                                  Private
-                                </>
-                              )}
-                            </Badge>
-                          </div>
-                          
-                          <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed`}>
-                            {team.description}
-                          </p>
+                <div className="space-y-4">
+                  {/* Team Header */}
+                  <div className="flex items-center gap-4">
+                    <Avatar className="w-12 h-12 flex-shrink-0">
+                      <AvatarFallback className={`text-lg font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+                        {team.name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className={`text-lg font-bold ${getThemeTextColor('primary')} truncate`}>
+                          {team.name}
                         </div>
-                        
-                        {/* Tags */}
-                        <div className="flex flex-wrap gap-2">
-                          {team.tags.map((tag) => (
-                            <Badge 
-                              key={tag} 
-                              variant="outline" 
-                              className={`gap-1 ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
-                            >
-                              <Hash className="h-3 w-3" />
-                              {tag}
-                            </Badge>
-                          ))}
+                        <Badge variant={team.isPublic ? "default" : "secondary"} className={`gap-1 flex-shrink-0 ${
+                          team.isPublic 
+                            ? 'bg-green-100 text-green-700 hover:bg-green-100'
+                            : 'bg-amber-100 text-amber-700 hover:bg-amber-100'
+                        }`}>
+                          {team.isPublic ? (
+                            <>
+                              <Globe className="h-3 w-3" />
+                              Public
+                            </>
+                          ) : (
+                            <>
+                              <Lock className="h-3 w-3" />
+                              Private
+                            </>
+                          )}
+                        </Badge>
+                      </div>
+                      
+                      {/* Stats */}
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1">
+                          <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                            {team.members}
+                          </div>
+                          <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                            members
+                          </div>
+                        </div>
+                        <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                          •
+                        </div>
+                        <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                          {new Date(team.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </div>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Stats and Action */}
-                  <div className="col-span-12 lg:col-span-4">
-                    <div className="flex flex-col items-end justify-between h-full space-y-4">
-                      {/* Stats */}
-                      <div className="flex items-center gap-6">
-                        <div className="text-center">
-                          <div className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-                            {team.members}
-                          </div>
-                          <div className={`text-xs ${getThemeTextColor('secondary')} uppercase tracking-wide`}>
-                            Members
-                          </div>
-                        </div>
-                        <Separator orientation="vertical" className="h-12" />
-                        <div className="text-center">
-                          <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                            {new Date(team.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                          </div>
-                          <div className={`text-xs ${getThemeTextColor('secondary')} uppercase tracking-wide`}>
-                            Created
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Action Button */}
-                      <Button
-                        className="w-full lg:w-auto bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors px-6 py-2"
-                        size="sm"
+                  {/* Description */}
+                  <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed line-clamp-2`}>
+                    {team.description}
+                  </p>
+                  
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2">
+                    {team.tags.map((tag) => (
+                      <Badge 
+                        key={tag} 
+                        variant="outline" 
+                        className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
                       >
-                        {team.isPublic ? 'Join Team' : 'Request to Join'}
-                      </Button>
-                    </div>
+                        <Hash className="h-3 w-3" />
+                        {tag}
+                      </Badge>
+                    ))}
                   </div>
+                  
+                  {/* Action Button */}
+                  <Button
+                    className="w-full bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
+                    size="sm"
+                  >
+                    {team.isPublic ? 'Join Team' : 'Request to Join'}
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           ))}
-        </div>
 
-        {filteredTeams.length === 0 && (
+      {filteredTeams.length === 0 && (
+        <div className="col-span-full">
           <Card className={getCommonCardClass()}>
             <CardContent className={`${spacing.inner.normal} text-center py-12`}>
               <div className={`w-20 h-20 rounded-full ${getThemeClass('componentSecondary')} flex items-center justify-center mx-auto mb-6`}>
@@ -285,7 +261,8 @@ export default function FindTeamPage() {
               </Button>
             </CardContent>
           </Card>
-        )}
+        </div>
+      )}
       </div>
     </div>
   );
