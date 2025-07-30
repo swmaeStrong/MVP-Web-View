@@ -23,8 +23,8 @@ interface GroupSidebarProps {
 }
 
 const navItems: NavItem[] = [
-  { name: 'Find Group', href: '/group/find', icon: Search },
-  { name: 'Create Group', href: '/group/create', icon: Plus },
+  { name: 'Search', href: '/group/find', icon: Search },
+  { name: 'Create', href: '/group/create', icon: Plus },
 ];
 
 export default function GroupSidebar({ teams }: GroupSidebarProps) {
@@ -76,9 +76,6 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
                     <div className="flex items-center gap-3">
                       <span className="text-sm truncate">{group.name}</span>
                     </div>
-                    <span className={`text-xs ${isGroupSelected ? 'text-white' : getThemeTextColor('secondary')}`}>
-                      {group.members}
-                    </span>
                   </Link>
                   
                   {/* Group Submenu - Show right below the selected group */}
