@@ -3,13 +3,21 @@
 import { useTheme } from '@/hooks/useTheme';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
+import { Badge } from '@/shadcn/ui/badge';
+import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
+import { Separator } from '@/shadcn/ui/separator';
 import { spacing } from '@/styles/design-system';
-import { Search, Users, Clock } from 'lucide-react';
+import { Search, Users, Clock, Filter, TrendingUp, Calendar, Globe, Lock, Hash } from 'lucide-react';
 import { useState } from 'react';
+import { Input } from '@/shadcn/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/ui/select';
+import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterType, setFilterType] = useState<'all' | 'public' | 'private'>('all');
+  const [sortBy, setSortBy] = useState<'members' | 'created' | 'name'>('members');
 
   // Mock data for available teams
   const availableTeams = [
@@ -42,102 +50,232 @@ export default function FindTeamPage() {
     },
   ];
 
-  const filteredTeams = availableTeams.filter(team =>
-    team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    team.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    team.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredTeams = availableTeams
+    .filter(team => {
+      const matchesSearch = team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        team.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        team.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+      const matchesFilter = filterType === 'all' || 
+        (filterType === 'public' && team.isPublic) ||
+        (filterType === 'private' && !team.isPublic);
+      
+      return matchesSearch && matchesFilter;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'members':
+          return b.members - a.members;
+        case 'created':
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case 'name':
+          return a.name.localeCompare(b.name);
+        default:
+          return 0;
+      }
+    });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 p-6">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className={`text-3xl font-bold mb-2 ${getThemeTextColor('primary')}`}>
+      <div className="space-y-4">
+        <div className={`text-3xl font-bold ${getThemeTextColor('primary')}`}>
           Find Team
-        </h1>
+        </div>
         <p className={`text-lg ${getThemeTextColor('secondary')}`}>
           Discover and join teams that match your interests
         </p>
       </div>
 
-      {/* Search Bar */}
+      {/* Search and Filter Section */}
       <Card className={getCommonCardClass()}>
-        <CardContent className={spacing.inner.normal}>
-          <div className="relative">
-            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${getThemeTextColor('secondary')}`} />
-            <input
-              type="text"
-              placeholder="Search teams by name, description, or tags..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className={`w-full pl-10 pr-4 py-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} placeholder:${getThemeTextColor('secondary')} focus:outline-none focus:ring-2 focus:ring-[#3F72AF]`}
-            />
+        <CardContent className="p-6">
+          <div className="grid grid-cols-12 gap-4">
+            {/* Search Bar */}
+            <div className="col-span-12 lg:col-span-6">
+              <div className="space-y-2">
+                <label className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                  Search Teams
+                </label>
+                <div className="relative">
+                  <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${getThemeTextColor('secondary')}`} />
+                  <Input
+                    type="text"
+                    placeholder="Search by name, description, or tags..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className={`pl-10 h-11 ${getThemeClass('component')} ${getThemeClass('border')} ${getThemeTextColor('primary')}`}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Filter Buttons */}
+            <div className="col-span-12 lg:col-span-3">
+              <div className="space-y-2">
+                <label className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                  Team Type
+                </label>
+                <ToggleGroup type="single" value={filterType} onValueChange={(value) => value && setFilterType(value as 'all' | 'public' | 'private')} className="h-11 w-full">
+                  <ToggleGroupItem value="all" className="flex-1 px-3">
+                    All
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="public" className="flex-1 gap-1 px-2">
+                    <Globe className="h-3 w-3" />
+                    Public
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="private" className="flex-1 gap-1 px-2">
+                    <Lock className="h-3 w-3" />
+                    Private
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </div>
+            </div>
+
+            {/* Sort Dropdown */}
+            <div className="col-span-12 lg:col-span-3">
+              <div className="space-y-2">
+                <label className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                  Sort By
+                </label>
+                <Select value={sortBy} onValueChange={(value: 'members' | 'created' | 'name') => setSortBy(value)}>
+                  <SelectTrigger className={`h-11 ${getThemeClass('component')} ${getThemeClass('border')}`}>
+                    <SelectValue placeholder="Sort by..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="members">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        Most Members
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="created">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        Recently Created
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="name">
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="h-4 w-4" />
+                        Name (A-Z)
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Results */}
-      <div className="space-y-4">
-        <h2 className={`text-xl font-semibold ${getThemeTextColor('primary')}`}>
-          Available Teams ({filteredTeams.length})
-        </h2>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between py-4">
+          <div className={`text-xl font-bold ${getThemeTextColor('primary')}`}>
+            Available Teams ({filteredTeams.length})
+          </div>
+          <div className={`text-sm ${getThemeTextColor('secondary')}`}>
+            {filterType !== 'all' && `Showing ${filterType} teams • `}
+            Sorted by {sortBy === 'members' ? 'members' : sortBy === 'created' ? 'date' : 'name'}
+          </div>
+        </div>
         
-        <div className="grid gap-4">
+        <div className="grid gap-6">
           {filteredTeams.map((team) => (
-            <Card key={team.id} className={getCommonCardClass()}>
-              <CardContent className={spacing.inner.normal}>
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
-                        {team.name}
-                      </h3>
-                      <div className={`px-2 py-1 rounded text-xs ${
-                        team.isPublic 
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                          : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                      }`}>
-                        {team.isPublic ? 'Public' : 'Private'}
+            <Card key={team.id} className={`${getCommonCardClass()} hover:ring-2 hover:ring-[#3F72AF]/20 transition-all`}>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-12 gap-6">
+                  {/* Team Info */}
+                  <div className="col-span-12 lg:col-span-8">
+                    <div className="flex items-start gap-4">
+                      {/* Team Avatar */}
+                      <Avatar className="w-16 h-16 flex-shrink-0">
+                        <AvatarFallback className={`text-2xl font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+                          {team.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      
+                      {/* Team Details */}
+                      <div className="flex-1 space-y-4">
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-3">
+                            <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
+                              {team.name}
+                            </div>
+                            <Badge variant={team.isPublic ? "default" : "secondary"} className={`gap-1 ${
+                              team.isPublic 
+                                ? 'bg-green-100 text-green-700 hover:bg-green-100'
+                                : 'bg-amber-100 text-amber-700 hover:bg-amber-100'
+                            }`}>
+                              {team.isPublic ? (
+                                <>
+                                  <Globe className="h-3 w-3" />
+                                  Public
+                                </>
+                              ) : (
+                                <>
+                                  <Lock className="h-3 w-3" />
+                                  Private
+                                </>
+                              )}
+                            </Badge>
+                          </div>
+                          
+                          <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed`}>
+                            {team.description}
+                          </p>
+                        </div>
+                        
+                        {/* Tags */}
+                        <div className="flex flex-wrap gap-2">
+                          {team.tags.map((tag) => (
+                            <Badge 
+                              key={tag} 
+                              variant="outline" 
+                              className={`gap-1 ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
+                            >
+                              <Hash className="h-3 w-3" />
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                    
-                    <p className={`text-sm ${getThemeTextColor('secondary')} mb-3`}>
-                      {team.description}
-                    </p>
-                    
-                    <div className="flex items-center gap-4 mb-3">
-                      <div className="flex items-center gap-1">
-                        <Users className={`h-4 w-4 ${getThemeTextColor('secondary')}`} />
-                        <span className={`text-sm ${getThemeTextColor('secondary')}`}>
-                          {team.members} members
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className={`h-4 w-4 ${getThemeTextColor('secondary')}`} />
-                        <span className={`text-sm ${getThemeTextColor('secondary')}`}>
-                          Created {new Date(team.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-2">
-                      {team.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className={`px-2 py-1 rounded text-xs ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`}
-                        >
-                          {tag}
-                        </span>
-                      ))}
                     </div>
                   </div>
                   
-                  <div className="ml-6">
-                    <Button
-                      className={`${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')} hover:${getThemeClass('component')} transition-colors`}
-                    >
-                      {team.isPublic ? 'Join Team' : 'Request to Join'}
-                    </Button>
+                  {/* Stats and Action */}
+                  <div className="col-span-12 lg:col-span-4">
+                    <div className="flex flex-col items-end justify-between h-full space-y-4">
+                      {/* Stats */}
+                      <div className="flex items-center gap-6">
+                        <div className="text-center">
+                          <div className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
+                            {team.members}
+                          </div>
+                          <div className={`text-xs ${getThemeTextColor('secondary')} uppercase tracking-wide`}>
+                            Members
+                          </div>
+                        </div>
+                        <Separator orientation="vertical" className="h-12" />
+                        <div className="text-center">
+                          <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                            {new Date(team.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </div>
+                          <div className={`text-xs ${getThemeTextColor('secondary')} uppercase tracking-wide`}>
+                            Created
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Action Button */}
+                      <Button
+                        className="w-full lg:w-auto bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors px-6 py-2"
+                        size="sm"
+                      >
+                        {team.isPublic ? 'Join Team' : 'Request to Join'}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -147,14 +285,19 @@ export default function FindTeamPage() {
 
         {filteredTeams.length === 0 && (
           <Card className={getCommonCardClass()}>
-            <CardContent className={`${spacing.inner.normal} text-center`}>
-              <Search className={`h-12 w-12 mx-auto mb-4 ${getThemeTextColor('secondary')}`} />
-              <h3 className={`text-lg font-semibold mb-2 ${getThemeTextColor('primary')}`}>
+            <CardContent className={`${spacing.inner.normal} text-center py-12`}>
+              <div className={`w-20 h-20 rounded-full ${getThemeClass('componentSecondary')} flex items-center justify-center mx-auto mb-6`}>
+                <Search className={`h-10 w-10 ${getThemeTextColor('secondary')}`} />
+              </div>
+              <div className={`text-xl font-bold mb-3 ${getThemeTextColor('primary')}`}>
                 No teams found
-              </h3>
-              <p className={`${getThemeTextColor('secondary')}`}>
-                Try adjusting your search criteria or create a new team
+              </div>
+              <p className={`text-base ${getThemeTextColor('secondary')} mb-6 max-w-md mx-auto`}>
+                We couldn't find any teams matching your search criteria. Try adjusting your filters or search terms.
               </p>
+              <Button className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90">
+                Create New Team
+              </Button>
             </CardContent>
           </Card>
         )}
