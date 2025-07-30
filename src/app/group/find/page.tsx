@@ -165,15 +165,6 @@ export default function FindTeamPage() {
 
   return (
     <div className="space-y-8 p-6">
-      {/* Header */}
-      <div className="space-y-4">
-        <div className={`text-3xl font-bold ${getThemeTextColor('primary')}`}>
-          Find Group
-        </div>
-        <p className={`text-lg ${getThemeTextColor('secondary')}`}>
-          Discover and join groups that match your interests
-        </p>
-      </div>
 
       {/* Search and Filter Section */}
       <Card className={getCommonCardClass()}>

@@ -81,15 +81,6 @@ export default function CreateGroupPage() {
 
   return (
     <div className="space-y-3 px-8 py-3">
-      {/* Header */}
-      <div className="space-y-2">
-        <div className={`text-3xl font-bold ${getThemeTextColor('primary')}`}>
-          Create Group
-        </div>
-        <p className={`text-lg ${getThemeTextColor('secondary')}`}>
-          Start your own group and collaborate with like-minded people
-        </p>
-      </div>
 
       <div className="max-w-4xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
