@@ -89,16 +89,10 @@ export default function TeamDetailPage() {
     return (
       <div className="flex items-center">
         {displayedNames.map((name, index) => (
-          <div key={index} className={`-ml-1.5 hover:z-10 relative first:ml-0`} style={{ zIndex: displayedNames.length - index }}>
-            <Avatar className={`w-6 h-6 ring-2 ring-background ${
-              isAchieved ? 'ring-green-500' : 'ring-gray-300'
-            }`}>
+          <div key={index} className={`-ml-2 hover:z-10 relative first:ml-0`} style={{ zIndex: displayedNames.length - index }}>
+            <Avatar className="w-6 h-6 ring-1 ring-gray-200 dark:ring-gray-700">
               <AvatarImage src="" />
-              <AvatarFallback className={`text-[8px] font-semibold ${
-                isAchieved 
-                  ? 'bg-green-100 text-green-700' 
-                  : 'bg-gray-100 text-gray-600'
-              }`}>
+              <AvatarFallback className={`text-[8px] font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
                 {getAvatarInitials(name)}
               </AvatarFallback>
             </Avatar>
@@ -108,14 +102,8 @@ export default function TeamDetailPage() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Avatar className={`w-6 h-6 -ml-1.5 hover:z-10 relative ring-2 ring-background cursor-pointer ${
-                  isAchieved ? 'ring-green-500' : 'ring-gray-300'
-                }`}>
-                  <AvatarFallback className={`text-[8px] font-bold ${
-                    isAchieved 
-                      ? 'bg-green-500 text-white' 
-                      : 'bg-gray-400 text-white'
-                  }`}>
+                <Avatar className="w-6 h-6 -ml-2 hover:z-10 relative ring-1 ring-gray-200 dark:ring-gray-700 cursor-pointer">
+                  <AvatarFallback className={`text-[8px] font-bold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
                     +{remainingCount}
                   </AvatarFallback>
                 </Avatar>
@@ -427,7 +415,6 @@ export default function TeamDetailPage() {
                           <span className={`text-xs font-medium ${getThemeTextColor('secondary')}`}>
                             Achieved ({goal.achieved.length})
                           </span>
-                          <div className="w-2 h-2 rounded-full bg-green-500"></div>
                         </div>
                         {renderAvatarGroup(goal.achieved, true)}
                       </div>
@@ -440,7 +427,6 @@ export default function TeamDetailPage() {
                           <span className={`text-xs font-medium ${getThemeTextColor('secondary')}`}>
                             Not Achieved ({goal.notAchieved.length})
                           </span>
-                          <div className="w-2 h-2 rounded-full bg-gray-400"></div>
                         </div>
                         {renderAvatarGroup(goal.notAchieved, false)}
                       </div>
