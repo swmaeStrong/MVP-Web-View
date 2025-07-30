@@ -50,8 +50,7 @@ export default function TeamDetailPage() {
       'Daily standup at 9:00 AM',
       'Code reviews within 24 hours',
       'No meetings on Fridays',
-      'Use proper commit messages',
-      'Test coverage above 80%'
+      'Use proper commit messages'
     ]
   };
 
@@ -160,11 +159,13 @@ export default function TeamDetailPage() {
           </h3>
         </CardHeader>
         <CardContent className={spacing.inner.normal}>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {teamData.groundRules.map((rule, index) => (
-              <div key={index} className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
-                <span className={`text-sm ${getThemeTextColor('secondary')}`}>
+              <div key={index} className={`flex items-start gap-3 p-3 rounded-md ${getThemeClass('componentSecondary')} hover:${getThemeClass('component')} transition-colors`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${getThemeClass('component')} ${getThemeTextColor('secondary')}`}>
+                  {index + 1}
+                </div>
+                <span className={`text-sm ${getThemeTextColor('primary')} leading-relaxed`}>
                   {rule}
                 </span>
               </div>
