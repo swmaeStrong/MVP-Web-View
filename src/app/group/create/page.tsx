@@ -1,20 +1,20 @@
 'use client';
 
 import { useTheme } from '@/hooks/useTheme';
-import { Button } from '@/shadcn/ui/button';
-import { Card, CardContent } from '@/shadcn/ui/card';
-import { Input } from '@/shadcn/ui/input';
-import { Textarea } from '@/shadcn/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/ui/select';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/shadcn/ui/form';
-import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
-import { Globe, Lock, Hash, Plus, X, Users, Target, TrendingUp } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import * as React from 'react';
+import { Button } from '@/shadcn/ui/button';
+import { Card, CardContent } from '@/shadcn/ui/card';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
+import { Input } from '@/shadcn/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/ui/select';
+import { Textarea } from '@/shadcn/ui/textarea';
+import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Globe, Hash, Lock, Plus, Target, TrendingUp, Users, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import * as React from 'react';
+import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 const formSchema = z.object({
@@ -80,7 +80,7 @@ export default function CreateGroupPage() {
   };
 
   return (
-    <div className="space-y-8 p-6">
+    <div className="space-y-6 p-4">
       {/* Header */}
       <div className="space-y-4">
         <div className={`text-3xl font-bold ${getThemeTextColor('primary')}`}>
@@ -92,14 +92,14 @@ export default function CreateGroupPage() {
       </div>
 
       <div className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Main Form */}
           <div className="lg:col-span-2">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 {/* Basic Information */}
                 <Card className={getCommonCardClass()}>
-                  <CardContent className="p-6">
+                  <CardContent className="p-4">
                     <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-4`}>
                       Basic Information
                     </div>
@@ -179,7 +179,7 @@ export default function CreateGroupPage() {
 
                 {/* Privacy Settings */}
                 <Card className={getCommonCardClass()}>
-                  <CardContent className="p-6">
+                  <CardContent className="p-4">
                     <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-4`}>
                       Privacy Settings
                     </div>
@@ -227,7 +227,7 @@ export default function CreateGroupPage() {
 
                 {/* Tags */}
                 <Card className={getCommonCardClass()}>
-                  <CardContent className="p-6">
+                  <CardContent className="p-4">
                     <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-4`}>
                       Tags
                     </div>
@@ -301,9 +301,9 @@ export default function CreateGroupPage() {
           </div>
 
           {/* Preview */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-4">
             <Card className={getCommonCardClass()}>
-              <CardContent className="p-6">
+              <CardContent className="p-4">
                 <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-4`}>
                   Preview
                 </div>
@@ -376,7 +376,7 @@ export default function CreateGroupPage() {
 
             {/* Group Benefits */}
             <Card className={getCommonCardClass()}>
-              <CardContent className="p-6">
+              <CardContent className="p-4">
                 <div className={`text-lg font-bold ${getThemeTextColor('primary')} mb-4`}>
                   Group Benefits
                 </div>
