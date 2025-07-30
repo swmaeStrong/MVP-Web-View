@@ -34,7 +34,7 @@ export default function TeamLeaderboard({ members }: TeamLeaderboardProps) {
       <CardContent className={spacing.inner.normal}>
         <div className="grid grid-cols-3 gap-4">
           {members.map((member) => (
-            <div key={member.rank} className={`p-4 rounded-md ${getThemeClass('componentSecondary')} text-center relative`}>
+            <div key={member.rank} className={`p-4 rounded-md ${getThemeClass('componentSecondary')} ${getThemeClass('border')} border text-center relative`}>
               
               {/* 아바타 */}
               <UserProfileTooltip
