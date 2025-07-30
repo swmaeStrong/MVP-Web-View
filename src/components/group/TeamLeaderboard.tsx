@@ -67,22 +67,9 @@ export default function TeamLeaderboard({ members }: TeamLeaderboardProps) {
               
               {/* 정보 */}
               <div>
-                <UserProfileTooltip
-                  userStats={{
-                    nickname: member.name,
-                    currentStreak: Math.floor(Math.random() * 30) + 1, // Mock data
-                    totalScore: member.score * 15 + Math.floor(Math.random() * 500), // Mock data
-                    totalSessions: Math.floor(Math.random() * 40) + 15, // Mock data
-                    rank: member.rank,
-                    workTime: `${member.hours}h`
-                  }}
-                  side="bottom"
-                  align="center"
-                >
-                  <p className={`text-sm font-medium truncate ${getThemeTextColor('primary')} mb-1 cursor-pointer hover:${getThemeTextColor('accent')} transition-colors duration-200`}>
-                    {member.name}
-                  </p>
-                </UserProfileTooltip>
+                <p className={`text-sm font-medium truncate ${getThemeTextColor('primary')} mb-1`}>
+                  {member.name}
+                </p>
                 <p className={`text-xs ${getThemeTextColor('secondary')} mb-1`}>
                   {member.hours}h worked
                 </p>
