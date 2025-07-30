@@ -6,6 +6,7 @@ import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Separator } from '@/shadcn/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shadcn/ui/tooltip';
+import { Progress } from '@/shadcn/ui/progress';
 import { spacing } from '@/styles/design-system';
 import { CheckIcon, Edit, Plus, Target, Trophy } from 'lucide-react';
 import { useParams } from 'next/navigation';
@@ -399,16 +400,37 @@ export default function TeamDetailPage() {
               <div className="space-y-4">
                 {todayGoals.map((goal, index) => (
                   <div key={goal.id} className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${getThemeClass('component')} ${getThemeTextColor('secondary')}`}>
-                        {index + 1}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${getThemeClass('component')} ${getThemeTextColor('secondary')}`}>
+                          {index + 1}
+                        </div>
+                        <div className={`text-sm font-bold ${getThemeTextColor('primary')}`}>
+                          {goal.title}
+                        </div>
                       </div>
-                      <div className={`text-sm font-bold ${getThemeTextColor('primary')}`}>
-                        {goal.title}
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="relative w-24">
+                            <Progress 
+                              value={(goal.achieved.length / (goal.achieved.length + goal.notAchieved.length)) * 100} 
+                              className="h-2 bg-gray-200"
+                            />
+                            <div className="absolute inset-0 h-2 rounded-full bg-green-500" 
+                              style={{ width: `${(goal.achieved.length / (goal.achieved.length + goal.notAchieved.length)) * 100}%` }}
+                            />
+                          </div>
+                          <span className={`text-xs font-bold ${getThemeTextColor('primary')}`}>
+                            {Math.round((goal.achieved.length / (goal.achieved.length + goal.notAchieved.length)) * 100)}%
+                          </span>
+                        </div>
+                        <span className={`text-xs font-medium ${getThemeTextColor('secondary')}`}>
+                          {goal.achieved.length}/{goal.achieved.length + goal.notAchieved.length}
+                        </span>
                       </div>
                     </div>
                     
-                    <div className="flex gap-4">
+                    <div className="flex gap-4 mt-3">
                       {/* 달성한 사람들 */}
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
