@@ -359,49 +359,51 @@ export default function TeamDetailPage() {
                       </h4>
                     </div>
                     
-                    {/* 달성한 사람들 */}
-                    <div className="mb-3">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className={`text-xs font-medium ${getThemeTextColor('secondary')}`}>
-                          Achieved ({goal.achieved.length})
-                        </span>
-                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                    <div className="flex gap-4">
+                      {/* 달성한 사람들 */}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className={`text-xs font-medium ${getThemeTextColor('secondary')}`}>
+                            Achieved ({goal.achieved.length})
+                          </span>
+                          <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {goal.achieved.map((name, i) => (
+                            <div key={i} className="relative">
+                              <Avatar className="w-6 h-6 ring-1 ring-green-500">
+                                <AvatarImage src="" />
+                                <AvatarFallback className={`text-[8px] font-semibold bg-green-100 text-green-700`}>
+                                  {getAvatarInitials(name)}
+                                </AvatarFallback>
+                              </Avatar>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <div className="flex flex-wrap gap-1">
-                        {goal.achieved.map((name, i) => (
-                          <div key={i} className="relative">
-                            <Avatar className="w-6 h-6 ring-1 ring-green-500">
-                              <AvatarImage src="" />
-                              <AvatarFallback className={`text-[8px] font-semibold bg-green-100 text-green-700`}>
-                                {getAvatarInitials(name)}
-                              </AvatarFallback>
-                            </Avatar>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
 
-                    <Separator className="my-3" />
+                      <Separator orientation="vertical" className="h-16" />
 
-                    {/* 달성하지 못한 사람들 */}
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className={`text-xs font-medium ${getThemeTextColor('secondary')}`}>
-                          Not Achieved ({goal.notAchieved.length})
-                        </span>
-                        <div className="w-2 h-2 rounded-full bg-gray-400"></div>
-                      </div>
-                      <div className="flex flex-wrap gap-1">
-                        {goal.notAchieved.map((name, i) => (
-                          <div key={i} className="relative">
-                            <Avatar className="w-6 h-6 ring-1 ring-gray-300">
-                              <AvatarImage src="" />
-                              <AvatarFallback className={`text-[8px] font-semibold bg-gray-100 text-gray-600`}>
-                                {getAvatarInitials(name)}
-                              </AvatarFallback>
-                            </Avatar>
-                          </div>
-                        ))}
+                      {/* 달성하지 못한 사람들 */}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className={`text-xs font-medium ${getThemeTextColor('secondary')}`}>
+                            Not Achieved ({goal.notAchieved.length})
+                          </span>
+                          <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {goal.notAchieved.map((name, i) => (
+                            <div key={i} className="relative">
+                              <Avatar className="w-6 h-6 ring-1 ring-gray-300">
+                                <AvatarImage src="" />
+                                <AvatarFallback className={`text-[8px] font-semibold bg-gray-100 text-gray-600`}>
+                                  {getAvatarInitials(name)}
+                                </AvatarFallback>
+                                </Avatar>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
