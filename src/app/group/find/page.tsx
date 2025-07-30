@@ -8,15 +8,20 @@ import { Card, CardContent } from '@/shadcn/ui/card';
 import { Input } from '@/shadcn/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
 import { spacing } from '@/styles/design-system';
 import { Calendar, Globe, Hash, Lock, Search, TrendingUp, Users } from 'lucide-react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'public' | 'private'>('all');
   const [sortBy, setSortBy] = useState<'members' | 'created' | 'name'>('members');
+  const [selectedTeam, setSelectedTeam] = useState<typeof availableTeams[0] | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Mock data for available teams
   const availableTeams = [
@@ -73,6 +78,37 @@ export default function FindTeamPage() {
           return 0;
       }
     });
+
+  const handleViewDetail = (team: typeof availableTeams[0]) => {
+    setSelectedTeam(team);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedTeam(null);
+  };
+
+  const handleJoinTeam = async (team: typeof availableTeams[0]) => {
+    if (team.isPublic) {
+      // Public 팀의 경우 바로 가입 처리 후 팀 상세 페이지로 이동
+      try {
+        // 실제로는 API 호출로 팀 가입 처리
+        // await joinPublicTeam(team.id);
+        
+        // Mock: 가입 성공으로 가정하고 팀 상세 페이지로 이동
+        handleCloseModal();
+        router.push(`/group/team/${team.id}`);
+      } catch (error) {
+        console.error('Failed to join team:', error);
+        // 에러 처리 로직 추가 가능
+      }
+    } else {
+      // Private 팀의 경우 초대 코드 입력 페이지로 이동
+      handleCloseModal();
+      router.push(`/group/team/${team.id}/join`);
+    }
+  };
 
   return (
     <div className="space-y-8 p-6">
@@ -234,8 +270,9 @@ export default function FindTeamPage() {
                   <Button
                     className="w-full bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
                     size="sm"
+                    onClick={() => handleViewDetail(team)}
                   >
-                    Join Group
+                    See in Detail
                   </Button>
                 </div>
               </CardContent>
@@ -263,6 +300,150 @@ export default function FindTeamPage() {
         </div>
       )}
       </div>
+
+      {/* Team Detail Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-2xl">
+          {selectedTeam && (
+            <>
+              <DialogHeader>
+                <DialogTitle className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
+                  Team Details
+                </DialogTitle>
+              </DialogHeader>
+              
+              <div className="space-y-6">
+                {/* Team Header */}
+                <div className="flex items-center gap-4">
+                  <Avatar className="w-16 h-16">
+                    <AvatarFallback className={`text-xl font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+                      {selectedTeam.name.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className={`text-xl font-bold ${getThemeTextColor('primary')}`}>
+                        {selectedTeam.name}
+                      </div>
+                      <Badge variant={selectedTeam.isPublic ? "default" : "secondary"} className={`gap-1 ${
+                        selectedTeam.isPublic 
+                          ? 'bg-green-100 text-green-700 hover:bg-green-100'
+                          : 'bg-amber-100 text-amber-700 hover:bg-amber-100'
+                      }`}>
+                        {selectedTeam.isPublic ? (
+                          <>
+                            <Globe className="h-3 w-3" />
+                            Public
+                          </>
+                        ) : (
+                          <>
+                            <Lock className="h-3 w-3" />
+                            Private
+                          </>
+                        )}
+                      </Badge>
+                    </div>
+                    
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-1">
+                        <Users className="h-4 w-4" />
+                        <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                          {selectedTeam.members}
+                        </div>
+                        <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                          members
+                        </div>
+                      </div>
+                      <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                        •
+                      </div>
+                      <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                        Created {new Date(selectedTeam.createdAt).toLocaleDateString('en-US', { 
+                          year: 'numeric', 
+                          month: 'long', 
+                          day: 'numeric' 
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Description */}
+                <div className="space-y-2">
+                  <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                    About this team
+                  </div>
+                  <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed`}>
+                    {selectedTeam.description}
+                  </p>
+                </div>
+                
+                {/* Tags */}
+                <div className="space-y-3">
+                  <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                    Skills & Technologies
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedTeam.tags.map((tag) => (
+                      <Badge 
+                        key={tag} 
+                        variant="outline" 
+                        className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
+                      >
+                        <Hash className="h-3 w-3" />
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Additional Info */}
+                <div className="space-y-3">
+                  <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                    Team Information
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
+                      <div className={`text-xs ${getThemeTextColor('secondary')} mb-1`}>
+                        Team Type
+                      </div>
+                      <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                        {selectedTeam.isPublic ? 'Public Team' : 'Private Team'}
+                      </div>
+                    </div>
+                    <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
+                      <div className={`text-xs ${getThemeTextColor('secondary')} mb-1`}>
+                        Join Method
+                      </div>
+                      <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                        {selectedTeam.isPublic ? 'Direct Join' : 'Invite Code Required'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={handleCloseModal}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90"
+                    onClick={() => handleJoinTeam(selectedTeam)}
+                  >
+                    {selectedTeam.isPublic ? 'Join Team' : 'Request to Join'}
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
