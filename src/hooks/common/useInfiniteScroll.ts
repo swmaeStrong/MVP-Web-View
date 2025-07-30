@@ -3,7 +3,7 @@ import { useCallback, useEffect } from 'react';
 import { INFINITE_SCROLL_CONFIG } from '@/config/constants/infinite-scroll';
 
 interface UseInfiniteScrollOptions<T> {
-  queryKey: unknown[];
+  queryKey: readonly unknown[];
   queryFn: ({ pageParam }: { pageParam: number }) => Promise<T[]>;
   getNextPageParam?: (lastPage: T[], allPages: T[][]) => number | undefined;
   enabled?: boolean;

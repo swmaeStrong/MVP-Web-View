@@ -6,11 +6,12 @@ import {
   transformUsageLogToDaily,
 } from '@/utils/statisticsUtils';
 import { useQuery } from '@tanstack/react-query';
+import { usageStatisticsQueryKey, multiDateStatisticsQueryKey } from '@/config/constants/query-keys';
 
 // 특정 날짜의 사용 기록 조회 (userId 파라미터 추가)
 export const useUsageStatistics = (selectedDate: string, userId: string) => {
   return useQuery({
-    queryKey: ['usage-statistics', selectedDate, userId],
+    queryKey: usageStatisticsQueryKey(selectedDate, userId),
     queryFn: async () => {
       const usageData = await getPomodoroUsageLog(userId, selectedDate);
 
@@ -36,7 +37,7 @@ export const useUsageStatistics = (selectedDate: string, userId: string) => {
 // 여러 날짜의 데이터를 조회하는 훅 (userId 파라미터 추가)
 export const useMultiDateStatistics = (dates: string[], userId: string) => {
   return useQuery({
-    queryKey: ['multi-date-statistics', dates, userId],
+    queryKey: multiDateStatisticsQueryKey(dates, userId),
     queryFn: async () => {
       // 현재는 단일 API만 있어서 같은 데이터를 반환
       // 향후 날짜별 API가 추가되면 수정 필요
