@@ -51,7 +51,7 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
 
   return (
     <aside
-      className={`fixed top-0 left-0 h-full w-48 ${getThemeClass('component')} ${getThemeClass('border')} border-r z-40`}
+      className={`fixed top-0 left-0 h-full w-40 ${getThemeClass('component')} ${getThemeClass('border')} border-r z-40`}
     >
       <div className="p-4 h-full flex flex-col">
         {/* Groups Section */}
