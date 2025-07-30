@@ -1,12 +1,10 @@
 'use client';
 
 import { useTheme } from '@/hooks/useTheme';
-import { Card } from '@/shadcn/ui/card';
-import { cardSystem, spacing } from '@/styles/design-system';
-import { Activity, Calendar, ChevronLeft, Menu, Settings, TrendingUp, Users, Search, Plus } from 'lucide-react';
+import { spacing } from '@/styles/design-system';
+import { Plus, Search, Settings, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
 
 interface NavItem {
   name: string;
@@ -50,7 +48,7 @@ const GroupSidebar = () => {
 
   return (
     <aside
-      className={`fixed top-0 left-0 h-full w-64 ${getThemeClass('component')} ${getThemeClass('border')} border-r z-40 shadow-lg`}
+      className={`fixed top-0 left-0 h-full w-48 ${getThemeClass('component')} ${getThemeClass('border')} border-r z-40`}
     >
       <div className="p-4 h-full flex flex-col">
         {/* Teams Section */}
@@ -68,14 +66,14 @@ const GroupSidebar = () => {
                     href={`/group/team/${team.id}`}
                     className={`flex items-center justify-between px-4 py-2 rounded-md transition-colors ${
                       isTeamSelected
-                        ? `${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')} ring-2 ring-[#3F72AF]`
-                        : `${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')} hover:${getThemeTextColor('primary')}`
+                        ? `${getThemeClass('border')} text-white bg-[#3F72AF] ring-2 ring-[#3F72AF]`
+                        : `${getThemeTextColor('secondary')} hover:${getThemeClass('border')} hover:${getThemeTextColor('primary')}`
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-sm truncate">{team.name}</span>
                     </div>
-                    <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                    <span className={`text-xs ${isTeamSelected ? 'text-white' : getThemeTextColor('secondary')}`}>
                       {team.members}
                     </span>
                   </Link>
@@ -91,10 +89,10 @@ const GroupSidebar = () => {
                           <Link
                             key={item.href}
                             href={item.href}
-                            className={`flex items-center gap-3 px-3 py-1.5 rounded-md transition-colors ${
+                            className={`flex items-center gap-3 px-3 py-1.5 transition-colors ${
                               active
-                                ? `${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')} ring-1 ring-[#3F72AF]`
-                                : `${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')} hover:${getThemeTextColor('primary')}`
+                                ? `${getThemeTextColor('primary')} border-b-2 border-[#3F72AF]`
+                                : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
                             }`}
                           >
                             <Icon size={14} className="flex-shrink-0" />
@@ -122,8 +120,8 @@ const GroupSidebar = () => {
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors ${
                   active
-                    ? `${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')} ring-2 ring-[#3F72AF]`
-                    : `${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')} hover:${getThemeTextColor('primary')}`
+                    ? `text-white bg-[#3F72AF] ring-2 ring-[#3F72AF]`
+                    : `${getThemeTextColor('secondary')} hover:${getThemeClass('border')} hover:${getThemeTextColor('primary')}`
                 }`}
               >
                 <Icon size={20} className="flex-shrink-0" />
@@ -152,7 +150,7 @@ export default function GroupLayout({ children }: GroupLayoutProps) {
         <GroupSidebar />
         
         {/* Main Content */}
-        <div className="flex-1 ml-64">
+        <div className="flex-1 ml-48">
           <main className={`${spacing.inner.normal} transition-all duration-300`}>
             {children}
           </main>
