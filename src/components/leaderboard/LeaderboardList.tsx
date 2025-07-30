@@ -2,7 +2,7 @@
 
 import StateDisplay from '@/components/common/StateDisplay';
 import { LeaderboardListSkeleton } from '@/components/common/LeaderboardSkeleton';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { cn } from '@/shadcn/lib/utils';
 import { LEADERBOARD_CONFIG } from '@/config/constants/infinite-scroll';
 import { useCurrentUser } from '@/stores/userStore';

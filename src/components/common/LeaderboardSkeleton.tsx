@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { componentSizes, spacing } from '@/styles/design-system';
 
 export function MyRankBannerSkeleton() {

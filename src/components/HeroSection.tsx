@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/shadcn/ui/button';
 import { Badge } from '@/shadcn/ui/badge';
-// import { useDesignSystem } from '@/hooks/useDesignSystem'; // 제거됨 - 사용되지 않음
+// import { useDesignSystem } from '@/hooks/ui/useDesignSystem'; // 제거됨 - 사용되지 않음
 import { cardSystem, buttonSystem, badgeSystem, componentStates, spacing, layouts } from '@/styles/design-system';
 
 export default function HeroSection() {

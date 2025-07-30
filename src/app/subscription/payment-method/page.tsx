@@ -12,7 +12,7 @@ import {
   NICE_PAY_CHANNEL_KEY,
   PORTONE_STORE_ID,
 } from '@/config/api/url';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 
 // 타입 정의
 type PaymentProvider = 'KAKAOPAY' | 'NICEPAY';

@@ -2,8 +2,8 @@
 
 import { cn } from '@/shadcn/lib/utils';
 import { AlertTriangle, Inbox, RefreshCw } from 'lucide-react';
-import { useTheme } from '@/hooks/useTheme';
-import type { ComponentSize } from '@/hooks/useDesignSystem';
+import { useTheme } from '@/hooks/ui/useTheme';
+import type { ComponentSize } from '@/hooks/ui/useDesignSystem';
 import { cardSystem, buttonSystem, componentSizes, componentStates, spacing } from '@/styles/design-system';
 
 type StateType = 'error' | 'empty';

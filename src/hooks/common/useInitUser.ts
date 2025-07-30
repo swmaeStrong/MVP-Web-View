@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
-import { getUserInfo } from '../shared/api/get';
-import { useUserStore } from '../stores/userStore';
+import { getUserInfo } from '@/shared/api/get';
+import { useUserStore } from '@/stores/userStore';
 
 export const useInitUser = () => {
   const { setCurrentUser } = useUserStore();

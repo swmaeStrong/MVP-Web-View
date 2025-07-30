@@ -1,7 +1,7 @@
 'use client';
 
-import { useAvailableDates, useUsageStatistics } from '@/hooks/useStatistics';
-import { useTheme } from '@/hooks/useTheme';
+import { useAvailableDates, useUsageStatistics } from '@/hooks/data/useStatistics';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUser } from '@/stores/userStore';
 // namespace로 변경됨
 import { getDateString } from '@/utils/statisticsUtils';
@@ -16,7 +16,7 @@ import SessionCarousel from '@/components/statistics/CycleCarousel';
 import MonthlyStreak from '@/components/statistics/MonthlyStreak';
 import SessionTimelineView from '@/components/statistics/SessionTimelineView';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
-import { useInitUser } from '@/hooks/useInitUser';
+import { useInitUser } from '@/hooks/common/useInitUser';
 // generateMockCycles import 제거 - API 사용으로 대체됨
 import StateDisplay from '../../components/common/StateDisplay';
 import TotalTimeCard from '../../components/statistics/DateNavigationCard';

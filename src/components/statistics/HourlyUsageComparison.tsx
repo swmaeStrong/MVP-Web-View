@@ -1,7 +1,7 @@
 'use client';
 
-import { useHourlyUsage } from '@/hooks/useHourlyUsage';
-import { useTheme } from '@/hooks/useTheme';
+import { useHourlyUsage } from '@/hooks/data/useHourlyUsage';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import {
   ChartContainer,

@@ -1,7 +1,7 @@
 'use client';
 
-// import { useDesignSystem } from '@/hooks/useDesignSystem'; // 제거됨 - 사용되지 않음
-import { useTheme } from '@/hooks/useTheme';
+// import { useDesignSystem } from '@/hooks/ui/useDesignSystem'; // 제거됨 - 사용되지 않음
+import { useTheme } from '@/hooks/ui/useTheme';
 import { cn } from '@/shadcn/lib/utils';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';

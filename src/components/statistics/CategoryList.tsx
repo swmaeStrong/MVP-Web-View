@@ -3,8 +3,8 @@
 import { memo } from 'react';
 import { Card, CardContent } from '@/shadcn/ui/card';
 // namespace로 변경됨
-import { useTheme } from '@/hooks/useTheme';
-// import { useDesignSystem } from '@/hooks/useDesignSystem'; // 제거됨
+import { useTheme } from '@/hooks/ui/useTheme';
+// import { useDesignSystem } from '@/hooks/ui/useDesignSystem'; // 제거됨
 import { cardSystem, componentStates, spacing, layouts, buttonSystem } from '@/styles/design-system';
 import StateDisplay from '@/components/common/StateDisplay';
 import { getCategoryColor } from '@/utils/categories';
