@@ -93,77 +93,62 @@ export default function FindTeamPage() {
           <div className="grid grid-cols-12 gap-4">
             {/* Search Bar */}
             <div className="col-span-12 lg:col-span-6">
-              <div className="space-y-2">
-                <label className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                  Search Teams
-                </label>
-                <div className="relative">
-                  <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${getThemeTextColor('secondary')}`} />
-                  <Input
-                    type="text"
-                    placeholder="Search by name, description, or tags..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className={`pl-10 h-11 ${getThemeClass('component')} ${getThemeClass('border')} ${getThemeTextColor('primary')}`}
-                  />
-                </div>
+              <div className="relative">
+                <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${getThemeTextColor('secondary')}`} />
+                <Input
+                  type="text"
+                  placeholder="Search by name, description, or tags..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 h-11 !bg-white !border-gray-200 !text-gray-900 placeholder:!text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:!bg-white dark:!text-gray-900"
+                />
               </div>
             </div>
 
             {/* Filter Buttons */}
             <div className="col-span-12 lg:col-span-3">
-              <div className="space-y-2">
-                <label className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                  Team Type
-                </label>
-                <ToggleGroup type="single" value={filterType} onValueChange={(value) => value && setFilterType(value as 'all' | 'public' | 'private')} className="h-11 w-full">
-                  <ToggleGroupItem value="all" className="flex-1 px-3">
-                    All
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="public" className="flex-1 gap-1 px-2">
-                    <Globe className="h-3 w-3" />
-                    Public
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="private" className="flex-1 gap-1 px-2">
-                    <Lock className="h-3 w-3" />
-                    Private
-                  </ToggleGroupItem>
-                </ToggleGroup>
-              </div>
+              <ToggleGroup type="single" value={filterType} onValueChange={(value) => value && setFilterType(value as 'all' | 'public' | 'private')} className="h-11 w-full !bg-white border border-gray-200 rounded-md">
+                <ToggleGroupItem value="all" className="flex-1 px-3 !bg-white !text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:!bg-gray-50">
+                  All
+                </ToggleGroupItem>
+                <ToggleGroupItem value="public" className="flex-1 gap-1 px-2 !bg-white !text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:!bg-gray-50">
+                  <Globe className="h-3 w-3" />
+                  Public
+                </ToggleGroupItem>
+                <ToggleGroupItem value="private" className="flex-1 gap-1 px-2 !bg-white !text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:!bg-gray-50">
+                  <Lock className="h-3 w-3" />
+                  Private
+                </ToggleGroupItem>
+              </ToggleGroup>
             </div>
 
             {/* Sort Dropdown */}
             <div className="col-span-12 lg:col-span-3">
-              <div className="space-y-2">
-                <label className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                  Sort By
-                </label>
-                <Select value={sortBy} onValueChange={(value: 'members' | 'created' | 'name') => setSortBy(value)}>
-                  <SelectTrigger className={`h-11 ${getThemeClass('component')} ${getThemeClass('border')}`}>
-                    <SelectValue placeholder="Sort by..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="members">
-                      <div className="flex items-center gap-2">
-                        <Users className="h-4 w-4" />
-                        Most Members
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="created">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        Recently Created
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="name">
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4" />
-                        Name (A-Z)
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <Select value={sortBy} onValueChange={(value: 'members' | 'created' | 'name') => setSortBy(value)}>
+                <SelectTrigger className="h-11 !bg-white !border-gray-200 !text-gray-900 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:!bg-white dark:!border-gray-200 dark:!text-gray-900">
+                  <SelectValue placeholder="Sort by..." className="!text-gray-900" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="members">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4" />
+                      Most Members
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="created">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      Recently Created
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="name">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4" />
+                      Name (A-Z)
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardContent>
