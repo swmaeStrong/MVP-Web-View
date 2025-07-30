@@ -23,7 +23,7 @@ export default function GroundRules({ rules }: GroundRulesProps) {
         <Separator className="mb-4" />
         <div className="space-y-4">
           {rules.map((rule, index) => (
-            <div key={index} className={`flex items-start gap-3 p-3 rounded-md ${getThemeClass('componentSecondary')} hover:${getThemeClass('component')} transition-colors`}>
+            <div key={index} className={`flex items-start gap-3 p-3 rounded-md ${getThemeClass('componentSecondary')} hover:${getThemeClass('componentSecondary')} hover:opacity-80 transition-all duration-200`}>
               <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${getThemeClass('component')} ${getThemeTextColor('secondary')}`}>
                 {index + 1}
               </div>
