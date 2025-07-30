@@ -195,9 +195,19 @@ export default function TeamDetailPage() {
       <Card className={`${getCommonCardClass()} col-span-3 row-span-1`}>
         <CardContent className={spacing.inner.normal}>
           <div className="space-y-4">
-            <h1 className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-              {teamData.name}
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
+                {teamData.name}
+              </h1>
+              <div className="flex gap-2">
+                <span className={`px-2 py-1 text-xs font-medium rounded-full ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`}>
+                  #Frontend
+                </span>
+                <span className={`px-2 py-1 text-xs font-medium rounded-full ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`}>
+                  #React
+                </span>
+              </div>
+            </div>
             
             <div className="flex items-center space-x-3">
               <Avatar className="w-12 h-12">
