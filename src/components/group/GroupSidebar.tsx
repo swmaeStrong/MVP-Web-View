@@ -11,7 +11,7 @@ interface NavItem {
   icon: React.ElementType;
 }
 
-interface Team {
+interface Group {
   id: number;
   name: string;
   members: number;
@@ -19,20 +19,20 @@ interface Team {
 }
 
 interface GroupSidebarProps {
-  teams: Team[];
+  teams: Group[];
 }
 
 const navItems: NavItem[] = [
-  { name: 'Find Team', href: '/group/find', icon: Search },
-  { name: 'Create Team', href: '/group/create', icon: Plus },
+  { name: 'Find Group', href: '/group/find', icon: Search },
+  { name: 'Create Group', href: '/group/create', icon: Plus },
 ];
 
 export default function GroupSidebar({ teams }: GroupSidebarProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
   const pathname = usePathname();
 
-  // Get selected team ID from URL
-  const selectedTeamId = pathname.includes('/group/team/') 
+  // Get selected group ID from URL
+  const selectedGroupId = pathname.includes('/group/team/') 
     ? pathname.split('/group/team/')[1]?.split('/')[0] 
     : null;
 
@@ -43,10 +43,10 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
     return pathname === href || pathname.startsWith(href + '/');
   };
 
-  // Team submenu items
-  const teamSubMenuItems = [
-    { name: 'Main', href: `/group/team/${selectedTeamId}`, icon: TrendingUp },
-    { name: 'Settings', href: `/group/team/${selectedTeamId}/settings`, icon: Settings },
+  // Group submenu items
+  const groupSubMenuItems = [
+    { name: 'Main', href: `/group/team/${selectedGroupId}`, icon: TrendingUp },
+    { name: 'Settings', href: `/group/team/${selectedGroupId}/settings`, icon: Settings },
   ];
 
   return (
@@ -54,37 +54,37 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
       className={`fixed top-0 left-0 h-full w-48 ${getThemeClass('component')} ${getThemeClass('border')} border-r z-40`}
     >
       <div className="p-4 h-full flex flex-col">
-        {/* Teams Section */}
+        {/* Groups Section */}
         <div className="mb-6 pb-4 border-b border-gray-600">
           <div className={`text-xs font-semibold ${getThemeTextColor('secondary')} uppercase tracking-wider mb-3 px-4`}>
-            My Teams
+            My Groups
           </div>
           <div className="space-y-1">
-            {teams.map((team) => {
-              const isTeamSelected = selectedTeamId === team.id.toString();
+            {teams.map((group) => {
+              const isGroupSelected = selectedGroupId === group.id.toString();
               
               return (
-                <div key={team.id}>
+                <div key={group.id}>
                   <Link
-                    href={`/group/team/${team.id}`}
+                    href={`/group/team/${group.id}`}
                     className={`flex items-center justify-between px-4 py-2 rounded-md transition-colors ${
-                      isTeamSelected
+                      isGroupSelected
                         ? `text-white bg-[#3F72AF] ring-2 ring-[#3F72AF]`
                         : `${getThemeTextColor('secondary')} hover:${getThemeClass('border')} hover:${getThemeTextColor('primary')}`
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <span className="text-sm truncate">{team.name}</span>
+                      <span className="text-sm truncate">{group.name}</span>
                     </div>
-                    <span className={`text-xs ${isTeamSelected ? 'text-white' : getThemeTextColor('secondary')}`}>
-                      {team.members}
+                    <span className={`text-xs ${isGroupSelected ? 'text-white' : getThemeTextColor('secondary')}`}>
+                      {group.members}
                     </span>
                   </Link>
                   
-                  {/* Team Submenu - Show right below the selected team */}
-                  {isTeamSelected && (
+                  {/* Group Submenu - Show right below the selected group */}
+                  {isGroupSelected && (
                     <div className="ml-4 mt-1 space-y-1">
-                      {teamSubMenuItems.map((item) => {
+                      {groupSubMenuItems.map((item) => {
                         const Icon = item.icon;
                         const active = isActive(item.href);
                         

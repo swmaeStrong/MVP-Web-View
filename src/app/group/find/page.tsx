@@ -20,14 +20,14 @@ export default function FindTeamPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'public' | 'private'>('all');
   const [sortBy, setSortBy] = useState<'members' | 'created' | 'name'>('members');
-  const [selectedTeam, setSelectedTeam] = useState<typeof availableTeams[0] | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<typeof availableGroups[0] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inviteCode, setInviteCode] = useState('');
   const [isJoining, setIsJoining] = useState(false);
   const [joinError, setJoinError] = useState('');
 
-  // Mock data for available teams
-  const availableTeams = [
+  // Mock data for available groups
+  const availableGroups = [
     {
       id: 1,
       name: 'Frontend Developers',
@@ -72,15 +72,15 @@ export default function FindTeamPage() {
     },
   ];
 
-  const filteredTeams = availableTeams
-    .filter(team => {
-      const matchesSearch = team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        team.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        team.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredGroups = availableGroups
+    .filter(group => {
+      const matchesSearch = group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        group.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        group.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
       
       const matchesFilter = filterType === 'all' || 
-        (filterType === 'public' && team.isPublic) ||
-        (filterType === 'private' && !team.isPublic);
+        (filterType === 'public' && group.isPublic) ||
+        (filterType === 'private' && !group.isPublic);
       
       return matchesSearch && matchesFilter;
     })
@@ -97,40 +97,40 @@ export default function FindTeamPage() {
       }
     });
 
-  const handleViewDetail = (team: typeof availableTeams[0]) => {
-    setSelectedTeam(team);
+  const handleViewDetail = (group: typeof availableGroups[0]) => {
+    setSelectedGroup(group);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedTeam(null);
+    setSelectedGroup(null);
     setInviteCode('');
     setJoinError('');
     setIsJoining(false);
   };
 
-  const handleJoinTeam = async (team: typeof availableTeams[0]) => {
-    if (team.isPublic) {
-      // Public 팀의 경우 바로 가입 처리 후 팀 상세 페이지로 이동
+  const handleJoinGroup = async (group: typeof availableGroups[0]) => {
+    if (group.isPublic) {
+      // Public 그룹의 경우 바로 가입 처리 후 그룹 상세 페이지로 이동
       setIsJoining(true);
       try {
-        // 실제로는 API 호출로 팀 가입 처리
-        // await joinPublicTeam(team.id);
+        // 실제로는 API 호출로 그룹 가입 처리
+        // await joinPublicGroup(group.id);
         
         // Mock: 2초 대기 후 성공
         await new Promise(resolve => setTimeout(resolve, 2000));
         
         handleCloseModal();
-        router.push(`/group/team/${team.id}`);
+        router.push(`/group/team/${group.id}`);
       } catch (error) {
-        console.error('Failed to join team:', error);
-        setJoinError('팀 가입에 실패했습니다. 다시 시도해주세요.');
+        console.error('Failed to join group:', error);
+        setJoinError('그룹 가입에 실패했습니다. 다시 시도해주세요.');
       } finally {
         setIsJoining(false);
       }
     } else {
-      // Private 팀의 경우 초대 코드 확인 후 가입 처리
+      // Private 그룹의 경우 초대 코드 확인 후 가입 처리
       if (!inviteCode.trim()) {
         setJoinError('초대 코드를 입력해주세요.');
         return;
@@ -140,8 +140,8 @@ export default function FindTeamPage() {
       setJoinError('');
       
       try {
-        // 실제로는 API 호출로 초대 코드 확인 및 팀 가입 처리
-        // await joinPrivateTeam(team.id, inviteCode);
+        // 실제로는 API 호출로 초대 코드 확인 및 그룹 가입 처리
+        // await joinPrivateGroup(group.id, inviteCode);
         
         // Mock: 2초 대기 후 성공 (간단한 검증)
         await new Promise(resolve => setTimeout(resolve, 2000));
@@ -152,9 +152,9 @@ export default function FindTeamPage() {
         }
         
         handleCloseModal();
-        router.push(`/group/team/${team.id}`);
+        router.push(`/group/team/${group.id}`);
       } catch (error) {
-        console.error('Failed to join team:', error);
+        console.error('Failed to join group:', error);
         setJoinError('유효하지 않은 초대 코드입니다.');
       } finally {
         setIsJoining(false);
@@ -168,10 +168,10 @@ export default function FindTeamPage() {
       {/* Header */}
       <div className="space-y-4">
         <div className={`text-3xl font-bold ${getThemeTextColor('primary')}`}>
-          Find Team
+          Find Group
         </div>
         <p className={`text-lg ${getThemeTextColor('secondary')}`}>
-          Discover and join teams that match your interests
+          Discover and join groups that match your interests
         </p>
       </div>
 
@@ -185,7 +185,7 @@ export default function FindTeamPage() {
                 <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${getThemeTextColor('secondary')}`} />
                 <Input
                   type="text"
-                  placeholder="Search by name, description, or tags..."
+                  placeholder="Search groups by name, description, or tags..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 h-11 !bg-white !border-gray-200 !text-gray-900 placeholder:!text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:!bg-white dark:!text-gray-900"
@@ -244,29 +244,29 @@ export default function FindTeamPage() {
 
       {/* Results */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredTeams.map((team) => (
-            <Card key={team.id} className={`${getCommonCardClass()} hover:ring-2 hover:ring-[#3F72AF]/20 transition-all h-fit`}>
+          {filteredGroups.map((group) => (
+            <Card key={group.id} className={`${getCommonCardClass()} hover:ring-2 hover:ring-[#3F72AF]/20 transition-all h-fit`}>
               <CardContent className="p-6">
                 <div className="space-y-4">
-                  {/* Team Header */}
+                  {/* Group Header */}
                   <div className="flex items-center gap-4">
                     <Avatar className="w-12 h-12 flex-shrink-0">
                       <AvatarFallback className={`text-lg font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                        {team.name.charAt(0)}
+                        {group.name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                     
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <div className={`text-lg font-bold ${getThemeTextColor('primary')} truncate`}>
-                          {team.name}
+                          {group.name}
                         </div>
-                        <Badge variant={team.isPublic ? "default" : "secondary"} className={`gap-1 flex-shrink-0 ${
-                          team.isPublic 
+                        <Badge variant={group.isPublic ? "default" : "secondary"} className={`gap-1 flex-shrink-0 ${
+                          group.isPublic 
                             ? 'bg-green-100 text-green-700 hover:bg-green-100'
                             : 'bg-amber-100 text-amber-700 hover:bg-amber-100'
                         }`}>
-                          {team.isPublic ? (
+                          {group.isPublic ? (
                             <>
                               <Globe className="h-3 w-3" />
                               Public
@@ -284,7 +284,7 @@ export default function FindTeamPage() {
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-1">
                           <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                            {team.members}
+                            {group.members}
                           </div>
                           <div className={`text-xs ${getThemeTextColor('secondary')}`}>
                             members
@@ -294,7 +294,7 @@ export default function FindTeamPage() {
                           •
                         </div>
                         <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                          {new Date(team.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          {new Date(group.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </div>
                       </div>
                     </div>
@@ -302,12 +302,12 @@ export default function FindTeamPage() {
                   
                   {/* Description */}
                   <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed line-clamp-2`}>
-                    {team.description}
+                    {group.description}
                   </p>
                   
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2">
-                    {team.tags.map((tag) => (
+                    {group.tags.map((tag) => (
                       <Badge 
                         key={tag} 
                         variant="outline" 
@@ -323,7 +323,7 @@ export default function FindTeamPage() {
                   <Button
                     className="w-full bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
                     size="sm"
-                    onClick={() => handleViewDetail(team)}
+                    onClick={() => handleViewDetail(group)}
                   >
                     See in Detail
                   </Button>
@@ -332,7 +332,7 @@ export default function FindTeamPage() {
             </Card>
           ))}
 
-      {filteredTeams.length === 0 && (
+      {filteredGroups.length === 0 && (
         <div className="col-span-full">
           <Card className={getCommonCardClass()}>
             <CardContent className={`${spacing.inner.normal} text-center py-12`}>
@@ -340,13 +340,13 @@ export default function FindTeamPage() {
                 <Search className={`h-10 w-10 ${getThemeTextColor('secondary')}`} />
               </div>
               <div className={`text-xl font-bold mb-3 ${getThemeTextColor('primary')}`}>
-                No teams found
+                No groups found
               </div>
               <p className={`text-base ${getThemeTextColor('secondary')} mb-6 max-w-md mx-auto`}>
-                We couldn't find any teams matching your search criteria. Try adjusting your filters or search terms.
+                We couldn't find any groups matching your search criteria. Try adjusting your filters or search terms.
               </p>
               <Button className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90">
-                Create New Team
+                Create New Group
               </Button>
             </CardContent>
           </Card>
@@ -354,39 +354,39 @@ export default function FindTeamPage() {
       )}
       </div>
 
-      {/* Team Detail Modal */}
+      {/* Group Detail Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className={`max-w-2xl ${getCommonCardClass()}`}>
-          {selectedTeam && (
+          {selectedGroup && (
             <>
               <DialogHeader className="pb-4">
                 <div className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-                  Team Details
+                  Group Details
                 </div>
               </DialogHeader>
               
               <div className="space-y-4">
-                {/* Team Header */}
+                {/* Group Header */}
                 <Card className={getCommonCardClass()}>
                   <CardContent className="p-6">
                     <div className="flex items-center gap-4 mb-4">
                       <Avatar className="w-16 h-16">
                         <AvatarFallback className={`text-xl font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                          {selectedTeam.name.charAt(0)}
+                          {selectedGroup.name.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                       
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <div className={`text-xl font-bold ${getThemeTextColor('primary')}`}>
-                            {selectedTeam.name}
+                            {selectedGroup.name}
                           </div>
-                          <Badge variant={selectedTeam.isPublic ? "default" : "secondary"} className={`gap-1 ${
-                            selectedTeam.isPublic 
+                          <Badge variant={selectedGroup.isPublic ? "default" : "secondary"} className={`gap-1 ${
+                            selectedGroup.isPublic 
                               ? 'bg-green-100 text-green-700 hover:bg-green-100'
                               : 'bg-amber-100 text-amber-700 hover:bg-amber-100'
                           }`}>
-                            {selectedTeam.isPublic ? (
+                            {selectedGroup.isPublic ? (
                               <>
                                 <Globe className="h-3 w-3" />
                                 Public
@@ -404,7 +404,7 @@ export default function FindTeamPage() {
                           <div className="flex items-center gap-1">
                             <Users className="h-4 w-4" />
                             <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                              {selectedTeam.members}
+                              {selectedGroup.members}
                             </div>
                             <div className={`text-xs ${getThemeTextColor('secondary')}`}>
                               members
@@ -414,7 +414,7 @@ export default function FindTeamPage() {
                             •
                           </div>
                           <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            Created {new Date(selectedTeam.createdAt).toLocaleDateString('en-US', { 
+                            Created {new Date(selectedGroup.createdAt).toLocaleDateString('en-US', { 
                               year: 'numeric', 
                               month: 'long', 
                               day: 'numeric' 
@@ -424,30 +424,30 @@ export default function FindTeamPage() {
                       </div>
                     </div>
 
-                    {/* Team Description */}
+                    {/* Group Description */}
                     <div className="mb-4">
                       <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed`}>
-                        {selectedTeam.description}
+                        {selectedGroup.description}
                       </p>
                     </div>
 
-                    {/* Team Leader */}
+                    {/* Group Leader */}
                     <div className="mb-4">
                       <div className={`text-sm font-medium ${getThemeTextColor('primary')} mb-2`}>
-                        Team Leader
+                        Group Leader
                       </div>
                       <div className="flex items-center gap-3">
                         <Avatar className="w-8 h-8">
                           <AvatarFallback className={`text-sm font-medium ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                            {selectedTeam.leader.avatar}
+                            {selectedGroup.leader.avatar}
                           </AvatarFallback>
                         </Avatar>
                         <div>
                           <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                            {selectedTeam.leader.name}
+                            {selectedGroup.leader.name}
                           </div>
                           <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            @{selectedTeam.leader.nickname}
+                            @{selectedGroup.leader.nickname}
                           </div>
                         </div>
                       </div>
@@ -456,7 +456,7 @@ export default function FindTeamPage() {
                     {/* Tags */}
                     <div>
                       <div className="flex flex-wrap gap-2">
-                        {selectedTeam.tags.map((tag) => (
+                        {selectedGroup.tags.map((tag) => (
                           <Badge 
                             key={tag} 
                             variant="outline" 
@@ -469,8 +469,8 @@ export default function FindTeamPage() {
                       </div>
                     </div>
 
-                    {/* Private Team Invite Code Section */}
-                    {!selectedTeam.isPublic && (
+                    {/* Private Group Invite Code Section */}
+                    {!selectedGroup.isPublic && (
                       <div className="mt-4 pt-4 border-t border-gray-200">
                         <div className={`text-sm font-medium ${getThemeTextColor('primary')} mb-2`}>
                           Invite Code Required
@@ -491,7 +491,7 @@ export default function FindTeamPage() {
                             <p className="text-red-500 text-xs">{joinError}</p>
                           )}
                           <p className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            💡 This is a private team. You need an invite code from a team member to join.
+                            💡 This is a private group. You need an invite code from a group member to join.
                           </p>
                         </div>
                       </div>
@@ -511,10 +511,10 @@ export default function FindTeamPage() {
                   </Button>
                   <Button
                     className="flex-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
-                    onClick={() => handleJoinTeam(selectedTeam)}
-                    disabled={isJoining || (!selectedTeam.isPublic && !inviteCode.trim())}
+                    onClick={() => handleJoinGroup(selectedGroup)}
+                    disabled={isJoining || (!selectedGroup.isPublic && !inviteCode.trim())}
                   >
-                    {isJoining ? 'Joining...' : 'Join Team'}
+                    {isJoining ? 'Joining...' : 'Join Group'}
                   </Button>
                 </div>
               </div>
