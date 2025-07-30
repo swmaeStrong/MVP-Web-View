@@ -4,8 +4,9 @@ import { useTheme } from '@/hooks/useTheme';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
+import { Separator } from '@/shadcn/ui/separator';
 import { spacing } from '@/styles/design-system';
-import { CheckIcon, Edit, Target, Trophy } from 'lucide-react';
+import { CheckIcon, Edit, Plus, Target, Trophy } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState, useCallback, useMemo } from 'react';
 import DateNavigation from '@/components/common/DateNavigation';
@@ -16,8 +17,28 @@ export default function TeamDetailPage() {
   const params = useParams();
   const teamId = params.id;
 
-  const [todayGoal, setTodayGoal] = useState('Complete React refactoring task');
+  const [todayGoals] = useState([
+    {
+      id: 1,
+      title: 'Complete React refactoring task',
+      achieved: ['John Doe', 'Sarah Wilson'],
+      notAchieved: ['Mike Johnson', 'Jane Smith', 'Tom Brown', 'Alice Kim']
+    },
+    {
+      id: 2,
+      title: 'Review team code submissions', 
+      achieved: ['John Doe', 'Mike Johnson', 'Jane Smith'],
+      notAchieved: ['Sarah Wilson', 'Tom Brown', 'Alice Kim']
+    },
+    {
+      id: 3,
+      title: 'Update project documentation',
+      achieved: ['Sarah Wilson', 'Tom Brown'],
+      notAchieved: ['John Doe', 'Mike Johnson', 'Jane Smith', 'Alice Kim']
+    }
+  ]);
   const [isEditingGoal, setIsEditingGoal] = useState(false);
+  const [newGoal, setNewGoal] = useState('');
   const [selectedPeriod, setSelectedPeriod] = useState<'daily' | 'weekly'>('daily');
   const [selectedDate, setSelectedDate] = useState(getKSTDateString());
 
@@ -54,9 +75,14 @@ export default function TeamDetailPage() {
     ]
   };
 
+  const getAvatarInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('');
+  };
+
   const handleGoalSave = () => {
+    setNewGoal('');
     setIsEditingGoal(false);
-    // Save goal logic here
+    // TODO: API로 새 목표 추가 로직 구현
   };
 
   const handlePreviousDate = useCallback(() => {
@@ -275,33 +301,45 @@ export default function TeamDetailPage() {
 
       {/* 우측 하단 - 오늘의 목표 설정 (2/5) */}
       <Card className={`${getCommonCardClass()} col-span-2 row-span-1`}>
-        <CardHeader>
-          <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')} flex items-center gap-2`}>
-            <Target className="h-5 w-5" />
+        <CardHeader className="flex flex-row items-center justify-between">
+          <h3 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
             Today's Goal
           </h3>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setIsEditingGoal(true)}
+            className={`h-8 w-8 p-0 ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')}`}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
         </CardHeader>
         <CardContent className={spacing.inner.normal}>
           <div className="space-y-4">
             {isEditingGoal ? (
               <div className="space-y-3">
-                <textarea
-                  value={todayGoal}
-                  onChange={(e) => setTodayGoal(e.target.value)}
-                  className={`w-full px-3 py-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} focus:outline-none focus:ring-2 focus:ring-[#3F72AF] resize-none`}
-                  rows={3}
-                  placeholder="Enter today's team goal..."
+                <input
+                  type="text"
+                  value={newGoal}
+                  onChange={(e) => setNewGoal(e.target.value)}
+                  className={`w-full px-3 py-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('component')} ${getThemeTextColor('primary')} focus:outline-none focus:ring-2 focus:ring-[#3F72AF]`}
+                  placeholder="Enter a new goal..."
+                  autoFocus
                 />
                 <div className="flex gap-2">
                   <Button
                     onClick={handleGoalSave}
+                    disabled={!newGoal.trim()}
                     className={`${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')} hover:${getThemeClass('component')}`}
                   >
-                    Save
+                    Add Goal
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => setIsEditingGoal(false)}
+                    onClick={() => {
+                      setIsEditingGoal(false);
+                      setNewGoal('');
+                    }}
                     className={`${getThemeClass('component')} ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
                   >
                     Cancel
@@ -309,20 +347,65 @@ export default function TeamDetailPage() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-3">
-                <div className={`p-4 rounded-lg ${getThemeClass('componentSecondary')} min-h-[80px] flex items-center`}>
-                  <p className={`text-lg ${getThemeTextColor('primary')}`}>
-                    {todayGoal}
-                  </p>
-                </div>
-                <Button
-                  onClick={() => setIsEditingGoal(true)}
-                  variant="outline"
-                  className={`${getThemeClass('component')} ${getThemeClass('border')} ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')}`}
-                >
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Goal
-                </Button>
+              <div className="space-y-4">
+                {todayGoals.map((goal, index) => (
+                  <div key={goal.id} className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${getThemeClass('component')} ${getThemeTextColor('secondary')}`}>
+                        {index + 1}
+                      </div>
+                      <h4 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                        {goal.title}
+                      </h4>
+                    </div>
+                    
+                    {/* 달성한 사람들 */}
+                    <div className="mb-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className={`text-xs font-medium ${getThemeTextColor('secondary')}`}>
+                          Achieved ({goal.achieved.length})
+                        </span>
+                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {goal.achieved.map((name, i) => (
+                          <div key={i} className="relative">
+                            <Avatar className="w-6 h-6 ring-1 ring-green-500">
+                              <AvatarImage src="" />
+                              <AvatarFallback className={`text-[8px] font-semibold bg-green-100 text-green-700`}>
+                                {getAvatarInitials(name)}
+                              </AvatarFallback>
+                            </Avatar>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <Separator className="my-3" />
+
+                    {/* 달성하지 못한 사람들 */}
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className={`text-xs font-medium ${getThemeTextColor('secondary')}`}>
+                          Not Achieved ({goal.notAchieved.length})
+                        </span>
+                        <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {goal.notAchieved.map((name, i) => (
+                          <div key={i} className="relative">
+                            <Avatar className="w-6 h-6 ring-1 ring-gray-300">
+                              <AvatarImage src="" />
+                              <AvatarFallback className={`text-[8px] font-semibold bg-gray-100 text-gray-600`}>
+                                {getAvatarInitials(name)}
+                              </AvatarFallback>
+                            </Avatar>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
