@@ -99,7 +99,7 @@ export default function TodayGoals({ goals }: TodayGoalsProps) {
 
   return (
     <Card className={`${getCommonCardClass()} col-span-2 row-span-1`}>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-row items-center justify-center relative">
         <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
           Today's Goal
         </div>
@@ -107,7 +107,7 @@ export default function TodayGoals({ goals }: TodayGoalsProps) {
           size="sm"
           variant="ghost"
           onClick={() => setIsEditingGoal(true)}
-          className={`h-8 w-8 p-0 ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')}`}
+          className={`absolute right-0 h-8 w-8 p-0 ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')}`}
         >
           <Plus className="h-4 w-4" />
         </Button>
