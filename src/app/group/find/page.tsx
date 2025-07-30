@@ -164,14 +164,13 @@ export default function FindTeamPage() {
 
 
   return (
-    <div className="space-y-8 p-6">
-
+    <div className="space-y-6 px-6 py-6 max-w-7xl mx-auto">
       {/* Search and Filter Section */}
       <Card className={getCommonCardClass()}>
         <CardContent className="p-6">
-          <div className="grid grid-cols-12 gap-4">
+          <div className="space-y-4">
             {/* Search Bar */}
-            <div className="col-span-12 lg:col-span-6">
+            <div className="w-full">
               <div className="relative">
                 <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${getThemeTextColor('secondary')}`} />
                 <Input
@@ -179,62 +178,65 @@ export default function FindTeamPage() {
                   placeholder="Search groups by name, description, or tags..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-11 !bg-white !border-gray-200 !text-gray-900 placeholder:!text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:!bg-white dark:!text-gray-900"
+                  className="pl-10 h-11 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900"
                 />
               </div>
             </div>
 
-            {/* Filter Buttons */}
-            <div className="col-span-12 lg:col-span-3">
-              <ToggleGroup type="single" value={filterType} onValueChange={(value) => value && setFilterType(value as 'all' | 'public' | 'private')} className="h-11 w-full !bg-white border border-gray-200 rounded-md">
-                <ToggleGroupItem value="all" className="flex-1 px-3 !bg-white !text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:!bg-gray-50">
-                  All
-                </ToggleGroupItem>
-                <ToggleGroupItem value="public" className="flex-1 gap-1 px-2 !bg-white !text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:!bg-gray-50">
-                  <Globe className="h-3 w-3" />
-                  Public
-                </ToggleGroupItem>
-                <ToggleGroupItem value="private" className="flex-1 gap-1 px-2 !bg-white !text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:!bg-gray-50">
-                  <Lock className="h-3 w-3" />
-                  Private
-                </ToggleGroupItem>
-              </ToggleGroup>
-            </div>
+            {/* Filter and Sort Controls */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              {/* Filter Buttons */}
+              <div className="flex-1">
+                <ToggleGroup type="single" value={filterType} onValueChange={(value) => value && setFilterType(value as 'all' | 'public' | 'private')} className="h-11 w-full bg-white border border-gray-200 rounded-md dark:bg-gray-50 dark:border-gray-300">
+                  <ToggleGroupItem value="all" className="flex-1 px-3 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-100">
+                    All
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="public" className="flex-1 gap-1 px-2 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-100">
+                    <Globe className="h-3 w-3" />
+                    Public
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="private" className="flex-1 gap-1 px-2 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-100">
+                    <Lock className="h-3 w-3" />
+                    Private
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </div>
 
-            {/* Sort Dropdown */}
-            <div className="col-span-12 lg:col-span-3">
-              <Select value={sortBy} onValueChange={(value: 'members' | 'created' | 'name') => setSortBy(value)}>
-                <SelectTrigger className="h-11 !bg-white !border-gray-200 !text-gray-900 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:!bg-white dark:!border-gray-200 dark:!text-gray-900">
-                  <SelectValue placeholder="Sort by..." className="!text-gray-900" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="members">
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4" />
-                      Most Members
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="created">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      Recently Created
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="name">
-                    <div className="flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4" />
-                      Name (A-Z)
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+              {/* Sort Dropdown */}
+              <div className="sm:w-64">
+                <Select value={sortBy} onValueChange={(value: 'members' | 'created' | 'name') => setSortBy(value)}>
+                  <SelectTrigger className="h-11 bg-white border-gray-200 text-gray-900 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900">
+                    <SelectValue placeholder="Sort by..." className="text-gray-900" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="members">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        Most Members
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="created">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        Recently Created
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="name">
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="h-4 w-4" />
+                        Name (A-Z)
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Results */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredGroups.map((group) => (
             <Card key={group.id} className={`${getCommonCardClass()} hover:ring-2 hover:ring-[#3F72AF]/20 transition-all h-fit`}>
               <CardContent className="p-6">
@@ -475,7 +477,7 @@ export default function FindTeamPage() {
                               setInviteCode(e.target.value);
                               setJoinError('');
                             }}
-                            className="text-center font-mono tracking-wider !bg-white !border-gray-200 !text-gray-900 placeholder:!text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:!bg-white dark:!text-gray-900"
+                            className="text-center font-mono tracking-wider bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900"
                             disabled={isJoining}
                           />
                           {joinError && (
@@ -494,7 +496,7 @@ export default function FindTeamPage() {
                 <div className="flex gap-3 pt-2">
                   <Button
                     variant="outline"
-                    className="flex-1 !bg-white !border-gray-200 !text-gray-900 hover:!bg-gray-50 disabled:!opacity-50"
+                    className="flex-1 bg-white border-gray-200 text-gray-900 hover:bg-gray-50 disabled:opacity-50 dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900 dark:hover:bg-gray-100"
                     onClick={handleCloseModal}
                     disabled={isJoining}
                   >
