@@ -312,15 +312,6 @@ export default function TeamDetailPage() {
           <div className="grid grid-cols-3 gap-4">
             {teamData.leaderboard.map((member) => (
               <div key={member.rank} className={`p-4 rounded-md ${getThemeClass('componentSecondary')} text-center relative`}>
-                {/* 순위 배지 */}
-                <div className={`absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                  member.rank === 1 ? 'bg-yellow-500 text-black' :
-                  member.rank === 2 ? 'bg-gray-400 text-white' :
-                  member.rank === 3 ? 'bg-orange-600 text-white' :
-                  `${getThemeClass('component')} ${getThemeTextColor('secondary')}`
-                }`}>
-                  {member.rank}
-                </div>
                 
                 {/* 아바타 */}
                 <div className="relative w-fit mx-auto mb-3">
