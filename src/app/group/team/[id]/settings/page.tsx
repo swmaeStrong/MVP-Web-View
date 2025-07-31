@@ -18,6 +18,10 @@ import * as z from 'zod';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
 import StateDisplay from '@/components/common/StateDisplay';
 import { useCurrentUser } from '@/stores/userStore';
+import { updateGroup } from '@/shared/api/patch';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { groupDetailQueryKey } from '@/config/constants/query-keys';
+import toast from 'react-hot-toast';
 
 const formSchema = z.object({
   name: z.string().min(3, 'Group name must be at least 3 characters').max(50, 'Group name must be less than 50 characters'),
@@ -32,6 +36,7 @@ export default function GroupSettingsPage() {
   const router = useRouter();
   const params = useParams();
   const currentUser = useCurrentUser();
+  const queryClient = useQueryClient();
   
   const groupId = Array.isArray(params.id) ? parseInt(params.id[0], 10) : parseInt(params.id as string, 10);
 
@@ -43,6 +48,22 @@ export default function GroupSettingsPage() {
 
   // 권한 확인 - 그룹장만 접근 가능
   const isGroupOwner = groupDetail && currentUser && groupDetail.owner.userId === currentUser.id;
+
+  // 그룹 정보 업데이트 mutation
+  const updateGroupMutation = useMutation({
+    mutationFn: (request: Group.UpdateGroupApiRequest) => updateGroup(groupId, request),
+    onSuccess: () => {
+      // 성공 시 그룹 상세 정보 다시 조회
+      queryClient.invalidateQueries({
+        queryKey: groupDetailQueryKey(groupId),
+      });
+      toast.success('그룹 정보가 성공적으로 업데이트되었습니다.');
+    },
+    onError: (error) => {
+      console.error('Failed to update group:', error);
+      toast.error('그룹 정보 업데이트에 실패했습니다.');
+    },
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -87,14 +108,23 @@ export default function GroupSettingsPage() {
 
   // Form submit handler
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // TODO: API 연동 - 그룹 정보 업데이트
-    console.log('Updating group:', values);
-    
-    // Mock: 2초 대기 후 성공
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // 성공 시 그룹 메인 페이지로 이동
-    router.push(`/group/team/${groupId}`);
+    if (!groupDetail) return;
+
+    const request: Group.UpdateGroupApiRequest = {
+      name: values.name,
+      description: values.description,
+      groundRule: values.groundRule,
+      tags: values.tags,
+      isPublic: values.isPublic === 'public',
+    };
+
+    try {
+      await updateGroupMutation.mutateAsync(request);
+      // 성공 시 그룹 메인 페이지로 이동
+      router.push(`/group/team/${groupId}`);
+    } catch (error) {
+      // 에러는 mutation에서 이미 toast로 표시됨
+    }
   };
 
   // 그룹 삭제 핸들러
@@ -363,10 +393,10 @@ export default function GroupSettingsPage() {
                 <Button
                   type="submit"
                   className="flex-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors gap-2"
-                  disabled={form.formState.isSubmitting}
+                  disabled={form.formState.isSubmitting || updateGroupMutation.isPending}
                 >
                   <Save className="h-4 w-4" />
-                  {form.formState.isSubmitting ? '저장 중...' : '변경사항 저장'}
+                  {(form.formState.isSubmitting || updateGroupMutation.isPending) ? '저장 중...' : '변경사항 저장'}
                 </Button>
               </div>
             </form>

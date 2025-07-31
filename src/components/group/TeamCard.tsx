@@ -2,8 +2,12 @@
 
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
+import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
+import { Textarea } from '@/shadcn/ui/textarea';
 import { spacing } from '@/styles/design-system';
+import { Check, Edit3, X } from 'lucide-react';
+import { useState } from 'react';
 
 interface TeamCardProps {
   teamName: string;
@@ -13,10 +17,38 @@ interface TeamCardProps {
     avatar: string;
   };
   tags?: string[];
+  isOwner?: boolean;
+  onDescriptionUpdate?: (newDescription: string) => Promise<void>;
 }
 
-export default function TeamCard({ teamName, description, leader, tags = [] }: TeamCardProps) {
+export default function TeamCard({ teamName, description, leader, tags = [], isOwner = false, onDescriptionUpdate }: TeamCardProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [editedDescription, setEditedDescription] = useState(description);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSaveDescription = async () => {
+    if (!onDescriptionUpdate || editedDescription === description) {
+      setIsEditingDescription(false);
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      await onDescriptionUpdate(editedDescription);
+      setIsEditingDescription(false);
+    } catch (error) {
+      console.error('Failed to update description:', error);
+      setEditedDescription(description); // 실패 시 원래 값으로 되돌림
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditedDescription(description);
+    setIsEditingDescription(false);
+  };
 
   return (
     <Card className={`${getCommonCardClass()} col-span-3 row-span-1`}>
@@ -57,10 +89,54 @@ export default function TeamCard({ teamName, description, leader, tags = [] }: T
             </div>
           </div>
           
-          <div className={`mt-4 p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
-            <p className={`text-sm ${getThemeTextColor('secondary')}`}>
-              {description}
-            </p>
+          <div className={`mt-4 p-3 rounded-lg ${getThemeClass('componentSecondary')} relative`}>
+            {isEditingDescription ? (
+              <div className="space-y-2">
+                <Textarea
+                  value={editedDescription}
+                  onChange={(e) => setEditedDescription(e.target.value)}
+                  className="min-h-[80px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900"
+                  placeholder="그룹 설명을 입력하세요..."
+                />
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleCancelEdit}
+                    disabled={isSaving}
+                    className="gap-1"
+                  >
+                    <X className="h-3 w-3" />
+                    취소
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleSaveDescription}
+                    disabled={isSaving || editedDescription.trim().length < 10}
+                    className="gap-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90"
+                  >
+                    <Check className="h-3 w-3" />
+                    {isSaving ? '저장 중...' : '저장'}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <p className={`text-sm ${getThemeTextColor('secondary')}`}>
+                  {description}
+                </p>
+                {isOwner && onDescriptionUpdate && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setIsEditingDescription(true)}
+                    className={`absolute top-2 right-2 h-6 w-6 p-0 rounded-md transition-all duration-200 ${getThemeTextColor('secondary')} hover:bg-gray-100 hover:${getThemeTextColor('primary')} dark:hover:bg-gray-700`}
+                  >
+                    <Edit3 className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+              </>
+            )}
           </div>
         </div>
       </CardContent>
