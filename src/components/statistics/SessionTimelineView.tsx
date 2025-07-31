@@ -527,7 +527,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
           <div className={`space-y-4 ${selectedSessionData ? 'min-h-96' : ''}`}>
             
             {selectedSessionData ? (
-              <div className={`p-4 rounded-lg border ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
+              <div className={`p-4 rounded-lg ${getThemeClass('componentSecondary')}`}>
                 
                 {/* Session Header */}
                 <div className="flex items-center justify-between mb-4">
@@ -538,7 +538,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                       </h4>
                     </div>
                     <p className={`text-sm ${getThemeTextColor('secondary')}`}>
-                      {formatTimeRange(selectedSessionData.timestamp, selectedSessionData.duration)}
+                      {selectedSessionData.startTime} • {formatTime(selectedSessionData.duration)}
                     </p>
                   </div>
                   <div 
