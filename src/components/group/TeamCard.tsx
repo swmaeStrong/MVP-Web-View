@@ -12,9 +12,10 @@ interface TeamCardProps {
     name: string;
     avatar: string;
   };
+  tags?: string[];
 }
 
-export default function TeamCard({ teamName, description, leader }: TeamCardProps) {
+export default function TeamCard({ teamName, description, leader, tags = [] }: TeamCardProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
 
   return (
@@ -25,14 +26,18 @@ export default function TeamCard({ teamName, description, leader }: TeamCardProp
             <div className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
               {teamName}
             </div>
-            <div className="flex gap-2">
-              <span className={`px-2 py-1 text-xs font-medium rounded-full ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`}>
-                #Frontend
-              </span>
-              <span className={`px-2 py-1 text-xs font-medium rounded-full ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`}>
-                #React
-              </span>
-            </div>
+            {tags.length > 0 && (
+              <div className="flex gap-2 flex-wrap">
+                {tags.map((tag, index) => (
+                  <span 
+                    key={index}
+                    className={`px-2 py-1 text-xs font-medium rounded-full ${getThemeClass('componentSecondary')} ${getThemeTextColor('secondary')}`}
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
           
           <div className="flex items-center space-x-3">
