@@ -17,9 +17,9 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { createGroup } from '@/shared/api/post';
 import { validateGroupName } from '@/shared/api/get';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@/hooks/ui/useDebounce';
-import { groupNameCheckQueryKey } from '@/config/constants/query-keys';
+import { groupNameCheckQueryKey, myGroupsQueryKey } from '@/config/constants/query-keys';
 import { useToast } from '@/hooks/ui/useToast';
 
 const formSchema = z.object({
@@ -34,6 +34,7 @@ export default function CreateGroupPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const router = useRouter();
   const { success, error, promise } = useToast();
+  const queryClient = useQueryClient();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -111,6 +112,11 @@ export default function CreateGroupPage() {
       },
       { id: 'create-group' }
     ).then(() => {
+      // 성공 시 내 그룹 목록을 무효화하고 다시 가져오기
+      queryClient.invalidateQueries({
+        queryKey: myGroupsQueryKey(),
+      });
+      
       // 성공 시 그룹 찾기 페이지로 이동
       setTimeout(() => {
         router.push('/group/find');
