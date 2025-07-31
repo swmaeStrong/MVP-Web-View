@@ -109,3 +109,16 @@ export const getSessionDetail = (session: number, date: string = getKSTDateStrin
   parseApi<Session.SessionDetailApiResponse[]>(
     API.get(`/usage-log/pomodoro/details?session=${session}&date=${date}`)
   );
+
+
+// 그룹 조회
+export const getMyGroups = () =>
+  parseApi<Group.GroupApiResponse[]>(
+    API.get(`/group/my`)
+  );
+
+// 그룹 상세 조회
+export const getGroupDetail = (groupId: number) =>
+  parseApi<Group.GroupDetailApiResponse>(
+    API.get(`/group/${groupId}`)
+  );
