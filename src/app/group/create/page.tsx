@@ -20,6 +20,7 @@ import { validateGroupName } from '@/shared/api/get';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useDebounce } from '@/hooks/ui/useDebounce';
 import { groupNameCheckQueryKey } from '@/config/constants/query-keys';
+import { useToast } from '@/hooks/ui/useToast';
 
 const formSchema = z.object({
   groupName: z.string().min(3, 'Group name must be at least 3 characters').max(50, 'Group name must be less than 50 characters'),
@@ -32,6 +33,7 @@ const formSchema = z.object({
 export default function CreateGroupPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const router = useRouter();
+  const { success, error, promise } = useToast();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,15 +62,6 @@ export default function CreateGroupPage() {
   // 그룹 생성 mutation
   const createGroupMutation = useMutation({
     mutationFn: createGroup,
-    onSuccess: (data) => {
-      // 성공 시 새로 생성된 그룹 페이지로 이동
-      // API 응답에서 groupId를 받아온다고 가정
-      router.push('/group/find');
-    },
-    onError: (error) => {
-      console.error('Failed to create group:', error);
-      // 에러 처리 (토스트 메시지 등)
-    }
   });
 
   // Add tag handler
@@ -95,7 +88,36 @@ export default function CreateGroupPage() {
       description: values.description,
     };
     
-    createGroupMutation.mutate(request);
+    // Promise 토스트를 사용해서 로딩/성공/에러를 한 번에 처리
+    promise(
+      createGroup(request),
+      {
+        loading: '그룹을 생성하고 있습니다...',
+        success: '그룹이 성공적으로 생성되었습니다!',
+        error: (err: any) => {
+          console.error('Failed to create group:', err);
+          
+          // 에러 메시지 추출
+          if (err?.message) {
+            return err.message;
+          } else if (err?.response?.data?.message) {
+            return err.response.data.message;
+          } else if (typeof err === 'string') {
+            return err;
+          }
+          
+          return '그룹 생성에 실패했습니다.';
+        },
+      },
+      { id: 'create-group' }
+    ).then(() => {
+      // 성공 시 그룹 찾기 페이지로 이동
+      setTimeout(() => {
+        router.push('/group/find');
+      }, 1000);
+    }).catch(() => {
+      // 에러는 이미 토스트로 표시됨
+    });
   };
 
   return (
@@ -309,9 +331,9 @@ export default function CreateGroupPage() {
                   <Button
                     type="submit"
                     className="flex-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
-                    disabled={createGroupMutation.isPending || isNameAvailable === false || isCheckingName}
+                    disabled={form.formState.isSubmitting || isNameAvailable === false || isCheckingName}
                   >
-                    {createGroupMutation.isPending ? 'Creating...' : 'Create Group'}
+                    {form.formState.isSubmitting ? 'Creating...' : 'Create Group'}
                   </Button>
                 </div>
               </form>
