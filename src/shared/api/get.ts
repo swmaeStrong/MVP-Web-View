@@ -86,11 +86,13 @@ export const getTimeline = (userId: string, date: string = getKSTDateString()) =
     API.get(`/usage-log/time-line?userId=${userId}&date=${date}`)
   );
 
-// 스트릭 캘린더 조회
-export const getStreakCalendar = (date: string = getKSTDateString()) =>
-  parseApi<Statistics.StreakCalendarApiResponse[]>(
-    API.get(`/streak/calendar?date=${date}`)
+// 스트릭 캘린더 조회 - 월별 데이터 페칭
+export const getStreakCalendar = (date: string) => {
+  const apiUrl = `/streak/calendar?date=${date}`;
+  return parseApi<Statistics.StreakCalendarApiResponse[]>(
+    API.get(apiUrl)
   );
+};
 
 // 스트릭 카운트 조회
 export const getStreakCount = () =>

@@ -1,10 +1,10 @@
 'use client';
 
-import { useAvailableDates, useUsageStatistics } from '@/hooks/data/useStatistics';
+import { canNavigateToNext, canNavigateToPrevious, getNextDate, getPreviousDate, useUsageStatistics } from '@/hooks/data/useStatistics';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUser } from '@/stores/userStore';
 // namespace로 변경됨
-import { getDateString } from '@/utils/statisticsUtils';
+import { getKSTDateString } from '@/utils/timezone';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 // 컴포넌트 임포트
@@ -23,11 +23,12 @@ import TotalTimeCard from '../../components/statistics/DateNavigationCard';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<Statistics.PeriodType>('daily');
-  // 가용한 날짜 목록 (최근 30일)
-  const availableDates = useAvailableDates();
+  // 현재 선택된 월 상태 추가
+  const [currentMonth, setCurrentMonth] = useState(new Date(getKSTDateString()));
+  // 날짜 제한 로직으로 변경 - 배열 생성 대신 상수 기반 체크
 
-  // 초기 날짜 설정
-  const [selectedDate, setSelectedDate] = useState(getDateString(new Date()));
+  // 초기 날짜 설정 (한국 시간대 기준)
+  const [selectedDate, setSelectedDate] = useState(getKSTDateString());
   // Hook 순서를 항상 동일하게 유지
   const currentUser = useCurrentUser();
   const { initializeUser } = useInitUser();
@@ -54,76 +55,44 @@ export default function StatisticsPage() {
 
   // cycleData 제거 - SessionCarousel에서 직접 API 호출
 
-  // availableDates 변경 모니터링
+  // 초기 날짜를 오늘 날짜로 설정
   React.useEffect(() => {
-    console.log(
-      'availableDates 배열 변경됨:',
-      availableDates.length,
-      availableDates.slice(0, 3)
-    );
-  }, [availableDates]);
-
-  // availableDates가 로드되면 오늘 날짜(첫 번째 요소)로 설정
-  React.useEffect(() => {
-    if (availableDates.length > 0) {
-      console.log('Statistics 페이지 - 오늘 날짜로 설정:', availableDates[0]);
-      setSelectedDate(availableDates[0]);
-    }
-  }, [availableDates]);
+    // 이미 오늘 날짜로 초기화되어 있으므로 별도 처리 불필요
+    console.log('Statistics 페이지 - 선택된 날짜:', selectedDate);
+  }, [selectedDate]);
 
 
   const handlePreviousDate = useCallback(() => {
-    const currentIndex = availableDates.indexOf(selectedDate);
-    console.log(
-      '이전 날짜 클릭 - 현재 인덱스:',
-      currentIndex,
-      '현재 날짜:',
-      selectedDate
-    );
-    if (currentIndex < availableDates.length - 1) {
-      const newDate = availableDates[currentIndex + 1];
-      console.log('새로운 날짜로 변경:', newDate);
-      setSelectedDate(newDate);
+    const previousDate = getPreviousDate(selectedDate);
+    if (previousDate) {
+      console.log('이전 날짜로 변경:', previousDate);
+      setSelectedDate(previousDate);
     } else {
-      console.log('이전 날짜로 갈 수 없음');
+      console.log('이전 날짜로 갈 수 없음 - 제한 날짜에 도달');
     }
-  }, [availableDates, selectedDate]);
+  }, [selectedDate]);
 
   const handleNextDate = useCallback(() => {
-    const currentIndex = availableDates.indexOf(selectedDate);
-    console.log(
-      '다음 날짜 클릭 - 현재 인덱스:',
-      currentIndex,
-      '현재 날짜:',
-      selectedDate
-    );
-    if (currentIndex > 0) {
-      const newDate = availableDates[currentIndex - 1];
-      console.log('새로운 날짜로 변경:', newDate);
-      setSelectedDate(newDate);
+    const nextDate = getNextDate(selectedDate);
+    if (nextDate) {
+      console.log('다음 날짜로 변경:', nextDate);
+      setSelectedDate(nextDate);
     } else {
-      console.log('다음 날짜로 갈 수 없음');
+      console.log('다음 날짜로 갈 수 없음 - 오늘 날짜에 도달');
     }
-  }, [availableDates, selectedDate]);
+  }, [selectedDate]);
 
   const canGoPrevious = useMemo(() => {
-    const currentIndex = availableDates.indexOf(selectedDate);
-    const canGo = currentIndex < availableDates.length - 1;
-    console.log(
-      'canGoPrevious 체크 - 인덱스:',
-      currentIndex,
-      '가능여부:',
-      canGo
-    );
+    const canGo = canNavigateToPrevious(selectedDate);
+    console.log('canGoPrevious 체크 - 날짜:', selectedDate, '가능여부:', canGo);
     return canGo;
-  }, [availableDates, selectedDate]);
+  }, [selectedDate]);
 
   const canGoNext = useMemo(() => {
-    const currentIndex = availableDates.indexOf(selectedDate);
-    const canGo = currentIndex > 0;
-    console.log('canGoNext 체크 - 인덱스:', currentIndex, '가능여부:', canGo);
+    const canGo = canNavigateToNext(selectedDate);
+    console.log('canGoNext 체크 - 날짜:', selectedDate, '가능여부:', canGo);
     return canGo;
-  }, [availableDates, selectedDate]);
+  }, [selectedDate]);
 
 
 
@@ -224,7 +193,10 @@ export default function StatisticsPage() {
                 currentDate={selectedDate}
               />
           {/* 오른쪽: 월별 스트릭 컴포넌트 (기존 ActivityList 위치) */}
-          <MonthlyStreak />
+          <MonthlyStreak 
+            initialMonth={currentMonth}
+            onMonthChange={setCurrentMonth}
+          />
 
         </div>
 

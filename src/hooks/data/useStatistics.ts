@@ -52,44 +52,64 @@ export const useMultiDateStatistics = (dates: string[], userId: string) => {
   });
 };
 
-import { getKSTDate, getKSTDateStringFromDate } from '@/utils/timezone';
-import { useMemo } from 'react';
+import { getKSTDateString, getKSTDateStringDaysAgo } from '@/utils/timezone';
+import { DATE_LIMITS } from '@/config/constants/date-limits';
 
-// 가용한 날짜 목록 생성 (2025년 7월 31일부터 오늘까지만 - 한국 시간대 기준)
-export const useAvailableDates = () => {
-  return useMemo(() => {
-    const dates: string[] = [];
-    
-    // 한국 시간대 기준 오늘 날짜
-    const todayKST = getKSTDate();
-    const todayDateString = getKSTDateStringFromDate(todayKST);
-    
-    // 2025년 7월 31일을 최소 날짜로 설정 (한국 시간대)
-    const minDateString = '2025-07-31';
-    
-    // 오늘부터 시작해서 최소 날짜까지 날짜 문자열 생성
-    let currentDateString = todayDateString;
-    while (currentDateString >= minDateString) {
-      dates.push(currentDateString);
-      
-      // 하루 전 날짜 계산 (한국 시간대 기준)
-      const currentDate = new Date(currentDateString + 'T00:00:00+09:00');
-      const previousDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
-      currentDateString = getKSTDateStringFromDate(previousDate);
-    }
+// 날짜 네비게이션 유틸리티 함수들 (한국 시간대 기준)
+export const isDateBeforeLimit = (dateString: string): boolean => {
+  const result = dateString < DATE_LIMITS.MIN_DATE;
+  console.log(`isDateBeforeLimit: ${dateString} < ${DATE_LIMITS.MIN_DATE} = ${result}`);
+  return result;
+};
 
-    // 디버깅용 로그
-    console.log(
-      'useAvailableDates - 한국 시간대 기준 생성된 날짜 배열:',
-      dates.slice(0, 5),
-      '...(총',
-      dates.length,
-      '개)'
-    );
-    console.log('useAvailableDates - 오늘 날짜 (KST):', dates[0]);
-    console.log('useAvailableDates - 최소 날짜 (마지막):', dates[dates.length - 1]);
-    console.log('useAvailableDates - 제한 날짜:', minDateString);
+export const isDateAfterToday = (dateString: string): boolean => {
+  const todayKST = getKSTDateString();
+  const result = dateString > todayKST;
+  console.log(`isDateAfterToday: ${dateString} > ${todayKST} = ${result}`);
+  return result;
+};
 
-    return dates;
-  }, []); // 의존성이 없으므로 컴포넌트 생명주기 동안 한 번만 계산
+export const getPreviousDate = (dateString: string): string | null => {
+  // 날짜 문자열을 UTC 기준으로 파싱하여 하루 전 날짜 계산
+  const [year, month, day] = dateString.split('-').map(Number);
+  const currentDate = new Date(year, month - 1, day); // month는 0-based
+  const previousDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
+  
+  const previousYear = previousDate.getFullYear();
+  const previousMonth = String(previousDate.getMonth() + 1).padStart(2, '0');
+  const previousDay = String(previousDate.getDate()).padStart(2, '0');
+  const previousDateString = `${previousYear}-${previousMonth}-${previousDay}`;
+  
+  if (isDateBeforeLimit(previousDateString)) {
+    return null;
+  }
+  
+  return previousDateString;
+};
+
+export const getNextDate = (dateString: string): string | null => {
+  // 날짜 문자열을 UTC 기준으로 파싱하여 하루 뒤 날짜 계산
+  const [year, month, day] = dateString.split('-').map(Number);
+  const currentDate = new Date(year, month - 1, day); // month는 0-based
+  const nextDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000);
+  
+  const nextYear = nextDate.getFullYear();
+  const nextMonth = String(nextDate.getMonth() + 1).padStart(2, '0');
+  const nextDay = String(nextDate.getDate()).padStart(2, '0');
+  const nextDateString = `${nextYear}-${nextMonth}-${nextDay}`;
+  
+  if (isDateAfterToday(nextDateString)) {
+    return null;
+  }
+  
+  return nextDateString;
+};
+
+// 날짜 네비게이션 가능 여부 체크
+export const canNavigateToPrevious = (currentDate: string): boolean => {
+  return getPreviousDate(currentDate) !== null;
+};
+
+export const canNavigateToNext = (currentDate: string): boolean => {
+  return getNextDate(currentDate) !== null;
 };
