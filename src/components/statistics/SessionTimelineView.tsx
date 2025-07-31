@@ -221,7 +221,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
         {/* Score text */}
         <text
           x={x + width / 2}
-          y={y - 5}
+          y={y - 15}
           textAnchor="middle"
           fontSize="11"
           fontWeight="600"
