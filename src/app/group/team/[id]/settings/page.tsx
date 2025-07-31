@@ -266,21 +266,27 @@ export default function GroupSettingsPage() {
                             type="single" 
                             value={field.value} 
                             onValueChange={field.onChange}
-                            className="grid grid-cols-2 gap-3 mt-2"
+                            className="w-full bg-white border border-gray-200 rounded-md dark:bg-gray-50 dark:border-gray-300 mt-2"
                           >
                             <ToggleGroupItem 
                               value="public" 
-                              className="flex items-center justify-center gap-2 h-10"
+                              className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-100"
                             >
                               <Globe className="h-4 w-4" />
-                              Public
+                              <div className="text-left">
+                                <div className="font-medium">Public</div>
+                                <div className="text-xs opacity-75">Anyone can join</div>
+                              </div>
                             </ToggleGroupItem>
                             <ToggleGroupItem 
                               value="private" 
-                              className="flex items-center justify-center gap-2 h-10"
+                              className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-100"
                             >
                               <Lock className="h-4 w-4" />
-                              Private
+                              <div className="text-left">
+                                <div className="font-medium">Private</div>
+                                <div className="text-xs opacity-75">Invite code required</div>
+                              </div>
                             </ToggleGroupItem>
                           </ToggleGroup>
                         </FormControl>
@@ -343,7 +349,7 @@ export default function GroupSettingsPage() {
               <div className="flex justify-end">
                 <Button
                   type="submit"
-                  className="gap-2"
+                  className="gap-2 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
                   disabled={form.formState.isSubmitting || updateGroupMutation.isPending}
                 >
                   <Save className="h-4 w-4" />
