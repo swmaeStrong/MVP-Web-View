@@ -1,5 +1,8 @@
 'use client';
 
+import StateDisplay from '@/components/common/StateDisplay';
+import { groupDetailQueryKey } from '@/config/constants/query-keys';
+import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
@@ -9,19 +12,16 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/shadcn/ui/input';
 import { Textarea } from '@/shadcn/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
+import { updateGroup } from '@/shared/api/patch';
+import { useCurrentUser } from '@/stores/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Globe, Hash, Lock, Plus, Save, Settings, Trash2, Users, X } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Copy, Crown, Globe, Hash, Lock, Plus, Save, Settings, Trash2, UserMinus, Users, X } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
-import StateDisplay from '@/components/common/StateDisplay';
-import { useCurrentUser } from '@/stores/userStore';
-import { updateGroup } from '@/shared/api/patch';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { groupDetailQueryKey } from '@/config/constants/query-keys';
 import toast from 'react-hot-toast';
+import * as z from 'zod';
 
 const formSchema = z.object({
   name: z.string().min(3, 'Group name must be at least 3 characters').max(50, 'Group name must be less than 50 characters'),
@@ -185,26 +185,66 @@ export default function GroupSettingsPage() {
     );
   }
 
+  // 초대 코드 복사 함수
+  const copyInviteCode = () => {
+    const inviteCode = `GROUP-${groupId}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+    navigator.clipboard.writeText(inviteCode);
+    toast.success('초대 코드가 복사되었습니다!');
+  };
+
   return (
-    <div className="space-y-6 px-6 py-6 max-w-6xl mx-auto">
-      {/* 헤더 */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-            그룹 설정
-          </h1>
-          <p className={`text-sm ${getThemeTextColor('secondary')} mt-1`}>
-            그룹의 상세 정보를 수정할 수 있습니다.
-          </p>
+    <div className="space-y-6 px-6 py-6 max-w-7xl mx-auto">
+      {/* 상단 헤더 */}
+      <div className="flex items-start justify-between">
+        {/* 좌상단 - 그룹 이름 */}
+        <div className="flex items-center gap-4">
+          <Avatar className="w-16 h-16">
+            <AvatarFallback className={`text-2xl font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+              {groupDetail.name.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h1 className={`text-3xl font-bold ${getThemeTextColor('primary')}`}>
+              {groupDetail.name}
+            </h1>
+            <p className={`text-sm ${getThemeTextColor('secondary')} mt-1`}>
+              그룹 설정 및 관리
+            </p>
+          </div>
         </div>
-        <Button
-          variant="outline"
-          onClick={() => router.back()}
-          className="gap-2"
-        >
-          <X className="h-4 w-4" />
-          취소
-        </Button>
+
+        {/* 우상단 - 초대 코드 */}
+        <div className="flex items-center gap-4">
+          <Card className={`${getCommonCardClass()} p-4`}>
+            <div className="flex items-center gap-3">
+              <div>
+                <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                  초대 코드
+                </div>
+                <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                  새로운 멤버 초대용
+                </div>
+              </div>
+              <Button
+                size="sm"
+                onClick={copyInviteCode}
+                className="gap-2 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90"
+              >
+                <Copy className="h-3 w-3" />
+                복사
+              </Button>
+            </div>
+          </Card>
+          
+          <Button
+            variant="outline"
+            onClick={() => router.back()}
+            className="gap-2"
+          >
+            <X className="h-4 w-4" />
+            닫기
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -405,125 +445,137 @@ export default function GroupSettingsPage() {
 
         {/* Sidebar */}
         <div className="lg:col-span-1 space-y-6">
-          {/* Preview */}
-          <Card className={getCommonCardClass()}>
-            <CardHeader>
-              <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-                미리보기
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Group Header */}
-              <div className="flex items-center gap-4">
-                <Avatar className="w-12 h-12">
-                  <AvatarFallback className={`text-lg font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                    {watchedValues.name?.charAt(0) || 'G'}
-                  </AvatarFallback>
-                </Avatar>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-1">
-                    <div className={`text-sm font-bold ${getThemeTextColor('primary')} truncate`}>
-                      {watchedValues.name || '그룹 이름'}
-                    </div>
-                    <Badge variant={watchedValues.isPublic === 'public' ? "default" : "secondary"} className={`gap-1 flex-shrink-0 text-xs ${
-                      watchedValues.isPublic === 'public'
-                        ? 'bg-green-100 text-green-700 hover:bg-green-100'
-                        : 'bg-amber-100 text-amber-700 hover:bg-amber-100'
-                    }`}>
-                      {watchedValues.isPublic === 'public' ? (
-                        <>
-                          <Globe className="h-2 w-2" />
-                          공개
-                        </>
-                      ) : (
-                        <>
-                          <Lock className="h-2 w-2" />
-                          비공개
-                        </>
-                      )}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Description */}
-              <p className={`text-xs ${getThemeTextColor('secondary')} leading-relaxed`}>
-                {watchedValues.description || '그룹 설명이 여기에 표시됩니다...'}
-              </p>
-              
-              {/* Ground Rule */}
-              {watchedValues.groundRule && (
-                <div>
-                  <div className={`text-xs font-semibold ${getThemeTextColor('primary')} mb-1`}>
-                    그라운드 룰
-                  </div>
-                  <p className={`text-xs ${getThemeTextColor('secondary')} leading-relaxed`}>
-                    {watchedValues.groundRule}
-                  </p>
-                </div>
-              )}
-              
-              {/* Tags */}
-              {watchedValues.tags && watchedValues.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {watchedValues.tags.map((tag) => (
-                    <Badge 
-                      key={tag} 
-                      variant="outline" 
-                      className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
-                    >
-                      <Hash className="h-2 w-2" />
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
           {/* Group Members */}
           <Card className={getCommonCardClass()}>
             <CardHeader>
-              <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-                그룹 멤버
+              <CardTitle className={`text-lg ${getThemeTextColor('primary')} flex items-center gap-2`}>
+                <Users className="h-5 w-5" />
+                멤버 관리
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <Avatar className="w-8 h-8">
-                    <AvatarFallback className={`text-xs font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                      {groupDetail.owner.nickname.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                      {groupDetail.owner.nickname}
-                    </div>
-                    <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                      그룹장
+                {/* 그룹장 */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="w-8 h-8">
+                      <AvatarFallback className={`text-xs font-semibold bg-yellow-200 text-yellow-800`}>
+                        {groupDetail.owner.nickname.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className={`text-sm font-medium ${getThemeTextColor('primary')} flex items-center gap-2`}>
+                        {groupDetail.owner.nickname}
+                        <Crown className="h-3 w-3 text-yellow-600" />
+                      </div>
+                      <div className="text-xs text-yellow-600 dark:text-yellow-400">
+                        그룹장
+                      </div>
                     </div>
                   </div>
                 </div>
                 
+                {/* 일반 멤버 */}
                 {groupDetail.members.map((member) => (
-                  <div key={member.userId} className="flex items-center gap-3">
-                    <Avatar className="w-8 h-8">
-                      <AvatarFallback className={`text-xs font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                        {member.nickname.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                        {member.nickname}
+                  <div key={member.userId} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="w-8 h-8">
+                        <AvatarFallback className={`text-xs font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+                          {member.nickname.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                          {member.nickname}
+                        </div>
+                        <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                          멤버
+                        </div>
                       </div>
-                      <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                        멤버
-                      </div>
+                    </div>
+                    
+                    {/* 멤버 관리 버튼 */}
+                    <div className="flex items-center gap-1">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                        title="그룹장 위임"
+                      >
+                        <Crown className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                        title="멤버 제거"
+                      >
+                        <UserMinus className="h-3 w-3" />
+                      </Button>
                     </div>
                   </div>
                 ))}
+              </div>
+              
+              {/* 멤버 초대 버튼 */}
+              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full gap-2"
+                  onClick={copyInviteCode}
+                >
+                  <Plus className="h-4 w-4" />
+                  새 멤버 초대
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 그룹 통계 */}
+          <Card className={getCommonCardClass()}>
+            <CardHeader>
+              <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
+                그룹 정보
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20">
+                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    {groupDetail.members.length + 1}
+                  </div>
+                  <div className="text-xs text-blue-600 dark:text-blue-400">
+                    총 멤버 수
+                  </div>
+                </div>
+                
+                <div className="text-center p-3 rounded-lg bg-green-50 dark:bg-green-900/20">
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    {new Date(groupDetail.createdAt).getFullYear() === new Date().getFullYear() 
+                      ? Math.ceil((new Date().getTime() - new Date(groupDetail.createdAt).getTime()) / (1000 * 60 * 60 * 24))
+                      : '365+'
+                    }
+                  </div>
+                  <div className="text-xs text-green-600 dark:text-green-400">
+                    활동 일수
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className={getThemeTextColor('secondary')}>생성일</span>
+                  <span className={getThemeTextColor('primary')}>
+                    {new Date(groupDetail.createdAt).toLocaleDateString('ko-KR')}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className={getThemeTextColor('secondary')}>공개 상태</span>
+                  <Badge variant={groupDetail.isPublic ? "default" : "secondary"} className="text-xs">
+                    {groupDetail.isPublic ? '공개' : '비공개'}
+                  </Badge>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -531,22 +583,29 @@ export default function GroupSettingsPage() {
           {/* Danger Zone */}
           <Card className={`${getCommonCardClass()} border-red-200 dark:border-red-900/50`}>
             <CardHeader>
-              <CardTitle className="text-lg text-red-600 dark:text-red-400">
+              <CardTitle className="text-lg text-red-600 dark:text-red-400 flex items-center gap-2">
+                <Trash2 className="h-5 w-5" />
                 위험 구역
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <p className="text-sm text-red-600 dark:text-red-400">
-                  그룹을 삭제하면 모든 데이터가 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없습니다.
-                </p>
+                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                  <p className="text-sm text-red-600 dark:text-red-400 font-medium mb-2">
+                    ⚠️ 주의사항
+                  </p>
+                  <p className="text-xs text-red-600 dark:text-red-400 leading-relaxed">
+                    그룹을 삭제하면 모든 데이터(멤버, 활동 기록, 설정 등)가 영구적으로 삭제되며, 이 작업은 되돌릴 수 없습니다.
+                  </p>
+                </div>
+                
                 <Button
                   variant="destructive"
                   onClick={handleDeleteGroup}
                   className="w-full gap-2"
                 >
                   <Trash2 className="h-4 w-4" />
-                  그룹 삭제
+                  그룹 영구 삭제
                 </Button>
               </div>
             </CardContent>
