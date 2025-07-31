@@ -541,11 +541,11 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                       {formatTimeRange(selectedSessionData.timestamp, selectedSessionData.duration)}
                     </p>
                   </div>
-                  <div 
-                    className="px-3 py-1 rounded-full text-sm font-medium text-white shadow-lg"
-                    style={{ backgroundColor: selectedSessionData.scoreColor }}
-                  >
-                    {selectedSessionData.score}
+                  <div className={`text-sm ${getThemeTextColor('secondary')}`}>
+                    <span>Score: </span>
+                    <span className={`font-bold ${getThemeTextColor('primary')}`}>
+                      {selectedSessionData.score}
+                    </span>
                   </div>
                 </div>
 
