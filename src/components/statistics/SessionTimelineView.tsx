@@ -804,8 +804,9 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                 {/* Score Breakdown */}
                 {sessionDetailData && sessionDetailData.length > 0 && (
                   <div className="space-y-3 mb-4">
-                    <h5 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                      Factors Affecting Your Score
+                    <h5 className={`text-sm font-medium ${getThemeTextColor('primary')} flex items-center gap-2`}>
+                      <span>🚫</span>
+                      Distractions
                     </h5>
                     <div className="space-y-2">
                       {sessionDetailData
