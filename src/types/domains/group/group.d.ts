@@ -1,10 +1,10 @@
 declare namespace Group {
 	interface GroupApiResponse {
-		goupId: number;
+		groupId: number;
 		name: string,
 		groupOwner: GroupUserInfo,
-		groupTag: string[] | null,
-		descripotion: string | null,
+		tags: string[] | null,
+		description: string | null,
 	}
 
 	interface GroupUserInfo {

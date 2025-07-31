@@ -11,15 +11,10 @@ interface NavItem {
   icon: React.ElementType;
 }
 
-interface Group {
-  id: number;
-  name: string;
-  members: number;
-  active: boolean;
-}
-
 interface GroupSidebarProps {
-  teams: Group[];
+  groups: Group.GroupApiResponse[];
+  error: any;
+  isLoading?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -27,7 +22,7 @@ const navItems: NavItem[] = [
   { name: 'Create', href: '/group/create', icon: Plus },
 ];
 
-export default function GroupSidebar({ teams }: GroupSidebarProps) {
+export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
   const pathname = usePathname();
 
@@ -60,13 +55,29 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
             My Groups
           </div>
           <div className="space-y-1">
-            {teams.map((group) => {
-              const isGroupSelected = selectedGroupId === group.id.toString();
+            {error && (
+              <div className="px-4 py-2">
+                <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                  Failed to load groups
+                </span>
+              </div>
+            )}
+            
+            {!error && groups.length === 0 && (
+              <div className="px-4 py-2">
+                <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                  No groups yet
+                </span>
+              </div>
+            )}
+            
+            {!error && groups.map((group) => {
+              const isGroupSelected = selectedGroupId === group.groupId.toString();
               
               return (
-                <div key={group.id}>
+                <div key={group.groupId}>
                   <Link
-                    href={`/group/team/${group.id}`}
+                    href={`/group/team/${group.groupId}`}
                     className={`flex items-center justify-between px-4 py-2 rounded-md transition-all duration-200 transform ${
                       isGroupSelected
                         ? `text-white bg-[#3F72AF] shadow-lg`
