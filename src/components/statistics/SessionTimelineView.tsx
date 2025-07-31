@@ -414,7 +414,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                Session Scores {totalPages > 1 && `(Page ${currentPage + 1} of ${totalPages})`}
+                {totalPages > 1 && `Page ${currentPage + 1} of ${totalPages}`}
               </h3>
               {totalPages > 1 && (
                 <div className="flex items-center gap-2">
@@ -525,9 +525,6 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
 
           {/* Right: Session Details */}
           <div className="space-y-4">
-            <h3 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-              Session Details
-            </h3>
             
             {selectedSessionData ? (
               <div className={`p-4 rounded-lg border ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
