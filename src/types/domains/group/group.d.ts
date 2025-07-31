@@ -15,8 +15,9 @@ declare namespace Group {
 	interface GroupDetailApiResponse {
 		owner: GroupUserInfo,
 		members: GroupUserInfo[],
-		groupTag: string[] | null,
-		description: string | null,
+		name: string,
+		tags: string[],
+		description: string,
 		groundRule: string,
 		isPublic: boolean,
 		createdAt: string
