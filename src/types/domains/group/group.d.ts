@@ -23,11 +23,11 @@ declare namespace Group {
 	}
 	
 	interface CreateGroupApiRequest {
-		groupName: string,
+		name: string,
 		isPublic: boolean,
 		groundRule: string,
-		groupTag: string[] | null,
-		description: string | null,
+		tags: string[],
+		description: string,
 	}
 
 }
