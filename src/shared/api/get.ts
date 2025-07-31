@@ -122,3 +122,9 @@ export const getGroupDetail = (groupId: number) =>
   parseApi<Group.GroupDetailApiResponse>(
     API.get(`/group/${groupId}`)
   );
+
+// 그룹 이름 유효성 검사
+export const validateGroupName = (name: string) =>
+  parseApi<boolean>(
+    API.get(`/group/name/check?name=${name}`)
+  );
