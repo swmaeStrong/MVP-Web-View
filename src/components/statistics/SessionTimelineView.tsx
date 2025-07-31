@@ -209,7 +209,6 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
           ry={4}
           style={{ 
             cursor: 'pointer',
-            filter: isSelected ? 'drop-shadow(0 4px 12px rgba(96, 165, 250, 0.4))' : 'none',
             transition: 'all 0.3s ease'
           }}
           onClick={() => {
@@ -229,8 +228,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
           fontWeight="600"
           fill={isHighlighted ? (isDarkMode ? '#ffffff' : '#374151') : (isDarkMode ? '#ffffff' : '#374151')}
           style={{ 
-            cursor: 'pointer',
-            textShadow: isHighlighted ? '0 1px 2px rgba(0,0,0,0.3)' : 'none'
+            cursor: 'pointer'
           }}
         >
           {payload.score}
@@ -306,7 +304,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
 
   if (isLoading) {
     return (
-      <Card className={`rounded-lg border-2 shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <Card className={`rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardHeader className="pb-3">
           <div className={`h-6 w-40 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
         </CardHeader>
@@ -356,7 +354,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
 
   if (isError || !sessionData) {
     return (
-      <Card className={`rounded-lg border-2 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <Card className={`rounded-lg border-2 ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardContent className="p-6">
           <StateDisplay
             type="error"
@@ -374,7 +372,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
 
   if (processedSessions.length === 0) {
     return (
-      <Card className={`rounded-lg border-2 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <Card className={`rounded-lg border-2 ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardHeader>
         </CardHeader>
         <CardContent className="p-6">
@@ -392,7 +390,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
   }
 
   return (
-    <Card className={`rounded-lg border-2 shadow-sm transition-all duration-300 hover:shadow-md py-2 pb-0 ${getThemeClass('border')} ${getThemeClass('component')}`}>
+    <Card className={`rounded-lg border-2 transition-all duration-300 py-2 pb-0 ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <CardContent className="pt-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: Bar Chart */}

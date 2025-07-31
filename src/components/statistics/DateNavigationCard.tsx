@@ -95,7 +95,7 @@ export default function TotalTimeCard({
   }
 
   return (
-    <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${componentStates.default.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>
+    <Card className={`bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 ${componentStates.default.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <CardContent className={`${cardSystem.content} ${spacing.inner.normal}`}>
         {/* Date navigation header */}
         <div className="flex items-center justify-center w-full">
