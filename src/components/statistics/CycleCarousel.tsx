@@ -430,9 +430,6 @@ const SessionCarousel = memo(function SessionCarousel({
 
       {/* Score Chart */}
       <div className={`mt-6 ${getThemeClass('component')} rounded-lg p-4 border ${getThemeClass('border')}`}>
-        <h3 className={`text-lg font-semibold ${getThemeClass('textPrimary')} mb-4`}>
-          Session Scores
-        </h3>
         <div className="h-48 w-full">
           <ChartContainer
             config={{

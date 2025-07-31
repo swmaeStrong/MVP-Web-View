@@ -1,5 +1,6 @@
 'use client';
 
+import { useSessionDetail, useSessions } from '@/hooks/data/useSession';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { ChartConfig, ChartContainer } from '@/shadcn/ui/chart';
@@ -8,7 +9,6 @@ import { Activity, Target } from 'lucide-react';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Bar, BarChart, XAxis, YAxis } from 'recharts';
 import StateDisplay from '../common/StateDisplay';
-import { useSessions, useSessionDetail } from '@/hooks/data/useSession';
 
 interface SessionTimelineViewProps {
   selectedDate?: string;
@@ -136,7 +136,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
       sessionNumber: session.sessionNumber,
       score: session.score,
       duration: session.duration,
-      fill: session.scoreColor,
+      fill: isDarkMode ? '#374151' : '#9ca3af', // Gray color for all bars
       sessionData: session,
       id: session.id,
     }));
@@ -182,47 +182,40 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
     const isHovered = hoveredSessionId === payload.sessionData.id;
     const isHighlighted = isSelected || isHovered;
     
-    // Calculate full chart height (264px total height - 35px top margin - 30px bottom margin = 199px)
-    const chartHeight = 199;
+    // Calculate full chart height (384px total height - 35px top margin - 30px bottom margin = 319px)
+    const chartHeight = 319;
     const chartTopY = 35; // Top margin from BarChart
+    
+    // Ensure minimum bar height for 0 scores
+    const minBarHeight = 8; // Minimum height in pixels
+    const adjustedHeight = Math.max(height, minBarHeight);
+    const adjustedY = height < minBarHeight ? y + height - minBarHeight : y;
     
     return (
       <g>
-        {/* Background wrapper for selected/hovered session - full height */}
-        {isHighlighted && (
-          <rect
-            x={x - 4}
-            y={chartTopY - 35} // Start from very top of chart area
-            width={width + 8}
-            height={chartHeight + 35} // Full height including margins
-            fill={isDarkMode ? 'rgba(96, 165, 250, 0.15)' : 'rgba(30, 64, 175, 0.1)'}
-            stroke={isDarkMode ? 'rgba(147, 197, 253, 0.4)' : 'rgba(30, 64, 175, 0.3)'}
-            strokeWidth="2"
-            rx={6}
-            ry={6}
-            style={{ 
-              filter: 'blur(0.5px)',
-              transition: 'all 0.3s ease'
-            }}
-          />
-        )}
         
         {/* Main bar */}
         <rect
           x={x}
-          y={y}
+          y={adjustedY}
           width={width}
-          height={height}
-          fill={isHighlighted ? (isDarkMode ? '#60a5fa' : '#1e40af') : payload.fill}
-          stroke={isHighlighted ? (isDarkMode ? '#93c5fd' : '#1d4ed8') : 'transparent'}
-          strokeWidth={isHighlighted ? 3 : 0}
+          height={adjustedHeight}
+          fill={isSelected ? (isDarkMode ? '#1e3a8a' : '#1e40af') : payload.fill}
+          stroke={isSelected ? (isDarkMode ? '#60a5fa' : '#3b82f6') : 'transparent'}
+          strokeWidth={isSelected ? 2 : 0}
           rx={4}
           ry={4}
           style={{ 
             cursor: 'pointer',
-            filter: isHighlighted ? 'brightness(1.2) drop-shadow(0 4px 12px rgba(96, 165, 250, 0.4))' : 'none',
+            filter: isSelected ? 'drop-shadow(0 4px 12px rgba(96, 165, 250, 0.4))' : 'none',
             transition: 'all 0.3s ease'
           }}
+          onClick={() => {
+            console.log('Bar clicked:', payload.sessionData);
+            setSelectedSession(payload.sessionData);
+          }}
+          onMouseEnter={() => setHoveredSessionId(payload.sessionData.id)}
+          onMouseLeave={() => setHoveredSessionId(null)}
         />
         
         {/* Score text */}
@@ -447,7 +440,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
               )}
             </div>
             <div 
-              className="h-64 w-full cursor-pointer relative overflow-x-auto"
+              className="h-96 w-full cursor-pointer relative overflow-x-auto"
               onClick={(e) => {
                 // Calculate which bar area was clicked based on position
                 const rect = chartContainerRef.current?.getBoundingClientRect();
@@ -501,22 +494,30 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
               >
                 <XAxis
                   dataKey="session"
-                  axisLine={false}
-                  tickLine={false}
+                  axisLine={true}
+                  tickLine={true}
                   tick={{ fontSize: 9, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
                   height={40}
                   interval={0}
+                  stroke={isDarkMode ? '#4b5563' : '#d1d5db'}
                 />
                 <YAxis
                   domain={[0, 100]}
-                  axisLine={false}
-                  tickLine={false}
+                  axisLine={true}
+                  tickLine={true}
                   tick={{ fontSize: 12, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                  stroke={isDarkMode ? '#4b5563' : '#d1d5db'}
                 />
                 <Bar
                   dataKey="score"
                   shape={CustomizedBar}
                   maxBarSize={60}
+                  fill={isDarkMode ? '#374151' : '#9ca3af'}
+                  onClick={(data) => {
+                    if (data && data.sessionData) {
+                      setSelectedSession(data.sessionData);
+                    }
+                  }}
                 />
               </BarChart>
               </ChartContainer>
@@ -524,7 +525,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
           </div>
 
           {/* Right: Session Details */}
-          <div className="space-y-4">
+          <div className={`space-y-4 ${selectedSessionData ? 'min-h-96' : ''}`}>
             
             {selectedSessionData ? (
               <div className={`p-4 rounded-lg border ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
