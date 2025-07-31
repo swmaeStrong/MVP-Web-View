@@ -4,6 +4,7 @@ import { useSessionDetail, useSessions } from '@/hooks/data/useSession';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { ChartConfig, ChartContainer } from '@/shadcn/ui/chart';
+import { ScrollArea, ScrollBar } from '@/shadcn/ui/scroll-area';
 import { getKSTDateString } from '@/utils/timezone';
 import { Activity, Target } from 'lucide-react';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
@@ -97,8 +98,14 @@ const getCategoryIcon = (category: string | undefined) => {
 export default function SessionTimelineView({ selectedDate = getKSTDateString() }: SessionTimelineViewProps) {
   const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
   const [selectedSession, setSelectedSession] = useState<SessionData | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
   const chartContainerRef = useRef<HTMLDivElement>(null);
+  const hasInitialScrolled = useRef(false);
+
+  // Reset scroll flag when date changes
+  React.useEffect(() => {
+    hasInitialScrolled.current = false;
+    setSelectedSession(null);
+  }, [selectedDate]);
 
   // Fetch session data
   const { data: sessionData, isLoading, isError, refetch } = useSessions(selectedDate);
@@ -107,12 +114,11 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
   const { data: sessionDetailData, isLoading: isDetailLoading, isError: isDetailError } = useSessionDetail(selectedSession?.id, selectedDate);
 
   // Process sessions for bar chart visualization
-  const { chartData, processedSessions, totalPages, currentChartData } = useMemo(() => {
+  const { chartData, processedSessions, allChartData } = useMemo(() => {
     if (!sessionData || sessionData.length === 0) return { 
       chartData: [], 
       processedSessions: [], 
-      totalPages: 0, 
-      currentChartData: [] 
+      allChartData: [] 
     };
 
     // Sort sessions by score (highest on the right)
@@ -141,19 +147,15 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
       id: session.id,
     }));
 
-    // Pagination: 10 items per page
-    const itemsPerPage = 10;
-    const totalPages = Math.ceil(sessions.length / itemsPerPage);
-    const startIndex = currentPage * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentChartData = chartData.slice(startIndex, endIndex).map(item => ({
+    // All sessions for horizontal scroll
+    const allChartData = chartData.map(item => ({
       ...item,
       fill: item.fill, // Keep original fill, will be overridden in CustomizedBar
       isSelected: selectedSession?.id === item.sessionData.id,
     }));
 
-    return { chartData, processedSessions: sessions, totalPages, currentChartData };
-  }, [sessionData, isDarkMode, currentPage, selectedSession]);
+    return { chartData, processedSessions: sessions, allChartData };
+  }, [sessionData, isDarkMode, selectedSession]);
 
   // Handle bar click
   const handleBarClick = useCallback((sessionData: SessionData) => {
@@ -237,14 +239,6 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
     );
   }, [selectedSession, isDarkMode, hoveredSessionId]);
 
-  // Pagination handlers
-  const handlePrevPage = useCallback(() => {
-    setCurrentPage(prev => Math.max(0, prev - 1));
-  }, []);
-
-  const handleNextPage = useCallback(() => {
-    setCurrentPage(prev => Math.min(totalPages - 1, prev + 1));
-  }, [totalPages]);
 
   // Calculate summary stats
   const summaryStats = useMemo(() => {
@@ -273,6 +267,31 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
       setSelectedSession(mostRecentSession);
     }
   }, [processedSessions, selectedSession]);
+
+  // Scroll to most recent session on initial load only
+  React.useEffect(() => {
+    if (processedSessions.length > 0 && chartContainerRef.current && allChartData.length > 0 && !hasInitialScrolled.current) {
+      const mostRecentIndex = allChartData.findIndex(item => 
+        item.sessionData.timestamp === Math.max(...allChartData.map(data => data.sessionData.timestamp))
+      );
+      
+      if (mostRecentIndex !== -1) {
+        const scrollContainer = chartContainerRef.current.closest('[data-radix-scroll-area-viewport]');
+        if (scrollContainer) {
+          const barWidth = 110; // Width per bar
+          const scrollPosition = mostRecentIndex * barWidth - (scrollContainer.clientWidth / 2) + (barWidth / 2);
+          
+          setTimeout(() => {
+            scrollContainer.scrollTo({
+              left: Math.max(0, scrollPosition),
+              behavior: 'smooth'
+            });
+            hasInitialScrolled.current = true; // Mark as scrolled
+          }, 100);
+        }
+      }
+    }
+  }, [processedSessions, allChartData]);
 
   // Get the selected session data
   const selectedSessionData = selectedSession;
@@ -373,7 +392,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
   }
 
   return (
-    <Card className={`rounded-lg border-2 shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+    <Card className={`rounded-lg border-2 shadow-sm transition-all duration-300 hover:shadow-md py-2 pb-0 ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <CardContent className="pt-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: Bar Chart */}
@@ -401,122 +420,69 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                 </div>
               </div>
             )}
-            <div className="flex items-center justify-between">
-              <h3 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                {totalPages > 1 && `Page ${currentPage + 1} of ${totalPages}`}
-              </h3>
-              {totalPages > 1 && (
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handlePrevPage}
-                    disabled={currentPage === 0}
-                    className={`px-2 py-1 rounded text-sm transition-colors ${
-                      currentPage === 0
-                        ? `${getThemeTextColor('secondary')} cursor-not-allowed`
-                        : `${getThemeTextColor('primary')} hover:${getThemeClass('componentSecondary')}`
-                    }`}
+            <div className={`relative rounded-lg ${getThemeClass('component')} p-2`}>
+              <ScrollArea className="w-full h-96">
+                <div className="w-max pr-4">
+                  <ChartContainer 
+                    config={chartConfig} 
+                    className="h-96" 
+                    style={{ 
+                      width: Math.max(600, allChartData.length * 110),
+                      minWidth: '600px'
+                    }}
+                    ref={chartContainerRef}
                   >
-                    ←
-                  </button>
-                  <span className={`text-xs ${getThemeTextColor('secondary')}`}>
-                    {Math.min(currentPage * 10 + 1, processedSessions.length)}-{Math.min((currentPage + 1) * 10, processedSessions.length)} of {processedSessions.length}
-                  </span>
-                  <button
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages - 1}
-                    className={`px-2 py-1 rounded text-sm transition-colors ${
-                      currentPage === totalPages - 1
-                        ? `${getThemeTextColor('secondary')} cursor-not-allowed`
-                        : `${getThemeTextColor('primary')} hover:${getThemeClass('componentSecondary')}`
-                    }`}
+                  <BarChart
+                    data={allChartData}
+                    margin={{ top: 35, right: 30, left: 50, bottom: 30 }}
+                    onClick={handleChartClick}
+                    width={Math.max(600, allChartData.length * 110)}
+                    barCategoryGap="10%"
                   >
-                    →
-                  </button>
+                    <XAxis
+                      dataKey="session"
+                      axisLine={true}
+                      tickLine={true}
+                      tick={{ fontSize: 9, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                      height={40}
+                      interval={0}
+                      stroke={isDarkMode ? '#4b5563' : '#d1d5db'}
+                    />
+                    <YAxis
+                      domain={[0, 100]}
+                      axisLine={true}
+                      tickLine={true}
+                      tick={{ fontSize: 12, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                      stroke={isDarkMode ? '#4b5563' : '#d1d5db'}
+                      width={45}
+                    />
+                    <Bar
+                      dataKey="score"
+                      shape={CustomizedBar}
+                      maxBarSize={50}
+                      fill={isDarkMode ? '#374151' : '#9ca3af'}
+                      onClick={(data) => {
+                        if (data && data.sessionData) {
+                          setSelectedSession(data.sessionData);
+                        }
+                      }}
+                    />
+                  </BarChart>
+                  </ChartContainer>
                 </div>
-              )}
-            </div>
-            <div 
-              className="h-96 w-full cursor-pointer relative"
-              onClick={(e) => {
-                // Calculate which bar area was clicked based on position
-                const rect = chartContainerRef.current?.getBoundingClientRect();
-                if (rect && currentChartData.length > 0) {
-                  const x = e.clientX - rect.left;
-                  const chartWidth = rect.width - 20; // Account for margins
-                  const barWidth = chartWidth / currentChartData.length;
-                  const clickedIndex = Math.floor(x / barWidth);
-                  
-                  if (clickedIndex >= 0 && clickedIndex < currentChartData.length) {
-                    const sessionData = currentChartData[clickedIndex]?.sessionData;
-                    if (sessionData) {
-                      console.log('Container clicked, selecting session at index:', clickedIndex);
-                      setSelectedSession(sessionData);
-                    }
-                  }
-                }
-              }}
-              onMouseMove={(e) => {
-                // Calculate which bar area is being hovered based on position
-                const rect = chartContainerRef.current?.getBoundingClientRect();
-                if (rect && currentChartData.length > 0) {
-                  const x = e.clientX - rect.left;
-                  const chartWidth = rect.width - 20; // Account for margins
-                  const barWidth = chartWidth / currentChartData.length;
-                  const hoveredIndex = Math.floor(x / barWidth);
-                  
-                  if (hoveredIndex >= 0 && hoveredIndex < currentChartData.length) {
-                    const sessionData = currentChartData[hoveredIndex]?.sessionData;
-                    if (sessionData) {
-                      setHoveredSessionId(sessionData.id);
-                    }
-                  } else {
-                    setHoveredSessionId(null);
-                  }
-                }
-              }}
-              onMouseLeave={() => setHoveredSessionId(null)}
-            >
-              <ChartContainer 
-                config={chartConfig} 
-                className="h-full" 
-                style={{ width: Math.max(500, currentChartData.length * 100) }}
-                ref={chartContainerRef}
-              >
-              <BarChart
-                data={currentChartData}
-                margin={{ top: 35, right: 20, left: 50, bottom: 30 }}
-                onClick={handleChartClick}
-                width={Math.max(500, currentChartData.length * 100)}
-              >
-                <XAxis
-                  dataKey="session"
-                  axisLine={true}
-                  tickLine={true}
-                  tick={{ fontSize: 9, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
-                  height={40}
-                  interval={0}
-                  stroke={isDarkMode ? '#4b5563' : '#d1d5db'}
+                <ScrollBar 
+                  orientation="horizontal" 
+                  className="h-3 [&>div]:bg-gray-300"
                 />
-                <YAxis
-                  domain={[0, 100]}
-                  axisLine={true}
-                  tickLine={true}
-                  tick={{ fontSize: 12, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
-                  stroke={isDarkMode ? '#4b5563' : '#d1d5db'}
-                />
-                <Bar
-                  dataKey="score"
-                  shape={CustomizedBar}
-                  maxBarSize={60}
-                  fill={isDarkMode ? '#374151' : '#9ca3af'}
-                  onClick={(data) => {
-                    if (data && data.sessionData) {
-                      setSelectedSession(data.sessionData);
-                    }
-                  }}
-                />
-              </BarChart>
-              </ChartContainer>
+              </ScrollArea>
+              
+              {/* Scroll indicators */}
+              <div className="absolute top-1/2 left-0 transform -translate-y-1/2 pointer-events-none">
+                <div className={`w-8 h-16 bg-gradient-to-r from-${isDarkMode ? 'gray-900' : 'white'} to-transparent opacity-50`}></div>
+              </div>
+              <div className="absolute top-1/2 right-0 transform -translate-y-1/2 pointer-events-none">
+                <div className={`w-8 h-16 bg-gradient-to-l from-${isDarkMode ? 'gray-900' : 'white'} to-transparent opacity-50`}></div>
+              </div>
             </div>
           </div>
 
