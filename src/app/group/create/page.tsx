@@ -21,6 +21,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@/hooks/ui/useDebounce';
 import { groupNameCheckQueryKey, myGroupsQueryKey } from '@/config/constants/query-keys';
 import { useToast } from '@/hooks/ui/useToast';
+import toast from 'react-hot-toast';
 
 const formSchema = z.object({
   groupName: z.string().min(3, 'Group name must be at least 3 characters').max(50, 'Group name must be less than 50 characters'),
@@ -33,7 +34,6 @@ const formSchema = z.object({
 export default function CreateGroupPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const router = useRouter();
-  const { success, error, promise } = useToast();
   const queryClient = useQueryClient();
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -89,8 +89,8 @@ export default function CreateGroupPage() {
       description: values.description,
     };
     
-    // Promise 토스트를 사용해서 로딩/성공/에러를 한 번에 처리
-    promise(
+    // react-hot-toast의 promise를 직접 사용
+    toast.promise(
       createGroup(request),
       {
         loading: '그룹을 생성하고 있습니다...',
@@ -110,7 +110,9 @@ export default function CreateGroupPage() {
           return '그룹 생성에 실패했습니다.';
         },
       },
-      { id: 'create-group' }
+      {
+        id: 'create-group', // 중복 토스트 방지
+      }
     ).then(() => {
       // 성공 시 내 그룹 목록을 무효화하고 다시 가져오기
       queryClient.invalidateQueries({
