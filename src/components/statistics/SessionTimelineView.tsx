@@ -538,7 +538,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                       </h4>
                     </div>
                     <p className={`text-sm ${getThemeTextColor('secondary')}`}>
-                      {selectedSessionData.startTime} • {formatTime(selectedSessionData.duration)}
+                      {formatTimeRange(selectedSessionData.timestamp, selectedSessionData.duration)}
                     </p>
                   </div>
                   <div 
