@@ -30,6 +30,11 @@ export const QUERY_KEYS = {
   // 스트릭 관련
   STREAK_CALENDAR: 'streakCalendar',
   STREAK_COUNT: 'streakCount',
+  
+  // 그룹 관련
+  MY_GROUPS: 'myGroups',
+  GROUP_DETAIL: 'groupDetail',
+  GROUP_NAME_CHECK: 'groupNameCheck',
 } as const;
 
 // =============================================================================
@@ -167,6 +172,31 @@ export const streakCountQueryKey = () => [
   QUERY_KEYS.STREAK_COUNT,
 ] as const;
 
+/**
+ * 내 그룹 목록 쿼리키 생성
+ */
+export const myGroupsQueryKey = () => [
+  QUERY_KEYS.MY_GROUPS,
+] as const;
+
+/**
+ * 그룹 상세 정보 쿼리키 생성
+ * @param groupId - 그룹 ID
+ */
+export const groupDetailQueryKey = (groupId: number) => [
+  QUERY_KEYS.GROUP_DETAIL,
+  groupId,
+] as const;
+
+/**
+ * 그룹 이름 중복 검사 쿼리키 생성
+ * @param groupName - 검사할 그룹 이름
+ */
+export const groupNameCheckQueryKey = (groupName: string) => [
+  QUERY_KEYS.GROUP_NAME_CHECK,
+  groupName,
+] as const;
+
 // =============================================================================
 // 타입 정의
 // =============================================================================
@@ -185,6 +215,9 @@ export type QueryKeyTypes = {
   sessionDetail: ReturnType<typeof sessionDetailQueryKey>;
   streakCalendar: ReturnType<typeof streakCalendarQueryKey>;
   streakCount: ReturnType<typeof streakCountQueryKey>;
+  myGroups: ReturnType<typeof myGroupsQueryKey>;
+  groupDetail: ReturnType<typeof groupDetailQueryKey>;
+  groupNameCheck: ReturnType<typeof groupNameCheckQueryKey>;
 };
 
 // =============================================================================
@@ -212,4 +245,7 @@ export const INVALIDATION_KEYS = {
   
   // 스트릭 관련 모든 쿼리 무효화
   ALL_STREAK: [QUERY_KEYS.STREAK_CALENDAR, QUERY_KEYS.STREAK_COUNT],
+  
+  // 그룹 관련 모든 쿼리 무효화
+  ALL_GROUPS: [QUERY_KEYS.MY_GROUPS, QUERY_KEYS.GROUP_DETAIL, QUERY_KEYS.GROUP_NAME_CHECK],
 } as const;
