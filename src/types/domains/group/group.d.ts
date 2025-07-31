@@ -31,5 +31,13 @@ declare namespace Group {
 		description: string,
 	}
 
+	interface UpdateGroupApiRequest {
+		description: string,
+		tags: string[],
+		groundRule: string,
+		name: string,
+		isPublic: boolean,
+	}
+
 }
   
