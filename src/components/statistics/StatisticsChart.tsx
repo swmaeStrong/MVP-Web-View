@@ -97,16 +97,8 @@ export default function StatisticsChart({
   };
 
   return (
-    <Card className={`h-[400px] flex flex-col rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <CardHeader className='pb-2'>
-        <div className='flex items-center justify-between'>
-          <CardTitle className={`flex items-center gap-2 text-sm font-semibold ${getThemeClass('textPrimary')} truncate`}>
-            <span className="truncate">{getChartTitle()}</span>
-          </CardTitle>
-        </div>
-      </CardHeader>
-
-      <CardContent className='flex-1 flex flex-col justify-center items-center p-3 pt-0 overflow-hidden'>
+    <Card className={`h-[360px] flex flex-col rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <CardContent className='flex-1 flex flex-col justify-center items-center p-3 overflow-hidden'>
           {selectedPeriod === 'daily' && data && data.categories.length > 0 ? (
             <StatisticsPieChart data={data} />
           ) : selectedPeriod === 'weekly' || selectedPeriod === 'monthly' ? (

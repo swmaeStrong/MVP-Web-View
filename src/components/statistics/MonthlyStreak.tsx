@@ -139,15 +139,8 @@ export default function MonthlyStreak() {
 
 
   return (
-    <Card className={`h-[400px] ${getThemeClass('component')} ${getThemeClass('border')}`}>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className={`text-sm font-semibold ${getThemeClass('textPrimary')}`}>
-            Monthly Streak
-          </CardTitle>
-        </div>
-      </CardHeader>
-      <CardContent className="flex-1 p-3 pt-0">
+    <Card className={`h-[360px] ${getThemeClass('component')} ${getThemeClass('border')}`}>
+      <CardContent className="flex-1 p-3">
         <div className="grid grid-cols-2 gap-3 w-full h-full items-stretch">
           {/* 좌측: 히트맵 스타일 캘린더 */}
           <div className="flex flex-col items-center space-y-2">

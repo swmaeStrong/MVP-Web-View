@@ -82,12 +82,9 @@ const CategoryList = memo(function CategoryList({
     <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${componentStates.default.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <CardContent className={`${cardSystem.content} ${spacing.inner.normal}`}>
         {/* Fixed height to match ActivityList + TotalTimeCard height */}
-        <div className="h-[542px] flex flex-col">
+        <div className="h-[502px] flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between mb-4">
-            <h4 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
-              Category Analysis
-            </h4>
+          <div className="flex items-center justify-between mb-2">
             <button
               onClick={() => onCategorySelect(null)}
               className={`${buttonSystem.base} ${buttonSystem.sizes.sm} ${
