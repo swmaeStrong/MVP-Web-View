@@ -4,6 +4,7 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import { Plus, Search, Settings, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useCurrentUser } from '@/stores/userStore';
 
 interface NavItem {
   name: string;
@@ -25,6 +26,7 @@ const navItems: NavItem[] = [
 export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
   const pathname = usePathname();
+  const currentUser = useCurrentUser();
 
   // Get selected group ID from URL
   const selectedGroupId = pathname.includes('/group/team/') 
@@ -38,10 +40,16 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
     return pathname === href || pathname.startsWith(href + '/');
   };
 
-  // Group submenu items
+  // 현재 선택된 그룹 찾기
+  const selectedGroup = groups.find(group => group.groupId.toString() === selectedGroupId);
+  
+  // 현재 사용자가 그룹장인지 확인
+  const isGroupOwner = selectedGroup && currentUser && selectedGroup.groupOwner.userId === currentUser.id;
+
+  // Group submenu items - 그룹장만 Settings 메뉴 표시
   const groupSubMenuItems = [
     { name: 'Main', href: `/group/team/${selectedGroupId}`, icon: TrendingUp },
-    { name: 'Settings', href: `/group/team/${selectedGroupId}/settings`, icon: Settings },
+    ...(isGroupOwner ? [{ name: 'Settings', href: `/group/team/${selectedGroupId}/settings`, icon: Settings }] : []),
   ];
 
   return (
