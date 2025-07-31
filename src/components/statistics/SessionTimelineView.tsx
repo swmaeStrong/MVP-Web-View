@@ -375,36 +375,35 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
   return (
     <Card className={`rounded-lg border-2 shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <CardHeader className="pb-3">
-        
-        {/* Summary Stats */}
-        {summaryStats && (
-          <div className={`grid grid-cols-3 gap-4 mt-4 p-4 rounded-lg ${getThemeClass('componentSecondary')}`}>
-            <div className="text-center">
-              <div className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-                {summaryStats.totalSessions}
-              </div>
-              <div className={`text-xs ${getThemeTextColor('secondary')}`}>Sessions</div>
-            </div>
-            <div className="text-center">
-              <div className={`text-2xl font-bold ${getThemeTextColor('accent')}`}>
-                {summaryStats.averageScore}
-              </div>
-              <div className={`text-xs ${getThemeTextColor('secondary')}`}>Avg Score</div>
-            </div>
-            <div className="text-center">
-              <div className={`text-2xl font-bold`} style={{ color: summaryStats.bestSession.scoreColor }}>
-                {summaryStats.bestSession.score}
-              </div>
-              <div className={`text-xs ${getThemeTextColor('secondary')}`}>Best Score</div>
-            </div>
-          </div>
-        )}
       </CardHeader>
 
       <CardContent>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: Bar Chart */}
           <div className="space-y-4">
+            {/* Summary Stats - Small version at top left */}
+            {summaryStats && (
+              <div className={`flex items-center justify-center gap-6 mb-3 p-3 rounded-md ${getThemeClass('componentSecondary')}`}>
+                <div className="flex items-center gap-2">
+                  <span className={`text-base font-bold ${getThemeTextColor('primary')}`}>
+                    {summaryStats.totalSessions}
+                  </span>
+                  <span className={`text-sm ${getThemeTextColor('secondary')}`}>Sessions</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-base font-bold ${getThemeTextColor('primary')}`}>
+                    {summaryStats.averageScore}
+                  </span>
+                  <span className={`text-sm ${getThemeTextColor('secondary')}`}>Avg Score</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-base font-bold ${getThemeTextColor('primary')}`}>
+                    {summaryStats.bestSession.score}
+                  </span>
+                  <span className={`text-sm ${getThemeTextColor('secondary')}`}>Best Score</span>
+                </div>
+              </div>
+            )}
             <div className="flex items-center justify-between">
               <h3 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
                 {totalPages > 1 && `Page ${currentPage + 1} of ${totalPages}`}
