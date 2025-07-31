@@ -360,7 +360,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
   }
 
   return (
-    <Card className={`rounded-lg border-2 shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+    <Card className={`rounded-lg border-2 shadow-sm transition-all duration-300 hover:shadow-md py-2 pb-0 ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <CardContent className="pt-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: Bar Chart */}
