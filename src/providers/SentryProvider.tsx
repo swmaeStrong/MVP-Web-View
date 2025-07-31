@@ -3,7 +3,7 @@
 import * as Sentry from '@sentry/nextjs';
 import { ErrorBoundary as SentryErrorBoundaryComponent } from '@sentry/nextjs';
 import React from 'react';
-import ErrorState from '@/components/common/ErrorState';
+import StateDisplay from '@/components/common/StateDisplay';
 
 interface SentryProviderProps {
   children: React.ReactNode;
@@ -26,7 +26,8 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({ error }) => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="flex flex-col items-center space-y-4">
-        <ErrorState
+        <StateDisplay
+          type="error"
           title="문제가 발생했습니다"
           message={errorMessage}
           size="large"

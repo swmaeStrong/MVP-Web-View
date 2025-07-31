@@ -2,9 +2,10 @@
  * 웹뷰에서 Swift 앱으로 토큰 요청하는 유틸리티
  */
 
+import { setRccToken } from '../config/api/csrConfig';
+import { setOsEnv } from '../config/api/osConfig';
+import { setRscToken } from '../config/api/ssrConfig';
 import { getUserInfo } from '../shared/api/get';
-import { setRccToken } from '../shared/configs/api/csrConfig';
-import { setRscToken } from '../shared/configs/api/ssrConfig';
 import { useUserStore } from '../stores/userStore';
 
 // TypeScript 타입 정의
@@ -17,8 +18,8 @@ declare global {
         };
       };
     };
-    receiveTokenFromSwift?: (accessToken: string, refreshToken: string) => void;
-    initAccessToken?: (token: string) => void;
+    receiveTokenFromSwift?: (accessToken: string) => void;
+    initAccessToken?: (token: string, osEnv: string) => void;
   }
 }
 
@@ -96,13 +97,22 @@ export const requestTokenFromSwift = (): Promise<string | null> => {
   });
 };
 
+export const requestTokenFromWindows = (): Promise<string | null> => {
+  return new Promise(resolve => {
+    resolve(null);
+  });
+};
+
+
+
+
 /**
  * 전역 토큰 수신 함수 설정
  * Swift 앱에서 window.initAccessToken(token) 형태로 호출 가능
 */
 
 if (typeof window !== 'undefined') {
-  window.initAccessToken = async function (token: string | null) {
+  window.initAccessToken = async function (token: string | null, osEnv: string) {
     if (!token) {
       return;
     }
@@ -110,7 +120,7 @@ if (typeof window !== 'undefined') {
       // API 인스턴스에 토큰 설정
       await setRccToken(token);
       await setRscToken(token);
-
+      await setOsEnv(osEnv);
       // 유저 정보 초기화 (일반 함수 호출)
       await initializeUserInfo();
 

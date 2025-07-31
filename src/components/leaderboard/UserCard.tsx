@@ -1,14 +1,16 @@
 'use client';
 
-import { useTheme } from '@/hooks/useTheme';
+import { memo } from 'react';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { categoryColors } from '@/styles';
 import { componentSizes, componentStates, getPriorityStyle, getRankPriority } from '@/styles/design-system';
 import { FONT_SIZES } from '@/styles/font-sizes';
 import { ProcessedDetail, formatScoreToMinutes, getCategoryDisplayName, processLeaderboardDetails } from '@/utils/leaderboard';
 import { Medal } from 'lucide-react';
+import UserProfileTooltip from '@/components/common/UserProfileTooltip';
 
 interface UserCardProps {
-  user: LeaderBoard.LeaderBoardResponse & { id?: string; isMe?: boolean };
+  user: LeaderBoard.LeaderBoardApiResponse & { id?: string; isMe?: boolean };
   index: number;
   totalUsers: number;
   isCurrentUser: boolean;
@@ -30,7 +32,7 @@ const formatTime = (seconds: number) => {
 };
 
 
-export default function UserCard({
+const UserCard = memo(function UserCard({
   user,
   index,
   totalUsers,
@@ -77,11 +79,24 @@ export default function UserCard({
         {/* 사용자 정보 */}
         <div className='flex-1 min-w-0'>
           <div className='flex items-center space-x-2'>
-            <h3
-              className={`${FONT_SIZES.LEADERBOARD.PRIMARY} font-bold truncate ${getThemeTextColor('primary')}`}
+            <UserProfileTooltip 
+              userStats={{
+                nickname: user.nickname,
+                currentStreak: Math.floor(Math.random() * 30) + 1, // Mock data - replace with actual API
+                totalScore: user.score * 10 + Math.floor(Math.random() * 1000), // Mock data
+                totalSessions: Math.floor(Math.random() * 50) + 10, // Mock data
+                rank: rank,
+                workTime: category === 'work' ? formatScoreToMinutes(user.score) : formatTime(user.score)
+              }}
+              side="top"
+              align="start"
             >
-              {user.nickname}
-            </h3>
+              <h3
+                className={`${FONT_SIZES.LEADERBOARD.PRIMARY} font-bold truncate ${getThemeTextColor('primary')} hover:${getThemeTextColor('accent')} transition-colors duration-200`}
+              >
+                {user.nickname}
+              </h3>
+            </UserProfileTooltip>
 
             {/* 사용자 표시 - 컴팩트 */}
             {isCurrentUser && (
@@ -184,4 +199,15 @@ export default function UserCard({
       </div>
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  // 메모이제이션 최적화: 귀밌한 props만 비교
+  return (
+    prevProps.user.userId === nextProps.user.userId &&
+    prevProps.user.rank === nextProps.user.rank &&
+    prevProps.user.score === nextProps.user.score &&
+    prevProps.isCurrentUser === nextProps.isCurrentUser &&
+    prevProps.category === nextProps.category
+  );
+});
+
+export default UserCard;

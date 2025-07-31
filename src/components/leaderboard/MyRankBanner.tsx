@@ -1,8 +1,8 @@
 'use client';
 
-import NoData from '@/components/common/NoData';
-import { useMyRank } from '@/hooks/useMyRank';
-import { useTheme } from '@/hooks/useTheme';
+import StateDisplay from '@/components/common/StateDisplay';
+import { useMyRank } from '@/hooks/data/useMyRank';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { themeColors } from '@/styles/colors';
 import { componentSizes, componentStates, spacing } from '@/styles/design-system';
 import { FONT_SIZES } from '@/styles/font-sizes';
@@ -138,7 +138,8 @@ export default function MyRankBanner({
         <div className={`border rounded-lg p-6 ${
           isDarkMode ? `${themeColors.dark.classes.borderLight} ${themeColors.dark.classes.componentSecondary}/50` : `${themeColors.light.classes.borderLight} ${themeColors.light.classes.componentSecondary}/50`
         }`}>
-          <NoData
+          <StateDisplay
+            type="empty"
             title="No Rank Data"
             message="Please log in or create activity records to see your ranking!"
             size="medium"

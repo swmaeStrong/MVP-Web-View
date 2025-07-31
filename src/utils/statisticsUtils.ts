@@ -1,5 +1,5 @@
 import { categoryColors } from '@/styles/colors';
-import { DailyStatistics, StatisticsCategory } from '@/types/statistics';
+// namespace로 변경됨
 
 // 카테고리별 고정 색상 맵 - colors.ts와 통합
 export const categoryColorMap: { [key: string]: string } = {
@@ -43,9 +43,9 @@ export const secondsToHours = (seconds: number): number => {
 
 // UsageLog 데이터를 DailyStatistics로 변환
 export const transformUsageLogToDaily = (
-  usageData: UsageLog.UsageLogResponse[],
+  usageData: UsageLog.UsageLogApiResponse[],
   date: string
-): DailyStatistics => {
+): Statistics.DailyStatistics => {
   const totalTime = usageData.reduce((sum, item) => sum + item.duration, 0);
 
   // 카테고리별 데이터 집계
@@ -56,7 +56,7 @@ export const transformUsageLogToDaily = (
   });
 
   // 카테고리 배열로 변환
-  const categories: StatisticsCategory[] = Array.from(
+  const categories: Statistics.StatisticsCategory[] = Array.from(
     categoryMap.entries()
   ).map(([name, time]) => ({
     name,
@@ -76,17 +76,8 @@ export const transformUsageLogToDaily = (
   };
 };
 
-// 주별 데이터 생성 (일별 데이터들을 모아서)
-export const generateWeeklyData = (dailyDataList: DailyStatistics[]) => {
-  // 구현할 예정 - 일별 데이터들을 주별로 집계
-  return null;
-};
-
-// 월별 데이터 생성 (일별 데이터들을 모아서)
-export const generateMonthlyData = (dailyDataList: DailyStatistics[]) => {
-  // 구현할 예정 - 일별 데이터들을 월별로 집계
-  return null;
-};
+// 주별, 월별 데이터 생성 함수들은 현재 구현되지 않아 제거됨
+// 필요시 향후 구현 예정
 
 import { formatKSTDateWithDay, getKSTDateStringFromDate } from './timezone';
 

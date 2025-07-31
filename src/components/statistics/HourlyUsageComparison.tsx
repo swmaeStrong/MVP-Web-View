@@ -1,7 +1,7 @@
 'use client';
 
-import { useHourlyUsage } from '@/hooks/useHourlyUsage';
-import { useTheme } from '@/hooks/useTheme';
+import { useHourlyUsage } from '@/hooks/data/useHourlyUsage';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import {
   ChartContainer,
@@ -28,8 +28,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import ErrorState from '../common/ErrorState';
-import NoData from '../common/NoData';
+import StateDisplay from '../common/StateDisplay';
 
 interface HourlyUsageComparisonProps {
   userId: string;
@@ -337,7 +336,8 @@ export default function HourlyUsageComparison({
     return (
       <Card className={`rounded-lg border-2 shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardContent className='p-6'>
-          <ErrorState
+          <StateDisplay
+            type="error"
             title='Unable to load hourly data'
             message='A network error occurred. Please try again.'
             onRetry={refetch}
@@ -435,7 +435,8 @@ export default function HourlyUsageComparison({
         <CardContent className='px-2 pt-0'>
           {!dataValidation.isValid ? (
             <div className='flex h-[350px] items-center justify-center p-4'>
-              <NoData
+              <StateDisplay
+                type="empty"
                 title={
                   dataValidation.reason === 'no-data' 
                     ? 'No hourly data available'

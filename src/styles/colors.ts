@@ -12,7 +12,7 @@ export const themeColors = {
     text: {
       primary: 'rgb(220, 220, 220)', // 밝은 텍스트 220,220,220
       secondary: 'rgb(153, 153, 153)', // 약간 어두운 153,153,153
-      accent: 'rgb(168, 85, 247)',   // 보라색 액센트 텍스트
+      accent: '#3F72AF',   // 블루 액센트 텍스트
     },
     // Tailwind 클래스명
     classes: {
@@ -23,7 +23,7 @@ export const themeColors = {
       borderLight: 'border-[rgb(120,120,120)]',
       textPrimary: 'text-[rgb(220,220,220)]',
       textSecondary: 'text-[rgb(153,153,153)]',
-      textAccent: 'text-[rgb(168,85,247)]',
+      textAccent: 'text-[#3F72AF]',
     }
   },
   light: {
@@ -38,7 +38,7 @@ export const themeColors = {
     text: {
       primary: 'rgb(43, 43, 43)',    // 텍스트 43, 43, 43
       secondary: 'rgb(142, 142, 142)', // 회색 텍스트 142,142,142
-      accent: 'rgb(147, 51, 234)',   // 보라색 액센트 텍스트 purple-700
+      accent: '#3F72AF',    // 네이비 액센트 텍스트 blue-700
     },
     // Tailwind 클래스명
     classes: {
@@ -49,7 +49,7 @@ export const themeColors = {
       borderLight: 'border-gray-300',
       textPrimary: 'text-[rgb(43,43,43)]',
       textSecondary: 'text-[rgb(142,142,142)]',
-      textAccent: 'text-purple-700',
+      textAccent: 'text-[#3F72AF]',
     }
   },
   // 공통 색상
@@ -91,7 +91,7 @@ export const categoryColors = {
     badgeClass: 'bg-slate-100 text-slate-700 border-slate-200',
     borderGradient: 'from-slate-400 to-purple-400',
     bgOpacity: 'from-slate-600/5 to-purple-600/5',
-    solid: '#6366f1', // indigo-500
+    solid: '#94a3b8', // slate-400
   },
   work: {
     bg: 'bg-purple-500',
@@ -102,7 +102,7 @@ export const categoryColors = {
     badgeClass: 'bg-purple-100 text-purple-700 border-purple-200',
     borderGradient: 'from-purple-400 to-violet-400',
     bgOpacity: 'from-purple-600/5 to-violet-600/5',
-    solid: '#7c3aed', // violet-600
+    solid: '#a855f7', // purple-500
   },
   others: {
     bg: 'bg-gray-400',
@@ -113,7 +113,7 @@ export const categoryColors = {
     badgeClass: 'bg-gray-100 text-gray-700 border-gray-200',
     borderGradient: 'from-gray-400 to-slate-400',
     bgOpacity: 'from-gray-600/5 to-slate-600/5',
-    solid: '#71717a', // zinc-500
+    solid: '#9ca3af', // gray-400
   },
   
   // 주요 작업 카테고리
@@ -126,7 +126,7 @@ export const categoryColors = {
     badgeClass: 'bg-blue-100 text-blue-700 border-blue-200',
     borderGradient: 'from-blue-400 to-indigo-400',
     bgOpacity: 'from-blue-600/5 to-indigo-600/5',
-    solid: '#1d4ed8', // blue-700
+    solid: '#a855f7', // purple-500
   },
   Documentation: {
     bg: 'bg-indigo-400',
@@ -137,7 +137,7 @@ export const categoryColors = {
     badgeClass: 'bg-green-100 text-green-700 border-green-200',
     borderGradient: 'from-green-400 to-emerald-400',
     bgOpacity: 'from-green-600/5 to-emerald-600/5',
-    solid: '#059669', // emerald-600
+    solid: '#818cf8', // indigo-400
   },
   LLM: {
     bg: 'bg-violet-400',
@@ -148,7 +148,7 @@ export const categoryColors = {
     badgeClass: 'bg-purple-100 text-purple-700 border-purple-200',
     borderGradient: 'from-purple-400 to-violet-400',
     bgOpacity: 'from-purple-600/5 to-violet-600/5',
-    solid: '#7c3aed', // violet-600
+    solid: '#a78bfa', // violet-400
   },
   Design: {
     bg: 'bg-blue-400',
@@ -159,7 +159,7 @@ export const categoryColors = {
     badgeClass: 'bg-pink-100 text-pink-700 border-pink-200',
     borderGradient: 'from-pink-400 to-rose-400',
     bgOpacity: 'from-pink-600/5 to-rose-600/5',
-    solid: '#db2777', // pink-600
+    solid: '#60a5fa', // blue-400
   },
   
   // 일반 활동 카테고리
@@ -172,7 +172,7 @@ export const categoryColors = {
     badgeClass: 'bg-orange-100 text-orange-700 border-orange-200',
     borderGradient: 'from-orange-400 to-amber-400',
     bgOpacity: 'from-orange-600/5 to-amber-600/5',
-    solid: '#f59e42', // orange-400
+    solid: '#34d399', // emerald-400
   },
   Education: {
     bg: 'bg-teal-400',
@@ -183,7 +183,7 @@ export const categoryColors = {
     badgeClass: 'bg-teal-100 text-teal-700 border-teal-200',
     borderGradient: 'from-teal-400 to-cyan-400',
     bgOpacity: 'from-teal-600/5 to-cyan-600/5',
-    solid: '#0d9488', // teal-600
+    solid: '#2dd4bf', // teal-400
   },
   Entertainment: {
     bg: 'bg-pink-400',
@@ -194,7 +194,7 @@ export const categoryColors = {
     badgeClass: 'bg-red-100 text-red-700 border-red-200',
     borderGradient: 'from-red-400 to-rose-400',
     bgOpacity: 'from-red-600/5 to-rose-600/5',
-    solid: '#dc2626', // red-600
+    solid: '#f472b6', // pink-400
   },
   'System & Utilities': {
     bg: 'bg-cyan-500',
@@ -205,7 +205,7 @@ export const categoryColors = {
     badgeClass: 'bg-cyan-100 text-cyan-700 border-cyan-200',
     borderGradient: 'from-cyan-400 to-blue-400',
     bgOpacity: 'from-cyan-600/5 to-blue-600/5',
-    solid: '#0ea5e9', // sky-500
+    solid: '#06b6d4', // cyan-500
   },
   SNS: {
     bg: 'bg-amber-400',
@@ -216,7 +216,7 @@ export const categoryColors = {
     badgeClass: 'bg-cyan-100 text-cyan-700 border-cyan-200',
     borderGradient: 'from-cyan-400 to-blue-400',
     bgOpacity: 'from-cyan-600/5 to-blue-600/5',
-    solid: '#0ea5e9', // sky-500
+    solid: '#fbbf24', // amber-400
   },
   Productivity: {
     bg: 'bg-rose-400',
@@ -227,7 +227,7 @@ export const categoryColors = {
     badgeClass: 'bg-rose-100 text-rose-700 border-rose-200',
     borderGradient: 'from-rose-400 to-pink-400',
     bgOpacity: 'from-rose-600/5 to-pink-600/5',
-    solid: '#e11d48', // rose-600
+    solid: '#fb7185', // rose-400
   },
   
   // 레거시 호환성 (소문자)
@@ -240,7 +240,7 @@ export const categoryColors = {
     badgeClass: 'bg-blue-100 text-blue-700 border-blue-200',
     borderGradient: 'from-blue-400 to-indigo-400',
     bgOpacity: 'from-blue-600/5 to-indigo-600/5',
-    solid: '#1d4ed8', // blue-700
+    solid: '#a855f7', // purple-500
   },
   llm: {
     bg: 'bg-violet-400',
@@ -251,7 +251,7 @@ export const categoryColors = {
     badgeClass: 'bg-purple-100 text-purple-700 border-purple-200',
     borderGradient: 'from-purple-400 to-violet-400',
     bgOpacity: 'from-purple-600/5 to-violet-600/5',
-    solid: '#7c3aed', // violet-600
+    solid: '#a78bfa', // violet-400
   },
   documentation: {
     bg: 'bg-indigo-400',
@@ -262,7 +262,7 @@ export const categoryColors = {
     badgeClass: 'bg-green-100 text-green-700 border-green-200',
     borderGradient: 'from-green-400 to-emerald-400',
     bgOpacity: 'from-green-600/5 to-emerald-600/5',
-    solid: '#059669', // emerald-600
+    solid: '#818cf8', // indigo-400
   },
   design: {
     bg: 'bg-blue-400',
@@ -273,7 +273,7 @@ export const categoryColors = {
     badgeClass: 'bg-pink-100 text-pink-700 border-pink-200',
     borderGradient: 'from-pink-400 to-rose-400',
     bgOpacity: 'from-pink-600/5 to-rose-600/5',
-    solid: '#db2777', // pink-600
+    solid: '#60a5fa', // blue-400
   },
   communication: {
     bg: 'bg-emerald-400',
@@ -284,7 +284,7 @@ export const categoryColors = {
     badgeClass: 'bg-orange-100 text-orange-700 border-orange-200',
     borderGradient: 'from-orange-400 to-amber-400',
     bgOpacity: 'from-orange-600/5 to-amber-600/5',
-    solid: '#f59e42', // orange-400
+    solid: '#34d399', // emerald-400
   },
   youtube: {
     bg: 'bg-pink-400',
@@ -295,7 +295,7 @@ export const categoryColors = {
     badgeClass: 'bg-red-100 text-red-700 border-red-200',
     borderGradient: 'from-red-400 to-rose-400',
     bgOpacity: 'from-red-600/5 to-rose-600/5',
-    solid: '#dc2626', // red-600
+    solid: '#f472b6', // pink-400
   },
   sns: {
     bg: 'bg-amber-400',
@@ -306,7 +306,7 @@ export const categoryColors = {
     badgeClass: 'bg-cyan-100 text-cyan-700 border-cyan-200',
     borderGradient: 'from-cyan-400 to-blue-400',
     bgOpacity: 'from-cyan-600/5 to-blue-600/5',
-    solid: '#0ea5e9', // sky-500
+    solid: '#fbbf24', // amber-400
   },
   uncategorized: {
     bg: 'bg-gray-400',
@@ -317,7 +317,7 @@ export const categoryColors = {
     badgeClass: 'bg-gray-100 text-gray-700 border-gray-200',
     borderGradient: 'from-gray-400 to-slate-400',
     bgOpacity: 'from-gray-600/5 to-slate-600/5',
-    solid: '#71717a', // zinc-500
+    solid: '#9ca3af', // gray-400
   },
   
   // 기본값
@@ -330,7 +330,7 @@ export const categoryColors = {
     badgeClass: 'bg-gray-100 text-gray-700 border-gray-200',
     borderGradient: 'from-gray-400 to-slate-400',
     bgOpacity: 'from-gray-600/5 to-slate-600/5',
-    solid: '#71717a', // zinc-500
+    solid: '#94a3b8', // slate-400
   },
 };
 

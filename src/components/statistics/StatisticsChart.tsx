@@ -1,21 +1,19 @@
 'use client';
 
+import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
-import { DailyStatistics, PeriodType } from '@/types/statistics';
-import { formatKSTDate } from '@/utils/timezone';
+// 이제 namespace 사용으로 인해 직접 import 불가능
 import {
   Activity,
   BarChart3,
   Target,
 } from 'lucide-react';
-import NoData from '../common/NoData';
-import StatisticsBarChart from './StatisticsBarChart';
-import StatisticsRadarChart from './StatisticsRadarChart';
-import { useTheme } from '@/hooks/useTheme';
+import StateDisplay from '../common/StateDisplay';
+import StatisticsPieChart from './StatisticsPieChart';
 
 interface StatisticsChartProps {
-  selectedPeriod: PeriodType;
-  data: DailyStatistics | null;
+  selectedPeriod: Statistics.PeriodType;
+  data: Statistics.DailyStatistics | null;
   currentDate: string;
   isLoading?: boolean;
 }
@@ -30,16 +28,16 @@ export default function StatisticsChart({
   
   if (isLoading) {
     return (
-      <Card className={`h-full rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <Card className={`h-[400px] flex flex-col rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardHeader className='pb-2'>
           <div className='flex items-center justify-between'>
-            <div className={`h-7 w-48 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+            <div className={`h-6 w-32 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
           </div>
         </CardHeader>
 
-        <CardContent className='flex-1 min-h-0 p-2 pt-0'>
+        <CardContent className='flex-1 flex flex-col justify-center items-center p-3 pt-0 overflow-hidden'>
           {selectedPeriod === 'daily' ? (
-            // Radar chart skeleton
+            // Pie chart skeleton
             <div className='h-full flex items-center justify-center'>
               <div className='relative w-full h-full flex items-center justify-center'>
                 <div className={`aspect-square w-full h-full min-h-[180px] max-h-[350px] min-w-[180px] max-w-[350px] animate-pulse rounded-full ${getThemeClass('componentSecondary')}`}></div>
@@ -80,7 +78,7 @@ export default function StatisticsChart({
   const getChartTitle = () => {
     switch (selectedPeriod) {
       case 'daily':
-        return 'Top 6 Category Analysis';
+        return 'Category Analysis';
       case 'weekly':
         return 'Weekly Work Patterns';
       case 'monthly':
@@ -99,30 +97,21 @@ export default function StatisticsChart({
   };
 
   return (
-    <Card className={`h-full rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <CardHeader className='pb-2'>
-        <div className='flex items-center justify-between'>
-          <CardTitle className={`text-lg font-semibold ${getThemeClass('textPrimary')}`}>
-            {getChartTitle()}
-          </CardTitle>
-        </div>
-      </CardHeader>
-
-      <CardContent className='flex-1 min-h-0 p-2 pt-0'>
+    <Card className={`h-[360px] flex flex-col rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <CardContent className='flex-1 flex flex-col justify-center items-center p-3 overflow-hidden'>
           {selectedPeriod === 'daily' && data && data.categories.length > 0 ? (
-            <StatisticsRadarChart data={data} />
+            <StatisticsPieChart data={data} />
           ) : selectedPeriod === 'weekly' || selectedPeriod === 'monthly' ? (
-            <StatisticsBarChart period={selectedPeriod} />
+            <>추후 추가 예정</>
           ) : (
-            <div className='flex h-full items-center justify-center p-4'>
-              <NoData
-                title='No Activity Data'
-                message='No activities recorded for the selected date.'
-                icon={Activity}
-                showBorder={false}
-                size='large'
-              />
-            </div>
+            <StateDisplay
+              type="empty"
+              title='No Activity Data'
+              message='No activities recorded for the selected date.'
+              icon={Activity}
+              showBorder={false}
+              size='large'
+            />
           )}
       </CardContent>
     </Card>

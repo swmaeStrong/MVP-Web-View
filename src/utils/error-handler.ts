@@ -6,7 +6,7 @@ import {
   ErrorLogEntry, 
   ErrorHandlerConfig,
   ApiErrorResponse 
-} from '@/types/error';
+} from '@/types/common/error';
 import { captureError, addBreadcrumb, setSentryContext } from './sentry';
 import { v4 as uuidv4 } from 'uuid';
 

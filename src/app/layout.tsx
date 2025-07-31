@@ -50,11 +50,17 @@ export default function RootLayout({
   return (
     <html
       lang='en'
-      className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable} dark`}
+      className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable}`}
     >
-      <body className='font-sans antialiased dark bg-gray-900 text-gray-100'>
+      <body className='font-sans antialiased'>
         <SentryProvider>
-          <QueryProvider>{children}</QueryProvider>
+          <QueryProvider>
+            <div className='min-h-screen bg-gray-900 text-gray-100'>
+              <main className='transition-all duration-300'>
+                {children}
+              </main>
+            </div>
+          </QueryProvider>
         </SentryProvider>
       </body>
     </html>

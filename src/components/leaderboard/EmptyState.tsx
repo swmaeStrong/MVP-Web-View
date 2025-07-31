@@ -1,7 +1,7 @@
 'use client';
 
-import NoData from '@/components/common/NoData';
-import { useTheme } from '@/hooks/useTheme';
+import StateDisplay from '@/components/common/StateDisplay';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { themeColors } from '@/styles/colors';
 
 interface EmptyStateProps {
@@ -17,7 +17,7 @@ export default function EmptyState({
   selectedDateIndex,
   refetch,
 }: EmptyStateProps) {
-  const { getThemeClass, isDarkMode } = useTheme();
+  const { isDarkMode } = useTheme();
   // Check if current period (today, this week, this month)
   const isCurrentPeriod = selectedDateIndex === 0;
   
@@ -48,7 +48,8 @@ export default function EmptyState({
         ? `${themeColors.dark.classes.borderLight} ${themeColors.dark.classes.component}` 
         : `${themeColors.light.classes.borderLight} ${themeColors.light.classes.component}`
     }`}>
-      <NoData
+      <StateDisplay
+        type="empty"
         title={getTitle()}
         message={getMessage()}
         size="large"

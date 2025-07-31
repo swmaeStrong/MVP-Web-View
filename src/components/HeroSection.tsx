@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button } from '@/shadcn/ui/button';
 import { Badge } from '@/shadcn/ui/badge';
-import { useDesignSystem } from '@/hooks/useDesignSystem';
+// import { useDesignSystem } from '@/hooks/ui/useDesignSystem'; // 제거됨 - 사용되지 않음
 import { cardSystem, buttonSystem, badgeSystem, componentStates, spacing, layouts } from '@/styles/design-system';
 
 export default function HeroSection() {
-  const { getCardStyle, getButtonStyle } = useDesignSystem();
+  // 사용되지 않는 스타일 함수들 제거됨
   
   const handleCopyCommand = () => {
     const command = 'brew install productivity-tracker';

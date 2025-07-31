@@ -1,12 +1,11 @@
 'use client';
 
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { Button } from '@/shadcn/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
 import { FONT_SIZES } from '@/styles/font-sizes';
 import { formatKSTDate, getKSTDate } from '@/utils/timezone';
-import { ChevronLeft, ChevronRight, Info, RefreshCw } from 'lucide-react';
-import { getThemeColor } from '../../utils/theme-detector';
+import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
 
 interface PeriodSelectorProps {
   selectedPeriod: 'daily' | 'weekly' | 'monthly';
@@ -167,12 +166,12 @@ export default function PeriodSelector({
             <div 
               className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full transition-all duration-200 cursor-pointer ${FONT_SIZES.LEADERBOARD.SECONDARY} border hover:shadow-sm ${
                 isDarkMode 
-                  ? `${getThemeColor('component')} border-[rgb(80,80,80)] text-[rgb(153,153,153)] hover:text-[rgb(220,220,220)] hover:border-[rgb(120,120,120)]` 
+                  ? `${getThemeClass('component')} border-[rgb(80,80,80)] text-[rgb(153,153,153)] hover:text-[rgb(220,220,220)] hover:border-[rgb(120,120,120)]` 
                   : `bg-gray-50 border-gray-200 text-[rgb(142,142,142)] hover:text-[rgb(43,43,43)] hover:border-gray-300`
               }`} 
             >
               <Info className={`h-3 w-3 ${getThemeTextColor('primary')}`} />
-              <span className={`${getThemeColor('background')} ${getThemeTextColor('primary')}`}>Info</span>
+              <span className={`${getThemeClass('background')} ${getThemeTextColor('primary')}`}>Info</span>
             </div>
           </TooltipTrigger>
           <TooltipContent side="top" align="end" className="max-w-xs text-sm leading-relaxed">

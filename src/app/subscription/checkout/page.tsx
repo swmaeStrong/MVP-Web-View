@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/shadcn/ui/card';
 import { getKSTDate } from '@/utils/timezone';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/ui/useTheme';
 
 interface PaymentMethod {
   method: string;

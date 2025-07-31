@@ -1,50 +1,38 @@
 'use client';
 
+import { memo } from 'react';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { StatisticsCategory } from '@/types/statistics';
-import { useTheme } from '@/hooks/useTheme';
-import { useDesignSystem } from '@/hooks/useDesignSystem';
+// namespace로 변경됨
+import { useTheme } from '@/hooks/ui/useTheme';
+// import { useDesignSystem } from '@/hooks/ui/useDesignSystem'; // 제거됨
 import { cardSystem, componentStates, spacing, layouts, buttonSystem } from '@/styles/design-system';
-import NoData from '@/components/common/NoData';
+import StateDisplay from '@/components/common/StateDisplay';
+import { getCategoryColor } from '@/utils/categories';
 
 interface CategoryListProps {
-  categories: StatisticsCategory[];
-  selectedCategory: StatisticsCategory | null;
-  onCategorySelect: (category: StatisticsCategory | null) => void;
+  categories: Statistics.StatisticsCategory[];
+  selectedCategory: Statistics.StatisticsCategory | null;
+  onCategorySelect: (category: Statistics.StatisticsCategory | null) => void;
   isLoading?: boolean;
 }
 
-export default function CategoryList({
+const CategoryList = memo(function CategoryList({
   categories,
   selectedCategory,
   onCategorySelect,
   isLoading = false,
 }: CategoryListProps) {
-  const { getThemeClass, getThemeTextColor } = useTheme();
-  const { getCardStyle, getButtonStyle } = useDesignSystem();
-  
-  // Apply design system styles
-  const cardStyles = getCardStyle('medium', 'hoverable');
-  const buttonStyles = getButtonStyle('small', 'ghost');
-  // Define 6 fixed colors
-  const categoryColors = [
-    '#8b5cf6', // Purple
-    '#06b6d4', // Cyan
-    '#10b981', // Green
-    '#f59e0b', // Yellow
-    '#ef4444', // Red
-    '#ec4899', // Pink
-  ];
-
-  // Show only top 6 and assign colors
+  const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
+  // 스타일 시스템 단순화됨 - 직접 클래스 사용
+  // Show only top 6 and assign colors using centralized config
   const top6Categories = categories.slice(0, 6).map((category, index) => ({
     ...category,
-    color: categoryColors[index] || categoryColors[0], // Color override
+    color: getCategoryColor(index), // 중앙화된 색상 설정 사용
   }));
 
   if (isLoading) {
     return (
-      <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${componentStates.default.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <Card className={getCommonCardClass()}>
         <CardContent className={`${cardSystem.content} ${spacing.inner.normal}`}>
           {/* Fixed height to match ActivityList + TotalTimeCard height */}
           <div className="h-[542px] flex flex-col">
@@ -80,7 +68,8 @@ export default function CategoryList({
 
   if (top6Categories.length === 0) {
     return (
-      <NoData 
+      <StateDisplay 
+        type="empty"
         title="No Category Data"
         message="No category data available for analysis."
         size="medium"
@@ -93,12 +82,9 @@ export default function CategoryList({
     <Card className={`${cardSystem.base} ${cardSystem.variants.elevated} ${componentStates.default.transition} ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <CardContent className={`${cardSystem.content} ${spacing.inner.normal}`}>
         {/* Fixed height to match ActivityList + TotalTimeCard height */}
-        <div className="h-[542px] flex flex-col">
+        <div className="h-[502px] flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between mb-4">
-            <h4 className={`text-lg font-semibold ${getThemeTextColor('primary')}`}>
-              Category Analysis
-            </h4>
+          <div className="flex items-center justify-between mb-2">
             <button
               onClick={() => onCategorySelect(null)}
               className={`${buttonSystem.base} ${buttonSystem.sizes.sm} ${
@@ -161,4 +147,14 @@ export default function CategoryList({
       </CardContent>
     </Card>
   );
-}
+}, (prevProps, nextProps) => {
+  // 메모이제이션: 데이터와 로딩 상태만 비교
+  return (
+    prevProps.categories.length === nextProps.categories.length &&
+    prevProps.selectedCategory?.name === nextProps.selectedCategory?.name &&
+    prevProps.isLoading === nextProps.isLoading &&
+    JSON.stringify(prevProps.categories) === JSON.stringify(nextProps.categories)
+  );
+});
+
+export default CategoryList;

@@ -1,22 +1,22 @@
+import { API } from '../../config/api';
 import { parseApi } from '../../utils/api-utils';
 import { getKSTDateString } from '../../utils/timezone';
-import { API } from '../configs/api';
 
 // 구독 플랜 조회
 
 export const getAvailableSubscriptionPlans = () =>
-  parseApi<Subscription.AvailableSubscriptionPlansResponse[]>(
+  parseApi<Subscription.AvailableSubscriptionPlansApiResponse[]>(
     API.get('/subscription-plans')
   );
 
 // 유저 구독 내역
 export const getUserCurrentSubscription = () =>
-  parseApi<Subscription.UserSubscriptionResponse>(
+  parseApi<Subscription.UserSubscriptionApiResponse>(
     API.get('/users/subscription/current')
   );
 
 export const getUserSubscriptionHistory = () =>
-  parseApi<Subscription.UserSubscriptionResponse[]>(
+  parseApi<Subscription.UserSubscriptionApiResponse[]>(
     API.get('/users/subscription/history')
   );
 
@@ -28,7 +28,7 @@ export const getLeaderBoard = (
   size: number = 10,
   date: string = getKSTDateString()
 ) =>
-  parseApi<LeaderBoard.LeaderBoardResponse[]>(
+  parseApi<LeaderBoard.LeaderBoardApiResponse[]>(
     API.get(
       `/leaderboard/${category}/${type}?page=${page}&size=${size}&date=${date}`
     )
@@ -40,7 +40,7 @@ export const getMyRank = (
   type: 'daily' | 'weekly' | 'monthly',
   date: string = getKSTDateString()
 ) =>
-  parseApi<LeaderBoard.LeaderBoardResponse>(
+  parseApi<LeaderBoard.LeaderBoardApiResponse>(
     API.get(
       `/leaderboard/${category}/user-info/${type}?userId=${userId}&date=${date}`
     )
@@ -51,8 +51,17 @@ export const getUsageLog = (
   userId: string,
   date: string = getKSTDateString()
 ) =>
-  parseApi<UsageLog.UsageLogResponse[]>(
+  parseApi<UsageLog.UsageLogApiResponse[]>(
     API.get(`/usage-log?userId=${userId}&date=${date}`)
+  );
+
+// 포모도로 사용 기록 조회
+export const getPomodoroUsageLog = (
+  userId: string,
+  date: string = getKSTDateString()
+) =>
+  parseApi<UsageLog.UsageLogApiResponse[]>(
+    API.get(`/usage-log/pomodoro?userId=${userId}&date=${date}`)
   );
 
 export const getHourlyUsageLog = (
@@ -60,7 +69,7 @@ export const getHourlyUsageLog = (
   userId: string,
   binSize: number
 ) =>
-  parseApi<UsageLog.HourlyUsageLogResponse[]>(
+  parseApi<UsageLog.HourlyUsageLogApiResponse[]>(
     API.get(`/usage-log/hour?userId=${userId}&date=${date}&binSize=${binSize}`)
   );
 
@@ -70,9 +79,33 @@ export const getRecentUsageLog = (date: string = getKSTDateString()) =>
   );
 
 export const getUserInfo = () =>
-  parseApi<User.UserResponse>(API.get('/user/my-info'));
+  parseApi<User.UserApiResponse>(API.get('/user/my-info'));
 
 export const getTimeline = (userId: string, date: string = getKSTDateString()) =>
   parseApi<UsageLog.TimelineItem[]>(
     API.get(`/usage-log/time-line?userId=${userId}&date=${date}`)
+  );
+
+// 스트릭 캘린더 조회
+export const getStreakCalendar = (date: string = getKSTDateString()) =>
+  parseApi<Statistics.StreakCalendarApiResponse[]>(
+    API.get(`/streak/calendar?date=${date}`)
+  );
+
+// 스트릭 카운트 조회
+export const getStreakCount = () =>
+  parseApi<Statistics.StreakCountApiResponse>(
+    API.get('/streak/count')
+  );
+
+// 세션 데이터 조회
+export const getSession = (date: string = getKSTDateString()) =>
+  parseApi<Session.SessionApiResponse[]>(
+    API.get(`/session?date=${date}`)
+  );
+
+// 세션 상세 데이터 조회
+export const getSessionDetail = (session: number, date: string = getKSTDateString()) =>
+  parseApi<Session.SessionDetailApiResponse[]>(
+    API.get(`/usage-log/pomodoro/details?session=${session}&date=${date}`)
   );

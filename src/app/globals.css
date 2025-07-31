@@ -349,6 +349,54 @@ p {
   }
 }
 
+/* 드래그 및 선택 비활성화 */
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}
+
+/* 텍스트 입력 필드는 선택 가능하도록 예외 처리 */
+input,
+textarea,
+[contenteditable="true"],
+[contenteditable=""] {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* 이미지 드래그 비활성화 */
+img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  pointer-events: none;
+}
+
+/* 버튼과 링크는 클릭 가능하도록 예외 처리 */
+button,
+a,
+[role="button"],
+[tabindex] {
+  pointer-events: auto;
+}
+
+/* 스크롤 가능한 요소들은 상호작용 가능하도록 예외 처리 */
+[data-scrollable="true"],
+.scrollable {
+  pointer-events: auto;
+}
+
 /* 선택 스타일 개선 */
 ::selection {
   background-color: #8b5cf6;

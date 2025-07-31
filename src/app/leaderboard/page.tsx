@@ -1,9 +1,9 @@
 'use client';
 
-import { useLeaderboardInfiniteScroll } from '@/hooks/useLeaderboardInfiniteScroll';
+import { useLeaderboardInfiniteScroll } from '@/hooks/data/useLeaderboardInfiniteScroll';
 // import { useScrollToMyRank } from '@/hooks/useScrollToMyRank'; // Not needed anymore
-import { useTheme } from '@/hooks/useTheme';
-import { INFINITE_SCROLL_CONFIG } from '@/shared/constants/infinite-scroll';
+import { useTheme } from '@/hooks/ui/useTheme';
+import { INFINITE_SCROLL_CONFIG } from '@/config/constants/infinite-scroll';
 import { CATEGORIES, LEADERBOARD_CATEGORIES } from '@/utils/categories';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -20,12 +20,12 @@ import {
   MyRankBannerSkeleton
 } from '@/components/common/LeaderboardSkeleton';
 import { useCurrentUser } from '@/stores/userStore';
-import { useInitUser } from '../../hooks/useInitUser';
+import { useInitUser } from '@/hooks/common/useInitUser';
 
 // LeaderBoard.LeaderBoardResponse 타입을 직접 사용
 
 // 필요한 유틸리티 함수들 import
-import { useMyRank } from '@/hooks/useMyRank';
+import { useMyRank } from '@/hooks/data/useMyRank';
 import { getKSTDate, getKSTDateStringFromDate, getKSTMonthlyDateString, getKSTWeeklyDateString } from '@/utils/timezone';
 
 export default function Leaderboard() {
