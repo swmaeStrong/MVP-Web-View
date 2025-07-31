@@ -16,16 +16,18 @@ interface MonthlyStreakProps {
 }
 
 export default function MonthlyStreak({ 
-  initialMonth = new Date(getKSTDateString()), 
+  initialMonth, 
   onMonthChange 
 }: MonthlyStreakProps) {
   const { getThemeClass, isDarkMode } = useTheme();
-  const [currentMonth, setCurrentMonth] = useState(new Date(getKSTDateString()));
+  const [currentMonth, setCurrentMonth] = useState(initialMonth || new Date(getKSTDateString()));
 
   // initialMonth이 변경되면 currentMonth 업데이트
   React.useEffect(() => {
-    setCurrentMonth(initialMonth);
-    console.log('🔄 MonthlyStreak 초기화 - 초기 월:', initialMonth);
+    if (initialMonth) {
+      setCurrentMonth(initialMonth);
+      console.log('🔄 MonthlyStreak 초기화 - 초기 월:', initialMonth);
+    }
   }, [initialMonth]);
 
   // API 데이터 조회 - 현재 날짜로 요청
@@ -33,6 +35,17 @@ export default function MonthlyStreak({
 
   // 스트릭 카운트 조회
   const { data: streakCountData, isLoading: isCountLoading, error: countError } = useStreakCount();
+
+  // 월별 날짜 계산 공통 로직
+  const monthlyCalcData = useMemo(() => {
+    const start = startOfMonth(currentMonth);
+    const end = endOfMonth(currentMonth);
+    const startWeek = start.getDay();
+    const days = eachDayOfInterval({ start, end });
+    const today = new Date();
+    
+    return { start, end, startWeek, days, today };
+  }, [currentMonth]);
 
   // API 데이터를 활동일 배열로 변환
   const activeDates = useMemo(() => {
@@ -61,13 +74,9 @@ export default function MonthlyStreak({
     return '';
   }, [streakCountData]);
   
-  // 같은 행에서의 연속 스트릭 분석
-  const getStreakClasses = () => {
-    const streakClasses: { [key: string]: string[] } = {};
-    const start = startOfMonth(currentMonth);
-    const end = endOfMonth(currentMonth);
-    const startWeek = start.getDay();
-    const days = eachDayOfInterval({ start, end });
+  // 공통 그리드 데이터 생성
+  const gridData = useMemo(() => {
+    const { startWeek, days } = monthlyCalcData;
     
     // 전체 그리드 생성 (빈 셀 + 날짜)
     const totalCells: (Date | null)[] = [];
@@ -83,6 +92,14 @@ export default function MonthlyStreak({
     for (let i = 0; i < totalCells.length; i += 7) {
       rows.push(totalCells.slice(i, i + 7));
     }
+    
+    return { totalCells, rows };
+  }, [monthlyCalcData]);
+
+  // 같은 행에서의 연속 스트릭 분석
+  const getStreakClasses = () => {
+    const streakClasses: { [key: string]: string[] } = {};
+    const { rows } = gridData;
     
     rows.forEach((row, rowIndex) => {
       row.forEach((date, colIndex) => {
@@ -131,29 +148,35 @@ export default function MonthlyStreak({
   console.log('Streak classes:', streakClasses);
 
 
+  // 네비게이션 제한 계산
+  const navigationLimits = useMemo(() => {
+    const minDate = new Date(2025, 6); // 2025년 7월
+    const maxDate = new Date(monthlyCalcData.today.getFullYear(), monthlyCalcData.today.getMonth());
+    const prevMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
+    const nextMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
+    
+    return {
+      canGoPrevious: prevMonth >= minDate,
+      canGoNext: nextMonth <= maxDate,
+      prevMonth,
+      nextMonth
+    };
+  }, [currentMonth, monthlyCalcData.today]);
+
   const handlePreviousMonth = () => {
-    const prev = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
-    const minDate = new Date(2025, 6); // 2025년 7월 (month는 0부터 시작)
-    
-    console.log('🔙 MonthlyStreak 이전 월 클릭 - 이동할 월:', prev.getFullYear(), prev.getMonth() + 1);
-    
-    if (prev >= minDate) {
-      setCurrentMonth(prev);
-      onMonthChange?.(prev); // 부모에게 월 변경 알림
+    if (navigationLimits.canGoPrevious) {
+      console.log('🔙 MonthlyStreak 이전 월 클릭 - 이동할 월:', navigationLimits.prevMonth.getFullYear(), navigationLimits.prevMonth.getMonth() + 1);
+      setCurrentMonth(navigationLimits.prevMonth);
+      onMonthChange?.(navigationLimits.prevMonth);
       console.log('🔙 MonthlyStreak 이전 월로 이동 성공');
     }
   };
 
   const handleNextMonth = () => {
-    const next = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
-    const today = new Date();
-    const maxDate = new Date(today.getFullYear(), today.getMonth());
-    
-    console.log('▶️ MonthlyStreak 다음 월 클릭 - 이동할 월:', next.getFullYear(), next.getMonth() + 1);
-    
-    if (next <= maxDate) {
-      setCurrentMonth(next);
-      onMonthChange?.(next); // 부모에게 월 변경 알림
+    if (navigationLimits.canGoNext) {
+      console.log('▶️ MonthlyStreak 다음 월 클릭 - 이동할 월:', navigationLimits.nextMonth.getFullYear(), navigationLimits.nextMonth.getMonth() + 1);
+      setCurrentMonth(navigationLimits.nextMonth);
+      onMonthChange?.(navigationLimits.nextMonth);
       console.log('▶️ MonthlyStreak 다음 월로 이동 성공');
     }
   };
@@ -173,11 +196,7 @@ export default function MonthlyStreak({
                 variant="ghost"
                 size="sm"
                 onClick={handlePreviousMonth}
-                disabled={(() => {
-                  const prev = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1);
-                  const minDate = new Date(2025, 6);
-                  return prev < minDate;
-                })()}
+                disabled={!navigationLimits.canGoPrevious}
                 className={`h-6 w-6 p-0 ${getThemeClass('textPrimary')}`}
               >
                 <ChevronLeft className="h-3 w-3" />
@@ -191,12 +210,7 @@ export default function MonthlyStreak({
                 variant="ghost"
                 size="sm"
                 onClick={handleNextMonth}
-                disabled={(() => {
-                  const next = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
-                  const today = new Date();
-                  const maxDate = new Date(today.getFullYear(), today.getMonth());
-                  return next > maxDate;
-                })()}
+                disabled={!navigationLimits.canGoNext}
                 className={`h-6 w-6 p-0 ${getThemeClass('textPrimary')}`}
               >
                 <ChevronRight className="h-3 w-3" />
@@ -221,26 +235,8 @@ export default function MonthlyStreak({
               {/* 백그라운드 스트릭 레이어 */}
               <div className="absolute inset-0 grid grid-cols-7 gap-2 pointer-events-none">
                 {(() => {
-                  const start = startOfMonth(currentMonth);
-                  const end = endOfMonth(currentMonth);
-                  const startWeek = start.getDay();
-                  const days = eachDayOfInterval({ start, end });
-                  
-                  // 전체 그리드 생성
-                  const totalCells: (Date | null)[] = [];
-                  for (let i = 0; i < startWeek; i++) {
-                    totalCells.push(null);
-                  }
-                  days.forEach(date => {
-                    totalCells.push(date);
-                  });
-                  
-                  // 행별로 처리하여 연속 스트릭 블록 생성
+                  const { rows } = gridData;
                   const backgroundCells: React.ReactNode[] = [];
-                  const rows: (Date | null)[][] = [];
-                  for (let i = 0; i < totalCells.length; i += 7) {
-                    rows.push(totalCells.slice(i, i + 7));
-                  }
                   
                   rows.forEach((row, rowIndex) => {
                     let streakStart = -1;
@@ -345,11 +341,7 @@ export default function MonthlyStreak({
               {/* 전경 날짜 레이어 */}
               <div className="relative grid grid-cols-7 gap-2">
                 {(() => {
-                  const start = startOfMonth(currentMonth);
-                  const end = endOfMonth(currentMonth);
-                  const startWeek = start.getDay();
-                  const days = eachDayOfInterval({ start, end });
-                  const today = new Date();
+                  const { startWeek, days, today } = monthlyCalcData;
                   
                   // 빈 셀 추가
                   const emptyCells = [];
