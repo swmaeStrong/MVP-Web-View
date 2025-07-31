@@ -32,3 +32,9 @@ export const createGroup = (request: Group.CreateGroupApiRequest) =>
   parseApi(
     API.post('/group', request)
 );
+
+// 그룹 가입
+export const joinGroup = (groupId: number) => 
+  parseApi(
+    API.post(`/group/${groupId}/join`)
+);
