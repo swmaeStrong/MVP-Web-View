@@ -99,6 +99,13 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
   const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
   const [selectedSession, setSelectedSession] = useState<SessionData | null>(null);
   const chartContainerRef = useRef<HTMLDivElement>(null);
+  const hasInitialScrolled = useRef(false);
+
+  // Reset scroll flag when date changes
+  React.useEffect(() => {
+    hasInitialScrolled.current = false;
+    setSelectedSession(null);
+  }, [selectedDate]);
 
   // Fetch session data
   const { data: sessionData, isLoading, isError, refetch } = useSessions(selectedDate);
@@ -260,6 +267,31 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
       setSelectedSession(mostRecentSession);
     }
   }, [processedSessions, selectedSession]);
+
+  // Scroll to most recent session on initial load only
+  React.useEffect(() => {
+    if (processedSessions.length > 0 && chartContainerRef.current && allChartData.length > 0 && !hasInitialScrolled.current) {
+      const mostRecentIndex = allChartData.findIndex(item => 
+        item.sessionData.timestamp === Math.max(...allChartData.map(data => data.sessionData.timestamp))
+      );
+      
+      if (mostRecentIndex !== -1) {
+        const scrollContainer = chartContainerRef.current.closest('[data-radix-scroll-area-viewport]');
+        if (scrollContainer) {
+          const barWidth = 110; // Width per bar
+          const scrollPosition = mostRecentIndex * barWidth - (scrollContainer.clientWidth / 2) + (barWidth / 2);
+          
+          setTimeout(() => {
+            scrollContainer.scrollTo({
+              left: Math.max(0, scrollPosition),
+              behavior: 'smooth'
+            });
+            hasInitialScrolled.current = true; // Mark as scrolled
+          }, 100);
+        }
+      }
+    }
+  }, [processedSessions, allChartData]);
 
   // Get the selected session data
   const selectedSessionData = selectedSession;
