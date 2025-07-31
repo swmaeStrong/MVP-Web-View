@@ -6,6 +6,7 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import { INFINITE_SCROLL_CONFIG } from '@/config/constants/infinite-scroll';
 import { CATEGORIES, LEADERBOARD_CATEGORIES } from '@/utils/categories';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 // 컴포넌트 임포트
 import CategoryFilter from '@/components/leaderboard/CategoryFilter';
@@ -31,6 +32,7 @@ export default function Leaderboard() {
   // Hook 순서를 항상 동일하게 유지
   const currentUser = useCurrentUser();
   const { initializeUser } = useInitUser();
+  const queryClient = useQueryClient();
   // scrollToMyRank is now defined locally instead of using the hook
   const { getThemeClass, getThemeTextColor } = useTheme();
 
@@ -95,6 +97,7 @@ export default function Leaderboard() {
   
   // 페이지 로딩 상태 관리
   const [isLoadingToMyRank, setIsLoadingToMyRank] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // 무한 스크롤 훅 사용
   const {
@@ -191,10 +194,41 @@ export default function Leaderboard() {
     }
   }, [rank, currentUser, users.length, hasNextPage, fetchNextPage]);
 
+  // 새로고침 함수 - 완전히 처음부터 다시 로드
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    
+    try {
+      console.log('🔄 새로고침 시작...');
+      
+      // 1. 모든 관련 쿼리 캐시를 완전히 제거 (무효화가 아닌 제거)
+      queryClient.removeQueries({ queryKey: ['leaderboard'] });
+      queryClient.removeQueries({ queryKey: ['myRank'] });
+      queryClient.removeQueries({ queryKey: ['statistics'] });
+      queryClient.removeQueries({ queryKey: ['hourlyUsage'] });
+      
+      // 2. 컨테이너를 맨 위로 즉시 스크롤 (부드러운 애니메이션 없이)
+      leaderboardContainerRef.current?.scrollTo({ top: 0, behavior: 'auto' });
+      
+      // 3. 잠시 대기해서 스켈레톤이 표시되도록 함
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // 4. 새로운 데이터 페치 시작 (무한 스크롤 훅이 자동으로 첫 페이지부터 다시 로드)
+      await refetch();
+      
+      console.log('✅ 새로고침 완료 - 첫 페이지부터 다시 로드됨');
+    } catch (error) {
+      console.error('❌ 새로고침 중 오류:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [queryClient, refetch]);
+
   const categories = LEADERBOARD_CATEGORIES;
 
   // 전체 로딩 상태 - PeriodSelector와 CategoryFilter는 항상 표시
-  const isInitialLoading = isLoading && users.length === 0;
+  // 새로고침 중이거나 초기 로딩 중일 때 스켈레톤 표시
+  const isInitialLoading = (isLoading && users.length === 0) || isRefreshing;
 
   return (
     <div className={`min-h-screen p-4 ${getThemeClass('background')}`}>
@@ -207,6 +241,8 @@ export default function Leaderboard() {
           selectedDateIndex={selectedDateIndex}
           setSelectedDateIndex={setSelectedDateIndex}
           currentDate={currentDate}
+          onRefresh={handleRefresh}
+          isRefreshing={isRefreshing}
         />
 
         {/* 카테고리 필터 */}

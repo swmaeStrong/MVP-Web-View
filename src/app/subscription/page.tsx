@@ -1,5 +1,4 @@
 'use client';
-import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { useRouter } from 'next/navigation';
@@ -37,7 +36,9 @@ const SubscriptionPage = () => {
       period: '월',
       discount: '50%',
       features: [
-        '기본 프리미엄 기능',
+        '무제한 세션 생성',
+        '다크모드 지원',
+        '기본 통계 분석',
         '광고 제거',
         '7일 무료 체험'
       ],
@@ -51,10 +52,13 @@ const SubscriptionPage = () => {
       period: '월',
       discount: '84%',
       features: [
-        '모든 프리미엄 기능',
-        '광고 없는 깔끔한 경험',
-        '30일 무료 체험',
-        '우선 고객 지원'
+        '무제한 세션 생성 & 저장',
+        '다크모드 지원',
+        'AI 기반 생산성 분석',
+        'LLM 프롬프팅을 통한 맞춤형 인사이트',
+        '고급 시간 추적 및 리포트',
+        '우선 고객 지원',
+        '30일 무료 체험'
       ],
       popular: true,
     },
@@ -66,9 +70,13 @@ const SubscriptionPage = () => {
       period: '월',
       discount: '60%',
       features: [
+        '팀 구성 및 협업 가능',
         '무제한 모든 기능',
-        '팀 협업 도구',
-        '고급 분석 기능',
+        'AI 기반 팀 생산성 분석',
+        'LLM 프롬프팅 고급 분석',
+        '실시간 팀 대시보드',
+        '관리자 권한 설정',
+        'API 연동 지원',
         '24/7 전담 지원'
       ],
       popular: false,
@@ -104,7 +112,7 @@ const SubscriptionPage = () => {
             구독 플랜
           </h1>
           <p className={`text-lg ${getThemeTextColor('secondary')}`}>
-            프리미엄 기능을 체험하고 생산성을 높이세요
+            AI 기반 스마트 생산성 추적으로 개발 효율성을 극대화하세요
           </p>
         </div>
 
@@ -246,6 +254,9 @@ const SubscriptionPage = () => {
           <div className={`mt-6 rounded-lg border p-4 ${getThemeClass('component')} ${getThemeClass('border')}`}>
             <h3 className={`mb-3 text-sm font-semibold ${getThemeTextColor('primary')}`}>교환/환불 규정</h3>
             <div className={`space-y-2 text-xs ${getThemeTextColor('secondary')}`}>
+              <div>
+                <span className='font-medium'>서비스 제공 기간:</span> 온라인 상품 구매 후 바로 사용 가능
+              </div>
               <div>
                 <span className='font-medium'>환불 가능 기간:</span> 서비스 이용 시작일로부터 7일 이내
               </div>
