@@ -5,7 +5,7 @@ import { Button } from '@/shadcn/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
 import { FONT_SIZES } from '@/styles/font-sizes';
 import { formatKSTDate, getKSTDate } from '@/utils/timezone';
-import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Info, RefreshCw } from 'lucide-react';
 
 interface PeriodSelectorProps {
   selectedPeriod: 'daily' | 'weekly' | 'monthly';
@@ -149,12 +149,12 @@ export default function PeriodSelector({
                   isRefreshing 
                     ? 'opacity-50 cursor-not-allowed'
                     : isDarkMode 
-                      ? `${getThemeColor('component')} border-[rgb(80,80,80)] text-[rgb(153,153,153)] hover:text-[rgb(220,220,220)] hover:border-[rgb(120,120,120)] hover:scale-105` 
+                      ? `${getThemeClass('component')} border-[rgb(80,80,80)] text-[rgb(153,153,153)] hover:text-[rgb(220,220,220)] hover:border-[rgb(120,120,120)] hover:scale-105` 
                       : `bg-gray-50 border-gray-200 text-[rgb(142,142,142)] hover:text-[rgb(43,43,43)] hover:border-gray-300 hover:scale-105`
                 }`}
               >
                 <RefreshCw className={`h-3 w-3 ${getThemeTextColor('primary')} ${isRefreshing ? 'animate-spin' : ''}`} />
-                <span className={`${getThemeColor('background')} ${getThemeTextColor('primary')}`}>Refresh</span>
+                <span className={`${getThemeClass('background')} ${getThemeTextColor('primary')}`}>Refresh</span>
               </button>
             </TooltipTrigger>
           </Tooltip>
