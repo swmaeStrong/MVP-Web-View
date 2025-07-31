@@ -392,7 +392,7 @@ export default function GroupSettingsPage() {
                 </div>
                 
                 {/* 일반 멤버 */}
-                {groupDetail.members.map((member) => (
+                {groupDetail.members.filter(member => member.userId !== groupDetail.owner.userId).map((member) => (
                   <div key={member.userId} className="flex items-center justify-between p-2 rounded-lg">
                     <div className="flex items-center gap-3">
                       <Avatar className="w-8 h-8">
@@ -446,7 +446,7 @@ export default function GroupSettingsPage() {
                 <div className="flex justify-between items-center">
                   <span className={`text-sm ${getThemeTextColor('secondary')}`}>Total Members</span>
                   <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                    {groupDetail.members.length + 1}
+                    {groupDetail.members.length}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
