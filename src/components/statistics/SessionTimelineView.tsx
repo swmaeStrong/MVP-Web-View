@@ -813,7 +813,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                         .sort((a, b) => b.duration - a.duration) // Sort by duration (longest first)
                         .slice(0, 3) // Take only top 3
                         .map((detail, index) => (
-                          <div key={index} className={`py-2 px-3 rounded-lg border ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
+                          <div key={index} className={`py-2 px-3 rounded-lg border ${isDarkMode ? 'border-red-400 bg-red-900/20' : 'border-red-300 bg-red-50'}`}>
                             <div className="flex items-center justify-between mb-1">
                               <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
                                 {detail.distractedApp}
