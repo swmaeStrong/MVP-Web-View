@@ -22,7 +22,13 @@ declare namespace Group {
 		createdAt: string
 	}
 	
-	
+	interface CreateGroupApiRequest {
+		groupName: string,
+		isPublic: boolean,
+		groundRule: string,
+		groupTag: string[] | null,
+		description: string | null,
+	}
 
 }
   
