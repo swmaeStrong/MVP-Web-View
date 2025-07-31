@@ -58,16 +58,14 @@ const formatTimeRange = (startTimestamp: number, duration: number): string => {
 };
 
 const getScoreColor = (score: number, isDarkMode: boolean) => {
-  if (score >= 80) return isDarkMode ? '#44C743' : '#44C743'; // green
-  if (score >= 60) return isDarkMode ? '#f59e0b' : '#d97706'; // yellow
-  if (score >= 40) return isDarkMode ? '#f97316' : '#ea580c'; // orange
+  if (score >= 85) return isDarkMode ? '#44C743' : '#44C743'; // green
+  if (score >= 51) return isDarkMode ? '#f59e0b' : '#d97706'; // yellow
   return isDarkMode ? '#ef4444' : '#dc2626'; // red
 };
 
 const getScoreLabel = (score: number) => {
-  if (score >= 80) return 'Excellent';
-  if (score >= 60) return 'Good';
-  if (score >= 40) return 'Fair';
+  if (score >= 85) return 'Excellent';
+  if (score >= 51) return 'Good';
   return 'Needs Improvement';
 };
 
