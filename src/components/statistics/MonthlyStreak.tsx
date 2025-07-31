@@ -2,16 +2,31 @@
 
 import { eachDayOfInterval, endOfMonth, startOfMonth } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
+import { useStreakCalendar, useStreakCount } from '@/hooks/data/useStreak';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Button } from '@/shadcn/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
-import { useStreakCalendar, useStreakCount } from '@/hooks/data/useStreak';
+import { Card, CardContent } from '@/shadcn/ui/card';
+import { getKSTDateString } from '@/utils/timezone';
 
-export default function MonthlyStreak() {
+interface MonthlyStreakProps {
+  initialMonth?: Date;
+  onMonthChange?: (month: Date) => void;
+}
+
+export default function MonthlyStreak({ 
+  initialMonth = new Date(getKSTDateString()), 
+  onMonthChange 
+}: MonthlyStreakProps) {
   const { getThemeClass, isDarkMode } = useTheme();
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(new Date(getKSTDateString()));
+
+  // initialMonth이 변경되면 currentMonth 업데이트
+  React.useEffect(() => {
+    setCurrentMonth(initialMonth);
+    console.log('🔄 MonthlyStreak 초기화 - 초기 월:', initialMonth);
+  }, [initialMonth]);
 
   // API 데이터 조회 - 현재 날짜로 요청
   const { data: streakData, isLoading: isCalendarLoading, error: calendarError } = useStreakCalendar(currentMonth.getFullYear(), currentMonth.getMonth());
@@ -117,11 +132,15 @@ export default function MonthlyStreak() {
 
 
   const handlePreviousMonth = () => {
-    const prev = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1);
+    const prev = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
     const minDate = new Date(2025, 6); // 2025년 7월 (month는 0부터 시작)
+    
+    console.log('🔙 MonthlyStreak 이전 월 클릭 - 이동할 월:', prev.getFullYear(), prev.getMonth() + 1);
     
     if (prev >= minDate) {
       setCurrentMonth(prev);
+      onMonthChange?.(prev); // 부모에게 월 변경 알림
+      console.log('🔙 MonthlyStreak 이전 월로 이동 성공');
     }
   };
 
@@ -130,8 +149,12 @@ export default function MonthlyStreak() {
     const today = new Date();
     const maxDate = new Date(today.getFullYear(), today.getMonth());
     
+    console.log('▶️ MonthlyStreak 다음 월 클릭 - 이동할 월:', next.getFullYear(), next.getMonth() + 1);
+    
     if (next <= maxDate) {
       setCurrentMonth(next);
+      onMonthChange?.(next); // 부모에게 월 변경 알림
+      console.log('▶️ MonthlyStreak 다음 월로 이동 성공');
     }
   };
 

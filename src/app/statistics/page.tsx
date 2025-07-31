@@ -20,9 +20,12 @@ import { useInitUser } from '@/hooks/common/useInitUser';
 // generateMockCycles import 제거 - API 사용으로 대체됨
 import StateDisplay from '../../components/common/StateDisplay';
 import TotalTimeCard from '../../components/statistics/DateNavigationCard';
+import { getKSTDateString } from '../../utils/timezone';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<Statistics.PeriodType>('daily');
+  // 현재 선택된 월 상태 추가
+  const [currentMonth, setCurrentMonth] = useState(new Date(getKSTDateString()));
   // 가용한 날짜 목록 (최근 30일)
   const availableDates = useAvailableDates();
 
@@ -224,7 +227,10 @@ export default function StatisticsPage() {
                 currentDate={selectedDate}
               />
           {/* 오른쪽: 월별 스트릭 컴포넌트 (기존 ActivityList 위치) */}
-          <MonthlyStreak />
+          <MonthlyStreak 
+            initialMonth={currentMonth}
+            onMonthChange={setCurrentMonth}
+          />
 
         </div>
 
