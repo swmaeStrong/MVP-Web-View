@@ -374,16 +374,13 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
 
   return (
     <Card className={`rounded-lg border-2 shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <CardHeader className="pb-3">
-      </CardHeader>
-
-      <CardContent>
+      <CardContent className="pt-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: Bar Chart */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* Summary Stats - Small version at top left */}
             {summaryStats && (
-              <div className={`flex items-center justify-center gap-6 mb-2 py-2 px-3 rounded-md ${getThemeClass('componentSecondary')}`}>
+              <div className={`flex items-center justify-center gap-6 mb-1 py-1 px-3 rounded-md ${getThemeClass('componentSecondary')}`}>
                 <div className="flex items-center gap-2">
                   <span className={`text-base font-bold ${getThemeTextColor('primary')}`}>
                     {summaryStats.totalSessions}
