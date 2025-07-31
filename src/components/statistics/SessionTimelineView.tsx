@@ -383,7 +383,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
           <div className="space-y-4">
             {/* Summary Stats - Small version at top left */}
             {summaryStats && (
-              <div className={`flex items-center justify-center gap-6 mb-3 p-3 rounded-md ${getThemeClass('componentSecondary')}`}>
+              <div className={`flex items-center justify-center gap-6 mb-2 py-2 px-3 rounded-md ${getThemeClass('componentSecondary')}`}>
                 <div className="flex items-center gap-2">
                   <span className={`text-base font-bold ${getThemeTextColor('primary')}`}>
                     {summaryStats.totalSessions}
