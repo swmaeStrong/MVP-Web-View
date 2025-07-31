@@ -3,6 +3,7 @@ import { useUserStore } from '@/stores/userStore';
 import { getKSTDateString } from '@/utils/timezone';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { myRankQueryKey } from '@/config/constants/query-keys';
 
 interface UseMyRankParams {
   category: string;
@@ -49,7 +50,7 @@ export const useMyRank = ({
     error,
     refetch,
   } = useQuery({
-    queryKey: ['myRank', category, type, finalUserId, date],
+    queryKey: myRankQueryKey(category, type, finalUserId, date),
     queryFn: () => getMyRank(category, finalUserId, type, date),
     enabled: enabled && !!finalUserId,
     staleTime: 30000, // 30초간 캐시 유지

@@ -1,11 +1,10 @@
 'use client';
 
+import { useSessionDetail, useSessions } from '@/hooks/data/useSession';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { ChartConfig, ChartContainer } from '@/shadcn/ui/chart';
-import { getSession, getSessionDetail } from '@/shared/api/get';
 import { getKSTDateString } from '@/utils/timezone';
-import { useQuery } from '@tanstack/react-query';
 import { Activity, Target } from 'lucide-react';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Bar, BarChart, XAxis, YAxis } from 'recharts';
@@ -59,16 +58,14 @@ const formatTimeRange = (startTimestamp: number, duration: number): string => {
 };
 
 const getScoreColor = (score: number, isDarkMode: boolean) => {
-  if (score >= 80) return isDarkMode ? '#44C743' : '#44C743'; // green
-  if (score >= 60) return isDarkMode ? '#f59e0b' : '#d97706'; // yellow
-  if (score >= 40) return isDarkMode ? '#f97316' : '#ea580c'; // orange
+  if (score >= 85) return isDarkMode ? '#44C743' : '#44C743'; // green
+  if (score >= 51) return isDarkMode ? '#f59e0b' : '#d97706'; // yellow
   return isDarkMode ? '#ef4444' : '#dc2626'; // red
 };
 
 const getScoreLabel = (score: number) => {
-  if (score >= 80) return 'Excellent';
-  if (score >= 60) return 'Good';
-  if (score >= 40) return 'Fair';
+  if (score >= 85) return 'Excellent';
+  if (score >= 51) return 'Good';
   return 'Needs Improvement';
 };
 
@@ -104,19 +101,10 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
   const chartContainerRef = useRef<HTMLDivElement>(null);
 
   // Fetch session data
-  const { data: sessionData, isLoading, isError, refetch } = useQuery({
-    queryKey: ['sessions', selectedDate],
-    queryFn: () => getSession(selectedDate),
-    retry: 1,
-  });
+  const { data: sessionData, isLoading, isError, refetch } = useSessions(selectedDate);
 
   // Fetch selected session detail data
-  const { data: sessionDetailData, isLoading: isDetailLoading, isError: isDetailError } = useQuery({
-    queryKey: ['sessionDetail', selectedSession?.id, selectedDate],
-    queryFn: () => selectedSession ? getSessionDetail(selectedSession.id, selectedDate) : Promise.resolve([]),
-    enabled: Boolean(selectedSession),
-    retry: 1,
-  });
+  const { data: sessionDetailData, isLoading: isDetailLoading, isError: isDetailError } = useSessionDetail(selectedSession?.id, selectedDate);
 
   // Process sessions for bar chart visualization
   const { chartData, processedSessions, totalPages, currentChartData } = useMemo(() => {
@@ -148,7 +136,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
       sessionNumber: session.sessionNumber,
       score: session.score,
       duration: session.duration,
-      fill: session.scoreColor,
+      fill: isDarkMode ? '#374151' : '#9ca3af', // Gray color for all bars
       sessionData: session,
       id: session.id,
     }));
@@ -194,53 +182,46 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
     const isHovered = hoveredSessionId === payload.sessionData.id;
     const isHighlighted = isSelected || isHovered;
     
-    // Calculate full chart height (264px total height - 35px top margin - 30px bottom margin = 199px)
-    const chartHeight = 199;
+    // Calculate full chart height (384px total height - 35px top margin - 30px bottom margin = 319px)
+    const chartHeight = 319;
     const chartTopY = 35; // Top margin from BarChart
+    
+    // Ensure minimum bar height for 0 scores
+    const minBarHeight = 8; // Minimum height in pixels
+    const adjustedHeight = Math.max(height, minBarHeight);
+    const adjustedY = height < minBarHeight ? y + height - minBarHeight : y;
     
     return (
       <g>
-        {/* Background wrapper for selected/hovered session - full height */}
-        {isHighlighted && (
-          <rect
-            x={x - 4}
-            y={chartTopY - 35} // Start from very top of chart area
-            width={width + 8}
-            height={chartHeight + 35} // Full height including margins
-            fill={isDarkMode ? 'rgba(96, 165, 250, 0.15)' : 'rgba(30, 64, 175, 0.1)'}
-            stroke={isDarkMode ? 'rgba(147, 197, 253, 0.4)' : 'rgba(30, 64, 175, 0.3)'}
-            strokeWidth="2"
-            rx={6}
-            ry={6}
-            style={{ 
-              filter: 'blur(0.5px)',
-              transition: 'all 0.3s ease'
-            }}
-          />
-        )}
         
         {/* Main bar */}
         <rect
           x={x}
-          y={y}
+          y={adjustedY}
           width={width}
-          height={height}
-          fill={isHighlighted ? (isDarkMode ? '#60a5fa' : '#1e40af') : payload.fill}
-          stroke={isHighlighted ? (isDarkMode ? '#93c5fd' : '#1d4ed8') : 'transparent'}
-          strokeWidth={isHighlighted ? 3 : 0}
+          height={adjustedHeight}
+          fill={isSelected ? (isDarkMode ? '#1e3a8a' : '#1e40af') : payload.fill}
+          stroke={isSelected ? (isDarkMode ? '#60a5fa' : '#3b82f6') : 'transparent'}
+          strokeWidth={isSelected ? 2 : 0}
           rx={4}
           ry={4}
           style={{ 
             cursor: 'pointer',
-            filter: isHighlighted ? 'brightness(1.2) drop-shadow(0 4px 12px rgba(96, 165, 250, 0.4))' : 'none',
+            filter: isSelected ? 'drop-shadow(0 4px 12px rgba(96, 165, 250, 0.4))' : 'none',
             transition: 'all 0.3s ease'
           }}
+          onClick={() => {
+            console.log('Bar clicked:', payload.sessionData);
+            setSelectedSession(payload.sessionData);
+          }}
+          onMouseEnter={() => setHoveredSessionId(payload.sessionData.id)}
+          onMouseLeave={() => setHoveredSessionId(null)}
         />
         
         {/* Score text */}
         <text
           x={x + width / 2}
-          y={y - 5}
+          y={y - 15}
           textAnchor="middle"
           fontSize="11"
           fontWeight="600"
@@ -393,40 +374,36 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
 
   return (
     <Card className={`rounded-lg border-2 shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <CardHeader className="pb-3">
-        
-        {/* Summary Stats */}
-        {summaryStats && (
-          <div className={`grid grid-cols-3 gap-4 mt-4 p-4 rounded-lg ${getThemeClass('componentSecondary')}`}>
-            <div className="text-center">
-              <div className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-                {summaryStats.totalSessions}
-              </div>
-              <div className={`text-xs ${getThemeTextColor('secondary')}`}>Sessions</div>
-            </div>
-            <div className="text-center">
-              <div className={`text-2xl font-bold ${getThemeTextColor('accent')}`}>
-                {summaryStats.averageScore}
-              </div>
-              <div className={`text-xs ${getThemeTextColor('secondary')}`}>Avg Score</div>
-            </div>
-            <div className="text-center">
-              <div className={`text-2xl font-bold`} style={{ color: summaryStats.bestSession.scoreColor }}>
-                {summaryStats.bestSession.score}
-              </div>
-              <div className={`text-xs ${getThemeTextColor('secondary')}`}>Best Score</div>
-            </div>
-          </div>
-        )}
-      </CardHeader>
-
-      <CardContent>
+      <CardContent className="pt-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: Bar Chart */}
-          <div className="space-y-4">
+          <div className="space-y-3">
+            {/* Summary Stats - Small version at top left */}
+            {summaryStats && (
+              <div className={`flex items-center justify-center gap-6 mb-1 py-1 px-3 rounded-md ${getThemeClass('componentSecondary')}`}>
+                <div className="flex items-center gap-2">
+                  <span className={`text-base font-bold ${getThemeTextColor('primary')}`}>
+                    {summaryStats.totalSessions}
+                  </span>
+                  <span className={`text-sm ${getThemeTextColor('secondary')}`}>Sessions</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-base font-bold ${getThemeTextColor('primary')}`}>
+                    {summaryStats.averageScore}
+                  </span>
+                  <span className={`text-sm ${getThemeTextColor('secondary')}`}>Avg Score</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-base font-bold ${getThemeTextColor('primary')}`}>
+                    {summaryStats.bestSession.score}
+                  </span>
+                  <span className={`text-sm ${getThemeTextColor('secondary')}`}>Best Score</span>
+                </div>
+              </div>
+            )}
             <div className="flex items-center justify-between">
               <h3 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                Session Scores {totalPages > 1 && `(Page ${currentPage + 1} of ${totalPages})`}
+                {totalPages > 1 && `Page ${currentPage + 1} of ${totalPages}`}
               </h3>
               {totalPages > 1 && (
                 <div className="flex items-center gap-2">
@@ -459,7 +436,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
               )}
             </div>
             <div 
-              className="h-64 w-full cursor-pointer relative overflow-x-auto"
+              className="h-96 w-full cursor-pointer relative"
               onClick={(e) => {
                 // Calculate which bar area was clicked based on position
                 const rect = chartContainerRef.current?.getBoundingClientRect();
@@ -502,33 +479,41 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
               <ChartContainer 
                 config={chartConfig} 
                 className="h-full" 
-                style={{ width: Math.max(400, currentChartData.length * 80) }}
+                style={{ width: Math.max(500, currentChartData.length * 100) }}
                 ref={chartContainerRef}
               >
               <BarChart
                 data={currentChartData}
-                margin={{ top: 35, right: 10, left: 10, bottom: 30 }}
+                margin={{ top: 35, right: 20, left: 50, bottom: 30 }}
                 onClick={handleChartClick}
-                width={Math.max(400, currentChartData.length * 80)}
+                width={Math.max(500, currentChartData.length * 100)}
               >
                 <XAxis
                   dataKey="session"
-                  axisLine={false}
-                  tickLine={false}
+                  axisLine={true}
+                  tickLine={true}
                   tick={{ fontSize: 9, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
                   height={40}
                   interval={0}
+                  stroke={isDarkMode ? '#4b5563' : '#d1d5db'}
                 />
                 <YAxis
                   domain={[0, 100]}
-                  axisLine={false}
-                  tickLine={false}
+                  axisLine={true}
+                  tickLine={true}
                   tick={{ fontSize: 12, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                  stroke={isDarkMode ? '#4b5563' : '#d1d5db'}
                 />
                 <Bar
                   dataKey="score"
                   shape={CustomizedBar}
                   maxBarSize={60}
+                  fill={isDarkMode ? '#374151' : '#9ca3af'}
+                  onClick={(data) => {
+                    if (data && data.sessionData) {
+                      setSelectedSession(data.sessionData);
+                    }
+                  }}
                 />
               </BarChart>
               </ChartContainer>
@@ -536,13 +521,10 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
           </div>
 
           {/* Right: Session Details */}
-          <div className="space-y-4">
-            <h3 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-              Session Details
-            </h3>
+          <div className={`space-y-4 ${selectedSessionData ? 'min-h-96' : ''}`}>
             
             {selectedSessionData ? (
-              <div className={`p-4 rounded-lg border ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
+              <div className={`p-4 rounded-lg ${getThemeClass('componentSecondary')}`}>
                 
                 {/* Session Header */}
                 <div className="flex items-center justify-between mb-4">
@@ -553,14 +535,14 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                       </h4>
                     </div>
                     <p className={`text-sm ${getThemeTextColor('secondary')}`}>
-                      {selectedSessionData.startTime} • {formatTime(selectedSessionData.duration)}
+                      {formatTimeRange(selectedSessionData.timestamp, selectedSessionData.duration)}
                     </p>
                   </div>
-                  <div 
-                    className="px-3 py-1 rounded-full text-sm font-medium text-white shadow-lg"
-                    style={{ backgroundColor: selectedSessionData.scoreColor }}
-                  >
-                    {selectedSessionData.score}
+                  <div className={`text-sm ${getThemeTextColor('secondary')}`}>
+                    <span>Score: </span>
+                    <span className={`font-bold ${getThemeTextColor('primary')}`}>
+                      {selectedSessionData.score}
+                    </span>
                   </div>
                 </div>
 
@@ -816,15 +798,16 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                 {/* Score Breakdown */}
                 {sessionDetailData && sessionDetailData.length > 0 && (
                   <div className="space-y-3 mb-4">
-                    <h5 className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                      Factors Affecting Your Score
+                    <h5 className={`text-sm font-medium ${getThemeTextColor('primary')} flex items-center gap-2`}>
+                      <span>🚫</span>
+                      Distractions
                     </h5>
                     <div className="space-y-2">
                       {sessionDetailData
                         .sort((a, b) => b.duration - a.duration) // Sort by duration (longest first)
                         .slice(0, 3) // Take only top 3
                         .map((detail, index) => (
-                          <div key={index} className={`py-2 px-3 rounded-lg border ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
+                          <div key={index} className={`py-2 px-3 rounded-lg border ${isDarkMode ? 'border-red-400 bg-red-900/20' : 'border-red-300 bg-red-50'}`}>
                             <div className="flex items-center justify-between mb-1">
                               <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
                                 {detail.distractedApp}

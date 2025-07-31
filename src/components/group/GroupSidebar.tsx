@@ -23,8 +23,8 @@ interface GroupSidebarProps {
 }
 
 const navItems: NavItem[] = [
-  { name: 'Find Group', href: '/group/find', icon: Search },
-  { name: 'Create Group', href: '/group/create', icon: Plus },
+  { name: 'Search', href: '/group/find', icon: Search },
+  { name: 'Create', href: '/group/create', icon: Plus },
 ];
 
 export default function GroupSidebar({ teams }: GroupSidebarProps) {
@@ -51,7 +51,7 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
 
   return (
     <aside
-      className={`fixed top-0 left-0 h-full w-48 ${getThemeClass('component')} ${getThemeClass('border')} border-r z-40`}
+      className={`fixed top-0 left-0 h-full w-40 ${getThemeClass('component')} ${getThemeClass('border')} border-r z-40`}
     >
       <div className="p-4 h-full flex flex-col">
         {/* Groups Section */}
@@ -67,18 +67,15 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
                 <div key={group.id}>
                   <Link
                     href={`/group/team/${group.id}`}
-                    className={`flex items-center justify-between px-4 py-2 rounded-md transition-colors ${
+                    className={`flex items-center justify-between px-4 py-2 rounded-md transition-all duration-200 transform ${
                       isGroupSelected
-                        ? `text-white bg-[#3F72AF] ring-2 ring-[#3F72AF]`
-                        : `${getThemeTextColor('secondary')} hover:${getThemeClass('border')} hover:${getThemeTextColor('primary')}`
+                        ? `text-white bg-[#3F72AF] shadow-lg`
+                        : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10 hover:scale-105 hover:shadow-md`
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-sm truncate">{group.name}</span>
                     </div>
-                    <span className={`text-xs ${isGroupSelected ? 'text-white' : getThemeTextColor('secondary')}`}>
-                      {group.members}
-                    </span>
                   </Link>
                   
                   {/* Group Submenu - Show right below the selected group */}
@@ -92,12 +89,17 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
                           <Link
                             key={item.href}
                             href={item.href}
-                            className={`flex items-center gap-3 px-3 py-1.5 transition-colors ${
+                            className={`flex items-center gap-3 px-3 py-1.5 rounded transition-all duration-200 transform relative ${
                               active
-                                ? `${getThemeTextColor('primary')} border-b-2 border-[#3F72AF]`
-                                : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
+                                ? `${getThemeTextColor('primary')} font-medium bg-[#3F72AF]/15`
+                                : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10 hover:scale-105 hover:shadow-sm`
                             }`}
                           >
+                            {/* Simple active indicator */}
+                            <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                              active ? 'bg-[#3F72AF]' : 'bg-transparent'
+                            }`} />
+                            
                             <Icon size={14} className="flex-shrink-0" />
                             <span className="text-xs">{item.name}</span>
                           </Link>
@@ -121,10 +123,10 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors ${
+                className={`flex items-center gap-3 px-4 py-2 rounded-md transition-all duration-200 transform ${
                   active
-                    ? `text-white bg-[#3F72AF] ring-2 ring-[#3F72AF]`
-                    : `${getThemeTextColor('secondary')} hover:${getThemeClass('border')} hover:${getThemeTextColor('primary')}`
+                    ? `text-white bg-[#3F72AF] shadow-lg`
+                    : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10 hover:scale-105 hover:shadow-md`
                 }`}
               >
                 <Icon size={20} className="flex-shrink-0" />

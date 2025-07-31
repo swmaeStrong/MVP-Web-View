@@ -25,7 +25,7 @@ export default function GroupLayout({ children }: GroupLayoutProps) {
         <GroupSidebar teams={teams} />
         
         {/* Main Content */}
-        <div className="flex-1 ml-48">
+        <div className="flex-1 ml-40">
           <main className={`${spacing.inner.normal} transition-all duration-300`}>
             {children}
           </main>

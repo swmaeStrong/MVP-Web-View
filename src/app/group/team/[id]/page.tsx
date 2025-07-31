@@ -145,9 +145,9 @@ export default function TeamDetailPage() {
       {/* Navigation Controls - 별도 컴포넌트 */}
       <Card className={`${getCommonCardClass()} col-span-3 row-span-1 flex items-center`}>
         <CardContent className="px-6 w-full">
-          <div className="flex items-center justify-between">
-            {/* Date Navigation */}
-            <div className="flex justify-start">
+          <div className="flex items-center justify-center relative w-full">
+            {/* Date Navigation - 중앙 정렬 */}
+            <div className="flex justify-center">
               <DateNavigation
                 currentDate={selectedDate}
                 onPrevious={() => handleDateChange('prev')}
@@ -158,8 +158,8 @@ export default function TeamDetailPage() {
               />
             </div>
 
-            {/* Period Selector */}
-            <div className={`flex rounded-md ${getThemeClass('componentSecondary')} p-1`}>
+            {/* Period Selector - 우측 절대 위치 */}
+            <div className={`absolute right-0 flex rounded-md ${getThemeClass('componentSecondary')} p-1`}>
               <button
                 onClick={() => setSelectedPeriod('daily')}
                 className={`px-3 py-1 text-sm font-medium rounded transition-colors ${

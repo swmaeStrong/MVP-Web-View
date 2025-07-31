@@ -1,6 +1,5 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { eachDayOfInterval, endOfMonth, startOfMonth } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -8,25 +7,17 @@ import { useMemo, useState } from 'react';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
-import { getStreakCalendar, getStreakCount } from '@/shared/api/get';
+import { useStreakCalendar, useStreakCount } from '@/hooks/data/useStreak';
 
 export default function MonthlyStreak() {
   const { getThemeClass, isDarkMode } = useTheme();
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   // API 데이터 조회 - 현재 날짜로 요청
-  const { data: streakData, isLoading: isCalendarLoading, error: calendarError } = useQuery({
-    queryKey: ['streakCalendar', currentMonth.getFullYear(), currentMonth.getMonth()],
-    queryFn: () => getStreakCalendar(),
-    retry: 1,
-  });
+  const { data: streakData, isLoading: isCalendarLoading, error: calendarError } = useStreakCalendar(currentMonth.getFullYear(), currentMonth.getMonth());
 
   // 스트릭 카운트 조회
-  const { data: streakCountData, isLoading: isCountLoading, error: countError } = useQuery({
-    queryKey: ['streakCount'],
-    queryFn: () => getStreakCount(),
-    retry: 1,
-  });
+  const { data: streakCountData, isLoading: isCountLoading, error: countError } = useStreakCount();
 
   // API 데이터를 활동일 배열로 변환
   const activeDates = useMemo(() => {
@@ -148,15 +139,8 @@ export default function MonthlyStreak() {
 
 
   return (
-    <Card className={`h-[400px] ${getThemeClass('component')} ${getThemeClass('border')}`}>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className={`text-sm font-semibold ${getThemeClass('textPrimary')}`}>
-            Monthly Streak
-          </CardTitle>
-        </div>
-      </CardHeader>
-      <CardContent className="flex-1 p-3 pt-0">
+    <Card className={`h-[360px] ${getThemeClass('component')} ${getThemeClass('border')}`}>
+      <CardContent className="flex-1 p-3">
         <div className="grid grid-cols-2 gap-3 w-full h-full items-stretch">
           {/* 좌측: 히트맵 스타일 캘린더 */}
           <div className="flex flex-col items-center space-y-2">

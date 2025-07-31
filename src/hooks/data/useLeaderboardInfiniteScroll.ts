@@ -8,6 +8,7 @@ import {
 } from '@/utils/timezone';
 import { useInfiniteScroll } from '../common/useInfiniteScroll';
 import { INFINITE_SCROLL_CONFIG } from '@/config/constants/infinite-scroll';
+import { leaderboardQueryKey } from '@/config/constants/query-keys';
 
 // User 타입은 userStore에서 import
 import { User } from '@/stores/userStore';
@@ -103,13 +104,7 @@ export function useLeaderboardInfiniteScroll({
     fetchNextPage,
     refetch,
   } = useInfiniteScroll<LeaderBoard.LeaderBoardApiResponse & { id?: string }>({
-    queryKey: [
-      'leaderboard',
-      category,
-      period,
-      selectedDateIndex,
-      getDateForAPI(),
-    ],
+    queryKey: leaderboardQueryKey(category, period, selectedDateIndex, getDateForAPI()),
     queryFn,
     getNextPageParam: (lastPage, allPages) => {
       console.log('getNextPageParam 호출:', {
