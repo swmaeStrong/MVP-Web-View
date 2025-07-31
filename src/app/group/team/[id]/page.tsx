@@ -14,17 +14,10 @@ import { getKSTDateString, getKSTDateStringDaysAgo } from '@/utils/timezone';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
 import StateDisplay from '@/components/common/StateDisplay';
 import { RefreshCw } from 'lucide-react';
-import { useCurrentUser } from '@/stores/userStore';
-import { updateGroup } from '@/shared/api/patch';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { groupDetailQueryKey } from '@/config/constants/query-keys';
-import toast from 'react-hot-toast';
 
 export default function TeamDetailPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const params = useParams();
-  const currentUser = useCurrentUser();
-  const queryClient = useQueryClient();
   
   const teamId = Array.isArray(params.id) ? params.id[0] : params.id;
   const groupId = teamId ? parseInt(teamId, 10) : 0;
@@ -38,54 +31,7 @@ export default function TeamDetailPage() {
     enabled: !!groupId,
   });
 
-  // 현재 사용자가 그룹장인지 확인
-  const isGroupOwner = groupDetail && currentUser && groupDetail.owner.userId === currentUser.id;
 
-  // 그룹 정보 업데이트 mutation
-  const updateGroupMutation = useMutation({
-    mutationFn: (request: Group.UpdateGroupApiRequest) => updateGroup(groupId, request),
-    onSuccess: () => {
-      // 성공 시 그룹 상세 정보 다시 조회
-      queryClient.invalidateQueries({
-        queryKey: groupDetailQueryKey(groupId),
-      });
-      toast.success('그룹 정보가 성공적으로 업데이트되었습니다.');
-    },
-    onError: (error) => {
-      console.error('Failed to update group:', error);
-      toast.error('그룹 정보 업데이트에 실패했습니다.');
-    },
-  });
-
-  // 그룹 설명 업데이트
-  const handleDescriptionUpdate = async (newDescription: string) => {
-    if (!groupDetail) return;
-    
-    const request: Group.UpdateGroupApiRequest = {
-      name: groupDetail.name,
-      description: newDescription,
-      groundRule: groupDetail.groundRule,
-      tags: groupDetail.tags,
-      isPublic: groupDetail.isPublic,
-    };
-
-    await updateGroupMutation.mutateAsync(request);
-  };
-
-  // 그라운드 룰 업데이트
-  const handleGroundRuleUpdate = async (newGroundRule: string) => {
-    if (!groupDetail) return;
-    
-    const request: Group.UpdateGroupApiRequest = {
-      name: groupDetail.name,
-      description: groupDetail.description,
-      groundRule: newGroundRule,
-      tags: groupDetail.tags,
-      isPublic: groupDetail.isPublic,
-    };
-
-    await updateGroupMutation.mutateAsync(request);
-  };
 
   // 사용 가능한 날짜 배열 생성 (오늘부터 과거 30일, 한국 시간 기준)
   const availableDates = useMemo(() => {
@@ -191,7 +137,7 @@ export default function TeamDetailPage() {
         <div className="flex flex-col items-center gap-4">
           <RefreshCw className="h-8 w-8 animate-spin text-blue-500" />
           <p className={`text-lg ${getThemeTextColor('primary')}`}>
-            그룹 정보를 불러오는 중...
+            Loading group information...
           </p>
         </div>
       </div>
@@ -204,10 +150,10 @@ export default function TeamDetailPage() {
       <div className="h-full flex items-center justify-center">
         <StateDisplay 
           type="error" 
-          title="그룹 정보를 불러오지 못했습니다"
-          message="네트워크 상태를 확인하거나 잠시 후 다시 시도해 주세요."
+          title="Failed to load group information"
+          message="Please check your network connection or try again later."
           onRetry={() => refetch()}
-          retryText="다시 시도"
+          retryText="Retry"
         />
       </div>
     );
@@ -224,15 +170,11 @@ export default function TeamDetailPage() {
           avatar: groupDetail.owner.nickname.charAt(0) 
         }}
         tags={groupDetail.tags}
-        isOwner={isGroupOwner}
-        onDescriptionUpdate={isGroupOwner ? handleDescriptionUpdate : undefined}
       />
 
       {/* 우측 상단 - 그라운드 룰 (2/5) */}
       <GroundRules 
-        rules={groupDetail.groundRule ? [groupDetail.groundRule] : []} 
-        isOwner={isGroupOwner}
-        onGroundRuleUpdate={isGroupOwner ? handleGroundRuleUpdate : undefined}
+        rules={groupDetail.groundRule ? [groupDetail.groundRule] : []}
       />
 
       {/* Navigation Controls - 별도 컴포넌트 */}
