@@ -37,6 +37,20 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
     if (href === '/group') {
       return pathname === href;
     }
+    
+    // 그룹 서브메뉴의 경우 정확한 매칭 필요
+    if (href.includes('/group/team/')) {
+      // Main 페이지: 정확히 해당 경로만 매칭
+      if (href.endsWith(`/group/team/${selectedGroupId}`)) {
+        return pathname === href;
+      }
+      // Settings 페이지: settings로 끝나는 경우만 매칭
+      if (href.endsWith('/settings')) {
+        return pathname === href;
+      }
+    }
+    
+    // 기타 경로는 기존 로직 유지
     return pathname === href || pathname.startsWith(href + '/');
   };
 
