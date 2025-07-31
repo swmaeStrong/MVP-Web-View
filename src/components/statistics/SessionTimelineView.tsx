@@ -440,7 +440,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                 </div>
                 <ScrollBar 
                   orientation="horizontal" 
-                  className="h-3 bg-gray-200"
+                  className="h-3 [&>div]:bg-gray-300"
                 />
               </ScrollArea>
               
