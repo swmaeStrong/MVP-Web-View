@@ -1,24 +1,92 @@
 'use client';
 
-import { useTheme } from '@/hooks/ui/useTheme';
-import { Card, CardContent } from '@/shadcn/ui/card';
-import { spacing } from '@/styles/design-system';
-import { useParams } from 'next/navigation';
-import { useState, useCallback, useMemo } from 'react';
 import DateNavigation from '@/components/common/DateNavigation';
-import TeamCard from '@/components/group/TeamCard';
+import StateDisplay from '@/components/common/StateDisplay';
 import GroundRules from '@/components/group/GroundRules';
+import TeamCard from '@/components/group/TeamCard';
 import TeamLeaderboard from '@/components/group/TeamLeaderboard';
 import TodayGoals from '@/components/group/TodayGoals';
+import { groupDetailQueryKey } from '@/config/constants/query-keys';
+import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
+import { useTheme } from '@/hooks/ui/useTheme';
+import { Card, CardContent } from '@/shadcn/ui/card';
+import { updateGroup } from '@/shared/api/patch';
+import { useCurrentUser } from '@/stores/userStore';
 import { getKSTDateString, getKSTDateStringDaysAgo } from '@/utils/timezone';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { RefreshCw } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { useCallback, useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 
 export default function TeamDetailPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const params = useParams();
-  const teamId = params.id;
+  const currentUser = useCurrentUser();
+  const queryClient = useQueryClient();
+  
+  const teamId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const groupId = teamId ? parseInt(teamId, 10) : 0;
 
   const [selectedPeriod, setSelectedPeriod] = useState<'daily' | 'weekly'>('daily');
   const [selectedDate, setSelectedDate] = useState(getKSTDateString());
+
+  // 그룹 상세 정보 조회
+  const { data: groupDetail, isLoading, error, refetch } = useGroupDetail({
+    groupId,
+    enabled: !!groupId,
+  });
+
+  // 현재 사용자가 그룹장인지 확인
+  const isGroupOwner = groupDetail && currentUser && groupDetail.owner.userId === currentUser.id;
+
+  // 그룹 정보 업데이트 mutation
+  const updateGroupMutation = useMutation({
+    mutationFn: (request: Group.UpdateGroupApiRequest) => updateGroup(groupId, request),
+    onSuccess: () => {
+      // 성공 시 그룹 상세 정보 다시 조회
+      queryClient.invalidateQueries({
+        queryKey: groupDetailQueryKey(groupId),
+      });
+      toast.success('Group information updated successfully.');
+    },
+    onError: (error) => {
+      console.error('Failed to update group:', error);
+      toast.error('Failed to update group information.');
+    },
+  });
+
+  // 그룹 설명 업데이트
+  const handleDescriptionUpdate = async (newDescription: string) => {
+    if (!groupDetail) return;
+    
+    const request: Group.UpdateGroupApiRequest = {
+      name: groupDetail.name,
+      description: newDescription,
+      groundRule: groupDetail.groundRule,
+      tags: groupDetail.tags,
+      isPublic: groupDetail.isPublic,
+    };
+
+    await updateGroupMutation.mutateAsync(request);
+  };
+
+  // 그라운드 룰 업데이트
+  const handleGroundRuleUpdate = async (newGroundRule: string) => {
+    if (!groupDetail) return;
+    
+    const request: Group.UpdateGroupApiRequest = {
+      name: groupDetail.name,
+      description: groupDetail.description,
+      groundRule: newGroundRule,
+      tags: groupDetail.tags,
+      isPublic: groupDetail.isPublic,
+    };
+
+    await updateGroupMutation.mutateAsync(request);
+  };
+
+
 
   // 사용 가능한 날짜 배열 생성 (오늘부터 과거 30일, 한국 시간 기준)
   const availableDates = useMemo(() => {
@@ -29,49 +97,36 @@ export default function TeamDetailPage() {
     return dates;
   }, []);
 
-  // Mock team data - would come from API
-  const teamData = {
-    id: teamId,
-    name: teamId === '1' ? 'Team Alpha' : teamId === '2' ? 'Team Beta' : 'Team Gamma',
-    description: teamId === '1' ? 'Frontend development team focused on React and Next.js applications' : 
-                 teamId === '2' ? 'Backend development team specializing in Node.js and Python' : 
-                 'Full-stack development team working on modern web applications',
-    leader: { name: 'John Doe', avatar: 'JD' },
-    leaderboard: [
-      { rank: 1, name: 'John Doe', score: 95, hours: 32 },
-      { rank: 2, name: 'Sarah Wilson', score: 88, hours: 30 },
-      { rank: 3, name: 'Mike Johnson', score: 85, hours: 35 },
-      { rank: 4, name: 'Jane Smith', score: 82, hours: 28 },
-      { rank: 5, name: 'Tom Brown', score: 78, hours: 25 },
-      { rank: 6, name: 'Alice Kim', score: 75, hours: 22 },
-    ],
-    groundRules: [
-      'Daily standup at 9:00 AM',
-      'Code reviews within 24 hours',
-      'No meetings on Fridays',
-      'Use proper commit messages'
-    ],
-    todayGoals: [
-      {
-        id: 1,
-        title: 'Complete React refactoring task',
-        achieved: ['John Doe', 'Sarah Wilson'],
-        notAchieved: ['Mike Johnson', 'Jane Smith', 'Tom Brown', 'Alice Kim']
-      },
-      {
-        id: 2,
-        title: 'Review team code submissions', 
-        achieved: ['John Doe', 'Mike Johnson', 'Jane Smith'],
-        notAchieved: ['Sarah Wilson', 'Tom Brown', 'Alice Kim']
-      },
-      {
-        id: 3,
-        title: 'Update project documentation',
-        achieved: ['Sarah Wilson', 'Tom Brown'],
-        notAchieved: ['John Doe', 'Mike Johnson', 'Jane Smith', 'Alice Kim']
-      }
-    ]
-  };
+  // Mock data for leaderboard and goals (will be replaced with actual API calls later)
+  const mockLeaderboard = [
+    { rank: 1, name: 'John Doe', score: 95, hours: 32 },
+    { rank: 2, name: 'Sarah Wilson', score: 88, hours: 30 },
+    { rank: 3, name: 'Mike Johnson', score: 85, hours: 35 },
+    { rank: 4, name: 'Jane Smith', score: 82, hours: 28 },
+    { rank: 5, name: 'Tom Brown', score: 78, hours: 25 },
+    { rank: 6, name: 'Alice Kim', score: 75, hours: 22 },
+  ];
+
+  const mockTodayGoals = [
+    {
+      id: 1,
+      title: 'Complete React refactoring task',
+      achieved: ['John Doe', 'Sarah Wilson'],
+      notAchieved: ['Mike Johnson', 'Jane Smith', 'Tom Brown', 'Alice Kim']
+    },
+    {
+      id: 2,
+      title: 'Review team code submissions', 
+      achieved: ['John Doe', 'Mike Johnson', 'Jane Smith'],
+      notAchieved: ['Sarah Wilson', 'Tom Brown', 'Alice Kim']
+    },
+    {
+      id: 3,
+      title: 'Update project documentation',
+      achieved: ['Sarah Wilson', 'Tom Brown'],
+      notAchieved: ['John Doe', 'Mike Johnson', 'Jane Smith', 'Alice Kim']
+    }
+  ];
 
 
   const handlePreviousDate = useCallback(() => {
@@ -130,17 +185,56 @@ export default function TeamDetailPage() {
     }
   }, [selectedPeriod]);
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <RefreshCw className="h-8 w-8 animate-spin text-blue-500" />
+          <p className={`text-lg ${getThemeTextColor('primary')}`}>
+            Loading group information...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !groupDetail) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <StateDisplay 
+          type="error" 
+          title="Failed to load group information"
+          message="Please check your network connection or try again later."
+          onRetry={() => refetch()}
+          retryText="Retry"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="h-full grid grid-cols-5 gap-6 p-6" style={{ gridTemplateRows: 'auto auto 1fr' }}>
       {/* 좌측 최상단 - 그룹 이름 및 팀장 정보 (3/5) */}
       <TeamCard 
-        teamName={teamData.name}
-        description={teamData.description}
-        leader={teamData.leader}
+        teamName={groupDetail.name}
+        description={groupDetail.description}
+        leader={{ 
+          name: groupDetail.owner.nickname, 
+          avatar: groupDetail.owner.nickname.charAt(0) 
+        }}
+        tags={groupDetail.tags}
+        isOwner={isGroupOwner ?? false}
+        onDescriptionUpdate={isGroupOwner ? handleDescriptionUpdate : undefined}
       />
 
       {/* 우측 상단 - 그라운드 룰 (2/5) */}
-      <GroundRules rules={teamData.groundRules} />
+      <GroundRules 
+        rules={groupDetail.groundRule ? [groupDetail.groundRule] : []}
+        isOwner={isGroupOwner ?? false}
+        onGroundRuleUpdate={isGroupOwner ? handleGroundRuleUpdate : undefined}
+      />
 
       {/* Navigation Controls - 별도 컴포넌트 */}
       <Card className={`${getCommonCardClass()} col-span-3 row-span-1 flex items-center`}>
@@ -186,10 +280,10 @@ export default function TeamDetailPage() {
       </Card>
 
       {/* 좌측 하단 - 리더보드 (3/5) */}
-      <TeamLeaderboard members={teamData.leaderboard} />
+      <TeamLeaderboard members={mockLeaderboard} />
 
       {/* 우측 하단 - 오늘의 목표 설정 (2/5) */}
-      <TodayGoals goals={teamData.todayGoals} />
+      <TodayGoals goals={mockTodayGoals} />
     </div>
   );
 }

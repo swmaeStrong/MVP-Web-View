@@ -1,5 +1,7 @@
 import { QueryProvider } from '@/providers/QueryProvider';
 import { SentryProvider } from '@/providers/SentryProvider';
+import { ThemeProvider } from '@/providers/ThemeProvider';
+import { ToastProvider } from '@/providers/ToastProvider';
 import type { Metadata } from 'next';
 import { Inter, Noto_Sans_KR, Poppins } from 'next/font/google';
 import './globals.css';
@@ -52,15 +54,19 @@ export default function RootLayout({
       lang='en'
       className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable}`}
     >
-      <body className='font-sans antialiased'>
+      <body className='antialiased' style={{ fontFamily: "'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif" }}>
         <SentryProvider>
-          <QueryProvider>
-            <div className='min-h-screen bg-gray-900 text-gray-100'>
-              <main className='transition-all duration-300'>
-                {children}
-              </main>
-            </div>
-          </QueryProvider>
+          <ThemeProvider>
+            <QueryProvider>
+              <ToastProvider>
+                <div className='min-h-screen bg-background text-foreground'>
+                  <main className='transition-all duration-300'>
+                    {children}
+                  </main>
+                </div>
+              </ToastProvider>
+            </QueryProvider>
+          </ThemeProvider>
         </SentryProvider>
       </body>
     </html>

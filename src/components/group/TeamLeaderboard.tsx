@@ -3,6 +3,7 @@
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
+import { Separator } from '@/shadcn/ui/separator';
 import { spacing } from '@/styles/design-system';
 import UserProfileTooltip from '@/components/common/UserProfileTooltip';
 
@@ -27,9 +28,10 @@ export default function TeamLeaderboard({ members }: TeamLeaderboardProps) {
   return (
     <Card className={`${getCommonCardClass()} col-span-3 row-span-1`}>
       <CardHeader>
-        <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
+        <div className={`text-lg font-bold ${getThemeTextColor('primary')} text-center`}>
           Leaderboard
         </div>
+        <Separator />
       </CardHeader>
       <CardContent className={spacing.inner.normal}>
         <div className="grid grid-cols-3 gap-4">

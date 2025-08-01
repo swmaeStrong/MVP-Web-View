@@ -4,6 +4,7 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import { Plus, Search, Settings, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useCurrentUser } from '@/stores/userStore';
 
 interface NavItem {
   name: string;
@@ -11,15 +12,10 @@ interface NavItem {
   icon: React.ElementType;
 }
 
-interface Group {
-  id: number;
-  name: string;
-  members: number;
-  active: boolean;
-}
-
 interface GroupSidebarProps {
-  teams: Group[];
+  groups: Group.GroupApiResponse[];
+  error: any;
+  isLoading?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -27,9 +23,10 @@ const navItems: NavItem[] = [
   { name: 'Create', href: '/group/create', icon: Plus },
 ];
 
-export default function GroupSidebar({ teams }: GroupSidebarProps) {
+export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
   const pathname = usePathname();
+  const currentUser = useCurrentUser();
 
   // Get selected group ID from URL
   const selectedGroupId = pathname.includes('/group/team/') 
@@ -40,13 +37,33 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
     if (href === '/group') {
       return pathname === href;
     }
+    
+    // 그룹 서브메뉴의 경우 정확한 매칭 필요
+    if (href.includes('/group/team/')) {
+      // Main 페이지: 정확히 해당 경로만 매칭
+      if (href.endsWith(`/group/team/${selectedGroupId}`)) {
+        return pathname === href;
+      }
+      // Settings 페이지: settings로 끝나는 경우만 매칭
+      if (href.endsWith('/settings')) {
+        return pathname === href;
+      }
+    }
+    
+    // 기타 경로는 기존 로직 유지
     return pathname === href || pathname.startsWith(href + '/');
   };
 
-  // Group submenu items
+  // 현재 선택된 그룹 찾기
+  const selectedGroup = groups.find(group => group.groupId.toString() === selectedGroupId);
+  
+  // 현재 사용자가 그룹장인지 확인
+  const isGroupOwner = selectedGroup && currentUser && selectedGroup.groupOwner.userId === currentUser.id;
+
+  // Group submenu items - 그룹장만 Settings 메뉴 표시
   const groupSubMenuItems = [
     { name: 'Main', href: `/group/team/${selectedGroupId}`, icon: TrendingUp },
-    { name: 'Settings', href: `/group/team/${selectedGroupId}/settings`, icon: Settings },
+    ...(isGroupOwner ? [{ name: 'Settings', href: `/group/team/${selectedGroupId}/settings`, icon: Settings }] : []),
   ];
 
   return (
@@ -60,13 +77,29 @@ export default function GroupSidebar({ teams }: GroupSidebarProps) {
             My Groups
           </div>
           <div className="space-y-1">
-            {teams.map((group) => {
-              const isGroupSelected = selectedGroupId === group.id.toString();
+            {error && (
+              <div className="px-4 py-2">
+                <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                  Failed to load groups
+                </span>
+              </div>
+            )}
+            
+            {!error && groups.length === 0 && (
+              <div className="px-4 py-2">
+                <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                  No groups yet
+                </span>
+              </div>
+            )}
+            
+            {!error && groups.map((group) => {
+              const isGroupSelected = selectedGroupId === group.groupId.toString();
               
               return (
-                <div key={group.id}>
+                <div key={group.groupId}>
                   <Link
-                    href={`/group/team/${group.id}`}
+                    href={`/group/team/${group.groupId}`}
                     className={`flex items-center justify-between px-4 py-2 rounded-md transition-all duration-200 transform ${
                       isGroupSelected
                         ? `text-white bg-[#3F72AF] shadow-lg`

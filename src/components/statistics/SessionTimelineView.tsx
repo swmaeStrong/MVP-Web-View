@@ -494,9 +494,9 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className={`font-semibold ${getThemeTextColor('primary')}`}>
+                      <div className={`font-semibold ${getThemeTextColor('primary')}`}>
                         {selectedSessionData.title}
-                      </h4>
+                      </div>
                     </div>
                     <p className={`text-sm ${getThemeTextColor('secondary')}`}>
                       {formatTimeRange(selectedSessionData.timestamp, selectedSessionData.duration)}
@@ -659,7 +659,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                     <div className="mb-4">
                       {/* Timeline-based Progress Bar */}
                       <div className="space-y-2">
-                        <div className="flex h-3 w-full rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+                        <div className="flex h-3 w-full rounded-full overflow-hidden bg-gray-200">
                           {timelineBreakdown.map((segment, index) => {
                             const segmentTotalTime = segment.segmentDuration;
                             const segmentPercent = totalAllocatedTime > 0 ? (segmentTotalTime / totalAllocatedTime) * 100 : 0;
@@ -708,7 +708,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                         </div>
                         
                         {/* Time labels */}
-                        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 overflow-hidden">
+                        <div className="flex justify-between text-xs text-gray-500 overflow-hidden">
                           {timelineBreakdown.length > 0 && (
                             <>
                               <span className="text-[9px] truncate px-1">
@@ -762,10 +762,10 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                 {/* Score Breakdown */}
                 {sessionDetailData && sessionDetailData.length > 0 && (
                   <div className="space-y-3 mb-4">
-                    <h5 className={`text-sm font-medium ${getThemeTextColor('primary')} flex items-center gap-2`}>
+                    <div className={`text-sm font-medium ${getThemeTextColor('primary')} flex items-center gap-2`}>
                       <span>🚫</span>
                       Distractions
-                    </h5>
+                    </div>
                     <div className="space-y-2">
                       {sessionDetailData
                         .sort((a, b) => b.duration - a.duration) // Sort by duration (longest first)
