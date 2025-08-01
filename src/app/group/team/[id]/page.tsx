@@ -1,23 +1,22 @@
 'use client';
 
-import { useTheme } from '@/hooks/ui/useTheme';
-import { Card, CardContent } from '@/shadcn/ui/card';
-import { spacing } from '@/styles/design-system';
-import { useParams } from 'next/navigation';
-import { useState, useCallback, useMemo } from 'react';
 import DateNavigation from '@/components/common/DateNavigation';
-import TeamCard from '@/components/group/TeamCard';
+import StateDisplay from '@/components/common/StateDisplay';
 import GroundRules from '@/components/group/GroundRules';
+import TeamCard from '@/components/group/TeamCard';
 import TeamLeaderboard from '@/components/group/TeamLeaderboard';
 import TodayGoals from '@/components/group/TodayGoals';
-import { getKSTDateString, getKSTDateStringDaysAgo } from '@/utils/timezone';
-import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
-import StateDisplay from '@/components/common/StateDisplay';
-import { RefreshCw } from 'lucide-react';
-import { useCurrentUser } from '@/stores/userStore';
-import { updateGroup } from '@/shared/api/patch';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { groupDetailQueryKey } from '@/config/constants/query-keys';
+import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
+import { useTheme } from '@/hooks/ui/useTheme';
+import { Card, CardContent } from '@/shadcn/ui/card';
+import { updateGroup } from '@/shared/api/patch';
+import { useCurrentUser } from '@/stores/userStore';
+import { getKSTDateString, getKSTDateStringDaysAgo } from '@/utils/timezone';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { RefreshCw } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { useCallback, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 
 export default function TeamDetailPage() {
@@ -226,14 +225,14 @@ export default function TeamDetailPage() {
           avatar: groupDetail.owner.nickname.charAt(0) 
         }}
         tags={groupDetail.tags}
-        isOwner={isGroupOwner}
+        isOwner={isGroupOwner ?? false}
         onDescriptionUpdate={isGroupOwner ? handleDescriptionUpdate : undefined}
       />
 
       {/* 우측 상단 - 그라운드 룰 (2/5) */}
       <GroundRules 
         rules={groupDetail.groundRule ? [groupDetail.groundRule] : []}
-        isOwner={isGroupOwner}
+        isOwner={isGroupOwner ?? false}
         onGroundRuleUpdate={isGroupOwner ? handleGroundRuleUpdate : undefined}
       />
 
