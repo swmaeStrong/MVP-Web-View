@@ -193,8 +193,25 @@ export default function GroupSettingsPage() {
           <h1 className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
             {groupDetail.name}
           </h1>
-          <Badge variant={groupDetail.isPublic ? "default" : "secondary"} className="text-xs">
-            {groupDetail.isPublic ? 'Public' : 'Private'}
+          <Badge 
+            variant={groupDetail.isPublic ? "default" : "secondary"} 
+            className={`text-xs flex items-center gap-1 ${
+              groupDetail.isPublic 
+                ? 'bg-green-100 text-green-700 border-green-200 hover:bg-green-200' 
+                : 'bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-200'
+            }`}
+          >
+            {groupDetail.isPublic ? (
+              <>
+                <Globe className="h-3 w-3" />
+                Public
+              </>
+            ) : (
+              <>
+                <Lock className="h-3 w-3" />
+                Private
+              </>
+            )}
           </Badge>
         </div>
 
@@ -206,14 +223,6 @@ export default function GroupSettingsPage() {
           >
             <Copy className="h-4 w-4" />
             Copy invite code
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => router.back()}
-            className="gap-2"
-          >
-            <X className="h-4 w-4" />
-            Close
           </Button>
         </div>
       </div>
