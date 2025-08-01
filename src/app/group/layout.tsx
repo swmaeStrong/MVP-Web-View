@@ -3,13 +3,10 @@
 import { useTheme } from '@/hooks/ui/useTheme';
 import { spacing } from '@/styles/design-system';
 import GroupSidebar from '@/components/group/GroupSidebar';
-
-// Team data (would come from API)
-const teams = [
-  { id: 1, name: 'Team Alpha', members: 5, active: true },
-  { id: 2, name: 'Team Beta', members: 3, active: false },
-  { id: 3, name: 'Team Gamma', members: 7, active: true },
-];
+import { useMyGroups } from '@/hooks/queries/useMyGroups';
+import { useInitUser } from '@/hooks/common/useInitUser';
+import { useCurrentUser } from '@/stores/userStore';
+import { useEffect } from 'react';
 
 interface GroupLayoutProps {
   children: React.ReactNode;
@@ -17,12 +14,22 @@ interface GroupLayoutProps {
 
 export default function GroupLayout({ children }: GroupLayoutProps) {
   const { getThemeClass } = useTheme();
+  const { data: groups, isLoading, error } = useMyGroups();
+  const { initializeUser } = useInitUser();
+  const currentUser = useCurrentUser();
+
+  // 사용자 정보 초기화
+  useEffect(() => {
+    if (!currentUser) {
+      initializeUser().catch(console.error);
+    }
+  }, [currentUser, initializeUser]);
 
   return (
     <div className={`min-h-screen ${getThemeClass('background')}`}>
       <div className="flex">
         {/* Sidebar */}
-        <GroupSidebar teams={teams} />
+        <GroupSidebar groups={groups || []} isLoading={isLoading} error={error} />
         
         {/* Main Content */}
         <div className="flex-1 ml-40">

@@ -174,13 +174,13 @@ export default function InlineTimeline({ cycles, date, onBack, showHeader = true
           </div>
           
           {/* Timeline bar */}
-          <div className="relative h-16 bg-gray-100 dark:bg-gray-800 rounded-lg border overflow-hidden">
+          <div className="relative h-16 bg-gray-100 rounded-lg border overflow-hidden">
             <div className="flex h-full">
               {timeline.map(({ hour, segments }) => {
                 const hasActivity = segments.length > 0;
                 
                 return (
-                  <div key={hour} className="flex-1 relative border-r border-gray-300 dark:border-gray-600 last:border-r-0">
+                  <div key={hour} className="flex-1 relative border-r border-gray-300 last:border-r-0">
                     {hasActivity && (
                       <div className="flex h-full">
                         {mergeConsecutiveSegments(segments).map((segment, segIndex) => {
@@ -247,7 +247,7 @@ export default function InlineTimeline({ cycles, date, onBack, showHeader = true
                       {[25, 50, 75].map(percentage => (
                         <div
                           key={percentage}
-                          className="absolute top-0 h-full w-px bg-gray-400 dark:bg-gray-500 opacity-40"
+                          className="absolute top-0 h-full w-px bg-gray-400 opacity-40"
                           style={{ left: `${percentage}%` }}
                         />
                       ))}
