@@ -130,3 +130,9 @@ export const validateGroupName = (name: string) =>
   parseApi<boolean>(
     API.get(`/group/name/check?name=${name}`)
   );
+
+// 그룹 검색
+export const searchGroups = () =>
+  parseApi<Group.GroupApiResponse[]>(
+    API.get('/group/search')
+  );

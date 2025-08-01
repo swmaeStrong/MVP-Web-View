@@ -11,8 +11,11 @@ import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { Dialog, DialogContent, DialogHeader } from '@/shadcn/ui/dialog';
 import { spacing } from '@/styles/design-system';
 import { Calendar, Globe, Hash, Lock, Search, TrendingUp, Users } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import { searchGroups } from '@/shared/api/get';
+import { Skeleton } from '@/shadcn/ui/skeleton';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
@@ -20,84 +23,34 @@ export default function FindTeamPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'public' | 'private'>('all');
   const [sortBy, setSortBy] = useState<'members' | 'created' | 'name'>('members');
-  const [selectedGroup, setSelectedGroup] = useState<typeof availableGroups[0] | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<Group.GroupApiResponse | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inviteCode, setInviteCode] = useState('');
   const [isJoining, setIsJoining] = useState(false);
   const [joinError, setJoinError] = useState('');
 
-  // Mock data for available groups
-  const availableGroups = [
-    {
-      id: 1,
-      name: 'Frontend Developers',
-      description: 'React, Next.js, TypeScript enthusiasts working on modern web applications',
-      members: 12,
-      isPublic: true,
-      tags: ['React', 'TypeScript', 'Frontend'],
-      createdAt: '2024-01-15',
-      leader: {
-        name: 'Alice Kim',
-        nickname: 'alice_dev',
-        avatar: 'AK'
-      }
-    },
-    {
-      id: 2,
-      name: 'Backend Warriors',
-      description: 'Node.js, Python, Database experts building scalable server architectures',
-      members: 8,
-      isPublic: true,
-      tags: ['Node.js', 'Python', 'Backend'],
-      createdAt: '2024-01-20',
-      leader: {
-        name: 'Bob Johnson',
-        nickname: 'bob_backend',
-        avatar: 'BJ'
-      }
-    },
-    {
-      id: 3,
-      name: 'DevOps Masters',
-      description: 'Docker, Kubernetes, CI/CD specialists focused on infrastructure automation',
-      members: 6,
-      isPublic: false,
-      tags: ['Docker', 'Kubernetes', 'DevOps'],
-      createdAt: '2024-02-01',
-      leader: {
-        name: 'Charlie Lee',
-        nickname: 'charlie_ops',
-        avatar: 'CL'
-      }
-    },
-  ];
+  // Fetch groups from API
+  const { data: groups = [], isLoading } = useQuery({
+    queryKey: ['groups', 'search'],
+    queryFn: searchGroups,
+  });
 
-  const filteredGroups = availableGroups
+  const filteredGroups = groups
     .filter(group => {
       const matchesSearch = group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        group.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        group.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+        (group.description?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
+        (group.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) || false);
       
-      const matchesFilter = filterType === 'all' || 
-        (filterType === 'public' && group.isPublic) ||
-        (filterType === 'private' && !group.isPublic);
-      
-      return matchesSearch && matchesFilter;
+      return matchesSearch;
     })
     .sort((a, b) => {
-      switch (sortBy) {
-        case 'members':
-          return b.members - a.members;
-        case 'created':
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        case 'name':
-          return a.name.localeCompare(b.name);
-        default:
-          return 0;
+      if (sortBy === 'name') {
+        return a.name.localeCompare(b.name);
       }
+      return 0;
     });
 
-  const handleViewDetail = (group: typeof availableGroups[0]) => {
+  const handleViewDetail = (group: Group.GroupApiResponse) => {
     setSelectedGroup(group);
     setIsModalOpen(true);
   };
@@ -110,58 +63,21 @@ export default function FindTeamPage() {
     setIsJoining(false);
   };
 
-  const handleJoinGroup = async (group: typeof availableGroups[0]) => {
-    if (group.isPublic) {
-      // Public 그룹의 경우 바로 가입 처리 후 그룹 상세 페이지로 이동
-      setIsJoining(true);
-      try {
-        // 실제로는 API 호출로 그룹 가입 처리
-        // await joinPublicGroup(group.id);
-        
-        // Mock: 2초 대기 후 성공
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        handleCloseModal();
-        router.push(`/group/team/${group.id}`);
-      } catch (error) {
-        console.error('Failed to join group:', error);
-        setJoinError('그룹 가입에 실패했습니다. 다시 시도해주세요.');
-      } finally {
-        setIsJoining(false);
-      }
-    } else {
-      // Private 그룹의 경우 초대 코드 확인 후 가입 처리
-      if (!inviteCode.trim()) {
-        setJoinError('초대 코드를 입력해주세요.');
-        return;
-      }
+  const handleJoinGroup = async (group: Group.GroupApiResponse) => {
+    setIsJoining(true);
+    try {
+      // TODO: Implement actual group join API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      setIsJoining(true);
-      setJoinError('');
-      
-      try {
-        // 실제로는 API 호출로 초대 코드 확인 및 그룹 가입 처리
-        // await joinPrivateGroup(group.id, inviteCode);
-        
-        // Mock: 2초 대기 후 성공 (간단한 검증)
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Mock validation - "1234"가 올바른 코드라고 가정
-        if (inviteCode.trim() !== '1234') {
-          throw new Error('Invalid invite code');
-        }
-        
-        handleCloseModal();
-        router.push(`/group/team/${group.id}`);
-      } catch (error) {
-        console.error('Failed to join group:', error);
-        setJoinError('유효하지 않은 초대 코드입니다.');
-      } finally {
-        setIsJoining(false);
-      }
+      handleCloseModal();
+      router.push(`/group/team/${group.groupId}`);
+    } catch (error) {
+      console.error('Failed to join group:', error);
+      setJoinError('그룹 가입에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsJoining(false);
     }
   };
-
 
   return (
     <div className="space-y-6 px-6 py-6 max-w-7xl mx-auto">
@@ -236,9 +152,34 @@ export default function FindTeamPage() {
       </Card>
 
       {/* Results */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, index) => (
+            <Card key={index} className={getCommonCardClass()}>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="w-12 h-12 rounded-full" />
+                    <div className="flex-1">
+                      <Skeleton className="h-6 w-32 mb-2" />
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-12 w-full" />
+                  <div className="flex gap-2">
+                    <Skeleton className="h-6 w-16" />
+                    <Skeleton className="h-6 w-16" />
+                  </div>
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredGroups.map((group) => (
-            <Card key={group.id} className={`${getCommonCardClass()} hover:ring-2 hover:ring-[#3F72AF]/20 transition-all h-fit`}>
+            <Card key={group.groupId} className={`${getCommonCardClass()} hover:ring-2 hover:ring-[#3F72AF]/20 transition-all h-fit`}>
               <CardContent className="p-6">
                 <div className="space-y-4">
                   {/* Group Header */}
@@ -250,67 +191,39 @@ export default function FindTeamPage() {
                     </Avatar>
                     
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className={`text-lg font-bold ${getThemeTextColor('primary')} truncate`}>
-                          {group.name}
-                        </div>
-                        <Badge variant={group.isPublic ? "default" : "secondary"} className={`gap-1 flex-shrink-0 ${
-                          group.isPublic 
-                            ? 'bg-green-100 text-green-700 hover:bg-green-100'
-                            : 'bg-amber-100 text-amber-700 hover:bg-amber-100'
-                        }`}>
-                          {group.isPublic ? (
-                            <>
-                              <Globe className="h-3 w-3" />
-                              Public
-                            </>
-                          ) : (
-                            <>
-                              <Lock className="h-3 w-3" />
-                              Private
-                            </>
-                          )}
-                        </Badge>
+                      <div className={`text-lg font-bold ${getThemeTextColor('primary')} truncate`}>
+                        {group.name}
                       </div>
                       
-                      {/* Stats */}
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1">
-                          <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                            {group.members}
-                          </div>
-                          <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            members
-                          </div>
-                        </div>
-                        <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                          •
-                        </div>
-                        <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                          {new Date(group.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </div>
+                      {/* Owner Info */}
+                      <div className={`text-sm ${getThemeTextColor('secondary')}`}>
+                        by @{group.groupOwner.nickname}
                       </div>
                     </div>
                   </div>
                   
                   {/* Description */}
-                  <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed line-clamp-2`}>
-                    {group.description}
-                  </p>
+                  {group.description && (
+                    <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed line-clamp-2`}>
+                      {group.description}
+                    </p>
+                  )}
                   
                   {/* Tags */}
-                  <div className="flex flex-wrap gap-2">
-                    {group.tags.map((tag) => (
-                      <Badge 
-                        key={tag} 
-                        variant="outline" 
-                        className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
-                      >
-                        <Hash className="h-3 w-3" />
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
+                  {group.tags && group.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {group.tags.map((tag) => (
+                        <Badge 
+                          key={tag} 
+                          variant="outline" 
+                          className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
+                        >
+                          <Hash className="h-3 w-3" />
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                   
                   {/* Action Button */}
                   <Button
@@ -324,8 +237,10 @@ export default function FindTeamPage() {
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
 
-      {filteredGroups.length === 0 && (
+      {!isLoading && filteredGroups.length === 0 && (
         <div className="col-span-full">
           <Card className={getCommonCardClass()}>
             <CardContent className={`${spacing.inner.normal} text-center py-12`}>
@@ -336,16 +251,18 @@ export default function FindTeamPage() {
                 No groups found
               </div>
               <p className={`text-base ${getThemeTextColor('secondary')} mb-6 max-w-md mx-auto`}>
-                We couldn't find any groups matching your search criteria. Try adjusting your filters or search terms.
+                We couldn't find any groups matching your search criteria. Try adjusting your search terms.
               </p>
-              <Button className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90">
+              <Button 
+                className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90"
+                onClick={() => router.push('/group/create')}
+              >
                 Create New Group
               </Button>
             </CardContent>
           </Card>
         </div>
       )}
-      </div>
 
       {/* Group Detail Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -370,122 +287,61 @@ export default function FindTeamPage() {
                       </Avatar>
                       
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className={`text-xl font-bold ${getThemeTextColor('primary')}`}>
-                            {selectedGroup.name}
-                          </div>
-                          <Badge variant={selectedGroup.isPublic ? "default" : "secondary"} className={`gap-1 ${
-                            selectedGroup.isPublic 
-                              ? 'bg-green-100 text-green-700 hover:bg-green-100'
-                              : 'bg-amber-100 text-amber-700 hover:bg-amber-100'
-                          }`}>
-                            {selectedGroup.isPublic ? (
-                              <>
-                                <Globe className="h-3 w-3" />
-                                Public
-                              </>
-                            ) : (
-                              <>
-                                <Lock className="h-3 w-3" />
-                                Private
-                              </>
-                            )}
-                          </Badge>
+                        <div className={`text-xl font-bold ${getThemeTextColor('primary')} mb-1`}>
+                          {selectedGroup.name}
                         </div>
                         
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-1">
-                            <Users className="h-4 w-4" />
-                            <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                              {selectedGroup.members}
-                            </div>
-                            <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                              members
-                            </div>
-                          </div>
-                          <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            •
-                          </div>
-                          <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            Created {new Date(selectedGroup.createdAt).toLocaleDateString('en-US', { 
-                              year: 'numeric', 
-                              month: 'long', 
-                              day: 'numeric' 
-                            })}
-                          </div>
+                        <div className={`text-sm ${getThemeTextColor('secondary')}`}>
+                          Created by @{selectedGroup.groupOwner.nickname}
                         </div>
                       </div>
                     </div>
 
                     {/* Group Description */}
-                    <div className="mb-4">
-                      <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed`}>
-                        {selectedGroup.description}
-                      </p>
-                    </div>
+                    {selectedGroup.description && (
+                      <div className="mb-4">
+                        <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed`}>
+                          {selectedGroup.description}
+                        </p>
+                      </div>
+                    )}
 
-                    {/* Group Leader */}
+                    {/* Group Owner */}
                     <div className="mb-4">
                       <div className={`text-sm font-medium ${getThemeTextColor('primary')} mb-2`}>
-                        Group Leader
+                        Group Owner
                       </div>
                       <div className="flex items-center gap-3">
                         <Avatar className="w-8 h-8">
                           <AvatarFallback className={`text-sm font-medium ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                            {selectedGroup.leader.avatar}
+                            {selectedGroup.groupOwner.nickname.slice(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <div>
                           <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                            {selectedGroup.leader.name}
+                            {selectedGroup.groupOwner.nickname}
                           </div>
                           <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            @{selectedGroup.leader.nickname}
+                            ID: {selectedGroup.groupOwner.userId}
                           </div>
                         </div>
                       </div>
                     </div>
 
                     {/* Tags */}
-                    <div>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedGroup.tags.map((tag) => (
-                          <Badge 
-                            key={tag} 
-                            variant="outline" 
-                            className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
-                          >
-                            <Hash className="h-3 w-3" />
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Private Group Invite Code Section */}
-                    {!selectedGroup.isPublic && (
-                      <div className="mt-4 pt-4 border-t border-gray-200">
-                        <div className={`text-sm font-medium ${getThemeTextColor('primary')} mb-2`}>
-                          Invite Code Required
-                        </div>
-                        <div className="space-y-2">
-                          <Input
-                            type="text"
-                            placeholder="Enter invite code..."
-                            value={inviteCode}
-                            onChange={(e) => {
-                              setInviteCode(e.target.value);
-                              setJoinError('');
-                            }}
-                            className="text-center font-mono tracking-wider bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900"
-                            disabled={isJoining}
-                          />
-                          {joinError && (
-                            <p className="text-red-500 text-xs">{joinError}</p>
-                          )}
-                          <p className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            💡 This is a private group. You need an invite code from a group member to join.
-                          </p>
+                    {selectedGroup.tags && selectedGroup.tags.length > 0 && (
+                      <div>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedGroup.tags.map((tag) => (
+                            <Badge 
+                              key={tag} 
+                              variant="outline" 
+                              className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
+                            >
+                              <Hash className="h-3 w-3" />
+                              {tag}
+                            </Badge>
+                          ))}
                         </div>
                       </div>
                     )}
@@ -505,7 +361,7 @@ export default function FindTeamPage() {
                   <Button
                     className="flex-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
                     onClick={() => handleJoinGroup(selectedGroup)}
-                    disabled={isJoining || (!selectedGroup.isPublic && !inviteCode.trim())}
+                    disabled={isJoining}
                   >
                     {isJoining ? 'Joining...' : 'Join Group'}
                   </Button>
