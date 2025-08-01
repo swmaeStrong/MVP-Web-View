@@ -157,7 +157,7 @@ export default function JoinTeamPage() {
                   setInviteCode(e.target.value);
                   setError('');
                 }}
-                className="h-12 text-center text-lg font-mono tracking-wider !bg-white !border-gray-200 !text-gray-900 placeholder:!text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:!bg-white dark:!text-gray-900"
+                className="h-12 text-center text-lg font-mono tracking-wider !bg-white !border-gray-200 !text-gray-900 placeholder:!text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
                 disabled={isLoading}
               />
               {error && (

@@ -94,7 +94,7 @@ export default function FindTeamPage() {
                   placeholder="Search groups by name, description, or tags..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-11 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900"
+                  className="pl-10 h-11 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
                 />
               </div>
             </div>
@@ -103,15 +103,15 @@ export default function FindTeamPage() {
             <div className="flex flex-col sm:flex-row gap-4">
               {/* Filter Buttons */}
               <div className="flex-1">
-                <ToggleGroup type="single" value={filterType} onValueChange={(value) => value && setFilterType(value as 'all' | 'public' | 'private')} className="h-11 w-full bg-white border border-gray-200 rounded-md dark:bg-gray-50 dark:border-gray-300">
-                  <ToggleGroupItem value="all" className="flex-1 px-3 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-100">
+                <ToggleGroup type="single" value={filterType} onValueChange={(value) => value && setFilterType(value as 'all' | 'public' | 'private')} className="h-11 w-full bg-white border border-gray-200 rounded-md">
+                  <ToggleGroupItem value="all" className="flex-1 px-3 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50">
                     All
                   </ToggleGroupItem>
-                  <ToggleGroupItem value="public" className="flex-1 gap-1 px-2 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-100">
+                  <ToggleGroupItem value="public" className="flex-1 gap-1 px-2 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50">
                     <Globe className="h-3 w-3" />
                     Public
                   </ToggleGroupItem>
-                  <ToggleGroupItem value="private" className="flex-1 gap-1 px-2 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-100">
+                  <ToggleGroupItem value="private" className="flex-1 gap-1 px-2 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50">
                     <Lock className="h-3 w-3" />
                     Private
                   </ToggleGroupItem>
@@ -121,7 +121,7 @@ export default function FindTeamPage() {
               {/* Sort Dropdown */}
               <div className="sm:w-64">
                 <Select value={sortBy} onValueChange={(value: 'members' | 'created' | 'name') => setSortBy(value)}>
-                  <SelectTrigger className="h-11 bg-white border-gray-200 text-gray-900 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900">
+                  <SelectTrigger className="h-11 bg-white border-gray-200 text-gray-900 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]">
                     <SelectValue placeholder="Sort by..." className="text-gray-900" />
                   </SelectTrigger>
                   <SelectContent>
@@ -352,7 +352,7 @@ export default function FindTeamPage() {
                 <div className="flex gap-3 pt-2">
                   <Button
                     variant="outline"
-                    className="flex-1 bg-white border-gray-200 text-gray-900 hover:bg-gray-50 disabled:opacity-50 dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900 dark:hover:bg-gray-100"
+                    className="flex-1 bg-white border-gray-200 text-gray-900 hover:bg-gray-50 disabled:opacity-50"
                     onClick={handleCloseModal}
                     disabled={isJoining}
                   >

@@ -156,7 +156,7 @@ export default function CreateGroupPage() {
                               <div className="relative">
                                 <Input
                                   placeholder="Enter group name..."
-                                  className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900"
+                                  className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
                                   {...field}
                                 />
                                 {field.value.length >= 3 && (
@@ -192,7 +192,7 @@ export default function CreateGroupPage() {
                             <FormControl>
                               <Textarea
                                 placeholder="Describe your group's purpose and goals..."
-                                className="min-h-[100px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900"
+                                className="min-h-[100px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
                                 {...field}
                               />
                             </FormControl>
@@ -213,7 +213,7 @@ export default function CreateGroupPage() {
                             <FormControl>
                               <Textarea
                                 placeholder="Set the ground rules for your group..."
-                                className="min-h-[100px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900"
+                                className="min-h-[100px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
                                 {...field}
                               />
                             </FormControl>
@@ -242,11 +242,11 @@ export default function CreateGroupPage() {
                               type="single" 
                               value={field.value} 
                               onValueChange={field.onChange}
-                              className="w-full bg-white border border-gray-200 rounded-md dark:bg-gray-50 dark:border-gray-300"
+                              className="w-full bg-white border border-gray-200 rounded-md"
                             >
                               <ToggleGroupItem 
                                 value="public" 
-                                className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-100"
+                                className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50"
                               >
                                 <Globe className="h-4 w-4" />
                                 <div className="text-left">
@@ -256,7 +256,7 @@ export default function CreateGroupPage() {
                               </ToggleGroupItem>
                               <ToggleGroupItem 
                                 value="private" 
-                                className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-100"
+                                className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50"
                               >
                                 <Lock className="h-4 w-4" />
                                 <div className="text-left">
@@ -331,7 +331,7 @@ export default function CreateGroupPage() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="flex-1 bg-white border-gray-200 text-gray-900 hover:bg-gray-50 dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900 dark:hover:bg-gray-100"
+                    className="flex-1 bg-white border-gray-200 text-gray-900 hover:bg-gray-50"
                     onClick={() => router.back()}
                   >
                     Cancel
@@ -506,7 +506,7 @@ function TagInput({ onAddTag, disabled }: { onAddTag: (tag: string) => void, dis
         value={newTag}
         onChange={(e) => setNewTag(e.target.value)}
         onKeyPress={handleKeyPress}
-        className="flex-1 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900"
+        className="flex-1 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
         disabled={disabled}
       />
       <Button

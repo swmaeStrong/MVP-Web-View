@@ -659,7 +659,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                     <div className="mb-4">
                       {/* Timeline-based Progress Bar */}
                       <div className="space-y-2">
-                        <div className="flex h-3 w-full rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+                        <div className="flex h-3 w-full rounded-full overflow-hidden bg-gray-200">
                           {timelineBreakdown.map((segment, index) => {
                             const segmentTotalTime = segment.segmentDuration;
                             const segmentPercent = totalAllocatedTime > 0 ? (segmentTotalTime / totalAllocatedTime) * 100 : 0;
@@ -708,7 +708,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                         </div>
                         
                         {/* Time labels */}
-                        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 overflow-hidden">
+                        <div className="flex justify-between text-xs text-gray-500 overflow-hidden">
                           {timelineBreakdown.length > 0 && (
                             <>
                               <span className="text-[9px] truncate px-1">

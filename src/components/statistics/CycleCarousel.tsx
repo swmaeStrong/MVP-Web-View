@@ -231,7 +231,7 @@ const SessionCarousel = memo(function SessionCarousel({
               {new Date(cycle.endTime).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
-          <div className="w-full h-10 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden flex relative transform-gpu">
+          <div className="w-full h-10 bg-gray-200 rounded-lg overflow-hidden flex relative transform-gpu">
             {mergedSegments.map((segment, index) => {
               const segmentWithSeconds = segment as CycleSegment & { durationInSeconds: number };
               const widthPercentage = (segmentWithSeconds.durationInSeconds / (cycle.duration * 60)) * 100;
@@ -324,8 +324,8 @@ const SessionCarousel = memo(function SessionCarousel({
     return (
       <div className={`${getThemeClass('component')} rounded-lg p-8 h-[280px] flex items-center justify-center border ${getThemeClass('border')}`}>
         <div className="animate-pulse flex flex-col items-center">
-          <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-32 mb-2"></div>
-          <div className="h-2 bg-gray-300 dark:bg-gray-700 rounded w-24"></div>
+          <div className="h-4 bg-gray-300 rounded w-32 mb-2"></div>
+          <div className="h-2 bg-gray-300 rounded w-24"></div>
         </div>
       </div>
     );

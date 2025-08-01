@@ -266,11 +266,11 @@ export default function GroupSettingsPage() {
                             type="single" 
                             value={field.value} 
                             onValueChange={field.onChange}
-                            className="w-full bg-white border border-gray-200 rounded-md dark:bg-gray-50 dark:border-gray-300 mt-2"
+                            className="w-full bg-white border border-gray-200 rounded-md mt-2"
                           >
                             <ToggleGroupItem 
                               value="public" 
-                              className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-100"
+                              className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50"
                             >
                               <Globe className="h-4 w-4" />
                               <div className="text-left">
@@ -280,7 +280,7 @@ export default function GroupSettingsPage() {
                             </ToggleGroupItem>
                             <ToggleGroupItem 
                               value="private" 
-                              className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-100"
+                              className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50"
                             >
                               <Lock className="h-4 w-4" />
                               <div className="text-left">
@@ -320,7 +320,7 @@ export default function GroupSettingsPage() {
                                   <button
                                     type="button"
                                     onClick={() => handleRemoveTag(tag)}
-                                    className="ml-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full p-0.5 transition-colors"
+                                    className="ml-1 hover:bg-gray-200 rounded-full p-0.5 transition-colors"
                                   >
                                     <X className="h-3 w-3" />
                                   </button>
@@ -469,7 +469,7 @@ export default function GroupSettingsPage() {
           </Card>
 
           {/* 그룹 삭제 */}
-          <Card className={`${getCommonCardClass()} border-red-200 dark:border-red-800`}>
+          <Card className={`${getCommonCardClass()} border-red-200`}>
             <CardHeader>
               <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
                 Delete Group
