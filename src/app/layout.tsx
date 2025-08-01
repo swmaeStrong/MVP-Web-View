@@ -1,6 +1,7 @@
 import { QueryProvider } from '@/providers/QueryProvider';
 import { SentryProvider } from '@/providers/SentryProvider';
 import { ToastProvider } from '@/providers/ToastProvider';
+import { ThemeProvider } from '@/providers/ThemeProvider';
 import type { Metadata } from 'next';
 import { Inter, Noto_Sans_KR, Poppins } from 'next/font/google';
 import './globals.css';
@@ -55,15 +56,17 @@ export default function RootLayout({
     >
       <body className='font-sans antialiased'>
         <SentryProvider>
-          <QueryProvider>
-            <ToastProvider>
-              <div className='min-h-screen bg-gray-900 text-gray-100'>
-                <main className='transition-all duration-300'>
-                  {children}
-                </main>
-              </div>
-            </ToastProvider>
-          </QueryProvider>
+          <ThemeProvider>
+            <QueryProvider>
+              <ToastProvider>
+                <div className='min-h-screen bg-background text-foreground'>
+                  <main className='transition-all duration-300'>
+                    {children}
+                  </main>
+                </div>
+              </ToastProvider>
+            </QueryProvider>
+          </ThemeProvider>
         </SentryProvider>
       </body>
     </html>
