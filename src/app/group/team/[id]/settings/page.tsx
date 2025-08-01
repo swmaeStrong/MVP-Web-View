@@ -113,8 +113,7 @@ export default function GroupSettingsPage() {
 
     try {
       await updateGroupMutation.mutateAsync(request);
-      // 성공 시 그룹 메인 페이지로 이동
-      router.push(`/group/team/${groupId}`);
+      // 성공 시 토스트는 mutation의 onSuccess에서 처리됨
     } catch (error) {
       // 에러는 mutation에서 이미 toast로 표시됨
     }
