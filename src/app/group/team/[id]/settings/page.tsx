@@ -2,7 +2,7 @@
 
 import StateDisplay from '@/components/common/StateDisplay';
 import { GroupNameInput } from '@/components/forms/GroupNameInput';
-import { groupDetailQueryKey } from '@/config/constants/query-keys';
+import { groupDetailQueryKey, myGroupsQueryKey } from '@/config/constants/query-keys';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { updateGroupSchema, UpdateGroupFormData } from '@/schemas/groupSchema';
@@ -46,9 +46,12 @@ export default function GroupSettingsPage() {
   const updateGroupMutation = useMutation({
     mutationFn: (request: Group.UpdateGroupApiRequest) => updateGroup(groupId, request),
     onSuccess: () => {
-      // 성공 시 그룹 상세 정보 다시 조회
+      // 성공 시 그룹 상세 정보 및 사이드바 다시 조회
       queryClient.invalidateQueries({
         queryKey: groupDetailQueryKey(groupId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: myGroupsQueryKey(),
       });
       toast.success('Group information updated successfully.');
     },
