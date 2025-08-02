@@ -23,3 +23,16 @@ declare namespace Session {
     count: number;
   }
 }
+
+// 컴포넌트에서 사용하는 처리된 세션 데이터
+export interface SessionData {
+  id: number;
+  title: string;
+  startTime: string;
+  duration: number;
+  score: number;
+  timestamp: number;
+  scoreColor: string;
+  scoreLabel: string;
+  sessionNumber: string;
+}
