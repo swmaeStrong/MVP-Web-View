@@ -9,9 +9,10 @@ interface UseGroupSearchOptions {
 }
 
 const SEARCH_KEYS = [
-  { name: 'name', weight: 0.5 },
-  { name: 'description', weight: 0.3 },
-  { name: 'tags', weight: 0.2 }
+  { name: 'name', weight: 0.4 },
+  { name: 'description', weight: 0.25 },
+  { name: 'tags', weight: 0.15 },
+  { name: 'groupOwner.nickname', weight: 0.2 }
 ];
 
 export function useGroupSearch({

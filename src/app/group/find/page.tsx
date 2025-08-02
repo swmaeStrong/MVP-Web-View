@@ -1,8 +1,8 @@
 'use client';
 
+import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
 import { useGroupSearch } from '@/hooks/ui/useGroupSearch';
 import { useTheme } from '@/hooks/ui/useTheme';
-import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
@@ -79,7 +79,7 @@ export default function FindTeamPage() {
                 <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${getThemeTextColor('secondary')}`} />
                 <Input
                   type="text"
-                  placeholder="Search groups (by name, description, tags)"
+                  placeholder="Search groups (by name, description, tags, or group leader's nickname)"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 h-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
@@ -237,7 +237,7 @@ export default function FindTeamPage() {
                   Search for groups
                 </div>
                 <p className={`text-base ${getThemeTextColor('secondary')} mb-6 max-w-md mx-auto`}>
-                  Enter a search term to find groups by name, description, or tags.
+                  Enter a search term to find groups by name, description, tags, or leader.
                 </p>
               </div>
             </div>
