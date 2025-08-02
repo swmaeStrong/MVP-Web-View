@@ -2,7 +2,7 @@
 
 import StateDisplay from '@/components/common/StateDisplay';
 import { GroupNameInput } from '@/components/forms/GroupNameInput';
-import { groupDetailQueryKey, myGroupsQueryKey } from '@/config/constants/query-keys';
+import { groupDetailQueryKey, myGroupsQueryKey, GROUP_VALIDATION_MESSAGES, GROUP_ACTION_MESSAGES } from '@/config/constants';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { updateGroupSchema, UpdateGroupFormData } from '@/schemas/groupSchema';
@@ -53,11 +53,11 @@ export default function GroupSettingsPage() {
       queryClient.invalidateQueries({
         queryKey: myGroupsQueryKey(),
       });
-      toast.success('Group information updated successfully.');
+      toast.success(GROUP_ACTION_MESSAGES.UPDATE.SUCCESS);
     },
     onError: (error) => {
       console.error('Failed to update group:', error);
-      toast.error('Failed to update group information.');
+      toast.error(GROUP_ACTION_MESSAGES.UPDATE.ERROR);
     },
   });
 
@@ -96,6 +96,39 @@ export default function GroupSettingsPage() {
   const handleRemoveTag = (tagToRemove: string) => {
     const currentTags = getValues('tags');
     setValue('tags', currentTags.filter(tag => tag !== tagToRemove));
+  };
+
+  // Form submit handler with validation
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const isValid = await form.trigger();
+    if (!isValid) {
+      const errors = form.formState.errors;
+      
+      // Show validation error toast with specific messages
+      if (errors.name) {
+        toast.error(`Group Name: ${errors.name.message}`);
+        return;
+      }
+      if (errors.description) {
+        toast.error(`Description: ${errors.description.message}`);
+        return;
+      }
+      if (errors.groundRules) {
+        toast.error(`Ground Rules: ${errors.groundRules.message || GROUP_VALIDATION_MESSAGES.GROUND_RULES.EMPTY}`);
+        return;
+      }
+      if (errors.tags) {
+        toast.error(`Tags: ${errors.tags.message}`);
+        return;
+      }
+      
+      return;
+    }
+    
+    const values = form.getValues();
+    await onSubmit(values);
   };
 
   // Form submit handler
@@ -231,7 +264,7 @@ export default function GroupSettingsPage() {
         {/* Main Form */}
         <div className="lg:col-span-2">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {/* 기본 설정 카드 */}
               <Card className={getCommonCardClass()}>
                 <CardHeader>

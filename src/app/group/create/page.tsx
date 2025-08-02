@@ -2,7 +2,7 @@
 
 import { GroundRulesInput } from '@/components/forms/GroundRulesInput';
 import { GroupNameInput } from '@/components/forms/GroupNameInput';
-import { groupNameCheckQueryKey, myGroupsQueryKey } from '@/config/constants/query-keys';
+import { groupNameCheckQueryKey, myGroupsQueryKey, GROUP_VALIDATION_MESSAGES, GROUP_ACTION_MESSAGES } from '@/config/constants';
 import { useDebounce } from '@/hooks/ui/useDebounce';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { CreateGroupFormData, createGroupSchema } from '@/schemas/groupSchema';
@@ -91,7 +91,7 @@ export default function CreateGroupPage() {
         return;
       }
       if (errors.groundRules) {
-        toast.error(`Ground Rules: ${errors.groundRules.message || 'Please add at least one non-empty ground rule'}`);
+        toast.error(`Ground Rules: ${errors.groundRules.message || GROUP_VALIDATION_MESSAGES.GROUND_RULES.EMPTY}`);
         return;
       }
       if (errors.tags) {
@@ -104,7 +104,7 @@ export default function CreateGroupPage() {
     
     // Check if name is available (only after basic validation passes)
     if (!isNameAvailable) {
-      toast.error('Group name is already taken. Please choose a different name.');
+      toast.error(GROUP_VALIDATION_MESSAGES.GROUP_NAME.TAKEN);
       return;
     }
     
@@ -126,8 +126,8 @@ export default function CreateGroupPage() {
     toast.promise(
       createGroup(request),
       {
-        loading: '그룹을 생성하고 있습니다...',
-        success: '그룹이 성공적으로 생성되었습니다!',
+        loading: GROUP_ACTION_MESSAGES.CREATE.LOADING,
+        success: GROUP_ACTION_MESSAGES.CREATE.SUCCESS,
         error: (err: any) => {
           console.error('Failed to create group:', err);
           
@@ -140,7 +140,7 @@ export default function CreateGroupPage() {
             return err;
           }
           
-          return '그룹 생성에 실패했습니다.';
+          return GROUP_ACTION_MESSAGES.CREATE.ERROR;
         },
       },
       {
