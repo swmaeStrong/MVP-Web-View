@@ -141,7 +141,7 @@ export default function FindTeamPage() {
                 </Card>
               ))}
             </div>
-          ) : (
+          ) : searchQuery.trim() !== '' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredGroups.map((group) => (
             <Card key={group.groupId} className={`${getCommonCardClass()} h-52 hover:bg-gray-50 dark:hover:bg-gray-800`}>
@@ -229,9 +229,25 @@ export default function FindTeamPage() {
                 </Card>
               ))}
             </div>
+          ) : null}
+
+          {!isLoading && searchQuery.trim() === '' && (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <div className={`w-20 h-20 rounded-full ${getThemeClass('componentSecondary')} flex items-center justify-center mx-auto mb-6`}>
+                  <Search className={`h-10 w-10 ${getThemeTextColor('secondary')}`} />
+                </div>
+                <div className={`text-xl font-bold mb-3 ${getThemeTextColor('primary')}`}>
+                  Search for groups
+                </div>
+                <p className={`text-base ${getThemeTextColor('secondary')} mb-6 max-w-md mx-auto`}>
+                  Enter a search term to find groups by name, description, or tags.
+                </p>
+              </div>
+            </div>
           )}
 
-          {!isLoading && filteredGroups.length === 0 && (
+          {!isLoading && searchQuery.trim() !== '' && filteredGroups.length === 0 && (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
                 <div className={`w-20 h-20 rounded-full ${getThemeClass('componentSecondary')} flex items-center justify-center mx-auto mb-6`}>
