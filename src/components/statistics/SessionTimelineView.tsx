@@ -526,36 +526,30 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                     const sessionDuration = selectedSessionFromApi.duration;
                     const sessionMinutes = selectedSessionFromApi.sessionMinutes;
                     
-                    // Use sessionMinutes as the total allocated time (in seconds)
-                    const totalAllocatedTime = sessionMinutes * 60; // Convert minutes to seconds
+                    // Use actual session duration as the total time
+                    const totalDuration = sessionDuration;
                     
                     // Debug logging
-                    console.log('SessionDuration:', sessionDuration, 'SessionMinutes:', sessionMinutes, 'TotalAllocatedTime:', totalAllocatedTime);
+                    console.log('SessionDuration:', sessionDuration, 'SessionStartTime:', sessionStartTime);
                     
-                    // Ensure valid allocated time with stricter checks
-                    if (!totalAllocatedTime || 
-                        typeof totalAllocatedTime !== 'number' || 
-                        totalAllocatedTime <= 0 || 
-                        totalAllocatedTime > 86400 || // Max 24 hours
-                        !Number.isFinite(totalAllocatedTime) ||
-                        Number.isNaN(totalAllocatedTime)) {
-                      console.warn('Invalid totalAllocatedTime:', totalAllocatedTime);
+                    // Ensure valid duration with stricter checks
+                    if (!totalDuration || 
+                        typeof totalDuration !== 'number' || 
+                        totalDuration <= 0 || 
+                        totalDuration > 86400 || // Max 24 hours
+                        !Number.isFinite(totalDuration) ||
+                        Number.isNaN(totalDuration)) {
+                      console.warn('Invalid totalDuration:', totalDuration);
                       return [];
                     }
                     
-                    // Create second-by-second timeline array based on allocated time
+                    // Create second-by-second timeline array based on actual session duration
                     // 0 = empty/unused, 1 = work, 2 = distraction, 3 = afk
                     let timeline;
                     try {
-                      timeline = new Array(Math.floor(totalAllocatedTime)).fill(0); // Initially all empty/unused time
-                      
-                      // Fill actual session duration with work time (up to the actual session duration)
-                      const actualSessionEnd = Math.min(sessionDuration, totalAllocatedTime);
-                      for (let i = 0; i < actualSessionEnd; i++) {
-                        timeline[i] = 1; // Mark as work time
-                      }
+                      timeline = new Array(Math.floor(totalDuration)).fill(1); // Initially all work time
                     } catch (error) {
-                      console.error('Failed to create timeline array:', error, 'AllocatedTime:', totalAllocatedTime);
+                      console.error('Failed to create timeline array:', error, 'Duration:', totalDuration);
                       return [];
                     }
                     
@@ -573,7 +567,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                         const detailDuration = Math.floor(detail.duration);
                         
                         // Validate calculated values
-                        if (detailDuration <= 0 || detailDuration > totalAllocatedTime) {
+                        if (detailDuration <= 0 || detailDuration > totalDuration) {
                           console.warn(`Invalid detail duration: ${detailDuration}`, detail);
                           return;
                         }
@@ -641,7 +635,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                   
                   const timelineBreakdown = getTimelineBreakdown();
                   const selectedSessionFromApi = sessionData?.find(s => s.session === selectedSessionData.id);
-                  const totalAllocatedTime = selectedSessionFromApi?.sessionMinutes ? selectedSessionFromApi.sessionMinutes * 60 : selectedSessionData.duration;
+                  const totalAllocatedTime = selectedSessionFromApi?.duration || selectedSessionData.duration;
                   
                   if (timelineBreakdown.length === 0) {
                     return (
