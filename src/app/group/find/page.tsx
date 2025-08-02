@@ -11,11 +11,12 @@ import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { Dialog, DialogContent, DialogHeader } from '@/shadcn/ui/dialog';
 import { spacing } from '@/styles/design-system';
 import { Calendar, Globe, Hash, Lock, Search, TrendingUp, Users } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { searchGroups } from '@/shared/api/get';
 import { Skeleton } from '@/shadcn/ui/skeleton';
+import { useGroupSearch } from '@/hooks/ui/useGroupSearch';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
@@ -35,25 +36,13 @@ export default function FindTeamPage() {
     queryFn: searchGroups,
   });
 
-  const filteredGroups = groups
-    .filter(group => {
-      const matchesSearch = group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (group.description?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
-        (group.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) || false);
-      
-      const matchesFilter = 
-        filterType === 'all' || 
-        (filterType === 'public' && group.isPublic) || 
-        (filterType === 'private' && !group.isPublic);
-      
-      return matchesSearch && matchesFilter;
-    })
-    .sort((a, b) => {
-      if (sortBy === 'name') {
-        return a.name.localeCompare(b.name);
-      }
-      return 0;
-    });
+  // Use the custom group search hook
+  const filteredGroups = useGroupSearch({
+    groups,
+    searchQuery,
+    filterType,
+    sortBy,
+  });
 
   const handleViewDetail = (group: Group.GroupApiResponse) => {
     setSelectedGroup(group);
@@ -96,7 +85,7 @@ export default function FindTeamPage() {
                 <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${getThemeTextColor('secondary')}`} />
                 <Input
                   type="text"
-                  placeholder="Search groups by name, description, or tags..."
+                  placeholder="Search groups (fuzzy search enabled)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 h-11 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
