@@ -5,7 +5,7 @@ interface UseGroupSearchOptions {
   groups: Group.GroupApiResponse[];
   searchQuery: string;
   filterType: 'all' | 'public' | 'private';
-  sortBy: 'members' | 'created' | 'name';
+  sortBy: 'created' | 'name';
 }
 
 const SEARCH_KEYS = [
@@ -50,10 +50,6 @@ export function useGroupSearch({
           return a.name.localeCompare(b.name);
         case 'created':
           // Note: 'created' sorting would require a createdAt field
-          // For now, we'll keep the original order
-          return 0;
-        case 'members':
-          // Note: 'members' sorting would require a member count field
           // For now, we'll keep the original order
           return 0;
         default:

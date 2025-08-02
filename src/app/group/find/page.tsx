@@ -6,11 +6,10 @@ import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { Input } from '@/shadcn/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { Dialog, DialogContent, DialogHeader } from '@/shadcn/ui/dialog';
 import { spacing } from '@/styles/design-system';
-import { Calendar, Globe, Hash, Lock, Search, TrendingUp, Users } from 'lucide-react';
+import { Globe, Hash, Lock, Search } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
@@ -23,7 +22,7 @@ export default function FindTeamPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'public' | 'private'>('all');
-  const [sortBy, setSortBy] = useState<'members' | 'created' | 'name'>('members');
+  const [sortBy, setSortBy] = useState<'created' | 'name'>('name');
   const [selectedGroup, setSelectedGroup] = useState<Group.GroupApiResponse | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inviteCode, setInviteCode] = useState('');
@@ -78,9 +77,9 @@ export default function FindTeamPage() {
       {/* Search and Filter Section */}
       <Card className={getCommonCardClass()}>
         <CardContent className="p-6">
-          <div className="space-y-4">
+          <div className="flex items-center gap-4">
             {/* Search Bar */}
-            <div className="w-full">
+            <div className="flex-1">
               <div className="relative">
                 <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${getThemeTextColor('secondary')}`} />
                 <Input
@@ -88,59 +87,25 @@ export default function FindTeamPage() {
                   placeholder="Search groups (fuzzy search enabled)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-11 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
+                  className="pl-10 h-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
                 />
               </div>
             </div>
 
-            {/* Filter and Sort Controls */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              {/* Filter Buttons */}
-              <div className="flex-1">
-                <ToggleGroup type="single" value={filterType} onValueChange={(value) => value && setFilterType(value as 'all' | 'public' | 'private')} className="h-11 w-full bg-white border border-gray-200 rounded-md">
-                  <ToggleGroupItem value="all" className="flex-1 px-3 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50">
-                    All
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="public" className="flex-1 gap-1 px-2 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50">
-                    <Globe className="h-3 w-3" />
-                    Public
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="private" className="flex-1 gap-1 px-2 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50">
-                    <Lock className="h-3 w-3" />
-                    Private
-                  </ToggleGroupItem>
-                </ToggleGroup>
-              </div>
-
-              {/* Sort Dropdown */}
-              <div className="sm:w-64">
-                <Select value={sortBy} onValueChange={(value: 'members' | 'created' | 'name') => setSortBy(value)}>
-                  <SelectTrigger className="h-11 bg-white border-gray-200 text-gray-900 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]">
-                    <SelectValue placeholder="Sort by..." className="text-gray-900" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="members">
-                      <div className="flex items-center gap-2">
-                        <Users className="h-4 w-4" />
-                        Most Members
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="created">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        Recently Created
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="name">
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4" />
-                        Name (A-Z)
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            {/* Filter Controls */}
+            <ToggleGroup type="single" value={filterType} onValueChange={(value) => value && setFilterType(value as 'all' | 'public' | 'private')} className="h-10">
+              <ToggleGroupItem value="all" className="px-4 h-10 text-sm bg-white border border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50 rounded-l-md">
+                All
+              </ToggleGroupItem>
+              <ToggleGroupItem value="public" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50">
+                <Globe className="h-3.5 w-3.5" />
+                Public
+              </ToggleGroupItem>
+              <ToggleGroupItem value="private" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50 rounded-r-md">
+                <Lock className="h-3.5 w-3.5" />
+                Private
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
         </CardContent>
       </Card>
