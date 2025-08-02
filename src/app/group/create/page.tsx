@@ -10,7 +10,7 @@ import { Input } from '@/shadcn/ui/input';
 import { Textarea } from '@/shadcn/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Globe, Hash, Lock, Plus, Target, TrendingUp, Users, X } from 'lucide-react';
+import { Globe, Hash, Lock, Plus, Target, TrendingUp, Users, X, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
@@ -27,7 +27,7 @@ const formSchema = z.object({
   groupName: z.string().min(3, 'Group name must be at least 3 characters').max(50, 'Group name must be less than 50 characters'),
   description: z.string().min(10, 'Description must be at least 10 characters').max(500, 'Description must be less than 500 characters'),
   isPublic: z.enum(['public', 'private']),
-  groundRule: z.string().min(10, 'Ground rule must be at least 10 characters').max(500, 'Ground rule must be less than 500 characters'),
+  groundRules: z.array(z.string().min(5, 'Each ground rule must be at least 5 characters')).min(1, 'At least one ground rule is required').max(10, 'Maximum 10 ground rules allowed'),
   tags: z.array(z.string()).min(1, 'At least one tag is required').max(5, 'Maximum 5 tags allowed'),
 });
 
@@ -42,7 +42,7 @@ export default function CreateGroupPage() {
       groupName: '',
       description: '',
       isPublic: 'public',
-      groundRule: '',
+      groundRules: [''],
       tags: [],
     },
   });
@@ -73,6 +73,29 @@ export default function CreateGroupPage() {
     }
   };
 
+  // Ground Rules handlers
+  const handleAddGroundRule = () => {
+    const currentRules = getValues('groundRules');
+    if (currentRules.length < 10) {
+      setValue('groundRules', [...currentRules, '']);
+    }
+  };
+
+  const removeGroundRule = (index: number) => {
+    const currentRules = getValues('groundRules');
+    if (currentRules.length > 1) {
+      const newRules = currentRules.filter((_, i) => i !== index);
+      setValue('groundRules', newRules);
+    }
+  };
+
+  const updateGroundRule = (index: number, value: string) => {
+    const currentRules = getValues('groundRules');
+    const newRules = [...currentRules];
+    newRules[index] = value;
+    setValue('groundRules', newRules);
+  };
+
   // Remove tag handler
   const handleRemoveTag = (tagToRemove: string) => {
     const currentTags = getValues('tags');
@@ -84,7 +107,7 @@ export default function CreateGroupPage() {
     const request: Group.CreateGroupApiRequest = {
       name: values.groupName,
       isPublic: values.isPublic === 'public',
-      groundRule: values.groundRule,
+      groundRule: values.groundRules.filter(rule => rule.trim().length > 0).join('\n'),
       tags: values.tags,
       description: values.description,
     };
@@ -201,21 +224,56 @@ export default function CreateGroupPage() {
                         )}
                       />
 
-                      {/* Ground Rule */}
+                      {/* Ground Rules */}
                       <FormField
                         control={form.control}
-                        name="groundRule"
+                        name="groundRules"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                              Ground Rule
+                              Ground Rules
                             </FormLabel>
                             <FormControl>
-                              <Textarea
-                                placeholder="Set the ground rules for your group..."
-                                className="min-h-[100px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
-                                {...field}
-                              />
+                              <div className="space-y-3">
+                                {field.value.map((rule, index) => (
+                                  <div key={index} className="flex items-center gap-2">
+                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${getThemeClass('component')} ${getThemeTextColor('secondary')}`}>
+                                      {index + 1}
+                                    </div>
+                                    <Textarea
+                                      value={rule}
+                                      onChange={(e) => updateGroundRule(index, e.target.value)}
+                                      placeholder="Enter a ground rule..."
+                                      className="flex-1 min-h-[60px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] resize-none"
+                                      rows={2}
+                                    />
+                                    {field.value.length > 1 && (
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => removeGroundRule(index)}
+                                        className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                ))}
+                                
+                                {field.value.length < 10 && (
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={handleAddGroundRule}
+                                    className="gap-1 mt-2"
+                                  >
+                                    <Plus className="h-3 w-3" />
+                                    Add Ground Rule
+                                  </Button>
+                                )}
+                              </div>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -398,14 +456,23 @@ export default function CreateGroupPage() {
                   </p>
                   
                   {/* Ground Rule */}
-                  {watchedValues.groundRule && (
+                  {watchedValues.groundRules && watchedValues.groundRules.some(rule => rule.trim().length > 0) && (
                     <div>
-                      <div className={`text-xs font-semibold ${getThemeTextColor('primary')} mb-1`}>
-                        Ground Rule
+                      <div className={`text-xs font-semibold ${getThemeTextColor('primary')} mb-2`}>
+                        Ground Rules
                       </div>
-                      <p className={`text-xs ${getThemeTextColor('secondary')} leading-relaxed`}>
-                        {watchedValues.groundRule}
-                      </p>
+                      <div className="space-y-2">
+                        {watchedValues.groundRules
+                          .filter(rule => rule.trim().length > 0)
+                          .map((rule, index) => (
+                            <div key={index} className={`text-xs ${getThemeTextColor('secondary')} ${getThemeClass('componentSecondary')} p-2 rounded flex items-start gap-2`}>
+                              <span className={`font-semibold ${getThemeTextColor('primary')} flex-shrink-0`}>
+                                {index + 1}.
+                              </span>
+                              <span>{rule}</span>
+                            </div>
+                          ))}
+                      </div>
                     </div>
                   )}
                   
