@@ -1,11 +1,11 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useCurrentUser } from '@/stores/userStore';
 import { Plus, Search, Settings, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useCurrentUser } from '@/stores/userStore';
-import { useMemo, useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 interface NavItem {
   name: string;
@@ -171,6 +171,7 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch={true}
                 className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors duration-150 ${
                   active
                     ? `text-white bg-[#3F72AF]`
