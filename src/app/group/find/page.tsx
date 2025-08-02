@@ -110,45 +110,47 @@ export default function FindTeamPage() {
         </CardContent>
       </Card>
 
-      {/* Results */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, index) => (
-            <Card key={index} className={`${getCommonCardClass()} h-80`}>
-              <CardContent className="p-6 h-full">
-                <div className="space-y-4 h-full flex flex-col">
+      {/* Results Container with Fixed Height */}
+      <Card className={`${getCommonCardClass()} h-[780px] overflow-hidden`}>
+        <CardContent className="p-4 h-full">
+          <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+            {isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[...Array(9)].map((_, index) => (
+            <Card key={index} className={`${getCommonCardClass()} h-52`}>
+              <CardContent className="p-4 h-full">
+                <div className="space-y-2 h-full flex flex-col">
                   <div className="flex items-center gap-4">
-                    <Skeleton className="w-12 h-12 rounded-full" />
+                    <Skeleton className="w-10 h-10 rounded-full" />
                     <div className="flex-1">
                       <Skeleton className="h-6 w-32 mb-2" />
                       <Skeleton className="h-4 w-24" />
                     </div>
                   </div>
-                  <div className="flex-1 space-y-4">
-                    <div className="min-h-[3rem]">
-                      <Skeleton className="h-4 w-full mb-2" />
-                      <Skeleton className="h-4 w-3/4" />
+                  <div className="flex-1 space-y-2">
+                    <div className="min-h-[1.5rem]">
+                      <Skeleton className="h-4 w-full" />
                     </div>
-                    <div className="min-h-[2rem] flex gap-2">
-                      <Skeleton className="h-6 w-16" />
-                      <Skeleton className="h-6 w-16" />
+                    <div className="flex gap-1.5">
+                      <Skeleton className="h-5 w-14" />
+                      <Skeleton className="h-5 w-14" />
                     </div>
                   </div>
-                  <Skeleton className="h-10 w-full mt-auto" />
+                  <Skeleton className="h-8 w-full mt-auto" />
                 </div>
               </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredGroups.map((group) => (
-            <Card key={group.groupId} className={`${getCommonCardClass()} hover:ring-2 hover:ring-[#3F72AF]/20 transition-all h-80`}>
-              <CardContent className="p-6 h-full">
-                <div className="space-y-4 h-full flex flex-col">
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredGroups.map((group) => (
+            <Card key={group.groupId} className={`${getCommonCardClass()} hover:ring-2 hover:ring-[#3F72AF]/20 transition-all h-52`}>
+              <CardContent className="p-4 h-full">
+                <div className="space-y-2 h-full flex flex-col">
                   {/* Group Header */}
                   <div className="flex items-center gap-4">
-                    <Avatar className="w-12 h-12 flex-shrink-0">
+                    <Avatar className="w-10 h-10 flex-shrink-0">
                       <AvatarFallback className={`text-lg font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
                         {group.name.charAt(0)}
                       </AvatarFallback>
@@ -174,11 +176,11 @@ export default function FindTeamPage() {
                   </div>
                   
                   {/* Content Container - grows to fill space */}
-                  <div className="flex-1 space-y-4">
+                  <div className="flex-1 space-y-2">
                     {/* Description */}
-                    <div className="min-h-[3rem]">
+                    <div className="min-h-[1.5rem]">
                       {group.description ? (
-                        <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed line-clamp-2`}>
+                        <p className={`text-sm ${getThemeTextColor('secondary')} leading-snug line-clamp-1`}>
                           {group.description}
                         </p>
                       ) : (
@@ -189,10 +191,10 @@ export default function FindTeamPage() {
                     </div>
                     
                     {/* Tags */}
-                    <div className="min-h-[2rem]">
+                    <div>
                       {group.tags && group.tags.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                          {group.tags.slice(0, 3).map((tag) => (
+                        <div className="flex flex-wrap gap-1.5">
+                          {group.tags.slice(0, 2).map((tag) => (
                             <Badge 
                               key={tag} 
                               variant="outline" 
@@ -202,12 +204,12 @@ export default function FindTeamPage() {
                               {tag}
                             </Badge>
                           ))}
-                          {group.tags.length > 3 && (
+                          {group.tags.length > 2 && (
                             <Badge 
                               variant="outline" 
                               className={`text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
                             >
-                              +{group.tags.length - 3}
+                              +{group.tags.length - 2}
                             </Badge>
                           )}
                         </div>
@@ -217,7 +219,7 @@ export default function FindTeamPage() {
                   
                   {/* Action Button - fixed at bottom */}
                   <Button
-                    className="w-full bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors mt-auto"
+                    className="w-full h-8 text-sm bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors mt-auto"
                     size="sm"
                     onClick={() => handleViewDetail(group)}
                   >
@@ -225,34 +227,35 @@ export default function FindTeamPage() {
                   </Button>
                 </div>
               </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+                </Card>
+              ))}
+            </div>
+          )}
 
-      {!isLoading && filteredGroups.length === 0 && (
-        <div className="col-span-full">
-          <Card className={getCommonCardClass()}>
-            <CardContent className={`${spacing.inner.normal} text-center py-12`}>
-              <div className={`w-20 h-20 rounded-full ${getThemeClass('componentSecondary')} flex items-center justify-center mx-auto mb-6`}>
-                <Search className={`h-10 w-10 ${getThemeTextColor('secondary')}`} />
+          {!isLoading && filteredGroups.length === 0 && (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <div className={`w-20 h-20 rounded-full ${getThemeClass('componentSecondary')} flex items-center justify-center mx-auto mb-6`}>
+                  <Search className={`h-10 w-10 ${getThemeTextColor('secondary')}`} />
+                </div>
+                <div className={`text-xl font-bold mb-3 ${getThemeTextColor('primary')}`}>
+                  No groups found
+                </div>
+                <p className={`text-base ${getThemeTextColor('secondary')} mb-6 max-w-md mx-auto`}>
+                  We couldn't find any groups matching your search criteria. Try adjusting your search terms.
+                </p>
+                <Button 
+                  className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90"
+                  onClick={() => router.push('/group/create')}
+                >
+                  Create New Group
+                </Button>
               </div>
-              <div className={`text-xl font-bold mb-3 ${getThemeTextColor('primary')}`}>
-                No groups found
-              </div>
-              <p className={`text-base ${getThemeTextColor('secondary')} mb-6 max-w-md mx-auto`}>
-                We couldn't find any groups matching your search criteria. Try adjusting your search terms.
-              </p>
-              <Button 
-                className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90"
-                onClick={() => router.push('/group/create')}
-              >
-                Create New Group
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+            </div>
+          )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Group Detail Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
