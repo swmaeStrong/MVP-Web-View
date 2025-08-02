@@ -1,5 +1,5 @@
 declare namespace Session {
-  interface SessionDetailApiResponse {
+  interface SessionDetail {
     category: string;
     categoryDetail: string;
     timestamp: number;
@@ -14,7 +14,7 @@ declare namespace Session {
     timestamp: number;
     duration: number;
     score: number;
-    details: SessionDetailApiResponse[];
+    details: SessionDetail[];
   }
 
   interface SessionDetailApiResponse {
@@ -22,4 +22,17 @@ declare namespace Session {
     duration: number;
     count: number;
   }
+}
+
+// 컴포넌트에서 사용하는 처리된 세션 데이터
+export interface SessionData {
+  id: number;
+  title: string;
+  startTime: string;
+  duration: number;
+  score: number;
+  timestamp: number;
+  scoreColor: string;
+  scoreLabel: string;
+  sessionNumber: string;
 }
