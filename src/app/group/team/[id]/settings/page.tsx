@@ -288,7 +288,12 @@ export default function GroupSettingsPage() {
                           <ToggleGroup 
                             type="single" 
                             value={field.value ? 'public' : 'private'} 
-                            onValueChange={(value) => field.onChange(value === 'public')}
+                            onValueChange={(value) => {
+                              // 값이 없으면 현재 값을 유지 (선택 해제 방지)
+                              if (value) {
+                                field.onChange(value === 'public');
+                              }
+                            }}
                             className="w-full bg-white border border-gray-200 rounded-md mt-2"
                           >
                             <ToggleGroupItem 

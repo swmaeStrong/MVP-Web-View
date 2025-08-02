@@ -225,7 +225,12 @@ export default function CreateGroupPage() {
                             <ToggleGroup 
                               type="single" 
                               value={field.value} 
-                              onValueChange={field.onChange}
+                              onValueChange={(value) => {
+                                // 값이 없으면 현재 값을 유지 (선택 해제 방지)
+                                if (value) {
+                                  field.onChange(value);
+                                }
+                              }}
                               className="w-full bg-white border border-gray-200 rounded-md"
                             >
                               <ToggleGroupItem 
