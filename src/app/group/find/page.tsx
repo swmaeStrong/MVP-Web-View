@@ -41,7 +41,12 @@ export default function FindTeamPage() {
         (group.description?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
         (group.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) || false);
       
-      return matchesSearch;
+      const matchesFilter = 
+        filterType === 'all' || 
+        (filterType === 'public' && group.isPublic) || 
+        (filterType === 'private' && !group.isPublic);
+      
+      return matchesSearch && matchesFilter;
     })
     .sort((a, b) => {
       if (sortBy === 'name') {
@@ -191,8 +196,15 @@ export default function FindTeamPage() {
                     </Avatar>
                     
                     <div className="flex-1 min-w-0">
-                      <div className={`text-lg font-bold ${getThemeTextColor('primary')} truncate`}>
-                        {group.name}
+                      <div className="flex items-center gap-2">
+                        <div className={`text-lg font-bold ${getThemeTextColor('primary')} truncate`}>
+                          {group.name}
+                        </div>
+                        {group.isPublic ? (
+                          <Globe className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        ) : (
+                          <Lock className="h-4 w-4 text-orange-500 flex-shrink-0" />
+                        )}
                       </div>
                       
                       {/* Owner Info */}
@@ -287,8 +299,15 @@ export default function FindTeamPage() {
                       </Avatar>
                       
                       <div className="flex-1">
-                        <div className={`text-xl font-bold ${getThemeTextColor('primary')} mb-1`}>
-                          {selectedGroup.name}
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className={`text-xl font-bold ${getThemeTextColor('primary')}`}>
+                            {selectedGroup.name}
+                          </div>
+                          {selectedGroup.isPublic ? (
+                            <Globe className="h-5 w-5 text-green-500 flex-shrink-0" />
+                          ) : (
+                            <Lock className="h-5 w-5 text-orange-500 flex-shrink-0" />
+                          )}
                         </div>
                         
                         <div className={`text-sm ${getThemeTextColor('secondary')}`}>
