@@ -673,7 +673,7 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                                 key={index}
                                 className="flex h-full"
                                 style={{ width: `${segmentPercent}%` }}
-                                title={`${segment.timeRange}: Work ${formatTime(segment.workTime)}, Distraction ${formatTime(segment.distractionTime)}, AFK ${formatTime(segment.afkTime)}, Unused ${formatTime(segment.unusedTime)}`}
+                                title={`${segment.timeRange}: Work ${formatTime(segment.workTime)}, Distraction ${formatTime(segment.distractionTime)}, AFK ${formatTime(segment.afkTime)}`}
                               >
                                 {workPercent > 0 && (
                                   <div 
@@ -694,12 +694,6 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                                   <div 
                                     className="bg-yellow-500 h-full" 
                                     style={{ width: `${afkPercent}%` }}
-                                  />
-                                )}
-                                {unusedPercent > 0 && (
-                                  <div 
-                                    className="bg-gray-400 h-full" 
-                                    style={{ width: `${unusedPercent}%` }}
                                   />
                                 )}
                               </div>
@@ -747,12 +741,6 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                             </span>
                           </div>
                         )}
-                        <div className="flex items-center gap-1">
-                          <div className="w-2 h-2 rounded bg-gray-400"></div>
-                          <span className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            Unused
-                          </span>
-                        </div>
                       </div>
                       
                     </div>
