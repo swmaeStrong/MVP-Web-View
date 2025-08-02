@@ -674,14 +674,17 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                                     className="h-full" 
                                     style={{ 
                                       width: `${workPercent}%`,
-                                      backgroundColor: 'rgb(68, 199, 67)'
+                                      backgroundColor: '#5ed462'
                                     }}
                                   />
                                 )}
                                 {distractionPercent > 0 && (
                                   <div 
-                                    className="bg-red-500 h-full" 
-                                    style={{ width: `${distractionPercent}%` }}
+                                    className="h-full"
+                                    style={{ 
+                                      width: `${distractionPercent}%`,
+                                      backgroundColor: '#ff5871'
+                                    }}
                                   />
                                 )}
                                 {afkPercent > 0 && (
@@ -715,14 +718,14 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
                         <div className="flex items-center gap-1">
                           <div 
                             className="w-2 h-2 rounded"
-                            style={{ backgroundColor: 'rgb(68, 199, 67)' }}
+                            style={{ backgroundColor: '#5ed462' }}
                           ></div>
                           <span className={`text-xs ${getThemeTextColor('secondary')}`}>
                             Work
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <div className="w-2 h-2 rounded bg-red-500"></div>
+                          <div className="w-2 h-2 rounded" style={{ backgroundColor: '#ff5871' }}></div>
                           <span className={`text-xs ${getThemeTextColor('secondary')}`}>
                             Distraction
                           </span>
