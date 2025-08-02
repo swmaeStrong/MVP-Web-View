@@ -273,7 +273,7 @@ export default function MonthlyStreak({
                                   key={`bg-streak-${rowIndex}-${streakStart}`}
                                   className="rounded-md"
                                   style={{
-                                    backgroundColor: 'rgb(68, 199, 67)',
+                                    backgroundColor: '#5ed462',
                                     gridColumn: `${streakStart + 1} / span ${currentStreak.length}`,
                                     height: '28px'
                                   }}
@@ -281,7 +281,7 @@ export default function MonthlyStreak({
                               );
                             } else {
                               // 단독 활동일
-                              backgroundCells.push(<div key={`bg-single-${cellIndex}`} className="w-7 h-7 rounded-md" style={{ backgroundColor: 'rgb(68, 199, 67)' }} />);
+                              backgroundCells.push(<div key={`bg-single-${cellIndex}`} className="w-7 h-7 rounded-md" style={{ backgroundColor: '#5ed462' }} />);
                             }
                             streakStart = colIndex;
                             currentStreak = [date];
@@ -296,7 +296,7 @@ export default function MonthlyStreak({
                               key={`bg-streak-${rowIndex}-${streakStart}`}
                               className="rounded-md"
                               style={{
-                                backgroundColor: 'rgb(68, 199, 67)',
+                                backgroundColor: '#5ed462',
                                 gridColumn: `${streakStart + 1} / span ${currentStreak.length}`,
                                 height: '28px'
                               }}
@@ -305,7 +305,7 @@ export default function MonthlyStreak({
                         } else if (currentStreak.length === 1) {
                           // 단독 활동일
                           const singleIndex = rowIndex * 7 + streakStart;
-                          backgroundCells.push(<div key={`bg-single-${singleIndex}`} className="w-7 h-7 rounded-md" style={{ backgroundColor: 'rgb(68, 199, 67)' }} />);
+                          backgroundCells.push(<div key={`bg-single-${singleIndex}`} className="w-7 h-7 rounded-md" style={{ backgroundColor: '#5ed462' }} />);
                         }
                         
                         // 비활성일은 투명
@@ -322,7 +322,7 @@ export default function MonthlyStreak({
                           key={`bg-streak-end-${rowIndex}-${streakStart}`}
                           className="rounded-md"
                           style={{
-                            backgroundColor: 'rgb(68, 199, 67)',
+                            backgroundColor: '#5ed462',
                             gridColumn: `${streakStart + 1} / span ${currentStreak.length}`,
                             height: '28px'
                           }}
@@ -330,7 +330,7 @@ export default function MonthlyStreak({
                       );
                     } else if (currentStreak.length === 1) {
                       const singleIndex = rowIndex * 7 + streakStart;
-                      backgroundCells.push(<div key={`bg-single-end-${singleIndex}`} className="w-7 h-7 rounded-md" style={{ backgroundColor: 'rgb(68, 199, 67)' }} />);
+                      backgroundCells.push(<div key={`bg-single-end-${singleIndex}`} className="w-7 h-7 rounded-md" style={{ backgroundColor: '#5ed462' }} />);
                     }
                   });
                   
@@ -373,7 +373,7 @@ export default function MonthlyStreak({
                       // 오늘이면서 활동일인 경우 더 진한 초록색으로 강조
                       cellClass = cellClass.replace('text-white', 'text-white rounded-md font-bold');
                       todayStyle = { 
-                        backgroundColor: 'rgb(34, 139, 34)', // 더 진한 초록색
+                        backgroundColor: '#4caf50', // 더 진한 초록색
                       };
                     } 
                     
@@ -397,7 +397,7 @@ export default function MonthlyStreak({
             {/* 범례 - 캘린더 아래 */}
             <div className="flex items-center justify-center gap-2 text-xs mt-1">
               <div className="flex items-center gap-1">
-                <div className="h-2 w-2 rounded" style={{ backgroundColor: 'rgb(68, 199, 67)' }} />
+                <div className="h-2 w-2 rounded" style={{ backgroundColor: '#5ed462' }} />
                 <span className={getThemeClass('textSecondary')}>Active</span>
               </div>
             </div>
