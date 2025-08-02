@@ -2,6 +2,7 @@
 
 import { useGroupSearch } from '@/hooks/ui/useGroupSearch';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
@@ -10,8 +11,6 @@ import { Dialog, DialogContent, DialogHeader } from '@/shadcn/ui/dialog';
 import { Input } from '@/shadcn/ui/input';
 import { Skeleton } from '@/shadcn/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
-import { searchGroups } from '@/shared/api/get';
-import { useQuery } from '@tanstack/react-query';
 import { Globe, Hash, Lock, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -29,14 +28,7 @@ export default function FindTeamPage() {
   const [joinError, setJoinError] = useState('');
 
   // Fetch groups from API
-  const { data: groups = [], isLoading } = useQuery({
-    queryKey: ['groups', 'search'],
-    queryFn: searchGroups,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-    refetchOnWindowFocus: false,
-    refetchOnMount: true,
-  });
+  const { data: groups = [], isLoading } = useSearchGroups();
 
   // Use the custom group search hook
   const filteredGroups = useGroupSearch({
