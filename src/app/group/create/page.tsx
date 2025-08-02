@@ -234,7 +234,7 @@ export default function CreateGroupPage() {
                               Ground Rules
                             </FormLabel>
                             <FormControl>
-                              <div className="space-y-3">
+                              <div className="space-y-3 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                                 {field.value.map((rule, index) => (
                                   <div key={index} className="flex items-center gap-2">
                                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${getThemeClass('component')} ${getThemeTextColor('secondary')}`}>

@@ -104,7 +104,7 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
         <Separator className="mb-4" />
         {isEditing ? (
           <div className="space-y-4">
-            <div className="space-y-3">
+            <div className="space-y-3 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
               {editedRules.map((rule, index) => (
                 <div key={index} className="flex items-center gap-2">
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${getThemeClass('component')} ${getThemeTextColor('secondary')}`}>
@@ -166,7 +166,7 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
             </div>
           </div>
         ) : parsedRules.length > 0 ? (
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
             {parsedRules.map((rule, index) => (
               <div key={index} className={`flex items-start gap-3 p-3 rounded-md ${getThemeClass('componentSecondary')} hover:${getThemeClass('componentSecondary')} hover:opacity-80 transition-all duration-200`}>
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${getThemeClass('component')} ${getThemeTextColor('secondary')}`}>
