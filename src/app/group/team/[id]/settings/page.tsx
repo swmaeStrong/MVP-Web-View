@@ -98,36 +98,29 @@ export default function GroupSettingsPage() {
     setValue('tags', currentTags.filter(tag => tag !== tagToRemove));
   };
 
-  // Form submit handler with validation
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const isValid = await form.trigger();
-    if (!isValid) {
-      const errors = form.formState.errors;
-      
-      // Show validation error toast with specific messages
-      if (errors.name) {
-        toast.error(`Group Name: ${errors.name.message}`);
-        return;
-      }
-      if (errors.description) {
-        toast.error(`Description: ${errors.description.message}`);
-        return;
-      }
-      if (errors.groundRules) {
-        toast.error(`Ground Rules: ${errors.groundRules.message || GROUP_VALIDATION_MESSAGES.GROUND_RULES.EMPTY}`);
-        return;
-      }
-      if (errors.tags) {
-        toast.error(`Tags: ${errors.tags.message}`);
-        return;
-      }
-      
+  // Validation error handler
+  const onError = (errors: any) => {
+    // Show validation error toast with specific messages
+    if (errors.name) {
+      toast.error(`Group Name: ${errors.name.message}`);
       return;
     }
-    
-    const values = form.getValues();
+    if (errors.description) {
+      toast.error(`Description: ${errors.description.message}`);
+      return;
+    }
+    if (errors.groundRules) {
+      toast.error(`Ground Rules: ${errors.groundRules.message || GROUP_VALIDATION_MESSAGES.GROUND_RULES.EMPTY}`);
+      return;
+    }
+    if (errors.tags) {
+      toast.error(`Tags: ${errors.tags.message}`);
+      return;
+    }
+  };
+
+  // Form submit handler for valid data
+  const onValidSubmit = async (values: UpdateGroupFormData) => {
     await onSubmit(values);
   };
 
@@ -264,7 +257,7 @@ export default function GroupSettingsPage() {
         {/* Main Form */}
         <div className="lg:col-span-2">
           <Form {...form}>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onValidSubmit, onError)} className="space-y-4">
               {/* 기본 설정 카드 */}
               <Card className={getCommonCardClass()}>
                 <CardHeader>

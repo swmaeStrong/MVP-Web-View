@@ -73,42 +73,35 @@ export default function CreateGroupPage() {
     setValue('tags', currentTags.filter(tag => tag !== tagToRemove));
   };
 
-  // Form submit handler with validation
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const isValid = await form.trigger();
-    if (!isValid) {
-      const errors = form.formState.errors;
-      
-      // Show validation error toast with specific messages
-      if (errors.groupName) {
-        toast.error(`Group Name: ${errors.groupName.message}`);
-        return;
-      }
-      if (errors.description) {
-        toast.error(`Description: ${errors.description.message}`);
-        return;
-      }
-      if (errors.groundRules) {
-        toast.error(`Ground Rules: ${errors.groundRules.message || GROUP_VALIDATION_MESSAGES.GROUND_RULES.EMPTY}`);
-        return;
-      }
-      if (errors.tags) {
-        toast.error(`Tags: ${errors.tags.message}`);
-        return;
-      }
-      
+  // Validation error handler
+  const onError = (errors: any) => {
+    // Show validation error toast with specific messages
+    if (errors.groupName) {
+      toast.error(`Group Name: ${errors.groupName.message}`);
       return;
     }
-    
+    if (errors.description) {
+      toast.error(`Description: ${errors.description.message}`);
+      return;
+    }
+    if (errors.groundRules) {
+      toast.error(`Ground Rules: ${errors.groundRules.message || GROUP_VALIDATION_MESSAGES.GROUND_RULES.EMPTY}`);
+      return;
+    }
+    if (errors.tags) {
+      toast.error(`Tags: ${errors.tags.message}`);
+      return;
+    }
+  };
+
+  // Form submit handler for valid data
+  const onValidSubmit = async (values: CreateGroupFormData) => {
     // Check if name is available (only after basic validation passes)
     if (!isNameAvailable) {
       toast.error(GROUP_VALIDATION_MESSAGES.GROUP_NAME.TAKEN);
       return;
     }
     
-    const values = form.getValues();
     await onSubmit(values);
   };
 
@@ -167,7 +160,7 @@ export default function CreateGroupPage() {
           {/* Main Form */}
           <div className="lg:col-span-2">
             <Form {...form}>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={form.handleSubmit(onValidSubmit, onError)} className="space-y-6">
                 {/* Basic Information */}
                 <Card className={getCommonCardClass()}>
                   <CardContent className="p-6">
