@@ -1,21 +1,20 @@
 'use client';
 
+import { useGroupSearch } from '@/hooks/ui/useGroupSearch';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { Input } from '@/shadcn/ui/input';
-import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { Dialog, DialogContent, DialogHeader } from '@/shadcn/ui/dialog';
-import { spacing } from '@/styles/design-system';
-import { Globe, Hash, Lock, Search } from 'lucide-react';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
-import { searchGroups } from '@/shared/api/get';
+import { Input } from '@/shadcn/ui/input';
 import { Skeleton } from '@/shadcn/ui/skeleton';
-import { useGroupSearch } from '@/hooks/ui/useGroupSearch';
+import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
+import { searchGroups } from '@/shared/api/get';
+import { useQuery } from '@tanstack/react-query';
+import { Globe, Hash, Lock, Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
@@ -145,7 +144,7 @@ export default function FindTeamPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredGroups.map((group) => (
-            <Card key={group.groupId} className={`${getCommonCardClass()} hover:ring-2 hover:ring-[#3F72AF]/20 transition-all h-52`}>
+            <Card key={group.groupId} className={`${getCommonCardClass()} h-52 hover:bg-gray-50 dark:hover:bg-gray-800`}>
               <CardContent className="p-4 h-full">
                 <div className="space-y-2 h-full flex flex-col">
                   {/* Group Header */}
@@ -219,7 +218,7 @@ export default function FindTeamPage() {
                   
                   {/* Action Button - fixed at bottom */}
                   <Button
-                    className="w-full h-8 text-sm bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors mt-auto"
+                    className="w-full h-8 text-sm bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors mt-auto cursor-pointer"
                     size="sm"
                     onClick={() => handleViewDetail(group)}
                   >
