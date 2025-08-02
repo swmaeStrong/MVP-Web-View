@@ -1,28 +1,26 @@
 'use client';
 
+import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
+import { useGroupSearch } from '@/hooks/ui/useGroupSearch';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { Input } from '@/shadcn/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/ui/select';
-import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { Dialog, DialogContent, DialogHeader } from '@/shadcn/ui/dialog';
-import { spacing } from '@/styles/design-system';
-import { Calendar, Globe, Hash, Lock, Search, TrendingUp, Users } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
-import { searchGroups } from '@/shared/api/get';
+import { Input } from '@/shadcn/ui/input';
 import { Skeleton } from '@/shadcn/ui/skeleton';
+import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
+import { Globe, Hash, Lock, Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'public' | 'private'>('all');
-  const [sortBy, setSortBy] = useState<'members' | 'created' | 'name'>('members');
+  const [sortBy, setSortBy] = useState<'created' | 'name'>('name');
   const [selectedGroup, setSelectedGroup] = useState<Group.GroupApiResponse | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inviteCode, setInviteCode] = useState('');
@@ -30,25 +28,15 @@ export default function FindTeamPage() {
   const [joinError, setJoinError] = useState('');
 
   // Fetch groups from API
-  const { data: groups = [], isLoading } = useQuery({
-    queryKey: ['groups', 'search'],
-    queryFn: searchGroups,
-  });
+  const { data: groups = [], isLoading } = useSearchGroups();
 
-  const filteredGroups = groups
-    .filter(group => {
-      const matchesSearch = group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (group.description?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
-        (group.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) || false);
-      
-      return matchesSearch;
-    })
-    .sort((a, b) => {
-      if (sortBy === 'name') {
-        return a.name.localeCompare(b.name);
-      }
-      return 0;
-    });
+  // Use the custom group search hook
+  const filteredGroups = useGroupSearch({
+    groups,
+    searchQuery,
+    filterType,
+    sortBy,
+  });
 
   const handleViewDetail = (group: Group.GroupApiResponse) => {
     setSelectedGroup(group);
@@ -84,115 +72,95 @@ export default function FindTeamPage() {
       {/* Search and Filter Section */}
       <Card className={getCommonCardClass()}>
         <CardContent className="p-6">
-          <div className="space-y-4">
+          <div className="flex items-center gap-4">
             {/* Search Bar */}
-            <div className="w-full">
+            <div className="flex-1">
               <div className="relative">
                 <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${getThemeTextColor('secondary')}`} />
                 <Input
                   type="text"
-                  placeholder="Search groups by name, description, or tags..."
+                  placeholder="Search groups (by name, description, tags, or group leader's nickname)"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-11 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
+                  className="pl-10 h-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
                 />
               </div>
             </div>
 
-            {/* Filter and Sort Controls */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              {/* Filter Buttons */}
-              <div className="flex-1">
-                <ToggleGroup type="single" value={filterType} onValueChange={(value) => value && setFilterType(value as 'all' | 'public' | 'private')} className="h-11 w-full bg-white border border-gray-200 rounded-md">
-                  <ToggleGroupItem value="all" className="flex-1 px-3 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50">
-                    All
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="public" className="flex-1 gap-1 px-2 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50">
-                    <Globe className="h-3 w-3" />
-                    Public
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="private" className="flex-1 gap-1 px-2 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50">
-                    <Lock className="h-3 w-3" />
-                    Private
-                  </ToggleGroupItem>
-                </ToggleGroup>
-              </div>
-
-              {/* Sort Dropdown */}
-              <div className="sm:w-64">
-                <Select value={sortBy} onValueChange={(value: 'members' | 'created' | 'name') => setSortBy(value)}>
-                  <SelectTrigger className="h-11 bg-white border-gray-200 text-gray-900 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]">
-                    <SelectValue placeholder="Sort by..." className="text-gray-900" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="members">
-                      <div className="flex items-center gap-2">
-                        <Users className="h-4 w-4" />
-                        Most Members
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="created">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        Recently Created
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="name">
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4" />
-                        Name (A-Z)
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            {/* Filter Controls */}
+            <ToggleGroup type="single" value={filterType} onValueChange={(value) => value && setFilterType(value as 'all' | 'public' | 'private')} className="h-10">
+              <ToggleGroupItem value="all" className="px-4 h-10 text-sm bg-white border border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50 rounded-l-md">
+                All
+              </ToggleGroupItem>
+              <ToggleGroupItem value="public" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50">
+                <Globe className="h-3.5 w-3.5" />
+                Public
+              </ToggleGroupItem>
+              <ToggleGroupItem value="private" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50 rounded-r-md">
+                <Lock className="h-3.5 w-3.5" />
+                Private
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
         </CardContent>
       </Card>
 
-      {/* Results */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, index) => (
-            <Card key={index} className={getCommonCardClass()}>
-              <CardContent className="p-6">
-                <div className="space-y-4">
+      {/* Results Container with Fixed Height */}
+      <Card className={`${getCommonCardClass()} h-[780px] overflow-hidden`}>
+        <CardContent className="p-4 h-full">
+          <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+            {isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[...Array(9)].map((_, index) => (
+            <Card key={index} className={`${getCommonCardClass()} h-52`}>
+              <CardContent className="p-4 h-full">
+                <div className="space-y-2 h-full flex flex-col">
                   <div className="flex items-center gap-4">
-                    <Skeleton className="w-12 h-12 rounded-full" />
+                    <Skeleton className="w-10 h-10 rounded-full" />
                     <div className="flex-1">
                       <Skeleton className="h-6 w-32 mb-2" />
                       <Skeleton className="h-4 w-24" />
                     </div>
                   </div>
-                  <Skeleton className="h-12 w-full" />
-                  <div className="flex gap-2">
-                    <Skeleton className="h-6 w-16" />
-                    <Skeleton className="h-6 w-16" />
+                  <div className="flex-1 space-y-2">
+                    <div className="min-h-[1.5rem]">
+                      <Skeleton className="h-4 w-full" />
+                    </div>
+                    <div className="flex gap-1.5">
+                      <Skeleton className="h-5 w-14" />
+                      <Skeleton className="h-5 w-14" />
+                    </div>
                   </div>
-                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-8 w-full mt-auto" />
                 </div>
               </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredGroups.map((group) => (
-            <Card key={group.groupId} className={`${getCommonCardClass()} hover:ring-2 hover:ring-[#3F72AF]/20 transition-all h-fit`}>
-              <CardContent className="p-6">
-                <div className="space-y-4">
+                </Card>
+              ))}
+            </div>
+          ) : searchQuery.trim() !== '' ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredGroups.map((group) => (
+            <Card key={group.groupId} className={`${getCommonCardClass()} h-52 hover:bg-gray-50 dark:hover:bg-gray-800`}>
+              <CardContent className="p-4 h-full">
+                <div className="space-y-2 h-full flex flex-col">
                   {/* Group Header */}
                   <div className="flex items-center gap-4">
-                    <Avatar className="w-12 h-12 flex-shrink-0">
+                    <Avatar className="w-10 h-10 flex-shrink-0">
                       <AvatarFallback className={`text-lg font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
                         {group.name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                     
                     <div className="flex-1 min-w-0">
-                      <div className={`text-lg font-bold ${getThemeTextColor('primary')} truncate`}>
-                        {group.name}
+                      <div className="flex items-center gap-2">
+                        <div className={`text-lg font-bold ${getThemeTextColor('primary')} truncate`}>
+                          {group.name}
+                        </div>
+                        {group.isPublic ? (
+                          <Globe className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        ) : (
+                          <Lock className="h-4 w-4 text-orange-500 flex-shrink-0" />
+                        )}
                       </div>
                       
                       {/* Owner Info */}
@@ -202,32 +170,51 @@ export default function FindTeamPage() {
                     </div>
                   </div>
                   
-                  {/* Description */}
-                  {group.description && (
-                    <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed line-clamp-2`}>
-                      {group.description}
-                    </p>
-                  )}
-                  
-                  {/* Tags */}
-                  {group.tags && group.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {group.tags.map((tag) => (
-                        <Badge 
-                          key={tag} 
-                          variant="outline" 
-                          className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
-                        >
-                          <Hash className="h-3 w-3" />
-                          {tag}
-                        </Badge>
-                      ))}
+                  {/* Content Container - grows to fill space */}
+                  <div className="flex-1 space-y-2">
+                    {/* Description */}
+                    <div className="min-h-[1.5rem]">
+                      {group.description ? (
+                        <p className={`text-sm ${getThemeTextColor('secondary')} leading-snug line-clamp-1`}>
+                          {group.description}
+                        </p>
+                      ) : (
+                        <p className={`text-sm ${getThemeTextColor('secondary')} italic`}>
+                          No description available
+                        </p>
+                      )}
                     </div>
-                  )}
+                    
+                    {/* Tags */}
+                    <div>
+                      {group.tags && group.tags.length > 0 ? (
+                        <div className="flex flex-wrap gap-1.5">
+                          {group.tags.slice(0, 2).map((tag) => (
+                            <Badge 
+                              key={tag} 
+                              variant="outline" 
+                              className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
+                            >
+                              <Hash className="h-3 w-3" />
+                              {tag}
+                            </Badge>
+                          ))}
+                          {group.tags.length > 2 && (
+                            <Badge 
+                              variant="outline" 
+                              className={`text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
+                            >
+                              +{group.tags.length - 2}
+                            </Badge>
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
                   
-                  {/* Action Button */}
+                  {/* Action Button - fixed at bottom */}
                   <Button
-                    className="w-full bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
+                    className="w-full h-8 text-sm bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors mt-auto cursor-pointer"
                     size="sm"
                     onClick={() => handleViewDetail(group)}
                   >
@@ -235,34 +222,51 @@ export default function FindTeamPage() {
                   </Button>
                 </div>
               </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+                </Card>
+              ))}
+            </div>
+          ) : null}
 
-      {!isLoading && filteredGroups.length === 0 && (
-        <div className="col-span-full">
-          <Card className={getCommonCardClass()}>
-            <CardContent className={`${spacing.inner.normal} text-center py-12`}>
-              <div className={`w-20 h-20 rounded-full ${getThemeClass('componentSecondary')} flex items-center justify-center mx-auto mb-6`}>
-                <Search className={`h-10 w-10 ${getThemeTextColor('secondary')}`} />
+          {!isLoading && searchQuery.trim() === '' && (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <div className={`w-20 h-20 rounded-full ${getThemeClass('componentSecondary')} flex items-center justify-center mx-auto mb-6`}>
+                  <Search className={`h-10 w-10 ${getThemeTextColor('secondary')}`} />
+                </div>
+                <div className={`text-xl font-bold mb-3 ${getThemeTextColor('primary')}`}>
+                  Search for groups
+                </div>
+                <p className={`text-base ${getThemeTextColor('secondary')} mb-6 max-w-md mx-auto`}>
+                  Enter a search term to find groups by name, description, tags, or leader.
+                </p>
               </div>
-              <div className={`text-xl font-bold mb-3 ${getThemeTextColor('primary')}`}>
-                No groups found
+            </div>
+          )}
+
+          {!isLoading && searchQuery.trim() !== '' && filteredGroups.length === 0 && (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <div className={`w-20 h-20 rounded-full ${getThemeClass('componentSecondary')} flex items-center justify-center mx-auto mb-6`}>
+                  <Search className={`h-10 w-10 ${getThemeTextColor('secondary')}`} />
+                </div>
+                <div className={`text-xl font-bold mb-3 ${getThemeTextColor('primary')}`}>
+                  No groups found
+                </div>
+                <p className={`text-base ${getThemeTextColor('secondary')} mb-6 max-w-md mx-auto`}>
+                  We couldn't find any groups matching your search criteria. Try adjusting your search terms.
+                </p>
+                <Button 
+                  className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90"
+                  onClick={() => router.push('/group/create')}
+                >
+                  Create New Group
+                </Button>
               </div>
-              <p className={`text-base ${getThemeTextColor('secondary')} mb-6 max-w-md mx-auto`}>
-                We couldn't find any groups matching your search criteria. Try adjusting your search terms.
-              </p>
-              <Button 
-                className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90"
-                onClick={() => router.push('/group/create')}
-              >
-                Create New Group
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+            </div>
+          )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Group Detail Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -287,8 +291,15 @@ export default function FindTeamPage() {
                       </Avatar>
                       
                       <div className="flex-1">
-                        <div className={`text-xl font-bold ${getThemeTextColor('primary')} mb-1`}>
-                          {selectedGroup.name}
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className={`text-xl font-bold ${getThemeTextColor('primary')}`}>
+                            {selectedGroup.name}
+                          </div>
+                          {selectedGroup.isPublic ? (
+                            <Globe className="h-5 w-5 text-green-500 flex-shrink-0" />
+                          ) : (
+                            <Lock className="h-5 w-5 text-orange-500 flex-shrink-0" />
+                          )}
                         </div>
                         
                         <div className={`text-sm ${getThemeTextColor('secondary')}`}>

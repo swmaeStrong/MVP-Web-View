@@ -1,10 +1,11 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useCurrentUser } from '@/stores/userStore';
 import { Plus, Search, Settings, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useCurrentUser } from '@/stores/userStore';
+import { useCallback, useMemo } from 'react';
 
 interface NavItem {
   name: string;
@@ -28,12 +29,14 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
   const pathname = usePathname();
   const currentUser = useCurrentUser();
 
-  // Get selected group ID from URL
-  const selectedGroupId = pathname.includes('/group/team/') 
-    ? pathname.split('/group/team/')[1]?.split('/')[0] 
-    : null;
+  // Get selected group ID from URL - 메모이제이션
+  const selectedGroupId = useMemo(() => {
+    if (!pathname.includes('/group/team/')) return null;
+    return pathname.split('/group/team/')[1]?.split('/')[0] || null;
+  }, [pathname]);
 
-  const isActive = (href: string) => {
+  // isActive 함수 최적화 - useCallback으로 메모이제이션
+  const isActive = useCallback((href: string) => {
     if (href === '/group') {
       return pathname === href;
     }
@@ -52,19 +55,30 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
     
     // 기타 경로는 기존 로직 유지
     return pathname === href || pathname.startsWith(href + '/');
-  };
+  }, [pathname, selectedGroupId]);
 
-  // 현재 선택된 그룹 찾기
-  const selectedGroup = groups.find(group => group.groupId.toString() === selectedGroupId);
-  
-  // 현재 사용자가 그룹장인지 확인
-  const isGroupOwner = selectedGroup && currentUser && selectedGroup.groupOwner.userId === currentUser.id;
+  // 선택된 그룹과 권한 정보 메모이제이션
+  const groupInfo = useMemo(() => {
+    const selectedGroup = groups.find(group => group.groupId.toString() === selectedGroupId);
+    const isGroupOwner = selectedGroup && currentUser && selectedGroup.groupOwner.userId === currentUser.id;
+    
+    return { selectedGroup, isGroupOwner };
+  }, [groups, selectedGroupId, currentUser]);
 
-  // Group submenu items - 그룹장만 Settings 메뉴 표시
-  const groupSubMenuItems = [
-    { name: 'Main', href: `/group/team/${selectedGroupId}`, icon: TrendingUp },
-    ...(isGroupOwner ? [{ name: 'Settings', href: `/group/team/${selectedGroupId}/settings`, icon: Settings }] : []),
-  ];
+  // Group submenu items 메모이제이션
+  const groupSubMenuItems = useMemo(() => {
+    if (!selectedGroupId) return [];
+    
+    const baseItems = [
+      { name: 'Main', href: `/group/team/${selectedGroupId}`, icon: TrendingUp },
+    ];
+    
+    if (groupInfo.isGroupOwner) {
+      baseItems.push({ name: 'Settings', href: `/group/team/${selectedGroupId}/settings`, icon: Settings });
+    }
+    
+    return baseItems;
+  }, [selectedGroupId, groupInfo.isGroupOwner]);
 
   return (
     <aside
@@ -95,15 +109,16 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
             
             {!error && groups.map((group) => {
               const isGroupSelected = selectedGroupId === group.groupId.toString();
+              const groupHref = `/group/team/${group.groupId}`;
               
               return (
                 <div key={group.groupId}>
                   <Link
-                    href={`/group/team/${group.groupId}`}
-                    className={`flex items-center justify-between px-4 py-2 rounded-md transition-all duration-200 transform ${
+                    href={groupHref}
+                    className={`flex items-center justify-between px-4 py-2 rounded-md transition-colors duration-150 ${
                       isGroupSelected
-                        ? `text-white bg-[#3F72AF] shadow-lg`
-                        : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10 hover:scale-105 hover:shadow-md`
+                        ? `text-white bg-[#3F72AF]`
+                        : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10`
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -112,7 +127,7 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
                   </Link>
                   
                   {/* Group Submenu - Show right below the selected group */}
-                  {isGroupSelected && (
+                  {isGroupSelected && groupSubMenuItems.length > 0 && (
                     <div className="ml-4 mt-1 space-y-1">
                       {groupSubMenuItems.map((item) => {
                         const Icon = item.icon;
@@ -122,10 +137,10 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
                           <Link
                             key={item.href}
                             href={item.href}
-                            className={`flex items-center gap-3 px-3 py-1.5 rounded transition-all duration-200 transform relative ${
+                            className={`flex items-center gap-3 px-3 py-1.5 rounded transition-colors duration-150 relative ${
                               active
                                 ? `${getThemeTextColor('primary')} font-medium bg-[#3F72AF]/15`
-                                : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10 hover:scale-105 hover:shadow-sm`
+                                : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10`
                             }`}
                           >
                             {/* Simple active indicator */}
@@ -156,10 +171,11 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-2 rounded-md transition-all duration-200 transform ${
+                prefetch={true}
+                className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors duration-150 ${
                   active
-                    ? `text-white bg-[#3F72AF] shadow-lg`
-                    : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10 hover:scale-105 hover:shadow-md`
+                    ? `text-white bg-[#3F72AF]`
+                    : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10`
                 }`}
               >
                 <Icon size={20} className="flex-shrink-0" />

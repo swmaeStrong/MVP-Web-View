@@ -5,6 +5,7 @@ declare namespace Group {
 		groupOwner: GroupUserInfo,
 		tags: string[] | null,
 		description: string | null,
+		isPublic: boolean,
 	}
 
 	interface GroupUserInfo {

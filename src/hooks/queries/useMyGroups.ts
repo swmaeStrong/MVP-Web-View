@@ -8,5 +8,7 @@ export function useMyGroups() {
   return useQuery({
     queryKey: myGroupsQueryKey(),
     queryFn: getMyGroups,
+    staleTime: 5 * 60 * 1000, // 5분간 데이터를 fresh로 간주
+    gcTime: 10 * 60 * 1000,   // 10분간 캐시 유지
   });
 }
