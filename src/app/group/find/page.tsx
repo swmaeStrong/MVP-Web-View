@@ -160,9 +160,9 @@ export default function FindTeamPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, index) => (
-            <Card key={index} className={getCommonCardClass()}>
-              <CardContent className="p-6">
-                <div className="space-y-4">
+            <Card key={index} className={`${getCommonCardClass()} h-80`}>
+              <CardContent className="p-6 h-full">
+                <div className="space-y-4 h-full flex flex-col">
                   <div className="flex items-center gap-4">
                     <Skeleton className="w-12 h-12 rounded-full" />
                     <div className="flex-1">
@@ -170,12 +170,17 @@ export default function FindTeamPage() {
                       <Skeleton className="h-4 w-24" />
                     </div>
                   </div>
-                  <Skeleton className="h-12 w-full" />
-                  <div className="flex gap-2">
-                    <Skeleton className="h-6 w-16" />
-                    <Skeleton className="h-6 w-16" />
+                  <div className="flex-1 space-y-4">
+                    <div className="min-h-[3rem]">
+                      <Skeleton className="h-4 w-full mb-2" />
+                      <Skeleton className="h-4 w-3/4" />
+                    </div>
+                    <div className="min-h-[2rem] flex gap-2">
+                      <Skeleton className="h-6 w-16" />
+                      <Skeleton className="h-6 w-16" />
+                    </div>
                   </div>
-                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full mt-auto" />
                 </div>
               </CardContent>
             </Card>
@@ -184,9 +189,9 @@ export default function FindTeamPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredGroups.map((group) => (
-            <Card key={group.groupId} className={`${getCommonCardClass()} hover:ring-2 hover:ring-[#3F72AF]/20 transition-all h-fit`}>
-              <CardContent className="p-6">
-                <div className="space-y-4">
+            <Card key={group.groupId} className={`${getCommonCardClass()} hover:ring-2 hover:ring-[#3F72AF]/20 transition-all h-80`}>
+              <CardContent className="p-6 h-full">
+                <div className="space-y-4 h-full flex flex-col">
                   {/* Group Header */}
                   <div className="flex items-center gap-4">
                     <Avatar className="w-12 h-12 flex-shrink-0">
@@ -214,32 +219,51 @@ export default function FindTeamPage() {
                     </div>
                   </div>
                   
-                  {/* Description */}
-                  {group.description && (
-                    <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed line-clamp-2`}>
-                      {group.description}
-                    </p>
-                  )}
-                  
-                  {/* Tags */}
-                  {group.tags && group.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {group.tags.map((tag) => (
-                        <Badge 
-                          key={tag} 
-                          variant="outline" 
-                          className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
-                        >
-                          <Hash className="h-3 w-3" />
-                          {tag}
-                        </Badge>
-                      ))}
+                  {/* Content Container - grows to fill space */}
+                  <div className="flex-1 space-y-4">
+                    {/* Description */}
+                    <div className="min-h-[3rem]">
+                      {group.description ? (
+                        <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed line-clamp-2`}>
+                          {group.description}
+                        </p>
+                      ) : (
+                        <p className={`text-sm ${getThemeTextColor('secondary')} italic`}>
+                          No description available
+                        </p>
+                      )}
                     </div>
-                  )}
+                    
+                    {/* Tags */}
+                    <div className="min-h-[2rem]">
+                      {group.tags && group.tags.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                          {group.tags.slice(0, 3).map((tag) => (
+                            <Badge 
+                              key={tag} 
+                              variant="outline" 
+                              className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
+                            >
+                              <Hash className="h-3 w-3" />
+                              {tag}
+                            </Badge>
+                          ))}
+                          {group.tags.length > 3 && (
+                            <Badge 
+                              variant="outline" 
+                              className={`text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
+                            >
+                              +{group.tags.length - 3}
+                            </Badge>
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
                   
-                  {/* Action Button */}
+                  {/* Action Button - fixed at bottom */}
                   <Button
-                    className="w-full bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
+                    className="w-full bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors mt-auto"
                     size="sm"
                     onClick={() => handleViewDetail(group)}
                   >
