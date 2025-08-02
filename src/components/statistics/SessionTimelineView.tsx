@@ -25,7 +25,6 @@ interface SessionData {
   scoreColor: string;
   scoreLabel: string;
   sessionNumber: string;
-  details: Session.SessionDetailApiResponse[];
 }
 
 const formatTime = (seconds: number): string => {
@@ -133,7 +132,6 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
         scoreColor: getScoreColor(session.score, isDarkMode),
         scoreLabel: getScoreLabel(session.score),
         sessionNumber: `S${session.session}`,
-        details: session.details,
       }))
       .sort((a, b) => a.timestamp - b.timestamp); // Sort by time ascending (chronological order)
 

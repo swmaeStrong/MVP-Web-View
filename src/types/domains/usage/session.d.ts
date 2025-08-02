@@ -1,5 +1,5 @@
 declare namespace Session {
-  interface SessionDetailApiResponse {
+  interface SessionDetail {
     category: string;
     categoryDetail: string;
     timestamp: number;
@@ -14,7 +14,7 @@ declare namespace Session {
     timestamp: number;
     duration: number;
     score: number;
-    details: SessionDetailApiResponse[];
+    details: SessionDetail[];
   }
 
   interface SessionDetailApiResponse {
