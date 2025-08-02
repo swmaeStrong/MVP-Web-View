@@ -1,9 +1,11 @@
 'use client';
 
 import StateDisplay from '@/components/common/StateDisplay';
+import { GroupNameInput } from '@/components/forms/GroupNameInput';
 import { groupDetailQueryKey } from '@/config/constants/query-keys';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { updateGroupSchema, UpdateGroupFormData } from '@/schemas/groupSchema';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
@@ -20,13 +22,7 @@ import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import * as z from 'zod';
 
-const formSchema = z.object({
-  name: z.string().min(3, 'Group name must be at least 3 characters').max(50, 'Group name must be less than 50 characters'),
-  isPublic: z.enum(['public', 'private']),
-  tags: z.array(z.string()).min(1, 'At least one tag is required').max(5, 'Maximum 5 tags allowed'),
-});
 
 export default function GroupSettingsPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
@@ -62,11 +58,11 @@ export default function GroupSettingsPage() {
     },
   });
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<UpdateGroupFormData>({
+    resolver: zodResolver(updateGroupSchema),
     defaultValues: {
       name: '',
-      isPublic: 'public',
+      isPublic: true,
       tags: [],
     },
   });
@@ -79,7 +75,7 @@ export default function GroupSettingsPage() {
     if (groupDetail) {
       reset({
         name: groupDetail.name,
-        isPublic: groupDetail.isPublic ? 'public' : 'private',
+        isPublic: groupDetail.isPublic,
         tags: groupDetail.tags,
       });
     }
@@ -100,15 +96,17 @@ export default function GroupSettingsPage() {
   };
 
   // Form submit handler
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: UpdateGroupFormData) => {
     if (!groupDetail) return;
 
     const request: Group.UpdateGroupApiRequest = {
       name: values.name,
-      description: groupDetail.description, // 기존 값 유지
-      groundRule: groupDetail.groundRule,   // 기존 값 유지
+      description: values.description || groupDetail.description,
+      groundRule: values.groundRules 
+        ? values.groundRules.filter(rule => rule.trim().length > 0).join('\n')
+        : groupDetail.groundRule,
       tags: values.tags,
-      isPublic: values.isPublic === 'public',
+      isPublic: values.isPublic,
     };
 
     try {
@@ -240,24 +238,12 @@ export default function GroupSettingsPage() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* 그룹 이름 */}
-                  <FormField
-                    control={form.control}
+                  <GroupNameInput
+                    form={form}
                     name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={`text-sm font-medium ${getThemeTextColor('secondary')}`}>
-                          Group Name
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            className="mt-2"
-                            placeholder="Enter group name"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    label="Group Name"
+                    placeholder="Enter group name"
+                    excludeFromValidation={groupDetail?.name}
                   />
 
                   {/* 공개 설정 */}
@@ -272,8 +258,8 @@ export default function GroupSettingsPage() {
                         <FormControl>
                           <ToggleGroup 
                             type="single" 
-                            value={field.value} 
-                            onValueChange={field.onChange}
+                            value={field.value ? 'public' : 'private'} 
+                            onValueChange={(value) => field.onChange(value === 'public')}
                             className="w-full bg-white border border-gray-200 rounded-md mt-2"
                           >
                             <ToggleGroupItem 

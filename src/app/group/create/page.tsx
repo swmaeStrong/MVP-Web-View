@@ -1,45 +1,36 @@
 'use client';
 
+import { GroundRulesInput } from '@/components/forms/GroundRulesInput';
+import { GroupNameInput } from '@/components/forms/GroupNameInput';
 import { groupNameCheckQueryKey, myGroupsQueryKey } from '@/config/constants/query-keys';
 import { useDebounce } from '@/hooks/ui/useDebounce';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { CreateGroupFormData, createGroupSchema } from '@/schemas/groupSchema';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
 import { Input } from '@/shadcn/ui/input';
-import { Textarea } from '@/shadcn/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { validateGroupName } from '@/shared/api/get';
 import { createGroup } from '@/shared/api/post';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Globe, Hash, Lock, Plus, Target, Trash2, TrendingUp, Users, X } from 'lucide-react';
+import { Globe, Hash, Lock, Plus, Target, TrendingUp, Users, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import * as z from 'zod';
-
-const formSchema = z.object({
-  groupName: z.string().min(1, 'Group name is required'),
-  description: z.string().min(10, 'Description must be at least 10 characters').max(500, 'Description must be less than 500 characters'),
-  isPublic: z.enum(['public', 'private']),
-  groundRules: z.array(z.string()).min(1, 'At least one ground rule is required').refine(
-    (rules) => rules.some(rule => rule.trim().length > 0),
-    'At least one ground rule is required'
-  ),
-  tags: z.array(z.string()).min(1, 'At least one tag is required').max(5, 'Maximum 5 tags allowed'),
-});
+import { Textarea } from '../../../shadcn/ui/textarea';
 
 export default function CreateGroupPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const router = useRouter();
   const queryClient = useQueryClient();
   
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<CreateGroupFormData>({
+    resolver: zodResolver(createGroupSchema),
     defaultValues: {
       groupName: '',
       description: '',
@@ -52,15 +43,15 @@ export default function CreateGroupPage() {
   const { watch, setValue, getValues } = form;
   const watchedValues = watch();
   
-  // 그룹 이름 디바운스
+  // 그룹 이름 디바운스 및 중복 검사
   const debouncedGroupName = useDebounce(watchedValues.groupName, 500);
   
-  // 그룹 이름 중복 검사
   const { data: isNameAvailable, isLoading: isCheckingName } = useQuery({
     queryKey: groupNameCheckQueryKey(debouncedGroupName),
     queryFn: () => validateGroupName(debouncedGroupName),
     enabled: debouncedGroupName.length >= 1,
   });
+  
 
   // 그룹 생성 mutation
   const createGroupMutation = useMutation({
@@ -75,28 +66,6 @@ export default function CreateGroupPage() {
     }
   };
 
-  // Ground Rules handlers
-  const handleAddGroundRule = () => {
-    const currentRules = getValues('groundRules');
-    if (currentRules.length < 10) {
-      setValue('groundRules', [...currentRules, '']);
-    }
-  };
-
-  const removeGroundRule = (index: number) => {
-    const currentRules = getValues('groundRules');
-    if (currentRules.length > 1) {
-      const newRules = currentRules.filter((_, i) => i !== index);
-      setValue('groundRules', newRules);
-    }
-  };
-
-  const updateGroundRule = (index: number, value: string) => {
-    const currentRules = getValues('groundRules');
-    const newRules = [...currentRules];
-    newRules[index] = value;
-    setValue('groundRules', newRules);
-  };
 
   // Remove tag handler
   const handleRemoveTag = (tagToRemove: string) => {
@@ -144,7 +113,7 @@ export default function CreateGroupPage() {
   };
 
   // Form submit handler
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: CreateGroupFormData) => {
     const request: Group.CreateGroupApiRequest = {
       name: values.groupName,
       isPublic: values.isPublic === 'public',
@@ -208,40 +177,11 @@ export default function CreateGroupPage() {
                     
                     <div className="space-y-4">
                       {/* Group Name */}
-                      <FormField
-                        control={form.control}
+                      <GroupNameInput
+                        form={form}
                         name="groupName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                              Group Name
-                            </FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <Input
-                                  placeholder="Enter group name..."
-                                  className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
-                                  {...field}
-                                />
-                                {field.value.length >= 1 && (
-                                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                    {isCheckingName ? (
-                                      <div className="text-gray-400 text-xs">Checking...</div>
-                                    ) : isNameAvailable === true ? (
-                                      <div className="text-green-600 text-xs">✓ Available</div>
-                                    ) : isNameAvailable === false ? (
-                                      <div className="text-red-600 text-xs">✗ Taken</div>
-                                    ) : null}
-                                  </div>
-                                )}
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                            {field.value.length >= 3 && !isCheckingName && isNameAvailable === false && (
-                              <p className="text-xs text-red-600 mt-1">This group name is already taken</p>
-                            )}
-                          </FormItem>
-                        )}
+                        label="Group Name"
+                        placeholder="Enter group name..."
                       />
 
                       {/* Description */}
@@ -266,59 +206,11 @@ export default function CreateGroupPage() {
                       />
 
                       {/* Ground Rules */}
-                      <FormField
-                        control={form.control}
+                      <GroundRulesInput
+                        form={form}
                         name="groundRules"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                              Ground Rules
-                            </FormLabel>
-                            <FormControl>
-                              <div className="space-y-3 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                                {field.value.map((rule, index) => (
-                                  <div key={index} className="flex items-center gap-2">
-                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${getThemeClass('component')} ${getThemeTextColor('secondary')}`}>
-                                      {index + 1}
-                                    </div>
-                                    <Textarea
-                                      value={rule}
-                                      onChange={(e) => updateGroundRule(index, e.target.value)}
-                                      placeholder="Enter a ground rule..."
-                                      className="flex-1 min-h-[60px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] resize-none"
-                                      rows={2}
-                                    />
-                                    {field.value.length > 1 && (
-                                      <Button
-                                        type="button"
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={() => removeGroundRule(index)}
-                                        className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                      >
-                                        <Trash2 className="h-4 w-4" />
-                                      </Button>
-                                    )}
-                                  </div>
-                                ))}
-                                
-                                {field.value.length < 10 && (
-                                  <Button
-                                    type="button"
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={handleAddGroundRule}
-                                    className="gap-1 mt-2"
-                                  >
-                                    <Plus className="h-3 w-3" />
-                                    Add Ground Rule
-                                  </Button>
-                                )}
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                        label="Ground Rules"
+                        maxRules={10}
                       />
                     </div>
                   </CardContent>
