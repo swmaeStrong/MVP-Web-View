@@ -1,5 +1,7 @@
 'use client';
 
+import { groupNameCheckQueryKey, myGroupsQueryKey } from '@/config/constants/query-keys';
+import { useDebounce } from '@/hooks/ui/useDebounce';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
@@ -9,25 +11,25 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/shadcn/ui/input';
 import { Textarea } from '@/shadcn/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
+import { validateGroupName } from '@/shared/api/get';
+import { createGroup } from '@/shared/api/post';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Globe, Hash, Lock, Plus, Target, TrendingUp, Users, X, Trash2 } from 'lucide-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Globe, Hash, Lock, Plus, Target, Trash2, TrendingUp, Users, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { createGroup } from '@/shared/api/post';
-import { validateGroupName } from '@/shared/api/get';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useDebounce } from '@/hooks/ui/useDebounce';
-import { groupNameCheckQueryKey, myGroupsQueryKey } from '@/config/constants/query-keys';
-import { useToast } from '@/hooks/ui/useToast';
 import toast from 'react-hot-toast';
+import * as z from 'zod';
 
 const formSchema = z.object({
-  groupName: z.string().min(3, 'Group name must be at least 3 characters').max(50, 'Group name must be less than 50 characters'),
+  groupName: z.string().min(1, 'Group name is required'),
   description: z.string().min(10, 'Description must be at least 10 characters').max(500, 'Description must be less than 500 characters'),
   isPublic: z.enum(['public', 'private']),
-  groundRules: z.array(z.string().min(5, 'Each ground rule must be at least 5 characters')).min(1, 'At least one ground rule is required').max(10, 'Maximum 10 ground rules allowed'),
+  groundRules: z.array(z.string()).min(1, 'At least one ground rule is required').refine(
+    (rules) => rules.some(rule => rule.trim().length > 0),
+    'At least one ground rule is required'
+  ),
   tags: z.array(z.string()).min(1, 'At least one tag is required').max(5, 'Maximum 5 tags allowed'),
 });
 
@@ -57,7 +59,7 @@ export default function CreateGroupPage() {
   const { data: isNameAvailable, isLoading: isCheckingName } = useQuery({
     queryKey: groupNameCheckQueryKey(debouncedGroupName),
     queryFn: () => validateGroupName(debouncedGroupName),
-    enabled: debouncedGroupName.length >= 3,
+    enabled: debouncedGroupName.length >= 1,
   });
 
   // 그룹 생성 mutation
@@ -100,6 +102,45 @@ export default function CreateGroupPage() {
   const handleRemoveTag = (tagToRemove: string) => {
     const currentTags = getValues('tags');
     setValue('tags', currentTags.filter(tag => tag !== tagToRemove));
+  };
+
+  // Form submit handler with validation
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const isValid = await form.trigger();
+    if (!isValid) {
+      const errors = form.formState.errors;
+      
+      // Show validation error toast with specific messages
+      if (errors.groupName) {
+        toast.error(`Group Name: ${errors.groupName.message}`);
+        return;
+      }
+      if (errors.description) {
+        toast.error(`Description: ${errors.description.message}`);
+        return;
+      }
+      if (errors.groundRules) {
+        toast.error(`Ground Rules: ${errors.groundRules.message || 'Please add at least one non-empty ground rule'}`);
+        return;
+      }
+      if (errors.tags) {
+        toast.error(`Tags: ${errors.tags.message}`);
+        return;
+      }
+      
+      return;
+    }
+    
+    // Check if name is available (only after basic validation passes)
+    if (!isNameAvailable) {
+      toast.error('Group name is already taken. Please choose a different name.');
+      return;
+    }
+    
+    const values = form.getValues();
+    await onSubmit(values);
   };
 
   // Form submit handler
@@ -157,7 +198,7 @@ export default function CreateGroupPage() {
           {/* Main Form */}
           <div className="lg:col-span-2">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Basic Information */}
                 <Card className={getCommonCardClass()}>
                   <CardContent className="p-6">
@@ -182,7 +223,7 @@ export default function CreateGroupPage() {
                                   className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
                                   {...field}
                                 />
-                                {field.value.length >= 3 && (
+                                {field.value.length >= 1 && (
                                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
                                     {isCheckingName ? (
                                       <div className="text-gray-400 text-xs">Checking...</div>
