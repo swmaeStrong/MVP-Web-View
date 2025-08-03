@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shadcn/ui/dropdown-menu';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
 import { Input } from '@/shadcn/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
@@ -19,7 +20,7 @@ import { deleteGroup, leaveGroup, banGroupMember } from '@/shared/api/delete';
 import { useCurrentUser } from '@/stores/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Copy, Crown, Globe, Hash, Lock, Plus, Save, Settings, Trash2, UserMinus, Users, X } from 'lucide-react';
+import { Copy, Crown, Globe, Hash, Lock, MoreVertical, Plus, Save, Settings, Trash2, UserMinus, Users, X } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
@@ -746,7 +747,12 @@ export default function GroupSettingsPage() {
                       </div>
                     </div>
                   </div>
-                  <Crown className="h-4 w-4 text-amber-500" />
+                  
+                  <div className="flex items-center">
+                    <div className="h-8 w-8 flex items-center justify-center">
+                      <Crown className="h-4 w-4 text-amber-500" />
+                    </div>
+                  </div>
                 </div>
                 
                 {/* 일반 멤버 */}
@@ -768,31 +774,38 @@ export default function GroupSettingsPage() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-1">
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 text-amber-600 hover:text-amber-700"
-                        title="Transfer ownership"
-                        onClick={() => {
-                          setSelectedMember(member);
-                          setShowTransferDialog(true);
-                        }}
-                      >
-                        <Crown className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 text-red-600 hover:text-red-700"
-                        title="Remove member"
-                        onClick={() => {
-                          setSelectedMember(member);
-                          setShowBanDialog(true);
-                        }}
-                      >
-                        <UserMinus className="h-4 w-4" />
-                      </Button>
+                    <div className="flex items-center">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-gray-600 hover:text-gray-700"
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-44">
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            onClick={() => {
+                              setSelectedMember(member);
+                              setShowTransferDialog(true);
+                            }}
+                          >
+                            Transfer Ownership
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-red-600 focus:text-red-700 cursor-pointer"
+                            onClick={() => {
+                              setSelectedMember(member);
+                              setShowBanDialog(true);
+                            }}
+                          >
+                            Remove Member
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
                 ))}
