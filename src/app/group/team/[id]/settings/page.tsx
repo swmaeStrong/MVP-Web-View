@@ -1,6 +1,7 @@
 'use client';
 
 import StateDisplay from '@/components/common/StateDisplay';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 import { GroupNameInput } from '@/components/forms/GroupNameInput';
 import { groupDetailQueryKey, myGroupsQueryKey, GROUP_VALIDATION_MESSAGES, GROUP_ACTION_MESSAGES } from '@/config/constants';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
@@ -10,14 +11,6 @@ import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/shadcn/ui/dialog';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
 import { Input } from '@/shadcn/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
@@ -543,48 +536,25 @@ export default function GroupSettingsPage() {
       </div>
 
       {/* 삭제 확인 다이얼로그 */}
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className={`${getThemeClass('component')} ${getThemeClass('border')} max-w-md`}>
-          <DialogHeader className="space-y-3">
-            <DialogTitle className={`text-xl font-semibold ${getThemeTextColor('primary')}`}>
-              Delete Group
-            </DialogTitle>
-            <DialogDescription className={`${getThemeTextColor('secondary')} leading-relaxed`}>
-              Are you sure you want to delete <span className="font-semibold">"{groupDetail?.name}"</span>? 
-              <br className="mt-2" />
-              This action cannot be undone. All group data, including member information and history, will be permanently removed.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="mt-6 gap-3 sm:gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setShowDeleteDialog(false)}
-              disabled={deleteGroupMutation.isPending}
-              className={`${getThemeClass('border')} ${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDeleteGroup}
-              disabled={deleteGroupMutation.isPending}
-              className="bg-red-600 hover:bg-red-700 text-white"
-            >
-              {deleteGroupMutation.isPending ? (
-                <>
-                  <Trash2 className="h-4 w-4 mr-2 animate-pulse" />
-                  Deleting...
-                </>
-              ) : (
-                <>
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete Group
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        title="Delete Group"
+        description={
+          <>
+            Are you sure you want to delete <span className="font-semibold">"{groupDetail?.name}"</span>?
+            <br className="mt-2" />
+            This action cannot be undone. All group data, including member information and history, will be permanently removed.
+          </>
+        }
+        confirmText="Delete Group"
+        cancelText="Cancel"
+        onConfirm={handleDeleteGroup}
+        variant="destructive"
+        isLoading={deleteGroupMutation.isPending}
+        loadingText="Deleting..."
+        icon={Trash2}
+      />
     </div>
   );
 }
