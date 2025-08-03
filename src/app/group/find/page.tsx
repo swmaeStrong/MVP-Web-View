@@ -1,10 +1,10 @@
 'use client';
 
-import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
+import { myGroupsQueryKey } from '@/config/constants/query-keys';
 import { useMyGroups } from '@/hooks/queries/useMyGroups';
+import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
 import { useGroupSearch } from '@/hooks/ui/useGroupSearch';
 import { useTheme } from '@/hooks/ui/useTheme';
-import { useCurrentUser } from '@/stores/userStore';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
@@ -13,14 +13,19 @@ import { Dialog, DialogContent, DialogHeader } from '@/shadcn/ui/dialog';
 import { Input } from '@/shadcn/ui/input';
 import { Skeleton } from '@/shadcn/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
+import { joinGroup } from '@/shared/api/post';
+import { useCurrentUser } from '@/stores/userStore';
+import { useQueryClient } from '@tanstack/react-query';
 import { Globe, Hash, Lock, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const router = useRouter();
   const currentUser = useCurrentUser();
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'public' | 'private'>('all');
   const [sortBy, setSortBy] = useState<'created' | 'name'>('name');
@@ -62,15 +67,23 @@ export default function FindTeamPage() {
 
   const handleJoinGroup = async (group: Group.GroupApiResponse) => {
     setIsJoining(true);
+    setJoinError('');
+    
     try {
-      // TODO: Implement actual group join API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await joinGroup(group.groupId);
       
+      // 성공 시 내 그룹 목록 다시 불러오기
+      await queryClient.invalidateQueries({
+        queryKey: myGroupsQueryKey(),
+      });
+      
+      toast.success('Successfully joined the group!');
       handleCloseModal();
       router.push(`/group/team/${group.groupId}`);
     } catch (error) {
       console.error('Failed to join group:', error);
-      setJoinError('그룹 가입에 실패했습니다. 다시 시도해주세요.');
+      setJoinError('Failed to join the group. Please try again.');
+      toast.error('Failed to join the group.');
     } finally {
       setIsJoining(false);
     }
@@ -367,6 +380,13 @@ export default function FindTeamPage() {
                     )}
                   </CardContent>
                 </Card>
+                
+                {/* Error Message */}
+                {joinError && (
+                  <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+                    <p className="text-sm text-red-600 dark:text-red-400">{joinError}</p>
+                  </div>
+                )}
                 
                 {/* Action Buttons */}
                 <div className="flex gap-3 pt-2">
