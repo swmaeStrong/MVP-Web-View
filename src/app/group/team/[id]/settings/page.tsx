@@ -200,6 +200,24 @@ export default function GroupSettingsPage() {
     },
   });
 
+  // 그룹 탈퇴 mutation (멤버용)
+  const leaveGroupMutation = useMutation({
+    mutationFn: () => leaveGroup(groupId.toString()),
+    onSuccess: () => {
+      // 성공 시 그룹 목록 쿼리 무효화
+      queryClient.invalidateQueries({
+        queryKey: myGroupsQueryKey(),
+      });
+      toast.success('Successfully left the group');
+      // 그룹 찾기 페이지로 이동
+      router.push('/group/find');
+    },
+    onError: (error) => {
+      console.error('Failed to leave group:', error);
+      toast.error('Failed to leave the group');
+    },
+  });
+
   // 멤버 추방 핸들러
   const handleBanMember = async (reason?: string) => {
     if (!selectedMember || !reason?.trim()) return;
@@ -209,6 +227,16 @@ export default function GroupSettingsPage() {
         userId: selectedMember.userId,
         reason: reason.trim(),
       });
+    } catch (error) {
+      // 에러는 mutation에서 이미 toast로 표시됨
+    }
+  };
+
+  // 그룹 탈퇴 핸들러 (멤버용)
+  const handleLeaveGroup = async () => {
+    try {
+      await leaveGroupMutation.mutateAsync();
+      setShowDeleteDialog(false);
     } catch (error) {
       // 에러는 mutation에서 이미 toast로 표시됨
     }
@@ -243,33 +271,6 @@ export default function GroupSettingsPage() {
     );
   }
 
-  // 그룹 탈퇴 mutation (멤버용)
-  const leaveGroupMutation = useMutation({
-    mutationFn: () => leaveGroup(groupId.toString()),
-    onSuccess: () => {
-      // 성공 시 그룹 목록 쿼리 무효화
-      queryClient.invalidateQueries({
-        queryKey: myGroupsQueryKey(),
-      });
-      toast.success('Successfully left the group');
-      // 그룹 찾기 페이지로 이동
-      router.push('/group/find');
-    },
-    onError: (error) => {
-      console.error('Failed to leave group:', error);
-      toast.error('Failed to leave the group');
-    },
-  });
-
-  // 그룹 탈퇴 핸들러 (멤버용)
-  const handleLeaveGroup = async () => {
-    try {
-      await leaveGroupMutation.mutateAsync();
-      setShowDeleteDialog(false);
-    } catch (error) {
-      // 에러는 mutation에서 이미 toast로 표시됨
-    }
-  };
 
   // 그룹장이 아닌 경우 멤버 전용 페이지 표시
   if (!isGroupOwner) {
