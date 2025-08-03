@@ -30,4 +30,9 @@ export const GROUP_ACTION_MESSAGES = {
     SUCCESS: 'Group information updated successfully.',
     ERROR: 'Failed to update group information.',
   },
+  DELETE: {
+    LOADING: 'Deleting group...',
+    SUCCESS: 'Group deleted successfully.',
+    ERROR: 'Failed to delete group.',
+  },
 } as const;

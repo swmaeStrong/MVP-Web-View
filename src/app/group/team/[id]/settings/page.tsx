@@ -14,6 +14,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/shadcn/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { updateGroup } from '@/shared/api/patch';
+import { deleteGroup } from '@/shared/api/delete';
 import { useCurrentUser } from '@/stores/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -146,20 +147,35 @@ export default function GroupSettingsPage() {
     }
   };
 
+  // 그룹 삭제 mutation
+  const deleteGroupMutation = useMutation({
+    mutationFn: () => deleteGroup(groupId.toString()),
+    onSuccess: () => {
+      // 성공 시 그룹 목록 쿼리 무효화
+      queryClient.invalidateQueries({
+        queryKey: myGroupsQueryKey(),
+      });
+      toast.success(GROUP_ACTION_MESSAGES.DELETE.SUCCESS);
+      // 그룹 찾기 페이지로 이동
+      router.push('/group/find');
+    },
+    onError: (error) => {
+      console.error('Failed to delete group:', error);
+      toast.error(GROUP_ACTION_MESSAGES.DELETE.ERROR);
+    },
+  });
+
   // 그룹 삭제 핸들러
   const handleDeleteGroup = async () => {
     if (!confirm('Are you sure you want to delete this group? This action cannot be undone.')) {
       return;
     }
 
-    // TODO: API 연동 - 그룹 삭제
-    console.log('Deleting group:', groupId);
-    
-    // Mock: 2초 대기 후 성공
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // 성공 시 그룹 찾기 페이지로 이동
-    router.push('/group/find');
+    try {
+      await deleteGroupMutation.mutateAsync();
+    } catch (error) {
+      // 에러는 mutation에서 이미 toast로 표시됨
+    }
   };
 
   // Loading state
@@ -512,8 +528,9 @@ export default function GroupSettingsPage() {
                 onClick={handleDeleteGroup}
                 className="w-full"
                 size="sm"
+                disabled={deleteGroupMutation.isPending}
               >
-                Delete Group
+                {deleteGroupMutation.isPending ? 'Deleting...' : 'Delete Group'}
               </Button>
             </CardContent>
           </Card>
