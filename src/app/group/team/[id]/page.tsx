@@ -231,7 +231,7 @@ export default function TeamDetailPage() {
 
       {/* 우측 상단 - 그라운드 룰 (2/5) */}
       <GroundRules 
-        rules={groupDetail.groundRule ? [groupDetail.groundRule] : []}
+        rules={groupDetail.groundRule || ''}
         isOwner={isGroupOwner ?? false}
         onGroundRuleUpdate={isGroupOwner ? handleGroundRuleUpdate : undefined}
       />

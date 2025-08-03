@@ -73,9 +73,8 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
       { name: 'Main', href: `/group/team/${selectedGroupId}`, icon: TrendingUp },
     ];
     
-    if (groupInfo.isGroupOwner) {
-      baseItems.push({ name: 'Settings', href: `/group/team/${selectedGroupId}/settings`, icon: Settings });
-    }
+    // 모든 멤버가 Settings 페이지에 접근 가능
+    baseItems.push({ name: 'Settings', href: `/group/team/${selectedGroupId}/settings`, icon: Settings });
     
     return baseItems;
   }, [selectedGroupId, groupInfo.isGroupOwner]);
@@ -115,6 +114,7 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
                 <div key={group.groupId}>
                   <Link
                     href={groupHref}
+                    prefetch={true}
                     className={`flex items-center justify-between px-4 py-2 rounded-md transition-colors duration-150 ${
                       isGroupSelected
                         ? `text-white bg-[#3F72AF]`
@@ -137,6 +137,7 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
                           <Link
                             key={item.href}
                             href={item.href}
+                            prefetch={true}
                             className={`flex items-center gap-3 px-3 py-1.5 rounded transition-colors duration-150 relative ${
                               active
                                 ? `${getThemeTextColor('primary')} font-medium bg-[#3F72AF]/15`
