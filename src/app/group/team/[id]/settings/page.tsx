@@ -15,7 +15,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/shadcn/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { updateGroup } from '@/shared/api/patch';
-import { deleteGroup, leaveGroup } from '@/shared/api/delete';
+import { deleteGroup, leaveGroup, banGroupMember } from '@/shared/api/delete';
 import { useCurrentUser } from '@/stores/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -33,6 +33,9 @@ export default function GroupSettingsPage() {
   const currentUser = useCurrentUser();
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+  const [showBanDialog, setShowBanDialog] = React.useState(false);
+  const [selectedMember, setSelectedMember] = React.useState<Group.GroupUserInfo | null>(null);
+  const [banReason, setBanReason] = React.useState('');
   
   const groupId = Array.isArray(params.id) ? parseInt(params.id[0], 10) : parseInt(params.id as string, 10);
 
@@ -172,6 +175,40 @@ export default function GroupSettingsPage() {
     try {
       await deleteGroupMutation.mutateAsync();
       setShowDeleteDialog(false);
+    } catch (error) {
+      // 에러는 mutation에서 이미 toast로 표시됨
+    }
+  };
+
+  // 멤버 추방 mutation
+  const banMemberMutation = useMutation({
+    mutationFn: ({ userId, reason }: { userId: string; reason: string }) => 
+      banGroupMember(groupId, userId, reason),
+    onSuccess: () => {
+      // 성공 시 그룹 상세 정보 다시 조회
+      queryClient.invalidateQueries({
+        queryKey: groupDetailQueryKey(groupId),
+      });
+      toast.success('Member has been removed from the group');
+      setShowBanDialog(false);
+      setSelectedMember(null);
+      setBanReason('');
+    },
+    onError: (error) => {
+      console.error('Failed to ban member:', error);
+      toast.error('Failed to remove member');
+    },
+  });
+
+  // 멤버 추방 핸들러
+  const handleBanMember = async (reason?: string) => {
+    if (!selectedMember || !reason?.trim()) return;
+    
+    try {
+      await banMemberMutation.mutateAsync({
+        userId: selectedMember.userId,
+        reason: reason.trim(),
+      });
     } catch (error) {
       // 에러는 mutation에서 이미 toast로 표시됨
     }
@@ -708,6 +745,10 @@ export default function GroupSettingsPage() {
                         variant="ghost"
                         className="h-8 w-8 text-red-600 hover:text-red-700"
                         title="Remove member"
+                        onClick={() => {
+                          setSelectedMember(member);
+                          setShowBanDialog(true);
+                        }}
                       >
                         <UserMinus className="h-4 w-4" />
                       </Button>
@@ -795,6 +836,41 @@ export default function GroupSettingsPage() {
         isLoading={deleteGroupMutation.isPending}
         loadingText="Deleting..."
         icon={Trash2}
+      />
+
+      {/* 멤버 추방 다이얼로그 */}
+      <ConfirmDialog
+        open={showBanDialog}
+        onOpenChange={(open) => {
+          setShowBanDialog(open);
+          if (!open) {
+            setSelectedMember(null);
+            setBanReason('');
+          }
+        }}
+        title="Remove Member"
+        description={
+          <>
+            Remove <span className="font-semibold">{selectedMember?.nickname}</span> from the group?
+          </>
+        }
+        confirmText="Remove Member"
+        cancelText="Cancel"
+        onConfirm={handleBanMember}
+        onCancel={() => {
+          setSelectedMember(null);
+          setBanReason('');
+        }}
+        variant="destructive"
+        isLoading={banMemberMutation.isPending}
+        loadingText="Removing..."
+        icon={UserMinus}
+        showTextarea={true}
+        textareaLabel="Reason for removal"
+        textareaPlaceholder="Please provide a reason for removing this member..."
+        textareaRequired={true}
+        textareaValue={banReason}
+        onTextareaChange={setBanReason}
       />
     </div>
   );

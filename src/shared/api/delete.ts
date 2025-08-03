@@ -6,3 +6,13 @@ export const deleteGroup = (groupId: string) =>
 
 export const leaveGroup = (groupId: string) =>
   parseApi<void>(API.delete(`/group/${groupId}/quit`));
+
+export const banGroupMember = (groupId: number, userId: string, reason: string) =>
+  parseApi<void>(
+    API.delete(`/group/${groupId}/ban`, {
+      data: {
+        userId,
+        reason
+      }
+    })
+  );
