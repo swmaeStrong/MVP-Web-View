@@ -14,7 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
 import { Input } from '@/shadcn/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
-import { updateGroup } from '@/shared/api/patch';
+import { updateGroup, transferGroupOwnership } from '@/shared/api/patch';
 import { deleteGroup, leaveGroup, banGroupMember } from '@/shared/api/delete';
 import { useCurrentUser } from '@/stores/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -34,6 +34,7 @@ export default function GroupSettingsPage() {
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [showBanDialog, setShowBanDialog] = React.useState(false);
+  const [showTransferDialog, setShowTransferDialog] = React.useState(false);
   const [selectedMember, setSelectedMember] = React.useState<Group.GroupUserInfo | null>(null);
   const [banReason, setBanReason] = React.useState('');
   
@@ -237,6 +238,41 @@ export default function GroupSettingsPage() {
     try {
       await leaveGroupMutation.mutateAsync();
       setShowDeleteDialog(false);
+    } catch (error) {
+      // 에러는 mutation에서 이미 toast로 표시됨
+    }
+  };
+
+  // 소유권 이전 mutation
+  const transferOwnershipMutation = useMutation({
+    mutationFn: (userId: string) => 
+      transferGroupOwnership(groupId, { userId }),
+    onSuccess: () => {
+      // 성공 시 그룹 상세 정보 다시 조회
+      queryClient.invalidateQueries({
+        queryKey: groupDetailQueryKey(groupId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: myGroupsQueryKey(),
+      });
+      toast.success('Group ownership has been transferred successfully');
+      setShowTransferDialog(false);
+      setSelectedMember(null);
+      // 그룹 페이지로 리다이렉트 (더 이상 관리자가 아니므로)
+      router.push(`/group/team/${groupId}`);
+    },
+    onError: (error) => {
+      console.error('Failed to transfer ownership:', error);
+      toast.error('Failed to transfer group ownership');
+    },
+  });
+
+  // 소유권 이전 핸들러
+  const handleTransferOwnership = async () => {
+    if (!selectedMember) return;
+    
+    try {
+      await transferOwnershipMutation.mutateAsync(selectedMember.userId);
     } catch (error) {
       // 에러는 mutation에서 이미 toast로 표시됨
     }
@@ -736,8 +772,12 @@ export default function GroupSettingsPage() {
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-8 w-8"
+                        className="h-8 w-8 text-amber-600 hover:text-amber-700"
                         title="Transfer ownership"
+                        onClick={() => {
+                          setSelectedMember(member);
+                          setShowTransferDialog(true);
+                        }}
                       >
                         <Crown className="h-4 w-4" />
                       </Button>
@@ -872,6 +912,35 @@ export default function GroupSettingsPage() {
         textareaRequired={true}
         textareaValue={banReason}
         onTextareaChange={setBanReason}
+      />
+
+      {/* 소유권 이전 다이얼로그 */}
+      <ConfirmDialog
+        open={showTransferDialog}
+        onOpenChange={(open) => {
+          setShowTransferDialog(open);
+          if (!open) {
+            setSelectedMember(null);
+          }
+        }}
+        title="Transfer Group Ownership"
+        description={
+          <>
+            Are you sure you want to transfer ownership of <span className="font-semibold">"{groupDetail?.name}"</span> to <span className="font-semibold">{selectedMember?.nickname}</span>?
+            <br className="mt-2" />
+            <span className="text-amber-600 font-medium">Warning:</span> You will lose all administrative privileges and cannot undo this action. The new owner will have full control over the group.
+          </>
+        }
+        confirmText="Transfer Ownership"
+        cancelText="Cancel"
+        onConfirm={handleTransferOwnership}
+        onCancel={() => {
+          setSelectedMember(null);
+        }}
+        variant="default"
+        isLoading={transferOwnershipMutation.isPending}
+        loadingText="Transferring..."
+        icon={Crown}
       />
     </div>
   );

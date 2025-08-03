@@ -40,5 +40,9 @@ declare namespace Group {
 		isPublic: boolean,
 	}
 
+	interface TransferOwnershipApiRequest {
+		userId: string,
+	}
+
 }
   
