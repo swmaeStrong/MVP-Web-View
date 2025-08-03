@@ -111,20 +111,32 @@ export default function TeamDetailPage() {
     {
       id: 1,
       title: 'Complete React refactoring task',
-      achieved: ['John Doe', 'Sarah Wilson'],
-      notAchieved: ['Mike Johnson', 'Jane Smith', 'Tom Brown', 'Alice Kim']
+      achieved: ['김민수', '이영희', '박철수'],
+      notAchieved: ['정수진', '최민호', '강예린', '오세훈', '윤지아']
     },
     {
       id: 2,
       title: 'Review team code submissions', 
-      achieved: ['John Doe', 'Mike Johnson', 'Jane Smith'],
-      notAchieved: ['Sarah Wilson', 'Tom Brown', 'Alice Kim']
+      achieved: ['이영희', '정수진', '최민호', '강예린'],
+      notAchieved: ['김민수', '박철수', '오세훈', '윤지아']
     },
     {
       id: 3,
       title: 'Update project documentation',
-      achieved: ['Sarah Wilson', 'Tom Brown'],
-      notAchieved: ['John Doe', 'Mike Johnson', 'Jane Smith', 'Alice Kim']
+      achieved: ['박철수', '오세훈'],
+      notAchieved: ['김민수', '이영희', '정수진', '최민호', '강예린', '윤지아']
+    },
+    {
+      id: 4,
+      title: 'Fix critical bugs in production',
+      achieved: ['김민수', '이영희', '정수진', '최민호', '강예린', '오세훈', '윤지아'],
+      notAchieved: ['박철수']
+    },
+    {
+      id: 5,
+      title: 'Attend daily standup meeting',
+      achieved: ['김민수', '이영희', '박철수', '정수진', '최민호'],
+      notAchieved: ['강예린', '오세훈', '윤지아']
     }
   ];
 
