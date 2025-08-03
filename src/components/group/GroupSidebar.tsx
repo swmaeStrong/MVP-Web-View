@@ -73,9 +73,8 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
       { name: 'Main', href: `/group/team/${selectedGroupId}`, icon: TrendingUp },
     ];
     
-    if (groupInfo.isGroupOwner) {
-      baseItems.push({ name: 'Settings', href: `/group/team/${selectedGroupId}/settings`, icon: Settings });
-    }
+    // 모든 멤버가 Settings 페이지에 접근 가능
+    baseItems.push({ name: 'Settings', href: `/group/team/${selectedGroupId}/settings`, icon: Settings });
     
     return baseItems;
   }, [selectedGroupId, groupInfo.isGroupOwner]);

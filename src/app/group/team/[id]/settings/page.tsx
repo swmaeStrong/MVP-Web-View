@@ -15,7 +15,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/shadcn/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { updateGroup } from '@/shared/api/patch';
-import { deleteGroup } from '@/shared/api/delete';
+import { deleteGroup, leaveGroup } from '@/shared/api/delete';
 import { useCurrentUser } from '@/stores/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -206,14 +206,255 @@ export default function GroupSettingsPage() {
     );
   }
 
-  // 권한 없음 상태
+  // 그룹 탈퇴 mutation (멤버용)
+  const leaveGroupMutation = useMutation({
+    mutationFn: () => leaveGroup(groupId.toString()),
+    onSuccess: () => {
+      // 성공 시 그룹 목록 쿼리 무효화
+      queryClient.invalidateQueries({
+        queryKey: myGroupsQueryKey(),
+      });
+      toast.success('Successfully left the group');
+      // 그룹 찾기 페이지로 이동
+      router.push('/group/find');
+    },
+    onError: (error) => {
+      console.error('Failed to leave group:', error);
+      toast.error('Failed to leave the group');
+    },
+  });
+
+  // 그룹 탈퇴 핸들러 (멤버용)
+  const handleLeaveGroup = async () => {
+    try {
+      await leaveGroupMutation.mutateAsync();
+      setShowDeleteDialog(false);
+    } catch (error) {
+      // 에러는 mutation에서 이미 toast로 표시됨
+    }
+  };
+
+  // 그룹장이 아닌 경우 멤버 전용 페이지 표시
   if (!isGroupOwner) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <StateDisplay 
-          type="error" 
-          title="Access denied"
-          message="Only group owners can modify group settings."
+      <div className="space-y-6 px-6 py-6 max-w-4xl mx-auto">
+        {/* 헤더 */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h1 className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
+              {groupDetail.name}
+            </h1>
+            <Badge 
+              variant={groupDetail.isPublic ? "default" : "secondary"} 
+              className={`text-xs flex items-center gap-1 ${
+                groupDetail.isPublic 
+                  ? 'bg-green-100 text-green-700 border-green-200 hover:bg-green-200' 
+                  : 'bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-200'
+              }`}
+            >
+              {groupDetail.isPublic ? (
+                <>
+                  <Globe className="h-3 w-3" />
+                  Public
+                </>
+              ) : (
+                <>
+                  <Lock className="h-3 w-3" />
+                  Private
+                </>
+              )}
+            </Badge>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* 그룹 정보 */}
+          <div className="lg:col-span-2">
+            <Card className={getCommonCardClass()}>
+              <CardHeader>
+                <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
+                  Group Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {groupDetail.description && (
+                  <div>
+                    <div className={`text-sm font-medium ${getThemeTextColor('secondary')} mb-1`}>
+                      Description
+                    </div>
+                    <p className={`text-sm ${getThemeTextColor('primary')}`}>
+                      {groupDetail.description}
+                    </p>
+                  </div>
+                )}
+                
+                {groupDetail.groundRule && (
+                  <div>
+                    <div className={`text-sm font-medium ${getThemeTextColor('secondary')} mb-1`}>
+                      Ground Rules
+                    </div>
+                    <p className={`text-sm ${getThemeTextColor('primary')} whitespace-pre-line`}>
+                      {groupDetail.groundRule}
+                    </p>
+                  </div>
+                )}
+
+                {groupDetail.tags && groupDetail.tags.length > 0 && (
+                  <div>
+                    <div className={`text-sm font-medium ${getThemeTextColor('secondary')} mb-2`}>
+                      Tags
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {groupDetail.tags.map((tag) => (
+                        <Badge 
+                          key={tag} 
+                          variant="secondary" 
+                          className="gap-1"
+                        >
+                          <Hash className="h-3 w-3" />
+                          <span className="text-xs">{tag}</span>
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* 멤버 목록 */}
+            <Card className={`${getCommonCardClass()} mt-6`}>
+              <CardHeader>
+                <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
+                  Group Members ({groupDetail.members.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {/* 그룹장 */}
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="w-10 h-10">
+                        <AvatarFallback className={`text-sm font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+                          {groupDetail.owner.nickname.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                          {groupDetail.owner.nickname}
+                        </div>
+                        <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                          Group Owner
+                        </div>
+                      </div>
+                    </div>
+                    <Crown className="h-5 w-5 text-amber-500" />
+                  </div>
+                  
+                  {/* 일반 멤버 */}
+                  {groupDetail.members.filter(member => member.userId !== groupDetail.owner.userId).map((member) => (
+                    <div key={member.userId} className="flex items-center justify-between p-3 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="w-10 h-10">
+                          <AvatarFallback className={`text-sm font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+                            {member.nickname.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                            {member.nickname}
+                          </div>
+                          <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                            Member
+                          </div>
+                        </div>
+                      </div>
+                      <Users className="h-5 w-5 text-gray-400" />
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* 사이드바 */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* 그룹 정보 */}
+            <Card className={getCommonCardClass()}>
+              <CardHeader>
+                <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
+                  Group Details
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className={`text-sm ${getThemeTextColor('secondary')}`}>Total Members</span>
+                    <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                      {groupDetail.members.length}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className={`text-sm ${getThemeTextColor('secondary')}`}>Created</span>
+                    <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                      {new Date(groupDetail.createdAt).toLocaleDateString('ko-KR')}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className={`text-sm ${getThemeTextColor('secondary')}`}>Active Days</span>
+                    <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                      {new Date(groupDetail.createdAt).getFullYear() === new Date().getFullYear() 
+                        ? Math.ceil((new Date().getTime() - new Date(groupDetail.createdAt).getTime()) / (1000 * 60 * 60 * 24))
+                        : '365+'
+                      } days
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 그룹 탈퇴 */}
+            <Card className={`${getCommonCardClass()} border-red-200`}>
+              <CardHeader>
+                <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
+                  Leave Group
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className={`text-sm ${getThemeTextColor('secondary')} mb-4`}>
+                  Are you sure you want to leave this group? You can rejoin later if the group is public.
+                </p>
+                <Button
+                  variant="destructive"
+                  onClick={() => setShowDeleteDialog(true)}
+                  className="w-full"
+                  size="sm"
+                >
+                  Leave Group
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* 탈퇴 확인 다이얼로그 */}
+        <ConfirmDialog
+          open={showDeleteDialog}
+          onOpenChange={setShowDeleteDialog}
+          title="Leave Group"
+          description={
+            <>
+              Are you sure you want to leave <span className="font-semibold">"{groupDetail?.name}"</span>?
+              <br className="mt-2" />
+              You can rejoin later if the group is public or if you receive another invitation.
+            </>
+          }
+          confirmText="Leave Group"
+          cancelText="Cancel"
+          onConfirm={handleLeaveGroup}
+          variant="destructive"
+          isLoading={leaveGroupMutation.isPending}
+          loadingText="Leaving..."
+          icon={UserMinus}
         />
       </div>
     );
