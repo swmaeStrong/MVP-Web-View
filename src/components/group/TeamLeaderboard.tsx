@@ -43,10 +43,10 @@ export default function TeamLeaderboard({ members }: TeamLeaderboardProps) {
                 userStats={{
                   nickname: member.name,
                   currentStreak: Math.floor(Math.random() * 30) + 1, // Mock data
-                  totalScore: member.score * 15 + Math.floor(Math.random() * 500), // Mock data
+                  maxStreak: Math.floor(Math.random() * 50) + 30, // Mock data
+                  totalPomodoroScore: Math.floor(Math.random() * 1200) + 800, // Mock data
                   totalSessions: Math.floor(Math.random() * 40) + 15, // Mock data
                   rank: member.rank,
-                  workTime: `${member.hours}h`
                 }}
                 side="top"
                 align="center"

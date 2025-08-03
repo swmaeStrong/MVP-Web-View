@@ -2,16 +2,16 @@
 
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shadcn/ui/tooltip';
-import { Calendar, Clock, Trophy, Zap } from 'lucide-react';
+import { Calendar, Trophy, Zap } from 'lucide-react';
 import React from 'react';
 
 interface UserStats {
   nickname: string;
   currentStreak: number;
-  totalScore: number;
+  maxStreak: number;
+  totalPomodoroScore: number;
   totalSessions: number;
   rank?: number;
-  workTime?: string;
 }
 
 interface UserProfileTooltipProps {
@@ -70,20 +70,31 @@ export default function UserProfileTooltip({
               <div className="flex items-center gap-2">
                 <Calendar className={`w-3.5 h-3.5 ${getThemeTextColor('secondary')}`} />
                 <div>
-                  <div className={`text-xs ${getThemeTextColor('secondary')}`}>Streak</div>
+                  <div className={`text-xs ${getThemeTextColor('secondary')}`}>Current Streak</div>
                   <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
                     {userStats.currentStreak} days
                   </div>
                 </div>
               </div>
 
-              {/* Total Score */}
+              {/* Max Streak */}
               <div className="flex items-center gap-2">
-                <Trophy className={`w-3.5 h-3.5 ${getThemeTextColor('secondary')}`} />
+                <Calendar className={`w-3.5 h-3.5 text-orange-500`} />
                 <div>
-                  <div className={`text-xs ${getThemeTextColor('secondary')}`}>Score</div>
+                  <div className={`text-xs ${getThemeTextColor('secondary')}`}>Max Streak</div>
                   <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                    {formatScore(userStats.totalScore)}
+                    {userStats.maxStreak} days
+                  </div>
+                </div>
+              </div>
+
+              {/* Total Pomodoro Score */}
+              <div className="flex items-center gap-2">
+                <Trophy className={`w-3.5 h-3.5 text-red-500`} />
+                <div>
+                  <div className={`text-xs ${getThemeTextColor('secondary')}`}>Pomodoro Score</div>
+                  <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                    {formatScore(userStats.totalPomodoroScore)}
                   </div>
                 </div>
               </div>
@@ -99,18 +110,6 @@ export default function UserProfileTooltip({
                 </div>
               </div>
 
-              {/* Work Time (if available) */}
-              {userStats.workTime && (
-                <div className="flex items-center gap-2">
-                  <Clock className={`w-3.5 h-3.5 ${getThemeTextColor('secondary')}`} />
-                  <div>
-                    <div className={`text-xs ${getThemeTextColor('secondary')}`}>Work</div>
-                    <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                      {userStats.workTime}
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </TooltipContent>
