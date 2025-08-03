@@ -372,9 +372,6 @@ export default function FindTeamPage() {
                           <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
                             {selectedGroup.groupOwner.nickname}
                           </div>
-                          <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            ID: {selectedGroup.groupOwner.userId}
-                          </div>
                         </div>
                       </div>
                     </div>
