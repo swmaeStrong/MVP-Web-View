@@ -160,13 +160,10 @@ export default function TodayGoals({ goals }: TodayGoalsProps) {
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-2">
-                        <div className="relative w-24">
+                        <div className="w-24">
                           <Progress 
                             value={(goal.achieved.length / (goal.achieved.length + goal.notAchieved.length)) * 100} 
-                            className="h-2 bg-gray-200"
-                          />
-                          <div className="absolute inset-0 h-2 rounded-full bg-green-500" 
-                            style={{ width: `${(goal.achieved.length / (goal.achieved.length + goal.notAchieved.length)) * 100}%` }}
+                            className="h-2 bg-gray-200 [&>div]:bg-green-500"
                           />
                         </div>
                         <span className={`text-xs font-bold ${getThemeTextColor('primary')}`}>
