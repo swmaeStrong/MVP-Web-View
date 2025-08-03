@@ -5,11 +5,11 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
 import { Progress } from '@/shadcn/ui/progress';
 import { Separator } from '@/shadcn/ui/separator';
 import { spacing } from '@/styles/design-system';
 import { Plus } from 'lucide-react';
+import MemberListDialog from './MemberListDialog';
 
 interface Goal {
   id: number;
@@ -201,71 +201,12 @@ export default function TodayGoals({ goals }: TodayGoalsProps) {
       </CardContent>
 
       {/* 멤버 리스트 다이얼로그 */}
-      <Dialog open={showMemberDialog} onOpenChange={setShowMemberDialog}>
-        <DialogContent className={`max-w-md ${getCommonCardClass()}`}>
-          <DialogHeader>
-            <DialogTitle className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
-              {selectedType === 'achieved' ? 'Members who achieved' : 'Members who have not achieved'} the goal
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-3 mt-4">
-            {selectedGoal && selectedType && (
-              <>
-                {/* 목표 제목 */}
-                <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
-                  <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                    "{selectedGoal.title}"
-                  </div>
-                </div>
-
-                {/* 멤버 리스트 */}
-                <div className="space-y-2">
-                  {(selectedType === 'achieved' ? selectedGoal.achieved : selectedGoal.notAchieved).map((name, index) => (
-                    <div key={index} className={`flex items-center gap-3 p-2 rounded-lg hover:${getThemeClass('componentSecondary')} transition-colors`}>
-                      <Avatar className="w-8 h-8">
-                        <AvatarImage src="" />
-                        <AvatarFallback className={`text-xs font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
-                          {getAvatarInitials(name)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                        {name}
-                      </div>
-                      {selectedType === 'achieved' && (
-                        <div className="ml-auto">
-                          <span className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full font-medium">
-                            ✓ Achieved
-                          </span>
-                        </div>
-                      )}
-                      {selectedType === 'notAchieved' && (
-                        <div className="ml-auto">
-                          <span className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded-full font-medium">
-                            Pending
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* 통계 정보 */}
-                <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')} mt-4`}>
-                  <div className="flex justify-between text-xs">
-                    <span className={getThemeTextColor('secondary')}>
-                      Total: {selectedGoal.achieved.length + selectedGoal.notAchieved.length} members
-                    </span>
-                    <span className={getThemeTextColor('secondary')}>
-                      Progress: {Math.round((selectedGoal.achieved.length / (selectedGoal.achieved.length + selectedGoal.notAchieved.length)) * 100)}%
-                    </span>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <MemberListDialog
+        open={showMemberDialog}
+        onOpenChange={setShowMemberDialog}
+        goal={selectedGoal}
+        type={selectedType}
+      />
     </Card>
   );
 }

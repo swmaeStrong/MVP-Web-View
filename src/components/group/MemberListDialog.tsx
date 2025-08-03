@@ -1,0 +1,110 @@
+'use client';
+
+import { useTheme } from '@/hooks/ui/useTheme';
+import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
+
+interface Goal {
+  id: number;
+  title: string;
+  achieved: string[];
+  notAchieved: string[];
+}
+
+interface MemberListDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  goal: Goal | null;
+  type: 'achieved' | 'notAchieved' | null;
+}
+
+export default function MemberListDialog({ 
+  open, 
+  onOpenChange, 
+  goal, 
+  type 
+}: MemberListDialogProps) {
+  const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
+
+  const getAvatarInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('');
+  };
+
+  if (!goal || !type) return null;
+
+  const members = type === 'achieved' ? goal.achieved : goal.notAchieved;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className={`max-w-md ${getCommonCardClass()}`}>
+        <DialogHeader>
+          <DialogTitle className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
+            {type === 'achieved' ? 'Members who achieved' : 'Members who have not achieved'} the goal
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-3 mt-4">
+          {/* 목표 제목 */}
+          <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
+            <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+              "{goal.title}"
+            </div>
+          </div>
+
+          {/* 멤버 수 정보 */}
+          <div className="flex items-center justify-between">
+            <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+              {type === 'achieved' ? 'Achieved Members' : 'Pending Members'}
+            </span>
+            <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+              {members.length} member{members.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+
+          {/* 스크롤 가능한 멤버 리스트 */}
+          <div className="max-h-[320px] overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800">
+            {members.map((name, index) => (
+              <div key={index} className={`flex items-center gap-3 p-3 rounded-lg hover:${getThemeClass('componentSecondary')} border ${getThemeClass('border')}`}>
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src="" />
+                  <AvatarFallback className={`text-xs font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
+                    {getAvatarInitials(name)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className={`text-sm font-medium ${getThemeTextColor('primary')} flex-1`}>
+                  {name}
+                </div>
+                {type === 'achieved' && (
+                  <div className="ml-auto">
+                    <span className="text-xs text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full font-medium">
+                      ✓ Achieved
+                    </span>
+                  </div>
+                )}
+                {type === 'notAchieved' && (
+                  <div className="ml-auto">
+                    <span className="text-xs text-gray-600 bg-gray-50 dark:bg-gray-800 px-2 py-1 rounded-full font-medium">
+                      Pending
+                    </span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* 통계 정보 */}
+          <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')} mt-4 border-t ${getThemeClass('border')}`}>
+            <div className="flex justify-between text-xs">
+              <span className={getThemeTextColor('secondary')}>
+                Total: {goal.achieved.length + goal.notAchieved.length} members
+              </span>
+              <span className={getThemeTextColor('secondary')}>
+                Progress: {Math.round((goal.achieved.length / (goal.achieved.length + goal.notAchieved.length)) * 100)}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
