@@ -1,11 +1,11 @@
 'use client';
 
+import UserProfileTooltip from '@/components/common/UserProfileTooltip';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Separator } from '@/shadcn/ui/separator';
 import { spacing } from '@/styles/design-system';
-import UserProfileTooltip from '@/components/common/UserProfileTooltip';
 
 interface LeaderboardMember {
   rank: number;
@@ -52,7 +52,7 @@ export default function TeamLeaderboard({ members }: TeamLeaderboardProps) {
                 align="center"
               >
                 <div className="relative w-fit mx-auto mb-3 cursor-pointer">
-                  <Avatar className="w-16 h-16 ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-2 hover:ring-[#3F72AF] transition-all duration-200">
+                  <Avatar className={`w-16 h-16 ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-2 hover:ring-gray-500 transition-all duration-200`}>
                     <AvatarImage src="" />
                     <AvatarFallback className={`text-lg font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
                       {getAvatarInitials(member.name)}
