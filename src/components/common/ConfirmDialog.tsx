@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/shadcn/ui/dialog';
+import { Textarea } from '@/shadcn/ui/textarea';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { LucideIcon } from 'lucide-react';
 import * as React from 'react';
@@ -20,13 +21,19 @@ interface ConfirmDialogProps {
   description: string | React.ReactNode;
   confirmText?: string;
   cancelText?: string;
-  onConfirm: () => void | Promise<void>;
+  onConfirm: (textareaValue?: string) => void | Promise<void>;
   onCancel?: () => void;
   variant?: 'default' | 'destructive';
   isLoading?: boolean;
   loadingText?: string;
   icon?: LucideIcon;
   showIcon?: boolean;
+  showTextarea?: boolean;
+  textareaLabel?: string;
+  textareaPlaceholder?: string;
+  textareaRequired?: boolean;
+  textareaValue?: string;
+  onTextareaChange?: (value: string) => void;
 }
 
 export default function ConfirmDialog({
@@ -43,8 +50,25 @@ export default function ConfirmDialog({
   loadingText = 'Processing...',
   icon: Icon,
   showIcon = true,
+  showTextarea = false,
+  textareaLabel,
+  textareaPlaceholder,
+  textareaRequired = false,
+  textareaValue: externalTextareaValue,
+  onTextareaChange,
 }: ConfirmDialogProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
+  const [internalTextareaValue, setInternalTextareaValue] = React.useState('');
+  
+  // Use external value if provided, otherwise use internal state
+  const textareaValue = externalTextareaValue !== undefined ? externalTextareaValue : internalTextareaValue;
+  const handleTextareaChange = (value: string) => {
+    if (onTextareaChange) {
+      onTextareaChange(value);
+    } else {
+      setInternalTextareaValue(value);
+    }
+  };
 
   const handleCancel = () => {
     if (onCancel) {
@@ -54,7 +78,13 @@ export default function ConfirmDialog({
   };
 
   const handleConfirm = async () => {
-    await onConfirm();
+    await onConfirm(showTextarea ? textareaValue : undefined);
+  };
+
+  const isConfirmDisabled = () => {
+    if (isLoading) return true;
+    if (showTextarea && textareaRequired && !textareaValue.trim()) return true;
+    return false;
   };
 
   const getButtonVariant = () => {
@@ -82,6 +112,23 @@ export default function ConfirmDialog({
             {description}
           </DialogDescription>
         </DialogHeader>
+        
+        {showTextarea && (
+          <div className="my-4">
+            {textareaLabel && (
+              <label className={`text-sm font-medium ${getThemeTextColor('primary')} mb-2 block`}>
+                {textareaLabel} {textareaRequired && <span className="text-red-500">*</span>}
+              </label>
+            )}
+            <Textarea
+              placeholder={textareaPlaceholder}
+              value={textareaValue}
+              onChange={(e) => handleTextareaChange(e.target.value)}
+              className="min-h-[100px] resize-none"
+            />
+          </div>
+        )}
+        
         <DialogFooter className="mt-6 gap-3 sm:gap-2">
           <Button
             variant="outline"
@@ -94,7 +141,7 @@ export default function ConfirmDialog({
           <Button
             variant={getButtonVariant()}
             onClick={handleConfirm}
-            disabled={isLoading}
+            disabled={isConfirmDisabled()}
             className={getButtonClassName()}
           >
             {isLoading ? (
