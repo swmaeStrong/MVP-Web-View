@@ -1,8 +1,10 @@
 'use client';
 
 import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
+import { useMyGroups } from '@/hooks/queries/useMyGroups';
 import { useGroupSearch } from '@/hooks/ui/useGroupSearch';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useCurrentUser } from '@/stores/userStore';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
@@ -18,6 +20,7 @@ import { useState } from 'react';
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const router = useRouter();
+  const currentUser = useCurrentUser();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'public' | 'private'>('all');
   const [sortBy, setSortBy] = useState<'created' | 'name'>('name');
@@ -29,6 +32,7 @@ export default function FindTeamPage() {
 
   // Fetch groups from API
   const { data: groups = [], isLoading } = useSearchGroups();
+  const { data: myGroups = [] } = useMyGroups();
 
   // Use the custom group search hook
   const filteredGroups = useGroupSearch({
@@ -37,6 +41,11 @@ export default function FindTeamPage() {
     filterType,
     sortBy,
   });
+
+  // Helper function to check if user is member of a group
+  const isGroupMember = (groupId: number) => {
+    return myGroups.some(group => group.groupId === groupId);
+  };
 
   const handleViewDetail = (group: Group.GroupApiResponse) => {
     setSelectedGroup(group);
@@ -369,13 +378,22 @@ export default function FindTeamPage() {
                   >
                     Cancel
                   </Button>
-                  <Button
-                    className="flex-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
-                    onClick={() => handleJoinGroup(selectedGroup)}
-                    disabled={isJoining}
-                  >
-                    {isJoining ? 'Joining...' : 'Join Group'}
-                  </Button>
+                  {!isGroupMember(selectedGroup.groupId) ? (
+                    <Button
+                      className="flex-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
+                      onClick={() => handleJoinGroup(selectedGroup)}
+                      disabled={isJoining}
+                    >
+                      {isJoining ? 'Joining...' : 'Join Group'}
+                    </Button>
+                  ) : (
+                    <Button
+                      className="flex-1 bg-gray-400 text-white cursor-not-allowed"
+                      disabled
+                    >
+                      Already Joined
+                    </Button>
+                  )}
                 </div>
               </div>
             </>
