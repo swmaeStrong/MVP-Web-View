@@ -94,38 +94,6 @@ export default function TeamDetailPage() {
     { rank: 6, name: 'Alice Kim', score: 75, hours: 22 },
   ];
 
-  const mockTodayGoals = [
-    {
-      id: 1,
-      title: 'Complete React refactoring task',
-      achieved: ['김민수', '이영희', '박철수'],
-      notAchieved: ['정수진', '최민호', '강예린', '오세훈', '윤지아']
-    },
-    {
-      id: 2,
-      title: 'Review team code submissions', 
-      achieved: ['이영희', '정수진', '최민호', '강예린'],
-      notAchieved: ['김민수', '박철수', '오세훈', '윤지아']
-    },
-    {
-      id: 3,
-      title: 'Update project documentation',
-      achieved: ['박철수', '오세훈'],
-      notAchieved: ['김민수', '이영희', '정수진', '최민호', '강예린', '윤지아']
-    },
-    {
-      id: 4,
-      title: 'Fix critical bugs in production',
-      achieved: ['김민수', '이영희', '정수진', '최민호', '강예린', '오세훈', '윤지아'],
-      notAchieved: ['박철수']
-    },
-    {
-      id: 5,
-      title: 'Attend daily standup meeting',
-      achieved: ['김민수', '이영희', '박철수', '정수진', '최민호'],
-      notAchieved: ['강예린', '오세훈', '윤지아']
-    }
-  ];
 
 
   const handlePreviousDate = useCallback(() => {
@@ -282,7 +250,7 @@ export default function TeamDetailPage() {
       <TeamLeaderboard members={mockLeaderboard} />
 
       {/* 우측 하단 - 오늘의 목표 설정 (2/5) */}
-      <TodayGoals goals={mockTodayGoals} />
+      <TodayGoals groupId={groupId} isGroupOwner={isGroupOwner ?? false} />
     </div>
   );
 }

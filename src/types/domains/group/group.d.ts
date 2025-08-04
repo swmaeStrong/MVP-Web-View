@@ -50,5 +50,17 @@ declare namespace Group {
 		period: 'DAILY' | 'WEEKLY',
 	}
 
+	interface GroupGoalMember {
+		userId: string,
+		currentSeconds: number,
+	}
+
+	interface GroupGoalsApiResponse {
+		category: string,
+		goalSeconds: number,
+		periodType: 'DAILY' | 'WEEKLY',
+		members: GroupGoalMember[],
+	}
+
 }
   

@@ -4,17 +4,10 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
 
-interface Goal {
-  id: number;
-  title: string;
-  achieved: string[];
-  notAchieved: string[];
-}
-
 interface MemberListDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  goal: Goal | null;
+  goal: Group.GroupGoalsApiResponse | null;
   type: 'achieved' | 'notAchieved' | null;
 }
 
@@ -26,13 +19,20 @@ export default function MemberListDialog({
 }: MemberListDialogProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
 
-  const getAvatarInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('');
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    if (hours > 0) {
+      return `${hours}h${minutes > 0 ? ` ${minutes}m` : ''}`;
+    }
+    return `${minutes}m`;
   };
 
   if (!goal || !type) return null;
 
-  const members = type === 'achieved' ? goal.achieved : goal.notAchieved;
+  const members = type === 'achieved' 
+    ? goal.members.filter(m => m.currentSeconds >= goal.goalSeconds)
+    : goal.members.filter(m => m.currentSeconds < goal.goalSeconds);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -47,7 +47,7 @@ export default function MemberListDialog({
           {/* 목표 제목 */}
           <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
             <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-              "{goal.title}"
+              "{goal.category} - {formatTime(goal.goalSeconds)} ({goal.periodType.toLowerCase()})"
             </div>
           </div>
 
@@ -63,16 +63,19 @@ export default function MemberListDialog({
 
           {/* 스크롤 가능한 멤버 리스트 */}
           <div className="max-h-[320px] overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800">
-            {members.map((name, index) => (
-              <div key={index} className={`flex items-center gap-3 p-3 rounded-lg hover:${getThemeClass('componentSecondary')} border ${getThemeClass('border')}`}>
+            {members.map((member, index) => (
+              <div key={member.userId} className={`flex items-center gap-3 p-3 rounded-lg hover:${getThemeClass('componentSecondary')} border ${getThemeClass('border')}`}>
                 <Avatar className="w-8 h-8">
                   <AvatarImage src="" />
                   <AvatarFallback className={`text-xs font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
-                    {getAvatarInitials(name)}
+                    {member.userId.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className={`text-sm font-medium ${getThemeTextColor('primary')} flex-1`}>
-                  {name}
+                  {member.userId}
+                </div>
+                <div className={`text-xs ${getThemeTextColor('secondary')} mr-3`}>
+                  {formatTime(member.currentSeconds)}
                 </div>
                 {type === 'achieved' && (
                   <div className="ml-auto">
@@ -96,10 +99,10 @@ export default function MemberListDialog({
           <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')} mt-4 border-t ${getThemeClass('border')}`}>
             <div className="flex justify-between text-xs">
               <span className={getThemeTextColor('secondary')}>
-                Total: {goal.achieved.length + goal.notAchieved.length} members
+                Total: {goal.members.length} members
               </span>
               <span className={getThemeTextColor('secondary')}>
-                Progress: {Math.round((goal.achieved.length / (goal.achieved.length + goal.notAchieved.length)) * 100)}%
+                Progress: {Math.round((goal.members.filter(m => m.currentSeconds >= goal.goalSeconds).length / goal.members.length) * 100)}%
               </span>
             </div>
           </div>
