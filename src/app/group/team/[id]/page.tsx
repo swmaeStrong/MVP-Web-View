@@ -6,9 +6,9 @@ import GroundRules from '@/components/group/GroundRules';
 import TeamCard from '@/components/group/TeamCard';
 import TeamLeaderboard from '@/components/group/TeamLeaderboard';
 import TodayGoals from '@/components/group/TodayGoals';
-import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
 import { useUpdateGroup } from '@/hooks/group/useGroupSettings';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
+import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { useCurrentUser } from '@/stores/userStore';
@@ -214,7 +214,7 @@ export default function TeamDetailPage() {
         <CardContent className="px-6 w-full">
           <div className="flex items-center justify-center relative w-full">
             {/* Date Navigation - 중앙 정렬 */}
-            <div className="flex justify-center">
+            <div className={`flex justify-center ${selectedPeriod === 'weekly' ? 'pr-12' : ''}`}>
               <DateNavigation
                 currentDate={selectedDate}
                 onPrevious={() => handleDateChange('prev')}
