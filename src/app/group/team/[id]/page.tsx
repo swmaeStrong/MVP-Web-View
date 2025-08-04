@@ -104,7 +104,7 @@ export default function TeamDetailPage() {
 
 
   // 최소 날짜 제한 (8월 1일)
-  const MIN_DATE = '2025-07-01';
+  const MIN_DATE = '2025-08-01';
   
   // 리더보드 멤버 데이터
   const leaderboardMembers = leaderboardData?.members || [];
