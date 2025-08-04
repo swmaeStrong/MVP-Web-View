@@ -8,6 +8,7 @@ import TeamLeaderboard from '@/components/group/TeamLeaderboard';
 import TodayGoals from '@/components/group/TodayGoals';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
 import { useUpdateGroup } from '@/hooks/group/useGroupSettings';
+import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { useCurrentUser } from '@/stores/userStore';
@@ -20,6 +21,9 @@ export default function TeamDetailPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const params = useParams();
   const currentUser = useCurrentUser();
+  
+  // Save current tab as last visited
+  useLastGroupTab();
   
   const teamId = Array.isArray(params.id) ? params.id[0] : params.id;
   const groupId = teamId ? parseInt(teamId, 10) : 0;

@@ -4,6 +4,7 @@ import { GroundRulesInput } from '@/components/forms/GroundRulesInput';
 import { GroupNameInput } from '@/components/forms/GroupNameInput';
 import { GROUP_VALIDATION_MESSAGES } from '@/config/constants';
 import { useGroupNameValidation, useCreateGroupWithToast } from '@/hooks/group/useCreateGroup';
+import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { CreateGroupFormData, createGroupSchema } from '@/schemas/groupSchema';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
@@ -24,6 +25,9 @@ import { Textarea } from '../../../shadcn/ui/textarea';
 export default function CreateGroupPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const router = useRouter();
+  
+  // Save current tab as last visited
+  useLastGroupTab();
   
   const form = useForm<CreateGroupFormData>({
     resolver: zodResolver(createGroupSchema),

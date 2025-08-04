@@ -3,6 +3,7 @@
 import { myGroupsQueryKey } from '@/config/constants/query-keys';
 import { useMyGroups } from '@/hooks/queries/useMyGroups';
 import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
+import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useGroupSearch } from '@/hooks/ui/useGroupSearch';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
@@ -28,6 +29,9 @@ export default function FindTeamPage() {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'public' | 'private'>('all');
+  
+  // Save current tab as last visited
+  useLastGroupTab();
   const [sortBy, setSortBy] = useState<'created' | 'name'>('name');
   const [selectedGroup, setSelectedGroup] = useState<Group.GroupApiResponse | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);

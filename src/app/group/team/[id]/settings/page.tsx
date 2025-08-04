@@ -5,6 +5,7 @@ import StateDisplay from '@/components/common/StateDisplay';
 import { GroupNameInput } from '@/components/forms/GroupNameInput';
 import { GROUP_VALIDATION_MESSAGES } from '@/config/constants';
 import { useBanMember, useDeleteGroup, useLeaveGroup, useTransferOwnership, useUpdateGroup } from '@/hooks/group/useGroupSettings';
+import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { UpdateGroupFormData, updateGroupSchema } from '@/schemas/groupSchema';
@@ -35,6 +36,9 @@ export default function GroupSettingsPage() {
   const [showTransferDialog, setShowTransferDialog] = React.useState(false);
   const [selectedMember, setSelectedMember] = React.useState<Group.GroupUserInfo | null>(null);
   const [banReason, setBanReason] = React.useState('');
+  
+  // Save current tab as last visited
+  useLastGroupTab();
   
   const groupId = Array.isArray(params.id) ? parseInt(params.id[0], 10) : parseInt(params.id as string, 10);
 
