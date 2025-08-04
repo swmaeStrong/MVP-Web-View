@@ -1,6 +1,7 @@
 'use client';
 
 import ConfirmDialog from '@/components/common/ConfirmDialog';
+import PageLoader from '@/components/common/PageLoader';
 import StateDisplay from '@/components/common/StateDisplay';
 import { GroupNameInput } from '@/components/forms/GroupNameInput';
 import { GROUP_VALIDATION_MESSAGES } from '@/config/constants';
@@ -19,7 +20,7 @@ import { Input } from '@/shadcn/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { useCurrentUser } from '@/stores/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Copy, Crown, Globe, Hash, Lock, MoreVertical, Plus, Save, Settings, Trash2, UserMinus, Users, X } from 'lucide-react';
+import { Copy, Crown, Globe, Hash, Lock, MoreVertical, Plus, Save, Trash2, UserMinus, Users, X } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
@@ -196,14 +197,7 @@ export default function GroupSettingsPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Settings className="h-8 w-8 animate-spin text-blue-500" />
-          <p className={`text-lg ${getThemeTextColor('primary')}`}>
-            Loading group settings...
-          </p>
-        </div>
-      </div>
+      <PageLoader message="Loading group information..." />
     );
   }
 

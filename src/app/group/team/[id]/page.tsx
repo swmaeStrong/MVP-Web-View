@@ -15,9 +15,9 @@ import { getGroupLeaderboard } from '@/shared/api/get';
 import { useCurrentUser } from '@/stores/userStore';
 import { getKSTDateString, getMondayOfWeek } from '@/utils/timezone';
 import { useQuery } from '@tanstack/react-query';
-import { RefreshCw } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
+import PageLoader from '../../../../components/common/PageLoader';
 
 export default function TeamDetailPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
@@ -223,14 +223,7 @@ export default function TeamDetailPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <RefreshCw className="h-8 w-8 animate-spin text-blue-500" />
-          <p className={`text-lg ${getThemeTextColor('primary')}`}>
-            Loading group information...
-          </p>
-        </div>
-      </div>
+      <PageLoader message="Loading group information..." />
     );
   }
 
