@@ -44,5 +44,11 @@ declare namespace Group {
 		userId: string,
 	}
 
+	interface SetGroupGoalApiRequest {
+		category: 'Development' | 'Design' | 'Documentation' | 'Education',
+		goalSeconds: number,
+		period: 'DAILY' | 'WEEKLY',
+	}
+
 }
   
