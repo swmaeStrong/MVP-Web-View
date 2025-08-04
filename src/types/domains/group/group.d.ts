@@ -67,5 +67,28 @@ declare namespace Group {
 		members: GroupGoalMember[],
 	}
 
+	interface GroupLeaderboardMember {
+		userId: string,
+		nickname: string,
+		profileImageUrl: string,
+		score: number,
+		rank: number,
+		isOnline: boolean,
+		lastActivityTime: number,
+		details: {
+			category: string,
+			score: number,
+		}[],
+	}
+
+	interface GroupLeaderboardApiResponse {
+		groupId: number,
+		groupName: string,
+		category: string,
+		periodType: 'DAILY' | 'WEEKLY',
+		date: string,
+		members: GroupLeaderboardMember[],
+	}
+
 }
   

@@ -142,3 +142,9 @@ export const searchGroups = () =>
   parseApi<Group.GroupApiResponse[]>(
     API.get('/group/search')
   );
+
+// 그룹 리더보드 조회
+export const getGroupLeaderboard = (groupId: number, date: string = getKSTDateString()) =>
+  parseApi<Group.GroupLeaderboardApiResponse>(
+    API.get(`/group/${groupId}/leaderboard?date=${date}`)
+  );

@@ -16,6 +16,8 @@ import { getKSTDateString, getKSTDateStringDaysAgo, getMondayOfWeek } from '@/ut
 import { RefreshCw } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getGroupLeaderboard } from '@/shared/api/get';
 
 export default function TeamDetailPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
@@ -35,6 +37,14 @@ export default function TeamDetailPage() {
   const { data: groupDetail, isLoading, error, refetch } = useGroupDetail({
     groupId,
     enabled: !!groupId,
+  });
+
+  // 그룹 리더보드 조회
+  const { data: leaderboardData, isLoading: isLeaderboardLoading } = useQuery({
+    queryKey: ['groupLeaderboard', groupId, selectedDate],
+    queryFn: () => getGroupLeaderboard(groupId, selectedDate),
+    enabled: !!groupId,
+    retry: 1,
   });
 
   // 현재 사용자가 그룹장인지 확인
@@ -84,21 +94,8 @@ export default function TeamDetailPage() {
     return dates;
   }, []);
 
-  // Mock data for leaderboard and goals (will be replaced with actual API calls later)
-  const mockLeaderboard = [
-    { rank: 1, name: 'John Doe', score: 95, hours: 32 },
-    { rank: 2, name: 'Sarah Wilson', score: 88, hours: 30 },
-    { rank: 3, name: 'Mike Johnson', score: 85, hours: 35 },
-    { rank: 4, name: 'Jane Smith', score: 82, hours: 28 },
-    { rank: 5, name: 'Tom Brown', score: 78, hours: 25 },
-    { rank: 6, name: 'Alice Kim', score: 75, hours: 22 },
-    { rank: 1, name: 'John Doe', score: 95, hours: 32 },
-    { rank: 2, name: 'Sarah Wilson', score: 88, hours: 30 },
-    { rank: 3, name: 'Mike Johnson', score: 85, hours: 35 },
-    { rank: 4, name: 'Jane Smith', score: 82, hours: 28 },
-    { rank: 5, name: 'Tom Brown', score: 78, hours: 25 },
-    { rank: 6, name: 'Alice Kim', score: 75, hours: 22 },
-  ];
+  // 리더보드 멤버 데이터
+  const leaderboardMembers = leaderboardData?.members || [];
 
 
 
@@ -259,7 +256,10 @@ export default function TeamDetailPage() {
       </Card>
 
       {/* 좌측 하단 - 리더보드 (3/5) */}
-      <TeamLeaderboard members={mockLeaderboard} />
+      <TeamLeaderboard 
+        members={leaderboardMembers} 
+        isLoading={isLeaderboardLoading}
+      />
 
       {/* 우측 하단 - 오늘의 목표 설정 (2/5) */}
       <TodayGoals 
