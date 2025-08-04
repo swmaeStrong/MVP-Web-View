@@ -12,7 +12,7 @@ import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { useCurrentUser } from '@/stores/userStore';
-import { getKSTDateString, getKSTDateStringDaysAgo } from '@/utils/timezone';
+import { getKSTDateString, getKSTDateStringDaysAgo, getMondayOfWeek } from '@/utils/timezone';
 import { RefreshCw } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
@@ -136,9 +136,15 @@ export default function TeamDetailPage() {
       return dateString; // 이미 YYYY-MM-DD 형식
     } else {
       const date = new Date(dateString);
+      const dayOfWeek = date.getDay(); // 0=Sunday, 1=Monday, ...
+      const daysFromMonday = (dayOfWeek + 6) % 7; // Days elapsed from Monday
+      
+      // 월요일 찾기
       const startOfWeek = new Date(date);
-      const endOfWeek = new Date(date);
-      startOfWeek.setDate(date.getDate() - date.getDay());
+      startOfWeek.setDate(date.getDate() - daysFromMonday);
+      
+      // 일요일 찾기 (월요일로부터 6일 후)
+      const endOfWeek = new Date(startOfWeek);
       endOfWeek.setDate(startOfWeek.getDate() + 6);
       
       const formatDateToString = (d: Date) => {
@@ -255,6 +261,7 @@ export default function TeamDetailPage() {
         isGroupOwner={isGroupOwner ?? false} 
         groupMembers={groupDetail ? [groupDetail.owner, ...groupDetail.members] : []}
         selectedPeriod={selectedPeriod}
+        date={selectedPeriod === 'weekly' ? getMondayOfWeek(selectedDate) : selectedDate}
       />
     </div>
   );

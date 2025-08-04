@@ -158,3 +158,16 @@ export const getKSTWeeklyDateString = (weeksAgo: number): string => {
 
   return mondayOfWeek.toISOString().split('T')[0];
 };
+
+/**
+ * Return Monday date string of the week containing the given date.
+ * Used for converting any date to its corresponding Monday (start of week).
+ */
+export const getMondayOfWeek = (dateString: string): string => {
+  const date = new Date(dateString + 'T00:00:00Z'); // Parse as UTC
+  const dayOfWeek = date.getUTCDay(); // 0=Sunday, 1=Monday, ...
+  const daysFromMonday = (dayOfWeek + 6) % 7; // Days elapsed from Monday
+  const mondayOfWeek = new Date(date.getTime() - daysFromMonday * 24 * 60 * 60 * 1000);
+  
+  return mondayOfWeek.toISOString().split('T')[0];
+};
