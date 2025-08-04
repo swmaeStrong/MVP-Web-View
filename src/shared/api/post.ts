@@ -38,3 +38,9 @@ export const joinGroup = (groupId: number) =>
   parseApi(
     API.post(`/group/${groupId}/join`)
 );
+
+// 그룹 목표 설정
+export const setGroupGoal = (groupId: number, request: Group.SetGroupGoalApiRequest) =>
+  parseApi(
+    API.post(`/group/${groupId}/goal`, request)
+  );
