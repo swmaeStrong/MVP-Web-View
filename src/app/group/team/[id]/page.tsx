@@ -6,24 +6,20 @@ import GroundRules from '@/components/group/GroundRules';
 import TeamCard from '@/components/group/TeamCard';
 import TeamLeaderboard from '@/components/group/TeamLeaderboard';
 import TodayGoals from '@/components/group/TodayGoals';
-import { groupDetailQueryKey } from '@/config/constants/query-keys';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
+import { useUpdateGroup } from '@/hooks/group/useGroupSettings';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { updateGroup } from '@/shared/api/patch';
 import { useCurrentUser } from '@/stores/userStore';
 import { getKSTDateString, getKSTDateStringDaysAgo } from '@/utils/timezone';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { RefreshCw } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
-import toast from 'react-hot-toast';
 
 export default function TeamDetailPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const params = useParams();
   const currentUser = useCurrentUser();
-  const queryClient = useQueryClient();
   
   const teamId = Array.isArray(params.id) ? params.id[0] : params.id;
   const groupId = teamId ? parseInt(teamId, 10) : 0;
@@ -41,20 +37,7 @@ export default function TeamDetailPage() {
   const isGroupOwner = groupDetail && currentUser && groupDetail.owner.userId === currentUser.id;
 
   // 그룹 정보 업데이트 mutation
-  const updateGroupMutation = useMutation({
-    mutationFn: (request: Group.UpdateGroupApiRequest) => updateGroup(groupId, request),
-    onSuccess: () => {
-      // 성공 시 그룹 상세 정보 다시 조회
-      queryClient.invalidateQueries({
-        queryKey: groupDetailQueryKey(groupId),
-      });
-      toast.success('Group information updated successfully.');
-    },
-    onError: (error) => {
-      console.error('Failed to update group:', error);
-      toast.error('Failed to update group information.');
-    },
-  });
+  const updateGroupMutation = useUpdateGroup(groupId);
 
   // 그룹 설명 업데이트
   const handleDescriptionUpdate = async (newDescription: string) => {

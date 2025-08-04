@@ -83,10 +83,10 @@ const UserCard = memo(function UserCard({
               userStats={{
                 nickname: user.nickname,
                 currentStreak: Math.floor(Math.random() * 30) + 1, // Mock data - replace with actual API
-                totalScore: user.score * 10 + Math.floor(Math.random() * 1000), // Mock data
+                maxStreak: Math.floor(Math.random() * 50) + 30, // Mock data
+                totalPomodoroScore: Math.floor(Math.random() * 1200) + 800, // Mock data
                 totalSessions: Math.floor(Math.random() * 50) + 10, // Mock data
                 rank: rank,
-                workTime: category === 'work' ? formatScoreToMinutes(user.score) : formatTime(user.score)
               }}
               side="top"
               align="start"

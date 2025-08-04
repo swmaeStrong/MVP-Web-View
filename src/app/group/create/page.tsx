@@ -2,8 +2,8 @@
 
 import { GroundRulesInput } from '@/components/forms/GroundRulesInput';
 import { GroupNameInput } from '@/components/forms/GroupNameInput';
-import { groupNameCheckQueryKey, myGroupsQueryKey, GROUP_VALIDATION_MESSAGES, GROUP_ACTION_MESSAGES } from '@/config/constants';
-import { useDebounce } from '@/hooks/ui/useDebounce';
+import { GROUP_VALIDATION_MESSAGES } from '@/config/constants';
+import { useGroupNameValidation, useCreateGroupWithToast } from '@/hooks/group/useCreateGroup';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { CreateGroupFormData, createGroupSchema } from '@/schemas/groupSchema';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
@@ -13,10 +13,7 @@ import { Card, CardContent } from '@/shadcn/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
 import { Input } from '@/shadcn/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
-import { validateGroupName } from '@/shared/api/get';
-import { createGroup } from '@/shared/api/post';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Globe, Hash, Lock, Plus, Target, TrendingUp, Users, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -27,7 +24,6 @@ import { Textarea } from '../../../shadcn/ui/textarea';
 export default function CreateGroupPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const router = useRouter();
-  const queryClient = useQueryClient();
   
   const form = useForm<CreateGroupFormData>({
     resolver: zodResolver(createGroupSchema),
@@ -43,20 +39,11 @@ export default function CreateGroupPage() {
   const { watch, setValue, getValues } = form;
   const watchedValues = watch();
   
-  // 그룹 이름 디바운스 및 중복 검사
-  const debouncedGroupName = useDebounce(watchedValues.groupName, 500);
+  // 그룹 이름 중복 검사
+  const { data: isNameAvailable, isLoading: isCheckingName } = useGroupNameValidation(watchedValues.groupName);
   
-  const { data: isNameAvailable, isLoading: isCheckingName } = useQuery({
-    queryKey: groupNameCheckQueryKey(debouncedGroupName),
-    queryFn: () => validateGroupName(debouncedGroupName),
-    enabled: debouncedGroupName.length >= 1,
-  });
-  
-
-  // 그룹 생성 mutation
-  const createGroupMutation = useMutation({
-    mutationFn: createGroup,
-  });
+  // 그룹 생성
+  const { createGroupWithToast, isLoading: isCreatingGroup } = useCreateGroupWithToast();
 
   // Add tag handler
   const handleAddTag = (newTag: string) => {
@@ -115,43 +102,7 @@ export default function CreateGroupPage() {
       description: values.description,
     };
     
-    // react-hot-toast의 promise를 직접 사용
-    toast.promise(
-      createGroup(request),
-      {
-        loading: GROUP_ACTION_MESSAGES.CREATE.LOADING,
-        success: GROUP_ACTION_MESSAGES.CREATE.SUCCESS,
-        error: (err: any) => {
-          console.error('Failed to create group:', err);
-          
-          // 에러 메시지 추출
-          if (err?.message) {
-            return err.message;
-          } else if (err?.response?.data?.message) {
-            return err.response.data.message;
-          } else if (typeof err === 'string') {
-            return err;
-          }
-          
-          return GROUP_ACTION_MESSAGES.CREATE.ERROR;
-        },
-      },
-      {
-        id: 'create-group', // 중복 토스트 방지
-      }
-    ).then(() => {
-      // 성공 시 내 그룹 목록을 무효화하고 다시 가져오기
-      queryClient.invalidateQueries({
-        queryKey: myGroupsQueryKey(),
-      });
-      
-      // 성공 시 그룹 찾기 페이지로 이동
-      setTimeout(() => {
-        router.push('/group/find');
-      }, 1000);
-    }).catch(() => {
-      // 에러는 이미 토스트로 표시됨
-    });
+    await createGroupWithToast(request);
   };
 
   return (
@@ -328,9 +279,9 @@ export default function CreateGroupPage() {
                   <Button
                     type="submit"
                     className="flex-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
-                    disabled={form.formState.isSubmitting || isNameAvailable === false || isCheckingName}
+                    disabled={form.formState.isSubmitting || isCreatingGroup || isNameAvailable === false || isCheckingName}
                   >
-                    {form.formState.isSubmitting ? 'Creating...' : 'Create Group'}
+                    {form.formState.isSubmitting || isCreatingGroup ? 'Creating...' : 'Create Group'}
                   </Button>
                 </div>
               </form>

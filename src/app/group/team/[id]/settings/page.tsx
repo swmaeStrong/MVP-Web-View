@@ -3,8 +3,9 @@
 import StateDisplay from '@/components/common/StateDisplay';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import { GroupNameInput } from '@/components/forms/GroupNameInput';
-import { groupDetailQueryKey, myGroupsQueryKey, GROUP_VALIDATION_MESSAGES, GROUP_ACTION_MESSAGES } from '@/config/constants';
+import { GROUP_VALIDATION_MESSAGES } from '@/config/constants';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
+import { useUpdateGroup, useDeleteGroup, useBanMember, useLeaveGroup, useTransferOwnership } from '@/hooks/group/useGroupSettings';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { updateGroupSchema, UpdateGroupFormData } from '@/schemas/groupSchema';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
@@ -15,11 +16,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
 import { Input } from '@/shadcn/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
-import { updateGroup, transferGroupOwnership } from '@/shared/api/patch';
-import { deleteGroup, leaveGroup, banGroupMember } from '@/shared/api/delete';
 import { useCurrentUser } from '@/stores/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Copy, Crown, Globe, Hash, Lock, MoreVertical, Plus, Save, Settings, Trash2, UserMinus, Users, X } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -32,7 +30,6 @@ export default function GroupSettingsPage() {
   const router = useRouter();
   const params = useParams();
   const currentUser = useCurrentUser();
-  const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [showBanDialog, setShowBanDialog] = React.useState(false);
   const [showTransferDialog, setShowTransferDialog] = React.useState(false);
@@ -50,24 +47,12 @@ export default function GroupSettingsPage() {
   // 권한 확인 - 그룹장만 접근 가능
   const isGroupOwner = groupDetail && currentUser && groupDetail.owner.userId === currentUser.id;
 
-  // 그룹 정보 업데이트 mutation
-  const updateGroupMutation = useMutation({
-    mutationFn: (request: Group.UpdateGroupApiRequest) => updateGroup(groupId, request),
-    onSuccess: () => {
-      // 성공 시 그룹 상세 정보 및 사이드바 다시 조회
-      queryClient.invalidateQueries({
-        queryKey: groupDetailQueryKey(groupId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: myGroupsQueryKey(),
-      });
-      toast.success(GROUP_ACTION_MESSAGES.UPDATE.SUCCESS);
-    },
-    onError: (error) => {
-      console.error('Failed to update group:', error);
-      toast.error(GROUP_ACTION_MESSAGES.UPDATE.ERROR);
-    },
-  });
+  // Group mutations
+  const updateGroupMutation = useUpdateGroup(groupId);
+  const deleteGroupMutation = useDeleteGroup(groupId);
+  const banMemberMutation = useBanMember(groupId);
+  const leaveGroupMutation = useLeaveGroup(groupId);
+  const transferOwnershipMutation = useTransferOwnership(groupId);
 
   const form = useForm<UpdateGroupFormData>({
     resolver: zodResolver(updateGroupSchema),
@@ -154,24 +139,6 @@ export default function GroupSettingsPage() {
     }
   };
 
-  // 그룹 삭제 mutation
-  const deleteGroupMutation = useMutation({
-    mutationFn: () => deleteGroup(groupId.toString()),
-    onSuccess: () => {
-      // 성공 시 그룹 목록 쿼리 무효화
-      queryClient.invalidateQueries({
-        queryKey: myGroupsQueryKey(),
-      });
-      toast.success(GROUP_ACTION_MESSAGES.DELETE.SUCCESS);
-      // 그룹 찾기 페이지로 이동
-      router.push('/group/find');
-    },
-    onError: (error) => {
-      console.error('Failed to delete group:', error);
-      toast.error(GROUP_ACTION_MESSAGES.DELETE.ERROR);
-    },
-  });
-
   // 그룹 삭제 핸들러
   const handleDeleteGroup = async () => {
     try {
@@ -182,44 +149,6 @@ export default function GroupSettingsPage() {
     }
   };
 
-  // 멤버 추방 mutation
-  const banMemberMutation = useMutation({
-    mutationFn: ({ userId, reason }: { userId: string; reason: string }) => 
-      banGroupMember(groupId, userId, reason),
-    onSuccess: () => {
-      // 성공 시 그룹 상세 정보 다시 조회
-      queryClient.invalidateQueries({
-        queryKey: groupDetailQueryKey(groupId),
-      });
-      toast.success('Member has been removed from the group');
-      setShowBanDialog(false);
-      setSelectedMember(null);
-      setBanReason('');
-    },
-    onError: (error) => {
-      console.error('Failed to ban member:', error);
-      toast.error('Failed to remove member');
-    },
-  });
-
-  // 그룹 탈퇴 mutation (멤버용)
-  const leaveGroupMutation = useMutation({
-    mutationFn: () => leaveGroup(groupId.toString()),
-    onSuccess: () => {
-      // 성공 시 그룹 목록 쿼리 무효화
-      queryClient.invalidateQueries({
-        queryKey: myGroupsQueryKey(),
-      });
-      toast.success('Successfully left the group');
-      // 그룹 찾기 페이지로 이동
-      router.push('/group/find');
-    },
-    onError: (error) => {
-      console.error('Failed to leave group:', error);
-      toast.error('Failed to leave the group');
-    },
-  });
-
   // 멤버 추방 핸들러
   const handleBanMember = async (reason?: string) => {
     if (!selectedMember || !reason?.trim()) return;
@@ -229,6 +158,9 @@ export default function GroupSettingsPage() {
         userId: selectedMember.userId,
         reason: reason.trim(),
       });
+      setShowBanDialog(false);
+      setSelectedMember(null);
+      setBanReason('');
     } catch (error) {
       // 에러는 mutation에서 이미 toast로 표시됨
     }
@@ -244,36 +176,14 @@ export default function GroupSettingsPage() {
     }
   };
 
-  // 소유권 이전 mutation
-  const transferOwnershipMutation = useMutation({
-    mutationFn: (userId: string) => 
-      transferGroupOwnership(groupId, { userId }),
-    onSuccess: () => {
-      // 성공 시 그룹 상세 정보 다시 조회
-      queryClient.invalidateQueries({
-        queryKey: groupDetailQueryKey(groupId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: myGroupsQueryKey(),
-      });
-      toast.success('Group ownership has been transferred successfully');
-      setShowTransferDialog(false);
-      setSelectedMember(null);
-      // 그룹 페이지로 리다이렉트 (더 이상 관리자가 아니므로)
-      router.push(`/group/team/${groupId}`);
-    },
-    onError: (error) => {
-      console.error('Failed to transfer ownership:', error);
-      toast.error('Failed to transfer group ownership');
-    },
-  });
-
   // 소유권 이전 핸들러
   const handleTransferOwnership = async () => {
     if (!selectedMember) return;
     
     try {
       await transferOwnershipMutation.mutateAsync(selectedMember.userId);
+      setShowTransferDialog(false);
+      setSelectedMember(null);
     } catch (error) {
       // 에러는 mutation에서 이미 toast로 표시됨
     }
