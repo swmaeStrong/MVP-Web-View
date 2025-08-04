@@ -92,6 +92,12 @@ export default function TeamDetailPage() {
     { rank: 4, name: 'Jane Smith', score: 82, hours: 28 },
     { rank: 5, name: 'Tom Brown', score: 78, hours: 25 },
     { rank: 6, name: 'Alice Kim', score: 75, hours: 22 },
+    { rank: 1, name: 'John Doe', score: 95, hours: 32 },
+    { rank: 2, name: 'Sarah Wilson', score: 88, hours: 30 },
+    { rank: 3, name: 'Mike Johnson', score: 85, hours: 35 },
+    { rank: 4, name: 'Jane Smith', score: 82, hours: 28 },
+    { rank: 5, name: 'Tom Brown', score: 78, hours: 25 },
+    { rank: 6, name: 'Alice Kim', score: 75, hours: 22 },
   ];
 
 
