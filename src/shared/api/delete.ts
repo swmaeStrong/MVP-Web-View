@@ -16,3 +16,10 @@ export const banGroupMember = (groupId: number, userId: string, reason: string) 
       }
     })
   );
+
+export const deleteGroupGoal = (groupId: number, request: Group.DeleteGroupGoalApiRequest) =>
+  parseApi<void>(
+    API.delete(`/group/${groupId}/goal`, {
+      data: request
+    })
+  );

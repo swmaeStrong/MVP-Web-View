@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useGroupGoals } from '@/hooks/group/useGroupGoals';
 import { useSetGroupGoal } from '@/hooks/group/useSetGroupGoal';
+import { useDeleteGroupGoal } from '@/hooks/group/useDeleteGroupGoal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
@@ -15,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/shadcn/ui/separator';
 import { spacing } from '@/styles/design-system';
 import { getKSTDateString } from '@/utils/timezone';
-import { Edit3, Plus } from 'lucide-react';
+import { Edit3, Plus, Trash2, Check, X } from 'lucide-react';
 import MemberListDialog from './MemberListDialog';
 
 interface TodayGoalsProps {
@@ -26,6 +27,7 @@ interface TodayGoalsProps {
 
 export default function TodayGoals({ groupId, isGroupOwner, date = getKSTDateString() }: TodayGoalsProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
+  const [isEditing, setIsEditing] = useState(false);
   const [showAddGoalDialog, setShowAddGoalDialog] = useState(false);
   const [showMemberDialog, setShowMemberDialog] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<Group.GroupGoalsApiResponse | null>(null);
@@ -39,6 +41,7 @@ export default function TodayGoals({ groupId, isGroupOwner, date = getKSTDateStr
   // API hooks
   const { data: groupGoals = [], isLoading, refetch } = useGroupGoals({ groupId, date });
   const setGoalMutation = useSetGroupGoal(groupId);
+  const deleteGoalMutation = useDeleteGroupGoal(groupId);
 
   const getAvatarInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('');
@@ -97,6 +100,11 @@ export default function TodayGoals({ groupId, isGroupOwner, date = getKSTDateStr
       setNewGoalPeriod('DAILY');
       setShowAddGoalDialog(false);
       
+      // Exit edit mode after adding
+      if (isEditing) {
+        setIsEditing(false);
+      }
+      
       // Refetch goals
       refetch();
     } catch (error) {
@@ -108,6 +116,33 @@ export default function TodayGoals({ groupId, isGroupOwner, date = getKSTDateStr
     setSelectedGoal(goal);
     setSelectedType(type);
     setShowMemberDialog(true);
+  };
+
+  const handleDeleteGoal = async (goal: Group.GroupGoalsApiResponse) => {
+    try {
+      await deleteGoalMutation.mutateAsync({
+        category: goal.category,
+        period: goal.periodType
+      });
+    } catch (error) {
+      // Error is handled by the mutation hook
+    }
+  };
+
+  const handleStartEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleAddGoalInEdit = () => {
+    setShowAddGoalDialog(true);
   };
   
   const formatTime = (seconds: number) => {
@@ -147,15 +182,43 @@ export default function TodayGoals({ groupId, isGroupOwner, date = getKSTDateStr
         <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
           Today's Goal
         </div>
-        {isGroupOwner && (
+        {isGroupOwner && !isEditing && (
           <Button
             size="sm"
             variant="ghost"
-            onClick={() => setShowAddGoalDialog(true)}
+            onClick={handleStartEdit}
             className={`absolute right-0 h-8 w-8 p-0 ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')}`}
           >
-            <Plus className="h-4 w-4" />
+            <Edit3 className="h-4 w-4" />
           </Button>
+        )}
+        {isGroupOwner && isEditing && (
+          <div className="absolute right-0 flex gap-1">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleAddGoalInEdit}
+              className={`h-8 w-8 p-0 ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')}`}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleSaveEdit}
+              className={`h-8 w-8 p-0 ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')} hover:text-green-500`}
+            >
+              <Check className="h-4 w-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleCancelEdit}
+              className={`h-8 w-8 p-0 ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')} hover:text-red-500`}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         )}
       </CardHeader>
       <CardContent className={spacing.inner.normal}>
@@ -163,7 +226,7 @@ export default function TodayGoals({ groupId, isGroupOwner, date = getKSTDateStr
         <div className="space-y-4">
           {groupGoals.length === 0 ? (
             <div className={`text-center py-8 ${getThemeTextColor('secondary')}`}>
-              {isGroupOwner ? 'No goals set yet. Click + to add a goal.' : 'No goals have been set by the group owner.'}
+              {isGroupOwner ? (isEditing ? 'No goals set yet. Click + to add a goal.' : 'No goals set yet. Click Edit to manage goals.') : 'No goals have been set by the group owner.'}
             </div>
           ) : (
             <div className="space-y-4">
@@ -199,14 +262,25 @@ export default function TodayGoals({ groupId, isGroupOwner, date = getKSTDateStr
                         <span className={`text-xs font-medium ${getThemeTextColor('secondary')}`}>
                           {achievedMembers.length}/{totalMembers}
                         </span>
+                        {isGroupOwner && isEditing && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDeleteGoal(goal)}
+                            disabled={deleteGoalMutation.isPending}
+                            className={`h-6 w-6 p-0 ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')} hover:text-red-500`}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        )}
                       </div>
                     </div>
                     
                     <div className="flex gap-4 mt-3">
                       {/* 달성한 사람들 */}
                       <div 
-                        className="flex-1 cursor-pointer group p-2 -m-2"
-                        onClick={() => handleShowMemberList(goal, 'achieved')}
+                        className={`flex-1 ${!isEditing ? 'cursor-pointer' : 'cursor-default'} group p-2 -m-2`}
+                        onClick={!isEditing ? () => handleShowMemberList(goal, 'achieved') : undefined}
                       >
                         <div className="flex items-center gap-2 mb-2">
                           <span className={`text-xs font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100`}>
@@ -222,8 +296,8 @@ export default function TodayGoals({ groupId, isGroupOwner, date = getKSTDateStr
 
                       {/* 달성하지 못한 사람들 */}
                       <div 
-                        className="flex-1 cursor-pointer group p-2 -m-2"
-                        onClick={() => handleShowMemberList(goal, 'notAchieved')}
+                        className={`flex-1 ${!isEditing ? 'cursor-pointer' : 'cursor-default'} group p-2 -m-2`}
+                        onClick={!isEditing ? () => handleShowMemberList(goal, 'notAchieved') : undefined}
                       >
                         <div className="flex items-center gap-2 mb-2">
                           <span className={`text-xs font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100`}>

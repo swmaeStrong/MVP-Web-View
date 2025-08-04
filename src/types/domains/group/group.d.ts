@@ -50,6 +50,11 @@ declare namespace Group {
 		period: 'DAILY' | 'WEEKLY',
 	}
 
+	interface DeleteGroupGoalApiRequest {
+		category: string,
+		period: string,
+	}
+
 	interface GroupGoalMember {
 		userId: string,
 		currentSeconds: number,
