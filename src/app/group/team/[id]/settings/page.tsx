@@ -1,13 +1,13 @@
 'use client';
 
-import StateDisplay from '@/components/common/StateDisplay';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
+import StateDisplay from '@/components/common/StateDisplay';
 import { GroupNameInput } from '@/components/forms/GroupNameInput';
 import { GROUP_VALIDATION_MESSAGES } from '@/config/constants';
+import { useBanMember, useDeleteGroup, useLeaveGroup, useTransferOwnership, useUpdateGroup } from '@/hooks/group/useGroupSettings';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
-import { useUpdateGroup, useDeleteGroup, useBanMember, useLeaveGroup, useTransferOwnership } from '@/hooks/group/useGroupSettings';
 import { useTheme } from '@/hooks/ui/useTheme';
-import { updateGroupSchema, UpdateGroupFormData } from '@/schemas/groupSchema';
+import { UpdateGroupFormData, updateGroupSchema } from '@/schemas/groupSchema';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
@@ -316,7 +316,11 @@ export default function GroupSettingsPage() {
               <CardContent>
                 <div className="space-y-2">
                   {/* 그룹장 */}
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                  <div className={`flex items-center justify-between p-3 rounded-lg ${
+                    currentUser && groupDetail.owner.userId === currentUser.id
+                      ? 'bg-gray-50 dark:bg-gray-800'
+                      : ''
+                  }`}>
                     <div className="flex items-center gap-3">
                       <Avatar className="w-10 h-10">
                         <AvatarFallback className={`text-sm font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
@@ -336,11 +340,18 @@ export default function GroupSettingsPage() {
                   </div>
                   
                   {/* 일반 멤버 */}
-                  {groupDetail.members.filter(member => member.userId !== groupDetail.owner.userId).map((member) => (
-                    <div key={member.userId} className="flex items-center justify-between p-3 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="w-10 h-10">
-                          <AvatarFallback className={`text-sm font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+                  {groupDetail.members.filter(member => member.userId !== groupDetail.owner.userId).map((member) => {
+                    const isCurrentUser = currentUser && member.userId === currentUser.id;
+                    
+                    return (
+                      <div key={member.userId} className={`flex items-center justify-between p-3 rounded-lg ${
+                        isCurrentUser
+                          ? 'bg-gray-50 dark:bg-gray-800'
+                          : ''
+                      }`}>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="w-10 h-10">
+                            <AvatarFallback className={`text-sm font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
                             {member.nickname.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
@@ -354,8 +365,9 @@ export default function GroupSettingsPage() {
                         </div>
                       </div>
                       <Users className="h-5 w-5 text-gray-400" />
-                    </div>
-                  ))}
+                      </div>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -641,7 +653,11 @@ export default function GroupSettingsPage() {
             <CardContent>
               <div className="space-y-2">
                 {/* 그룹장 */}
-                <div className="flex items-center justify-between p-2 rounded-lg">
+                <div className={`flex items-center justify-between p-2 rounded-lg ${
+                  currentUser && groupDetail.owner.userId === currentUser.id
+                    ? 'bg-gray-50 dark:bg-gray-800'
+                    : ''
+                }`}>
                   <div className="flex items-center gap-3">
                     <Avatar className="w-8 h-8">
                       <AvatarFallback className={`text-xs font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
@@ -666,23 +682,30 @@ export default function GroupSettingsPage() {
                 </div>
                 
                 {/* 일반 멤버 */}
-                {groupDetail.members.filter(member => member.userId !== groupDetail.owner.userId).map((member) => (
-                  <div key={member.userId} className="flex items-center justify-between p-2 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="w-8 h-8">
-                        <AvatarFallback className={`text-xs font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                          {member.nickname.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                          {member.nickname}
-                        </div>
-                        <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                          Member
+                {groupDetail.members.filter(member => member.userId !== groupDetail.owner.userId).map((member) => {
+                  const isCurrentUser = currentUser && member.userId === currentUser.id;
+                  
+                  return (
+                    <div key={member.userId} className={`flex items-center justify-between p-2 rounded-lg ${
+                      isCurrentUser
+                        ? 'bg-gray-50 dark:bg-gray-800'
+                        : ''
+                    }`}>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="w-8 h-8">
+                          <AvatarFallback className={`text-xs font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+                            {member.nickname.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                            {member.nickname}
+                          </div>
+                          <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                            Member
+                          </div>
                         </div>
                       </div>
-                    </div>
                     
                     <div className="flex items-center">
                       <DropdownMenu>
@@ -716,9 +739,10 @@ export default function GroupSettingsPage() {
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
