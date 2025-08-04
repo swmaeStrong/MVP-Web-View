@@ -31,25 +31,29 @@ export default function TeamDetailPage() {
   const groupId = teamId ? parseInt(teamId, 10) : 0;
 
   const [selectedPeriod, setSelectedPeriod] = useState<'daily' | 'weekly'>('daily');
-  const [selectedDate, setSelectedDate] = useState(getKSTDateString());
+  
+  // 각 모드별로 독립적인 날짜 상태 관리
+  const [dateStates, setDateStates] = useState({
+    daily: getKSTDateString(),
+    weekly: (() => {
+      // Weekly 초기값은 현재 주의 월요일
+      const today = new Date(getKSTDateString());
+      const dayOfWeek = today.getDay();
+      const daysFromMonday = (dayOfWeek + 6) % 7;
+      const mondayDate = new Date(today);
+      mondayDate.setDate(today.getDate() - daysFromMonday);
+      return mondayDate.toISOString().split('T')[0];
+    })()
+  });
 
-  // Period 변경 시 적절한 날짜로 조정
+  // 현재 선택된 기간의 날짜
+  const selectedDate = dateStates[selectedPeriod];
+
+  // Period 변경 시 해당 모드의 저장된 날짜로 전환
   const handlePeriodChange = useCallback((newPeriod: 'daily' | 'weekly') => {
     setSelectedPeriod(newPeriod);
-    
-    if (newPeriod === 'weekly') {
-      // Weekly로 변경 시 현재 주의 월요일로 설정
-      const currentDate = new Date(selectedDate);
-      const dayOfWeek = currentDate.getDay();
-      const daysFromMonday = (dayOfWeek + 6) % 7; // Sunday=0이므로 Monday 기준으로 조정
-      
-      const mondayDate = new Date(currentDate);
-      mondayDate.setDate(currentDate.getDate() - daysFromMonday);
-      
-      setSelectedDate(mondayDate.toISOString().split('T')[0]);
-    }
-    // Daily로 변경 시는 현재 날짜 유지
-  }, [selectedDate]);
+    // 각 모드는 이미 저장된 날짜를 사용하므로 별도 처리 불필요
+  }, []);
 
   // 그룹 상세 정보 조회
   const { data: groupDetail, isLoading, error, refetch } = useGroupDetail({
@@ -127,7 +131,11 @@ export default function TeamDetailPage() {
     
     // 8월 1일 이전으로는 이동 불가
     if (newDateString >= MIN_DATE) {
-      setSelectedDate(newDateString);
+      // 현재 모드의 날짜만 업데이트
+      setDateStates(prev => ({
+        ...prev,
+        [selectedPeriod]: newDateString
+      }));
     }
   }, [selectedDate, selectedPeriod]);
 
@@ -148,7 +156,12 @@ export default function TeamDetailPage() {
     
     // 오늘 이후로는 이동 불가
     if (newDate <= today) {
-      setSelectedDate(newDate.toISOString().split('T')[0]);
+      const newDateString = newDate.toISOString().split('T')[0];
+      // 현재 모드의 날짜만 업데이트
+      setDateStates(prev => ({
+        ...prev,
+        [selectedPeriod]: newDateString
+      }));
     }
   }, [selectedDate, selectedPeriod]);
 
@@ -160,9 +173,9 @@ export default function TeamDetailPage() {
     }
   }, [handlePreviousDate, handleNextDate]);
 
-  // 이전/다음 버튼 활성화 상태 체크
+  // 이전/다음 버튼 활성화 상태 체크 (현재 선택된 모드 기준)
   const canGoPrevious = useMemo(() => {
-    const currentDate = new Date(selectedDate);
+    const currentDate = new Date(dateStates[selectedPeriod]);
     let checkDate: Date;
     
     if (selectedPeriod === 'daily') {
@@ -175,10 +188,10 @@ export default function TeamDetailPage() {
     
     const checkDateString = checkDate.toISOString().split('T')[0];
     return checkDateString >= MIN_DATE;
-  }, [selectedDate, selectedPeriod]);
+  }, [dateStates, selectedPeriod]);
 
   const canGoNext = useMemo(() => {
-    const currentDate = new Date(selectedDate);
+    const currentDate = new Date(dateStates[selectedPeriod]);
     const today = new Date(getKSTDateString());
     let checkDate: Date;
     
@@ -191,7 +204,7 @@ export default function TeamDetailPage() {
     }
     
     return checkDate <= today;
-  }, [selectedDate, selectedPeriod]);
+  }, [dateStates, selectedPeriod]);
 
   const formatDate = useCallback((dateString: string) => {
     if (selectedPeriod === 'daily') {
@@ -319,7 +332,7 @@ export default function TeamDetailPage() {
         isGroupOwner={isGroupOwner ?? false} 
         groupMembers={groupDetail ? [groupDetail.owner, ...groupDetail.members] : []}
         selectedPeriod={selectedPeriod}
-        date={selectedPeriod === 'weekly' ? getMondayOfWeek(selectedDate) : selectedDate}
+        date={selectedPeriod === 'weekly' ? getMondayOfWeek(dateStates[selectedPeriod]) : dateStates[selectedPeriod]}
       />
     </div>
   );
