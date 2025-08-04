@@ -1,25 +1,24 @@
 'use client';
 
-import StateDisplay from '@/components/common/StateDisplay';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
+import StateDisplay from '@/components/common/StateDisplay';
 import { GroupNameInput } from '@/components/forms/GroupNameInput';
-import { groupDetailQueryKey, myGroupsQueryKey, GROUP_VALIDATION_MESSAGES, GROUP_ACTION_MESSAGES } from '@/config/constants';
+import { GROUP_VALIDATION_MESSAGES } from '@/config/constants';
+import { useBanMember, useDeleteGroup, useLeaveGroup, useTransferOwnership, useUpdateGroup } from '@/hooks/group/useGroupSettings';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
 import { useTheme } from '@/hooks/ui/useTheme';
-import { updateGroupSchema, UpdateGroupFormData } from '@/schemas/groupSchema';
+import { UpdateGroupFormData, updateGroupSchema } from '@/schemas/groupSchema';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shadcn/ui/dropdown-menu';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
 import { Input } from '@/shadcn/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
-import { updateGroup } from '@/shared/api/patch';
-import { deleteGroup, leaveGroup, banGroupMember } from '@/shared/api/delete';
 import { useCurrentUser } from '@/stores/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Copy, Crown, Globe, Hash, Lock, Plus, Save, Settings, Trash2, UserMinus, Users, X } from 'lucide-react';
+import { Copy, Crown, Globe, Hash, Lock, MoreVertical, Plus, Save, Settings, Trash2, UserMinus, Users, X } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
@@ -31,9 +30,9 @@ export default function GroupSettingsPage() {
   const router = useRouter();
   const params = useParams();
   const currentUser = useCurrentUser();
-  const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [showBanDialog, setShowBanDialog] = React.useState(false);
+  const [showTransferDialog, setShowTransferDialog] = React.useState(false);
   const [selectedMember, setSelectedMember] = React.useState<Group.GroupUserInfo | null>(null);
   const [banReason, setBanReason] = React.useState('');
   
@@ -48,24 +47,12 @@ export default function GroupSettingsPage() {
   // 권한 확인 - 그룹장만 접근 가능
   const isGroupOwner = groupDetail && currentUser && groupDetail.owner.userId === currentUser.id;
 
-  // 그룹 정보 업데이트 mutation
-  const updateGroupMutation = useMutation({
-    mutationFn: (request: Group.UpdateGroupApiRequest) => updateGroup(groupId, request),
-    onSuccess: () => {
-      // 성공 시 그룹 상세 정보 및 사이드바 다시 조회
-      queryClient.invalidateQueries({
-        queryKey: groupDetailQueryKey(groupId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: myGroupsQueryKey(),
-      });
-      toast.success(GROUP_ACTION_MESSAGES.UPDATE.SUCCESS);
-    },
-    onError: (error) => {
-      console.error('Failed to update group:', error);
-      toast.error(GROUP_ACTION_MESSAGES.UPDATE.ERROR);
-    },
-  });
+  // Group mutations
+  const updateGroupMutation = useUpdateGroup(groupId);
+  const deleteGroupMutation = useDeleteGroup(groupId);
+  const banMemberMutation = useBanMember(groupId);
+  const leaveGroupMutation = useLeaveGroup(groupId);
+  const transferOwnershipMutation = useTransferOwnership(groupId);
 
   const form = useForm<UpdateGroupFormData>({
     resolver: zodResolver(updateGroupSchema),
@@ -152,24 +139,6 @@ export default function GroupSettingsPage() {
     }
   };
 
-  // 그룹 삭제 mutation
-  const deleteGroupMutation = useMutation({
-    mutationFn: () => deleteGroup(groupId.toString()),
-    onSuccess: () => {
-      // 성공 시 그룹 목록 쿼리 무효화
-      queryClient.invalidateQueries({
-        queryKey: myGroupsQueryKey(),
-      });
-      toast.success(GROUP_ACTION_MESSAGES.DELETE.SUCCESS);
-      // 그룹 찾기 페이지로 이동
-      router.push('/group/find');
-    },
-    onError: (error) => {
-      console.error('Failed to delete group:', error);
-      toast.error(GROUP_ACTION_MESSAGES.DELETE.ERROR);
-    },
-  });
-
   // 그룹 삭제 핸들러
   const handleDeleteGroup = async () => {
     try {
@@ -180,44 +149,6 @@ export default function GroupSettingsPage() {
     }
   };
 
-  // 멤버 추방 mutation
-  const banMemberMutation = useMutation({
-    mutationFn: ({ userId, reason }: { userId: string; reason: string }) => 
-      banGroupMember(groupId, userId, reason),
-    onSuccess: () => {
-      // 성공 시 그룹 상세 정보 다시 조회
-      queryClient.invalidateQueries({
-        queryKey: groupDetailQueryKey(groupId),
-      });
-      toast.success('Member has been removed from the group');
-      setShowBanDialog(false);
-      setSelectedMember(null);
-      setBanReason('');
-    },
-    onError: (error) => {
-      console.error('Failed to ban member:', error);
-      toast.error('Failed to remove member');
-    },
-  });
-
-  // 그룹 탈퇴 mutation (멤버용)
-  const leaveGroupMutation = useMutation({
-    mutationFn: () => leaveGroup(groupId.toString()),
-    onSuccess: () => {
-      // 성공 시 그룹 목록 쿼리 무효화
-      queryClient.invalidateQueries({
-        queryKey: myGroupsQueryKey(),
-      });
-      toast.success('Successfully left the group');
-      // 그룹 찾기 페이지로 이동
-      router.push('/group/find');
-    },
-    onError: (error) => {
-      console.error('Failed to leave group:', error);
-      toast.error('Failed to leave the group');
-    },
-  });
-
   // 멤버 추방 핸들러
   const handleBanMember = async (reason?: string) => {
     if (!selectedMember || !reason?.trim()) return;
@@ -227,6 +158,9 @@ export default function GroupSettingsPage() {
         userId: selectedMember.userId,
         reason: reason.trim(),
       });
+      setShowBanDialog(false);
+      setSelectedMember(null);
+      setBanReason('');
     } catch (error) {
       // 에러는 mutation에서 이미 toast로 표시됨
     }
@@ -237,6 +171,19 @@ export default function GroupSettingsPage() {
     try {
       await leaveGroupMutation.mutateAsync();
       setShowDeleteDialog(false);
+    } catch (error) {
+      // 에러는 mutation에서 이미 toast로 표시됨
+    }
+  };
+
+  // 소유권 이전 핸들러
+  const handleTransferOwnership = async () => {
+    if (!selectedMember) return;
+    
+    try {
+      await transferOwnershipMutation.mutateAsync(selectedMember.userId);
+      setShowTransferDialog(false);
+      setSelectedMember(null);
     } catch (error) {
       // 에러는 mutation에서 이미 toast로 표시됨
     }
@@ -369,7 +316,11 @@ export default function GroupSettingsPage() {
               <CardContent>
                 <div className="space-y-2">
                   {/* 그룹장 */}
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+                  <div className={`flex items-center justify-between p-3 rounded-lg ${
+                    currentUser && groupDetail.owner.userId === currentUser.id
+                      ? 'bg-gray-50 dark:bg-gray-800'
+                      : ''
+                  }`}>
                     <div className="flex items-center gap-3">
                       <Avatar className="w-10 h-10">
                         <AvatarFallback className={`text-sm font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
@@ -389,11 +340,18 @@ export default function GroupSettingsPage() {
                   </div>
                   
                   {/* 일반 멤버 */}
-                  {groupDetail.members.filter(member => member.userId !== groupDetail.owner.userId).map((member) => (
-                    <div key={member.userId} className="flex items-center justify-between p-3 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="w-10 h-10">
-                          <AvatarFallback className={`text-sm font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+                  {groupDetail.members.filter(member => member.userId !== groupDetail.owner.userId).map((member) => {
+                    const isCurrentUser = currentUser && member.userId === currentUser.id;
+                    
+                    return (
+                      <div key={member.userId} className={`flex items-center justify-between p-3 rounded-lg ${
+                        isCurrentUser
+                          ? 'bg-gray-50 dark:bg-gray-800'
+                          : ''
+                      }`}>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="w-10 h-10">
+                            <AvatarFallback className={`text-sm font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
                             {member.nickname.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
@@ -407,8 +365,9 @@ export default function GroupSettingsPage() {
                         </div>
                       </div>
                       <Users className="h-5 w-5 text-gray-400" />
-                    </div>
-                  ))}
+                      </div>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -694,7 +653,11 @@ export default function GroupSettingsPage() {
             <CardContent>
               <div className="space-y-2">
                 {/* 그룹장 */}
-                <div className="flex items-center justify-between p-2 rounded-lg">
+                <div className={`flex items-center justify-between p-2 rounded-lg ${
+                  currentUser && groupDetail.owner.userId === currentUser.id
+                    ? 'bg-gray-50 dark:bg-gray-800'
+                    : ''
+                }`}>
                   <div className="flex items-center gap-3">
                     <Avatar className="w-8 h-8">
                       <AvatarFallback className={`text-xs font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
@@ -710,52 +673,76 @@ export default function GroupSettingsPage() {
                       </div>
                     </div>
                   </div>
-                  <Crown className="h-4 w-4 text-amber-500" />
+                  
+                  <div className="flex items-center">
+                    <div className="h-8 w-8 flex items-center justify-center">
+                      <Crown className="h-4 w-4 text-amber-500" />
+                    </div>
+                  </div>
                 </div>
                 
                 {/* 일반 멤버 */}
-                {groupDetail.members.filter(member => member.userId !== groupDetail.owner.userId).map((member) => (
-                  <div key={member.userId} className="flex items-center justify-between p-2 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="w-8 h-8">
-                        <AvatarFallback className={`text-xs font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                          {member.nickname.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                          {member.nickname}
-                        </div>
-                        <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                          Member
+                {groupDetail.members.filter(member => member.userId !== groupDetail.owner.userId).map((member) => {
+                  const isCurrentUser = currentUser && member.userId === currentUser.id;
+                  
+                  return (
+                    <div key={member.userId} className={`flex items-center justify-between p-2 rounded-lg ${
+                      isCurrentUser
+                        ? 'bg-gray-50 dark:bg-gray-800'
+                        : ''
+                    }`}>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="w-8 h-8">
+                          <AvatarFallback className={`text-xs font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+                            {member.nickname.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                            {member.nickname}
+                          </div>
+                          <div className={`text-xs ${getThemeTextColor('secondary')}`}>
+                            Member
+                          </div>
                         </div>
                       </div>
-                    </div>
                     
-                    <div className="flex items-center gap-1">
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8"
-                        title="Transfer ownership"
-                      >
-                        <Crown className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 text-red-600 hover:text-red-700"
-                        title="Remove member"
-                        onClick={() => {
-                          setSelectedMember(member);
-                          setShowBanDialog(true);
-                        }}
-                      >
-                        <UserMinus className="h-4 w-4" />
-                      </Button>
+                    <div className="flex items-center">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-gray-600 hover:text-gray-700"
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-44">
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            onClick={() => {
+                              setSelectedMember(member);
+                              setShowTransferDialog(true);
+                            }}
+                          >
+                            Transfer Ownership
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-red-600 focus:text-red-700 cursor-pointer"
+                            onClick={() => {
+                              setSelectedMember(member);
+                              setShowBanDialog(true);
+                            }}
+                          >
+                            Remove Member
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -872,6 +859,35 @@ export default function GroupSettingsPage() {
         textareaRequired={true}
         textareaValue={banReason}
         onTextareaChange={setBanReason}
+      />
+
+      {/* 소유권 이전 다이얼로그 */}
+      <ConfirmDialog
+        open={showTransferDialog}
+        onOpenChange={(open) => {
+          setShowTransferDialog(open);
+          if (!open) {
+            setSelectedMember(null);
+          }
+        }}
+        title="Transfer Group Ownership"
+        description={
+          <>
+            Are you sure you want to transfer ownership of <span className="font-semibold">"{groupDetail?.name}"</span> to <span className="font-semibold">{selectedMember?.nickname}</span>?
+            <br className="mt-2" />
+            <span className="text-amber-600 font-medium">Warning:</span> You will lose all administrative privileges and cannot undo this action. The new owner will have full control over the group.
+          </>
+        }
+        confirmText="Transfer Ownership"
+        cancelText="Cancel"
+        onConfirm={handleTransferOwnership}
+        onCancel={() => {
+          setSelectedMember(null);
+        }}
+        variant="default"
+        isLoading={transferOwnershipMutation.isPending}
+        loadingText="Transferring..."
+        icon={Crown}
       />
     </div>
   );

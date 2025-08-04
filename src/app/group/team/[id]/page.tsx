@@ -6,24 +6,20 @@ import GroundRules from '@/components/group/GroundRules';
 import TeamCard from '@/components/group/TeamCard';
 import TeamLeaderboard from '@/components/group/TeamLeaderboard';
 import TodayGoals from '@/components/group/TodayGoals';
-import { groupDetailQueryKey } from '@/config/constants/query-keys';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
+import { useUpdateGroup } from '@/hooks/group/useGroupSettings';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { updateGroup } from '@/shared/api/patch';
 import { useCurrentUser } from '@/stores/userStore';
 import { getKSTDateString, getKSTDateStringDaysAgo } from '@/utils/timezone';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { RefreshCw } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
-import toast from 'react-hot-toast';
 
 export default function TeamDetailPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const params = useParams();
   const currentUser = useCurrentUser();
-  const queryClient = useQueryClient();
   
   const teamId = Array.isArray(params.id) ? params.id[0] : params.id;
   const groupId = teamId ? parseInt(teamId, 10) : 0;
@@ -41,20 +37,7 @@ export default function TeamDetailPage() {
   const isGroupOwner = groupDetail && currentUser && groupDetail.owner.userId === currentUser.id;
 
   // 그룹 정보 업데이트 mutation
-  const updateGroupMutation = useMutation({
-    mutationFn: (request: Group.UpdateGroupApiRequest) => updateGroup(groupId, request),
-    onSuccess: () => {
-      // 성공 시 그룹 상세 정보 다시 조회
-      queryClient.invalidateQueries({
-        queryKey: groupDetailQueryKey(groupId),
-      });
-      toast.success('Group information updated successfully.');
-    },
-    onError: (error) => {
-      console.error('Failed to update group:', error);
-      toast.error('Failed to update group information.');
-    },
-  });
+  const updateGroupMutation = useUpdateGroup(groupId);
 
   // 그룹 설명 업데이트
   const handleDescriptionUpdate = async (newDescription: string) => {
@@ -111,20 +94,32 @@ export default function TeamDetailPage() {
     {
       id: 1,
       title: 'Complete React refactoring task',
-      achieved: ['John Doe', 'Sarah Wilson'],
-      notAchieved: ['Mike Johnson', 'Jane Smith', 'Tom Brown', 'Alice Kim']
+      achieved: ['김민수', '이영희', '박철수'],
+      notAchieved: ['정수진', '최민호', '강예린', '오세훈', '윤지아']
     },
     {
       id: 2,
       title: 'Review team code submissions', 
-      achieved: ['John Doe', 'Mike Johnson', 'Jane Smith'],
-      notAchieved: ['Sarah Wilson', 'Tom Brown', 'Alice Kim']
+      achieved: ['이영희', '정수진', '최민호', '강예린'],
+      notAchieved: ['김민수', '박철수', '오세훈', '윤지아']
     },
     {
       id: 3,
       title: 'Update project documentation',
-      achieved: ['Sarah Wilson', 'Tom Brown'],
-      notAchieved: ['John Doe', 'Mike Johnson', 'Jane Smith', 'Alice Kim']
+      achieved: ['박철수', '오세훈'],
+      notAchieved: ['김민수', '이영희', '정수진', '최민호', '강예린', '윤지아']
+    },
+    {
+      id: 4,
+      title: 'Fix critical bugs in production',
+      achieved: ['김민수', '이영희', '정수진', '최민호', '강예린', '오세훈', '윤지아'],
+      notAchieved: ['박철수']
+    },
+    {
+      id: 5,
+      title: 'Attend daily standup meeting',
+      achieved: ['김민수', '이영희', '박철수', '정수진', '최민호'],
+      notAchieved: ['강예린', '오세훈', '윤지아']
     }
   ];
 

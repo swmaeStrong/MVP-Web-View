@@ -183,6 +183,14 @@ export default function FindTeamPage() {
                         ) : (
                           <Lock className="h-4 w-4 text-orange-500 flex-shrink-0" />
                         )}
+                        {isGroupMember(group.groupId) && (
+                          <Badge 
+                            variant="outline" 
+                            className="text-xs bg-green-50 border-green-200 text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400"
+                          >
+                            Joined
+                          </Badge>
+                        )}
                       </div>
                       
                       {/* Owner Info */}
@@ -235,13 +243,23 @@ export default function FindTeamPage() {
                   </div>
                   
                   {/* Action Button - fixed at bottom */}
-                  <Button
-                    className="w-full h-8 text-sm bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors mt-auto cursor-pointer"
-                    size="sm"
-                    onClick={() => handleViewDetail(group)}
-                  >
-                    See in Detail
-                  </Button>
+                  {isGroupMember(group.groupId) ? (
+                    <Button
+                      className="w-full h-8 text-sm bg-gray-400 text-white cursor-not-allowed mt-auto"
+                      size="sm"
+                      disabled
+                    >
+                      Already Joined
+                    </Button>
+                  ) : (
+                    <Button
+                      className="w-full h-8 text-sm bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors mt-auto cursor-pointer"
+                      size="sm"
+                      onClick={() => handleViewDetail(group)}
+                    >
+                      See in Detail
+                    </Button>
+                  )}
                 </div>
               </CardContent>
                 </Card>
@@ -353,9 +371,6 @@ export default function FindTeamPage() {
                         <div>
                           <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
                             {selectedGroup.groupOwner.nickname}
-                          </div>
-                          <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            ID: {selectedGroup.groupOwner.userId}
                           </div>
                         </div>
                       </div>

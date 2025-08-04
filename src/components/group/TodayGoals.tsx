@@ -7,10 +7,9 @@ import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Progress } from '@/shadcn/ui/progress';
 import { Separator } from '@/shadcn/ui/separator';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shadcn/ui/tooltip';
 import { spacing } from '@/styles/design-system';
 import { Plus } from 'lucide-react';
-import UserProfileTooltip from '@/components/common/UserProfileTooltip';
+import MemberListDialog from './MemberListDialog';
 
 interface Goal {
   id: number;
@@ -27,65 +26,44 @@ export default function TodayGoals({ goals }: TodayGoalsProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [newGoal, setNewGoal] = useState('');
+  const [showMemberDialog, setShowMemberDialog] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
+  const [selectedType, setSelectedType] = useState<'achieved' | 'notAchieved' | null>(null);
 
   const getAvatarInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('');
   };
 
-  const renderAvatarGroup = (names: string[], isAchieved: boolean) => {
+  const renderAvatarGroup = (names: string[], isAchieved: boolean, goal: Goal) => {
     const maxVisible = 3;
     const totalAvatars = names.length;
     const displayedNames = names.slice(0, maxVisible);
     const remainingCount = Math.max(totalAvatars - maxVisible, 0);
 
     return (
-      <div className="flex items-center">
+      <div className="flex items-center pointer-events-none">
         {displayedNames.map((name, index) => (
-          <div key={index} className={`-ml-2 hover:z-10 relative first:ml-0`} style={{ zIndex: displayedNames.length - index }}>
-            <UserProfileTooltip
-              userStats={{
-                nickname: name,
-                currentStreak: Math.floor(Math.random() * 25) + 3, // Mock data
-                totalScore: Math.floor(Math.random() * 5000) + 1000, // Mock data
-                totalSessions: Math.floor(Math.random() * 30) + 10, // Mock data
-                workTime: `${Math.floor(Math.random() * 8) + 2}h`
-              }}
-              side="top"
-              align="center"
-            >
-              <Avatar className="w-6 h-6 ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-2 hover:ring-[#3F72AF] transition-all duration-200 cursor-pointer">
-                <AvatarImage src="" />
-                <AvatarFallback className={`text-[8px] font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
-                  {getAvatarInitials(name)}
-                </AvatarFallback>
-              </Avatar>
-            </UserProfileTooltip>
+          <div 
+            key={index} 
+            className={`-ml-2 relative first:ml-0`} 
+            style={{ zIndex: displayedNames.length - index }}
+          >
+            <Avatar className="w-6 h-6 ring-1 ring-gray-200 dark:ring-gray-700 group-hover:ring-gray-400 dark:group-hover:ring-gray-500">
+              <AvatarImage src="" />
+              <AvatarFallback className={`text-[8px] font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100`}>
+                {getAvatarInitials(name)}
+              </AvatarFallback>
+            </Avatar>
           </div>
         ))}
         {remainingCount > 0 && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Avatar className="w-6 h-6 -ml-2 hover:z-10 relative ring-1 ring-gray-200 dark:ring-gray-700 cursor-pointer">
-                  <AvatarFallback className={`text-[8px] font-bold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
-                    +{remainingCount}
-                  </AvatarFallback>
-                </Avatar>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-xs">
-                <div className="space-y-1">
-                  <div className="text-xs font-medium mb-2">
-                    {isAchieved ? 'Also Achieved:' : 'Also Not Achieved:'}
-                  </div>
-                  {names.slice(maxVisible).map((name, i) => (
-                    <div key={i} className="text-xs">
-                      {name}
-                    </div>
-                  ))}
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <div className="-ml-2 relative">
+            <Avatar className="w-6 h-6 ring-1 ring-gray-200 dark:ring-gray-700 group-hover:ring-gray-400 dark:group-hover:ring-gray-500">
+              <AvatarFallback className={`text-[8px] font-bold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100`}>
+                +{remainingCount}
+              </AvatarFallback>
+            </Avatar>
+          </div>
         )}
       </div>
     );
@@ -95,6 +73,12 @@ export default function TodayGoals({ goals }: TodayGoalsProps) {
     setNewGoal('');
     setIsEditingGoal(false);
     // TODO: API로 새 목표 추가 로직 구현
+  };
+
+  const handleShowMemberList = (goal: Goal, type: 'achieved' | 'notAchieved') => {
+    setSelectedGoal(goal);
+    setSelectedType(type);
+    setShowMemberDialog(true);
   };
 
   return (
@@ -160,13 +144,10 @@ export default function TodayGoals({ goals }: TodayGoalsProps) {
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-2">
-                        <div className="relative w-24">
+                        <div className="w-24">
                           <Progress 
                             value={(goal.achieved.length / (goal.achieved.length + goal.notAchieved.length)) * 100} 
-                            className="h-2 bg-gray-200"
-                          />
-                          <div className="absolute inset-0 h-2 rounded-full bg-green-500" 
-                            style={{ width: `${(goal.achieved.length / (goal.achieved.length + goal.notAchieved.length)) * 100}%` }}
+                            className="h-2 bg-gray-200 [&>div]:bg-green-500"
                           />
                         </div>
                         <span className={`text-xs font-bold ${getThemeTextColor('primary')}`}>
@@ -181,25 +162,35 @@ export default function TodayGoals({ goals }: TodayGoalsProps) {
                   
                   <div className="flex gap-4 mt-3">
                     {/* 달성한 사람들 */}
-                    <div className="flex-1">
+                    <div 
+                      className="flex-1 cursor-pointer group p-2 -m-2"
+                      onClick={() => handleShowMemberList(goal, 'achieved')}
+                    >
                       <div className="flex items-center gap-2 mb-2">
-                        <span className={`text-xs font-medium ${getThemeTextColor('secondary')}`}>
+                        <span className={`text-xs font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100`}>
                           Achieved ({goal.achieved.length})
                         </span>
                       </div>
-                      {renderAvatarGroup(goal.achieved, true)}
+                      <div>
+                        {renderAvatarGroup(goal.achieved, true, goal)}
+                      </div>
                     </div>
 
                     <Separator orientation="vertical" className="h-16" />
 
                     {/* 달성하지 못한 사람들 */}
-                    <div className="flex-1">
+                    <div 
+                      className="flex-1 cursor-pointer group p-2 -m-2"
+                      onClick={() => handleShowMemberList(goal, 'notAchieved')}
+                    >
                       <div className="flex items-center gap-2 mb-2">
-                        <span className={`text-xs font-medium ${getThemeTextColor('secondary')}`}>
+                        <span className={`text-xs font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100`}>
                           Not Achieved ({goal.notAchieved.length})
                         </span>
                       </div>
-                      {renderAvatarGroup(goal.notAchieved, false)}
+                      <div>
+                        {renderAvatarGroup(goal.notAchieved, false, goal)}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -208,6 +199,14 @@ export default function TodayGoals({ goals }: TodayGoalsProps) {
           )}
         </div>
       </CardContent>
+
+      {/* 멤버 리스트 다이얼로그 */}
+      <MemberListDialog
+        open={showMemberDialog}
+        onOpenChange={setShowMemberDialog}
+        goal={selectedGoal}
+        type={selectedType}
+      />
     </Card>
   );
 }
