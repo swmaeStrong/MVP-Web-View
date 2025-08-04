@@ -9,13 +9,15 @@ interface MemberListDialogProps {
   onOpenChange: (open: boolean) => void;
   goal: Group.GroupGoalsApiResponse | null;
   type: 'achieved' | 'notAchieved' | null;
+  groupMembers?: Group.GroupUserInfo[];
 }
 
 export default function MemberListDialog({ 
   open, 
   onOpenChange, 
   goal, 
-  type 
+  type,
+  groupMembers = []
 }: MemberListDialogProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
 
@@ -26,6 +28,11 @@ export default function MemberListDialog({
       return `${hours}h${minutes > 0 ? ` ${minutes}m` : ''}`;
     }
     return `${minutes}m`;
+  };
+
+  const getUserNickname = (userId: string) => {
+    const member = groupMembers.find(m => m.userId === userId);
+    return member?.nickname || userId;
   };
 
   if (!goal || !type) return null;
@@ -68,11 +75,11 @@ export default function MemberListDialog({
                 <Avatar className="w-8 h-8">
                   <AvatarImage src="" />
                   <AvatarFallback className={`text-xs font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
-                    {member.userId.slice(0, 2).toUpperCase()}
+                    {getUserNickname(member.userId).slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className={`text-sm font-medium ${getThemeTextColor('primary')} flex-1`}>
-                  {member.userId}
+                  {getUserNickname(member.userId)}
                 </div>
                 <div className={`text-xs ${getThemeTextColor('secondary')} mr-3`}>
                   {formatTime(member.currentSeconds)}

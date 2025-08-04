@@ -22,10 +22,11 @@ import MemberListDialog from './MemberListDialog';
 interface TodayGoalsProps {
   groupId: number;
   isGroupOwner: boolean;
+  groupMembers?: Group.GroupUserInfo[];
   date?: string;
 }
 
-export default function TodayGoals({ groupId, isGroupOwner, date = getKSTDateString() }: TodayGoalsProps) {
+export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], date = getKSTDateString() }: TodayGoalsProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [showAddGoalDialog, setShowAddGoalDialog] = useState(false);
@@ -47,6 +48,11 @@ export default function TodayGoals({ groupId, isGroupOwner, date = getKSTDateStr
     return name.split(' ').map(n => n[0]).join('');
   };
 
+  const getUserNickname = (userId: string) => {
+    const member = groupMembers.find(m => m.userId === userId);
+    return member?.nickname || userId;
+  };
+
   const renderAvatarGroup = (userIds: string[], isAchieved: boolean, goal: Group.GroupGoalsApiResponse) => {
     const maxVisible = 3;
     const totalAvatars = userIds.length;
@@ -64,7 +70,7 @@ export default function TodayGoals({ groupId, isGroupOwner, date = getKSTDateStr
             <Avatar className="w-6 h-6 ring-1 ring-gray-200 dark:ring-gray-700 group-hover:ring-gray-400 dark:group-hover:ring-gray-500">
               <AvatarImage src="" />
               <AvatarFallback className={`text-[8px] font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100`}>
-                {userId.slice(0, 2).toUpperCase()}
+                {getUserNickname(userId).slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -386,6 +392,7 @@ export default function TodayGoals({ groupId, isGroupOwner, date = getKSTDateStr
         onOpenChange={setShowMemberDialog}
         goal={selectedGoal}
         type={selectedType}
+        groupMembers={groupMembers}
       />
     </Card>
   );

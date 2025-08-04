@@ -250,7 +250,11 @@ export default function TeamDetailPage() {
       <TeamLeaderboard members={mockLeaderboard} />
 
       {/* 우측 하단 - 오늘의 목표 설정 (2/5) */}
-      <TodayGoals groupId={groupId} isGroupOwner={isGroupOwner ?? false} />
+      <TodayGoals 
+        groupId={groupId} 
+        isGroupOwner={isGroupOwner ?? false} 
+        groupMembers={groupDetail ? [groupDetail.owner, ...groupDetail.members] : []}
+      />
     </div>
   );
 }
