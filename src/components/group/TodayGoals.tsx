@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/shadcn/ui/separator';
 import { spacing } from '@/styles/design-system';
 import { getKSTDateString } from '@/utils/timezone';
-import { Edit3, Plus, Trash2, Check, X } from 'lucide-react';
+import { Edit3, Plus, Trash2, X } from 'lucide-react';
 import MemberListDialog from './MemberListDialog';
 
 interface TodayGoalsProps {
@@ -139,10 +139,6 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], d
     setIsEditing(true);
   };
 
-  const handleSaveEdit = () => {
-    setIsEditing(false);
-  };
-
   const handleCancelEdit = () => {
     setIsEditing(false);
   };
@@ -184,7 +180,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], d
 
   return (
     <Card className={`${getCommonCardClass()} col-span-2 row-span-1`}>
-      <CardHeader className="flex flex-row items-center justify-center relative">
+      <CardHeader className="text-center relative">
         <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
           Today's Goal
         </div>
@@ -193,46 +189,45 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], d
             size="sm"
             variant="ghost"
             onClick={handleStartEdit}
-            className={`absolute right-0 h-8 w-8 p-0 ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')}`}
+            className={`absolute top-3 right-4 h-6 w-6 p-0 rounded-md transition-all duration-200 ${getThemeTextColor('secondary')} hover:bg-gray-100 hover:${getThemeTextColor('primary')} dark:hover:bg-gray-700`}
           >
-            <Edit3 className="h-4 w-4" />
+            <Edit3 className="h-3.5 w-3.5" />
           </Button>
         )}
         {isGroupOwner && isEditing && (
-          <div className="absolute right-0 flex gap-1">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleAddGoalInEdit}
-              className={`h-8 w-8 p-0 ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')}`}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleSaveEdit}
-              className={`h-8 w-8 p-0 ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')} hover:text-green-500`}
-            >
-              <Check className="h-4 w-4" />
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleCancelEdit}
-              className={`h-8 w-8 p-0 ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')} hover:text-red-500`}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={handleCancelEdit}
+            className={`absolute top-3 right-4 h-6 w-6 p-0 rounded-md transition-all duration-200 ${getThemeTextColor('secondary')} hover:bg-gray-100 hover:text-red-500 dark:hover:bg-gray-700`}
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
         )}
       </CardHeader>
       <CardContent className={spacing.inner.normal}>
         <Separator className="mb-4" />
         <div className="space-y-4">
           {groupGoals.length === 0 ? (
-            <div className={`text-center py-8 ${getThemeTextColor('secondary')}`}>
-              {isGroupOwner ? (isEditing ? 'No goals set yet. Click + to add a goal.' : 'No goals set yet. Click Edit to manage goals.') : 'No goals have been set by the group owner.'}
+            <div className="space-y-4">
+              <div className={`text-center py-8 ${getThemeTextColor('secondary')}`}>
+                {isGroupOwner ? (isEditing ? 'No goals set yet. Click + to add a goal.' : 'No goals set yet. Click Edit to manage goals.') : 'No goals have been set by the group owner.'}
+              </div>
+              
+              {/* 편집 모드에서 목표 추가 버튼 (목표가 없을 때) */}
+              {isGroupOwner && isEditing && (
+                <div 
+                  onClick={handleAddGoalInEdit}
+                  className={`p-3 rounded-lg border-2 border-dashed ${getThemeClass('border')} ${getThemeClass('componentSecondary')} cursor-pointer hover:${getThemeClass('component')} transition-colors`}
+                >
+                  <div className="flex items-center justify-center gap-2 py-4">
+                    <Plus className={`h-5 w-5 ${getThemeTextColor('secondary')}`} />
+                    <span className={`text-sm font-medium ${getThemeTextColor('secondary')}`}>
+                      Add New Goal
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="space-y-4">
@@ -274,7 +269,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], d
                             variant="ghost"
                             onClick={() => handleDeleteGoal(goal)}
                             disabled={deleteGoalMutation.isPending}
-                            className={`h-6 w-6 p-0 ${getThemeTextColor('secondary')} hover:${getThemeClass('componentSecondary')} hover:text-red-500`}
+                            className={`h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20`}
                           >
                             <Trash2 className="h-3 w-3" />
                           </Button>
@@ -318,6 +313,21 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], d
                   </div>
                 );
               })}
+              
+              {/* 편집 모드에서 목표 추가 버튼 */}
+              {isGroupOwner && isEditing && (
+                <div 
+                  onClick={handleAddGoalInEdit}
+                  className={`p-3 rounded-lg border-2 border-dashed ${getThemeClass('border')} ${getThemeClass('componentSecondary')} cursor-pointer hover:${getThemeClass('component')} transition-colors`}
+                >
+                  <div className="flex items-center justify-center gap-2 py-4">
+                    <Plus className={`h-5 w-5 ${getThemeTextColor('secondary')}`} />
+                    <span className={`text-sm font-medium ${getThemeTextColor('secondary')}`}>
+                      Add New Goal
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
