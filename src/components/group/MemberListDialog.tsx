@@ -54,7 +54,7 @@ export default function MemberListDialog({
           {/* 목표 제목 */}
           <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
             <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-              "{goal.category} - {formatTime(goal.goalSeconds)} ({goal.periodType.toLowerCase()})"
+              "{goal.category} - {formatTime(goal.goalSeconds)}"
             </div>
           </div>
 

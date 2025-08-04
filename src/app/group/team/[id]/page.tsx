@@ -254,6 +254,7 @@ export default function TeamDetailPage() {
         groupId={groupId} 
         isGroupOwner={isGroupOwner ?? false} 
         groupMembers={groupDetail ? [groupDetail.owner, ...groupDetail.members] : []}
+        selectedPeriod={selectedPeriod}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useGroupGoals } from '@/hooks/group/useGroupGoals';
 import { useSetGroupGoal } from '@/hooks/group/useSetGroupGoal';
@@ -23,10 +23,11 @@ interface TodayGoalsProps {
   groupId: number;
   isGroupOwner: boolean;
   groupMembers?: Group.GroupUserInfo[];
+  selectedPeriod?: 'daily' | 'weekly';
   date?: string;
 }
 
-export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], date = getKSTDateString() }: TodayGoalsProps) {
+export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], selectedPeriod = 'daily', date = getKSTDateString() }: TodayGoalsProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [showAddGoalDialog, setShowAddGoalDialog] = useState(false);
@@ -37,12 +38,24 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], d
   // Form states for new goal
   const [newGoalCategory, setNewGoalCategory] = useState<'Development' | 'Design' | 'Documentation' | 'Education'>('Development');
   const [newGoalHours, setNewGoalHours] = useState('');
-  const [newGoalPeriod, setNewGoalPeriod] = useState<'DAILY' | 'WEEKLY'>('DAILY');
+  const [newGoalPeriod, setNewGoalPeriod] = useState<'DAILY' | 'WEEKLY'>(
+    selectedPeriod === 'daily' ? 'DAILY' : 'WEEKLY'
+  );
   
   // API hooks
-  const { data: groupGoals = [], isLoading, refetch } = useGroupGoals({ groupId, date });
+  const { data: allGroupGoals = [], isLoading, refetch } = useGroupGoals({ groupId, date });
   const setGoalMutation = useSetGroupGoal(groupId);
   const deleteGoalMutation = useDeleteGroupGoal(groupId);
+
+  // Filter goals by selected period
+  const groupGoals = allGroupGoals.filter(goal => 
+    goal.periodType === (selectedPeriod === 'daily' ? 'DAILY' : 'WEEKLY')
+  );
+
+  // Update new goal period when selected period changes
+  useEffect(() => {
+    setNewGoalPeriod(selectedPeriod === 'daily' ? 'DAILY' : 'WEEKLY');
+  }, [selectedPeriod]);
 
   const getAvatarInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('');
@@ -103,7 +116,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], d
       // Reset form and close dialog
       setNewGoalCategory('Development');
       setNewGoalHours('');
-      setNewGoalPeriod('DAILY');
+      setNewGoalPeriod(selectedPeriod === 'daily' ? 'DAILY' : 'WEEKLY');
       setShowAddGoalDialog(false);
       
       // Exit edit mode after adding
@@ -182,7 +195,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], d
     <Card className={`${getCommonCardClass()} col-span-2 row-span-1`}>
       <CardHeader className="text-center relative">
         <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
-          Today's Goal
+          {selectedPeriod === 'daily' ? "Daily Goal" : "Weekly Goal"}
         </div>
         {isGroupOwner && !isEditing && (
           <Button
@@ -211,7 +224,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], d
           {groupGoals.length === 0 ? (
             <div className="space-y-4">
               <div className={`text-center py-8 ${getThemeTextColor('secondary')}`}>
-                {isGroupOwner ? (isEditing ? 'No goals set yet. Click + to add a goal.' : 'No goals set yet. Click Edit to manage goals.') : 'No goals have been set by the group owner.'}
+                {isGroupOwner ? (isEditing ? `No ${selectedPeriod} goals set yet. Click + to add a goal.` : `No ${selectedPeriod} goals set yet. Click Edit to manage goals.`) : `No ${selectedPeriod} goals have been set by the group owner.`}
               </div>
               
               {/* 편집 모드에서 목표 추가 버튼 (목표가 없을 때) */}
@@ -223,7 +236,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], d
                   <div className="flex items-center justify-center gap-2 py-4">
                     <Plus className={`h-5 w-5 ${getThemeTextColor('secondary')}`} />
                     <span className={`text-sm font-medium ${getThemeTextColor('secondary')}`}>
-                      Add New Goal
+                      Add New {selectedPeriod === 'daily' ? 'Daily' : 'Weekly'} Goal
                     </span>
                   </div>
                 </div>
@@ -245,7 +258,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], d
                           {index + 1}
                         </div>
                         <div className={`text-sm font-bold ${getThemeTextColor('primary')}`}>
-                          {goal.category} - {formatTime(goal.goalSeconds)} ({goal.periodType.toLowerCase()})
+                          {goal.category} - {formatTime(goal.goalSeconds)}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -323,7 +336,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], d
                   <div className="flex items-center justify-center gap-2 py-4">
                     <Plus className={`h-5 w-5 ${getThemeTextColor('secondary')}`} />
                     <span className={`text-sm font-medium ${getThemeTextColor('secondary')}`}>
-                      Add New Goal
+                      Add New {selectedPeriod === 'daily' ? 'Daily' : 'Weekly'} Goal
                     </span>
                   </div>
                 </div>
@@ -337,7 +350,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], d
       <Dialog open={showAddGoalDialog} onOpenChange={setShowAddGoalDialog}>
         <DialogContent className={`sm:max-w-md ${getCommonCardClass()}`}>
           <DialogHeader>
-            <DialogTitle className={`text-lg font-bold ${getThemeTextColor('primary')}`}>Add New Goal</DialogTitle>
+            <DialogTitle className={`text-lg font-bold ${getThemeTextColor('primary')}`}>Add New {selectedPeriod === 'daily' ? 'Daily' : 'Weekly'} Goal</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
