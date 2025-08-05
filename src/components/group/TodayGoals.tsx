@@ -175,7 +175,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
   
   if (isLoading) {
     return (
-      <Card className={`${getCommonCardClass()} col-span-2 row-span-1`}>
+      <Card className={`${getCommonCardClass()} col-span-2 row-span-1 h-[500px] flex flex-col`}>
         <CardHeader>
           <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
             Today's Goal
@@ -192,8 +192,8 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
   }
 
   return (
-    <Card className={`${getCommonCardClass()} col-span-2 row-span-1`}>
-      <CardHeader className="text-center relative">
+    <Card className={`${getCommonCardClass()} col-span-2 row-span-1 h-[500px] flex flex-col`}>
+      <CardHeader className="text-center relative flex-shrink-0">
         <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
           {selectedPeriod === 'daily' ? "Daily Goal" : "Weekly Goal"}
         </div>
@@ -218,9 +218,9 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
           </Button>
         )}
       </CardHeader>
-      <CardContent className={spacing.inner.normal}>
+      <CardContent className={`${spacing.inner.normal} flex-1 overflow-hidden`}>
         <Separator className="mb-4" />
-        <div className="space-y-4">
+        <div className="space-y-4 h-full flex flex-col">
           {groupGoals.length === 0 ? (
             <div className="space-y-4">
               <div className={`text-center py-8 ${getThemeTextColor('secondary')}`}>
@@ -243,7 +243,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
               )}
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4 flex-1 overflow-y-auto">
               {groupGoals.map((goal, index) => {
                 const totalMembers = goal.members.length;
                 const achievedMembers = goal.members.filter(m => m.currentSeconds >= goal.goalSeconds);

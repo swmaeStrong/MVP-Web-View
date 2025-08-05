@@ -55,16 +55,16 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
   }
 
   return (
-    <Card className={`${getCommonCardClass()} col-span-3 row-span-1`}>
-      <CardHeader>
+    <Card className={`${getCommonCardClass()} col-span-3 row-span-1 h-[500px] flex flex-col`}>
+      <CardHeader className="flex-shrink-0">
         <div className={`text-lg font-bold ${getThemeTextColor('primary')} text-center`}>
           Leaderboard
         </div>
         <Separator />
       </CardHeader>
-      <CardContent className={`${spacing.inner.normal} overflow-hidden`}>
-        <div className="h-full max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
-          <div className="grid grid-cols-3 gap-4 pr-2">
+      <CardContent className={`${spacing.inner.normal} flex-1 overflow-hidden`}>
+        <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pr-2">
             {members.map((member) => (
               <div key={member.userId} className={`p-4 rounded-md ${getThemeClass('componentSecondary')} ${getThemeClass('border')} border text-center relative`}>
                 
