@@ -256,7 +256,7 @@ export default function TeamDetailPage() {
   }
 
   return (
-    <div className="h-full grid grid-cols-5 gap-6 p-6" style={{ gridTemplateRows: 'auto auto 1fr' }}>
+    <div className="h-full grid grid-cols-1 lg:grid-cols-5 p-6 gap-y-6 lg:gap-6" style={{ gridTemplateRows: 'auto auto 1fr' }}>
       {/* 좌측 최상단 - 그룹 이름 및 팀장 정보 (3/5) */}
       <TeamCard 
         teamName={groupDetail.name}
