@@ -43,7 +43,7 @@ export default function GroupHeader({ groupName, isPublic, password }: GroupHead
       </div>
 
       <div className="flex items-center gap-3">
-        <GroupInviteButton password={password} />
+        <GroupInviteButton password={password} isPublic={isPublic} />
       </div>
     </div>
   );

@@ -7,10 +7,16 @@ import toast from 'react-hot-toast';
 
 interface GroupInviteButtonProps {
   password?: string | null;
+  isPublic: boolean;
 }
 
-export default function GroupInviteButton({ password }: GroupInviteButtonProps) {
+export default function GroupInviteButton({ password, isPublic }: GroupInviteButtonProps) {
   const { getThemeClass } = useTheme();
+
+  // Public 그룹의 경우 invite code 버튼을 보이지 않게 함
+  if (isPublic) {
+    return null;
+  }
 
   const copyInviteCode = () => {
     const textToCopy = password || 'No password required';
