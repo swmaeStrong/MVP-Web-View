@@ -86,7 +86,6 @@ export default function UserProfileTooltip({
             <div className={`p-4 rounded-lg border ${getThemeClass('border')} ${getThemeClass('component')} min-w-[200px]`}>
               {/* Header */}
               <div className="flex items-center gap-2 mb-3">
-                <div className={`w-2 h-2 rounded-full bg-green-500`} />
                 <h4 className={`font-semibold ${getThemeTextColor('primary')} text-sm`}>
                   {userStats.nickname}
                 </h4>
