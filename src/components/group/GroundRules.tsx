@@ -69,13 +69,18 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
   };
 
   const handleRuleChange = (index: number, value: string) => {
+    // 30글자 제한
+    if (value.length > 30) {
+      return;
+    }
+    
     const newRules = [...editedRules];
     newRules[index] = value;
     setEditedRules(newRules);
   };
 
   const handleAddRule = useCallback(() => {
-    if (isAddingRule.current) {
+    if (isAddingRule.current || editedRules.length >= 10) {
       return;
     }
     
@@ -108,9 +113,9 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
       e.preventDefault();
       e.stopPropagation();
       
-      // 현재 값이 비어있지 않을 때만 새 룰 추가
+      // 현재 값이 비어있지 않고 10개 미만일 때만 새 룰 추가
       const currentValue = editedRules[index]?.trim();
-      if (currentValue) {
+      if (currentValue && editedRules.length < 10) {
         handleAddRule();
       }
     }
@@ -139,45 +144,75 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
           <div className="space-y-4">
             <div className="space-y-3 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
               {editedRules.map((rule, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${getThemeClass('component')} ${getThemeTextColor('secondary')}`}>
-                    {index + 1}
+                <div key={index} className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${getThemeClass('component')} ${getThemeTextColor('secondary')}`}>
+                      {index + 1}
+                    </div>
+                    <Textarea
+                      ref={(el) => {
+                        textareaRefs.current[index] = el;
+                      }}
+                      value={rule}
+                      onChange={(e) => handleRuleChange(index, e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(e, index)}
+                      className={`flex-1 min-h-[60px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900 resize-none ${
+                        rule.length > 30 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : ''
+                      }`}
+                      placeholder="Enter a ground rule... (Press Enter to add next rule)"
+                      rows={2}
+                    />
+                    {editedRules.length > 1 && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleRemoveRule(index)}
+                        className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
-                  <Textarea
-                    ref={(el) => {
-                      textareaRefs.current[index] = el;
-                    }}
-                    value={rule}
-                    onChange={(e) => handleRuleChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(e, index)}
-                    className="flex-1 min-h-[60px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900 resize-none"
-                    placeholder="Enter a ground rule... (Press Enter to add next rule)"
-                    rows={2}
-                  />
-                  {editedRules.length > 1 && (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleRemoveRule(index)}
-                      className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
+                  <div className="flex justify-end">
+                    <span className={`text-xs ${
+                      rule.length > 30 ? 'text-red-500' : 
+                      rule.length > 25 ? 'text-yellow-600' : 
+                      getThemeTextColor('secondary')
+                    }`}>
+                      {rule.length}/30
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
             
             <div className="flex justify-between items-center">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleAddRule}
-                className="gap-1"
-              >
-                <Plus className="h-3 w-3" />
-                Add Rule
-              </Button>
+              <div className="flex items-center gap-4">
+                {editedRules.length < 10 && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleAddRule}
+                    className="gap-1"
+                  >
+                    <Plus className="h-3 w-3" />
+                    Add Rule
+                  </Button>
+                )}
+                
+                <div className="flex flex-col text-xs space-y-1">
+                  <span className={`${
+                    editedRules.length >= 10 ? 'text-red-500' : 
+                    editedRules.length >= 8 ? 'text-yellow-600' : 
+                    getThemeTextColor('secondary')
+                  }`}>
+                    {editedRules.length}/10 rules
+                  </span>
+                  {editedRules.length >= 10 && (
+                    <span className="text-red-500">Maximum rules reached</span>
+                  )}
+                </div>
+              </div>
               
               <div className="flex gap-2">
                 <Button
