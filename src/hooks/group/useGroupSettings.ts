@@ -1,8 +1,8 @@
 'use client';
 
-import { groupDetailQueryKey, myGroupsQueryKey, GROUP_ACTION_MESSAGES } from '@/config/constants';
-import { updateGroup, transferGroupOwnership } from '@/shared/api/patch';
-import { deleteGroup, leaveGroup, banGroupMember } from '@/shared/api/delete';
+import { GROUP_ACTION_MESSAGES, groupDetailQueryKey, myGroupsQueryKey } from '@/config/constants';
+import { banGroupMember, deleteGroup, leaveGroup } from '@/shared/api/delete';
+import { transferGroupOwnership, updateGroup } from '@/shared/api/patch';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
@@ -42,7 +42,7 @@ export function useDeleteGroup(groupId: number) {
       });
       toast.success(GROUP_ACTION_MESSAGES.DELETE.SUCCESS);
       // 그룹 찾기 페이지로 이동
-      router.push('/group/find');
+      router.push('/group/search');
     },
     onError: (error) => {
       console.error('Failed to delete group:', error);
@@ -84,7 +84,7 @@ export function useLeaveGroup(groupId: number) {
       });
       toast.success('Successfully left the group');
       // 그룹 찾기 페이지로 이동
-      router.push('/group/find');
+      router.push('/group/search');
     },
     onError: (error) => {
       console.error('Failed to leave group:', error);

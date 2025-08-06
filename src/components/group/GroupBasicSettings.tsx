@@ -34,8 +34,10 @@ export default function GroupBasicSettings({
   // Add tag handler
   const handleAddTag = (newTag: string) => {
     const currentTags = getValues('tags');
-    if (newTag.trim() && !currentTags.includes(newTag.trim()) && currentTags.length < 5) {
-      setValue('tags', [...currentTags, newTag.trim()]);
+    const trimmedTag = newTag.trim();
+    // 12글자 제한, 중복 체크, 5개 제한
+    if (trimmedTag && trimmedTag.length <= 12 && !currentTags.includes(trimmedTag) && currentTags.length < 5) {
+      setValue('tags', [...currentTags, trimmedTag]);
     }
   };
 
@@ -131,7 +133,9 @@ export default function GroupBasicSettings({
                           <Badge 
                             key={tag} 
                             variant="secondary" 
-                            className="gap-1 pl-2 pr-1 py-1"
+                            className={`gap-1 pl-2 pr-1 py-1 ${
+                              tag.length > 12 ? 'border-red-300 bg-red-50 text-red-700' : ''
+                            }`}
                           >
                             <Hash className="h-3 w-3" />
                             <span className="text-xs">{tag}</span>
@@ -181,11 +185,13 @@ export default function GroupBasicSettings({
 
 // Tag Input Component
 function TagInput({ onAddTag, disabled }: { onAddTag: (tag: string) => void, disabled: boolean }) {
+  const { getThemeTextColor } = useTheme();
   const [newTag, setNewTag] = React.useState('');
 
   const handleAddTag = () => {
-    if (newTag.trim()) {
-      onAddTag(newTag.trim());
+    const trimmedTag = newTag.trim();
+    if (trimmedTag && trimmedTag.length <= 12) {
+      onAddTag(trimmedTag);
       setNewTag('');
     }
   };
@@ -198,24 +204,43 @@ function TagInput({ onAddTag, disabled }: { onAddTag: (tag: string) => void, dis
   };
 
   return (
-    <div className="flex gap-2">
-      <Input
-        type="text"
-        placeholder="Add tag (e.g., React, Python)..."
-        value={newTag}
-        onChange={(e) => setNewTag(e.target.value)}
-        onKeyPress={handleKeyPress}
-        className="flex-1"
-        disabled={disabled}
-      />
-      <Button
-        type="button"
-        onClick={handleAddTag}
-        disabled={!newTag.trim() || disabled}
-        size="sm"
-      >
-        <Plus className="h-4 w-4" />
-      </Button>
+    <div className="space-y-1">
+      <div className="flex gap-2">
+        <Input
+          type="text"
+          placeholder="Add tag (e.g., React, Python)..."
+          value={newTag}
+          onChange={(e) => {
+            // 12글자 제한
+            if (e.target.value.length <= 12) {
+              setNewTag(e.target.value);
+            }
+          }}
+          onKeyPress={handleKeyPress}
+          className={`flex-1 ${
+            newTag.length > 12 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : ''
+          }`}
+          disabled={disabled}
+        />
+        <Button
+          type="button"
+          onClick={handleAddTag}
+          disabled={!newTag.trim() || disabled || newTag.length > 12}
+          size="sm"
+        >
+          <Plus className="h-4 w-4" />
+        </Button>
+      </div>
+      
+      <div className="flex justify-end">
+        <span className={`text-xs ${
+          newTag.length > 12 ? 'text-red-500' : 
+          newTag.length > 10 ? 'text-yellow-600' : 
+          getThemeTextColor('secondary')
+        }`}>
+          {newTag.length}/12
+        </span>
+      </div>
     </div>
   );
 }

@@ -53,12 +53,19 @@ export function GroupNameInput<
         {label}
       </FormLabel>
       <FormControl>
-        <div className="relative">
+        <div className="relative space-y-1">
           <Input
             value={fieldValue}
-            onChange={(e) => form.setValue(name, e.target.value as any)}
+            onChange={(e) => {
+              // 16글자 제한
+              if (e.target.value.length <= 16) {
+                form.setValue(name, e.target.value as any);
+              }
+            }}
             placeholder={placeholder}
-            className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
+            className={`bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] ${
+              fieldValue.length > 16 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : ''
+            }`}
             disabled={disabled}
           />
           {shouldCheckName && (
@@ -72,6 +79,16 @@ export function GroupNameInput<
               ) : null}
             </div>
           )}
+          
+          <div className="flex justify-end">
+            <span className={`text-xs ${
+              fieldValue.length > 16 ? 'text-red-500' : 
+              fieldValue.length > 14 ? 'text-yellow-600' : 
+              getThemeTextColor('secondary')
+            }`}>
+              {fieldValue.length}/16
+            </span>
+          </div>
         </div>
       </FormControl>
       <FormMessage />
