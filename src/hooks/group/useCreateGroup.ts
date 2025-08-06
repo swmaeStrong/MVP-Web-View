@@ -24,9 +24,9 @@ export function useCreateGroup() {
 
   return useMutation({
     mutationFn: createGroup,
-    onSuccess: () => {
-      // 성공 시 내 그룹 목록을 무효화하고 다시 가져오기
-      queryClient.invalidateQueries({
+    onSuccess: (data) => {
+      // refetchQueries는 캐시에 없어도 강제로 새 데이터를 가져옴 (첫 그룹 생성에 적합)
+      queryClient.refetchQueries({
         queryKey: myGroupsQueryKey(),
       });
       
@@ -42,9 +42,9 @@ export function useCreateGroupWithToast() {
   const createGroupMutation = useCreateGroup();
 
   const createGroupWithToast = async (request: Group.CreateGroupApiRequest) => {
-    // react-hot-toast의 promise를 직접 사용
+    // mutation을 직접 사용하여 토스트와 쿼리 무효화를 모두 처리
     return toast.promise(
-      createGroup(request),
+      createGroupMutation.mutateAsync(request),
       {
         loading: GROUP_ACTION_MESSAGES.CREATE.LOADING,
         success: GROUP_ACTION_MESSAGES.CREATE.SUCCESS,
@@ -66,12 +66,7 @@ export function useCreateGroupWithToast() {
       {
         id: 'create-group', // 중복 토스트 방지
       }
-    ).then(() => {
-      // 성공 시 처리는 mutation의 onSuccess에서 담당
-      createGroupMutation.mutate(request);
-    }).catch(() => {
-      // 에러는 이미 토스트로 표시됨
-    });
+    );
   };
 
   return {
