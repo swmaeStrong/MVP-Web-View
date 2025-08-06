@@ -7,7 +7,7 @@ import { Separator } from '@/shadcn/ui/separator';
 import { Textarea } from '@/shadcn/ui/textarea';
 import { spacing } from '@/styles/design-system';
 import { Check, Edit3, Plus, Trash2, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 
 interface GroundRulesProps {
   rules: string;
@@ -19,6 +19,8 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
+  const isAddingRule = useRef(false);
   
   // Parse rules string into array, filtering out empty lines
   const parsedRules = rules
@@ -72,14 +74,45 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
     setEditedRules(newRules);
   };
 
-  const handleAddRule = () => {
-    setEditedRules([...editedRules, '']);
-  };
+  const handleAddRule = useCallback(() => {
+    if (isAddingRule.current) {
+      return;
+    }
+    
+    isAddingRule.current = true;
+    const newRules = [...editedRules, ''];
+    setEditedRules(newRules);
+    
+    // 다음 프레임에서 새로 생성된 textarea에 포커스
+    setTimeout(() => {
+      const newIndex = newRules.length - 1;
+      textareaRefs.current[newIndex]?.focus();
+      isAddingRule.current = false;
+    }, 100);
+  }, [editedRules]);
 
   const handleRemoveRule = (index: number) => {
     if (editedRules.length > 1) {
       const newRules = editedRules.filter((_, i) => i !== index);
       setEditedRules(newRules);
+      // 삭제 후 이전 textarea에 포커스
+      setTimeout(() => {
+        const focusIndex = Math.max(0, index - 1);
+        textareaRefs.current[focusIndex]?.focus();
+      }, 0);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, index: number) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // 현재 값이 비어있지 않을 때만 새 룰 추가
+      const currentValue = editedRules[index]?.trim();
+      if (currentValue) {
+        handleAddRule();
+      }
     }
   };
 
@@ -111,10 +144,14 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
                     {index + 1}
                   </div>
                   <Textarea
+                    ref={(el) => {
+                      textareaRefs.current[index] = el;
+                    }}
                     value={rule}
                     onChange={(e) => handleRuleChange(index, e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(e, index)}
                     className="flex-1 min-h-[60px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900 resize-none"
-                    placeholder="Enter a ground rule..."
+                    placeholder="Enter a ground rule... (Press Enter to add next rule)"
                     rows={2}
                   />
                   {editedRules.length > 1 && (
