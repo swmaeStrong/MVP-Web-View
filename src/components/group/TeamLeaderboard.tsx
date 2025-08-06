@@ -70,12 +70,12 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
                 
                 {/* 아바타 */}
                 <UserProfileTooltip
+                  userId={member.userId}
                   userStats={{
                     nickname: member.nickname,
-                    currentStreak: Math.floor(Math.random() * 30) + 1, // Mock data - will be replaced with real data later
-                    maxStreak: Math.floor(Math.random() * 50) + 30, // Mock data - will be replaced with real data later
-                    totalPomodoroScore: formatScore(member.score), 
-                    totalSessions: Math.floor(Math.random() * 40) + 15, // Mock data - will be replaced with real data later
+                    currentStreak: 0, // fallback data
+                    maxStreak: 0, // fallback data
+                    totalSessions: 0, // fallback data
                     rank: member.rank,
                   }}
                   side="top"

@@ -80,12 +80,12 @@ const UserCard = memo(function UserCard({
         <div className='flex-1 min-w-0'>
           <div className='flex items-center space-x-2'>
             <UserProfileTooltip 
+              userId={user.userId}
               userStats={{
                 nickname: user.nickname,
-                currentStreak: Math.floor(Math.random() * 30) + 1, // Mock data - replace with actual API
-                maxStreak: Math.floor(Math.random() * 50) + 30, // Mock data
-                totalPomodoroScore: Math.floor(Math.random() * 1200) + 800, // Mock data
-                totalSessions: Math.floor(Math.random() * 50) + 10, // Mock data
+                currentStreak: 0, // fallback data
+                maxStreak: 0, // fallback data
+                totalSessions: 0, // fallback data
                 rank: rank,
               }}
               side="top"

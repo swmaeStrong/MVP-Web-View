@@ -17,6 +17,7 @@ export const QUERY_KEYS = {
   
   // 사용자 관련
   MY_RANK: 'myRank',
+  OTHER_USER_INFO: 'otherUserInfo',
   
   // 통계 관련
   USAGE_STATISTICS: 'usage-statistics',
@@ -197,6 +198,15 @@ export const groupNameCheckQueryKey = (groupName: string) => [
   groupName,
 ] as const;
 
+/**
+ * 타 유저 정보 쿼리키 생성
+ * @param userId - 조회할 사용자 ID
+ */
+export const otherUserInfoQueryKey = (userId: string) => [
+  QUERY_KEYS.OTHER_USER_INFO,
+  userId,
+] as const;
+
 // =============================================================================
 // 타입 정의
 // =============================================================================
@@ -218,6 +228,7 @@ export type QueryKeyTypes = {
   myGroups: ReturnType<typeof myGroupsQueryKey>;
   groupDetail: ReturnType<typeof groupDetailQueryKey>;
   groupNameCheck: ReturnType<typeof groupNameCheckQueryKey>;
+  otherUserInfo: ReturnType<typeof otherUserInfoQueryKey>;
 };
 
 // =============================================================================
