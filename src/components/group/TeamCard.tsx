@@ -51,7 +51,17 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
   };
 
   return (
-    <Card className={`${getCommonCardClass()} col-span-3 row-span-1 max-h-72`}>
+    <Card className={`${getCommonCardClass()} col-span-3 row-span-1 max-h-72 relative`}>
+      {isOwner && onDescriptionUpdate && !isEditingDescription && (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => setIsEditingDescription(true)}
+          className={`absolute top-4 right-4 h-6 w-6 p-0 rounded-md transition-all duration-200 ${getThemeTextColor('secondary')} hover:bg-gray-100 hover:${getThemeTextColor('primary')} dark:hover:bg-gray-700 z-10`}
+        >
+          <Edit3 className="h-3.5 w-3.5" />
+        </Button>
+      )}
       <CardContent className={spacing.inner.normal}>
         <div className="space-y-4">
           <div className="flex items-center gap-3">
@@ -89,7 +99,7 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
             </div>
           </div>
           
-          <div className={`mt-4 p-3 rounded-lg ${getThemeClass('componentSecondary')} relative`}>
+          <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
             {isEditingDescription ? (
               <div className="space-y-2 h-24">
                 <Textarea
@@ -121,21 +131,9 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
                 </div>
               </div>
             ) : (
-              <>
-                <p className={`text-sm h-24 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 ${getThemeTextColor('secondary')}`}>
-                  {description}
-                </p>
-                {isOwner && onDescriptionUpdate && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setIsEditingDescription(true)}
-                    className={`absolute top-2 right-2 h-6 w-6 p-0 rounded-md transition-all duration-200 ${getThemeTextColor('secondary')} hover:bg-gray-100 hover:${getThemeTextColor('primary')} dark:hover:bg-gray-700`}
-                  >
-                    <Edit3 className="h-3.5 w-3.5" />
-                  </Button>
-                )}
-              </>
+              <p className={`text-sm h-24 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 ${getThemeTextColor('secondary')}`}>
+                {description}
+              </p>
             )}
           </div>
         </div>
