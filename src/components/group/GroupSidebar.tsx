@@ -121,8 +121,10 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
                         : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10`
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm truncate">{group.name}</span>
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <span className="text-sm truncate max-w-[7rem]" title={group.name}>
+                        {group.name.length > 9 ? `${group.name.slice(0, 9)}...` : group.name}
+                      </span>
                     </div>
                   </Link>
                   
