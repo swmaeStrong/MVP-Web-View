@@ -1,12 +1,11 @@
 'use client';
 
 import { myGroupsQueryKey } from '@/config/constants/query-keys';
+import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useMyGroups } from '@/hooks/queries/useMyGroups';
 import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
-import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useGroupSearch } from '@/hooks/ui/useGroupSearch';
 import { useTheme } from '@/hooks/ui/useTheme';
-import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
@@ -171,99 +170,84 @@ export default function FindTeamPage() {
           ) : searchQuery.trim() !== '' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredGroups.map((group) => (
-            <Card key={group.groupId} className={`${getCommonCardClass()} h-52 hover:bg-gray-50 dark:hover:bg-gray-800`}>
-              <CardContent className="p-4 h-full">
-                <div className="space-y-2 h-full flex flex-col">
+            <Card key={group.groupId} className={`${getCommonCardClass()} h-52 hover:bg-gray-50 dark:hover:bg-gray-800 group relative`}>
+              <CardContent className="px-4 h-full">
+                <div className="h-full flex flex-col gap-3">
                   {/* Group Header */}
-                  <div className="flex items-center gap-4">
-                    <Avatar className="w-10 h-10 flex-shrink-0">
-                      <AvatarFallback className={`text-lg font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                        {group.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <div className={`text-lg font-bold ${getThemeTextColor('primary')} truncate`}>
-                          {group.name}
-                        </div>
+                  <div className="flex-shrink-0">
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <div className={`text-xl font-bold ${getThemeTextColor('primary')} truncate flex-1 min-w-0`}>
+                        {group.name}
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
                         {group.isPublic ? (
-                          <Globe className="h-4 w-4 text-green-500 flex-shrink-0" />
+                          <Globe className="h-5 w-5 text-green-500" />
                         ) : (
-                          <Lock className="h-4 w-4 text-orange-500 flex-shrink-0" />
+                          <Lock className="h-5 w-5 text-orange-500" />
                         )}
                         {isGroupMember(group.groupId) && (
                           <Badge 
                             variant="outline" 
-                            className="text-xs bg-green-50 border-green-200 text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400"
+                            className="text-xs bg-green-50 border-green-200 text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400 whitespace-nowrap"
                           >
                             Joined
                           </Badge>
                         )}
                       </div>
-                      
-                      {/* Owner Info */}
-                      <div className={`text-sm ${getThemeTextColor('secondary')}`}>
-                        by @{group.groupOwner.nickname}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Content Container - grows to fill space */}
-                  <div className="flex-1 space-y-2">
-                    {/* Description */}
-                    <div className="min-h-[1.5rem]">
-                      {group.description ? (
-                        <p className={`text-sm ${getThemeTextColor('secondary')} leading-snug line-clamp-1`}>
-                          {group.description}
-                        </p>
-                      ) : (
-                        <p className={`text-sm ${getThemeTextColor('secondary')} italic`}>
-                          No description available
-                        </p>
-                      )}
                     </div>
                     
-                    {/* Tags */}
-                    <div>
-                      {group.tags && group.tags.length > 0 ? (
-                        <div className="flex flex-wrap gap-1.5">
-                          {group.tags.slice(0, 2).map((tag) => (
-                            <Badge 
-                              key={tag} 
-                              variant="outline" 
-                              className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
-                            >
-                              <Hash className="h-3 w-3" />
-                              {tag}
-                            </Badge>
-                          ))}
-                          {group.tags.length > 2 && (
-                            <Badge 
-                              variant="outline" 
-                              className={`text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
-                            >
-                              +{group.tags.length - 2}
-                            </Badge>
-                          )}
-                        </div>
-                      ) : null}
+                    {/* Owner Info */}
+                    <div className={`text-sm ${getThemeTextColor('secondary')} truncate`}>
+                      Created by @{group.groupOwner.nickname}
                     </div>
                   </div>
                   
-                  {/* Action Button - fixed at bottom */}
+                  {/* Tags - max 2 lines */}
+                  {group.tags && group.tags.length > 0 && (
+                    <div className="flex-shrink-0">
+                      <div className="flex flex-wrap gap-1.5 max-h-16 overflow-hidden">
+                        {group.tags.map((tag) => (
+                          <Badge 
+                            key={tag} 
+                            variant="outline" 
+                            className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')} whitespace-nowrap`}
+                          >
+                            <Hash className="h-3 w-3 flex-shrink-0" />
+                            <span className="truncate max-w-16">{tag}</span>
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Description - 2 lines max with ellipsis */}
+                  <div className="flex-1 min-h-0">
+                    {group.description ? (
+                      <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed overflow-hidden line-clamp-2`}>
+                        {group.description}
+                      </p>
+                    ) : (
+                      <p className={`text-sm ${getThemeTextColor('secondary')} italic`}>
+                        No description available
+                      </p>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Centered Action Button - appears on hover */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   {isGroupMember(group.groupId) ? (
                     <Button
-                      className="w-full h-8 text-sm bg-gray-400 text-white cursor-not-allowed mt-auto"
-                      size="sm"
+                      className="bg-gray-700 text-white cursor-not-allowed shadow-lg hover:bg-gray-600 backdrop-blur-sm"
+                      size="default"
                       disabled
                     >
                       Already Joined
                     </Button>
                   ) : (
                     <Button
-                      className="w-full h-8 text-sm bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors mt-auto cursor-pointer"
-                      size="sm"
+                      className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors cursor-pointer shadow-lg backdrop-blur-sm"
+                      size="default"
                       onClick={() => handleViewDetail(group)}
                     >
                       See in Detail
@@ -332,28 +316,20 @@ export default function FindTeamPage() {
                 {/* Group Header */}
                 <Card className={getCommonCardClass()}>
                   <CardContent className="p-6">
-                    <div className="flex items-center gap-4 mb-4">
-                      <Avatar className="w-16 h-16">
-                        <AvatarFallback className={`text-xl font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                          {selectedGroup.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
+                    <div className="mb-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
+                          {selectedGroup.name}
+                        </div>
+                        {selectedGroup.isPublic ? (
+                          <Globe className="h-6 w-6 text-green-500 flex-shrink-0" />
+                        ) : (
+                          <Lock className="h-6 w-6 text-orange-500 flex-shrink-0" />
+                        )}
+                      </div>
                       
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <div className={`text-xl font-bold ${getThemeTextColor('primary')}`}>
-                            {selectedGroup.name}
-                          </div>
-                          {selectedGroup.isPublic ? (
-                            <Globe className="h-5 w-5 text-green-500 flex-shrink-0" />
-                          ) : (
-                            <Lock className="h-5 w-5 text-orange-500 flex-shrink-0" />
-                          )}
-                        </div>
-                        
-                        <div className={`text-sm ${getThemeTextColor('secondary')}`}>
-                          Created by @{selectedGroup.groupOwner.nickname}
-                        </div>
+                      <div className={`text-sm ${getThemeTextColor('secondary')}`}>
+                        Created by @{selectedGroup.groupOwner.nickname}
                       </div>
                     </div>
 
@@ -371,17 +347,8 @@ export default function FindTeamPage() {
                       <div className={`text-sm font-medium ${getThemeTextColor('primary')} mb-2`}>
                         Group Owner
                       </div>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="w-8 h-8">
-                          <AvatarFallback className={`text-sm font-medium ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                            {selectedGroup.groupOwner.nickname.slice(0, 2).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                            {selectedGroup.groupOwner.nickname}
-                          </div>
-                        </div>
+                      <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                        @{selectedGroup.groupOwner.nickname}
                       </div>
                     </div>
 
