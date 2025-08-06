@@ -52,6 +52,10 @@ declare namespace Group {
 		userId: string,
 	}
 
+	interface JoinGroupApiRequest {
+		password: string | null,
+	}
+
 	interface SetGroupGoalApiRequest {
 		category: 'Development' | 'Design' | 'Documentation' | 'Education',
 		goalSeconds: number,

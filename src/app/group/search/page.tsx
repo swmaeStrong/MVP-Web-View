@@ -35,7 +35,7 @@ export default function FindTeamPage() {
   const [sortBy, setSortBy] = useState<'created' | 'name'>('name');
   const [selectedGroup, setSelectedGroup] = useState<Group.GroupApiResponse | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [inviteCode, setInviteCode] = useState('');
+  const [password, setPassword] = useState('');
   const [isJoining, setIsJoining] = useState(false);
   const [joinError, setJoinError] = useState('');
 
@@ -64,7 +64,7 @@ export default function FindTeamPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedGroup(null);
-    setInviteCode('');
+    setPassword('');
     setJoinError('');
     setIsJoining(false);
   };
@@ -74,7 +74,12 @@ export default function FindTeamPage() {
     setJoinError('');
     
     try {
-      await joinGroup(group.groupId);
+      // public 그룹이면 password를 null로, private 그룹이면 입력된 password 사용
+      const request: Group.JoinGroupApiRequest = {
+        password: group.isPublic ? null : password || null
+      };
+      
+      await joinGroup(group.groupId, request);
       
       // 성공 시 내 그룹 목록 다시 불러오기
       await queryClient.invalidateQueries({
@@ -83,7 +88,7 @@ export default function FindTeamPage() {
       
       toast.success('Successfully joined the group!');
       handleCloseModal();
-      router.push(`/group/team/${group.groupId}`);
+      router.push(`/group/${group.groupId}/detail`);
     } catch (error) {
       console.error('Failed to join group:', error);
       setJoinError('Failed to join the group. Please try again.');
@@ -400,6 +405,24 @@ export default function FindTeamPage() {
                   </CardContent>
                 </Card>
                 
+                {/* Password Input for Private Groups */}
+                {!selectedGroup.isPublic && !isGroupMember(selectedGroup.groupId) && (
+                  <div className="space-y-2">
+                    <label htmlFor="password" className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                      Password required for private group
+                    </label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Enter group password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={isJoining}
+                      className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
+                    />
+                  </div>
+                )}
+                
                 {/* Error Message */}
                 {joinError && (
                   <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
@@ -421,7 +444,7 @@ export default function FindTeamPage() {
                     <Button
                       className="flex-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
                       onClick={() => handleJoinGroup(selectedGroup)}
-                      disabled={isJoining}
+                      disabled={isJoining || (!selectedGroup.isPublic && !password)}
                     >
                       {isJoining ? 'Joining...' : 'Join Group'}
                     </Button>
