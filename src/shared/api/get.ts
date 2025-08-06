@@ -81,6 +81,10 @@ export const getRecentUsageLog = (date: string = getKSTDateString()) =>
 export const getUserInfo = () =>
   parseApi<User.UserApiResponse>(API.get('/user/my-info'));
 
+// 타 유저 정보 조회
+export const getOtherUserInfo = (userId: string) =>
+  parseApi<User.OtherUserApiResponse>(API.get(`/user?userId=${userId}`));
+
 export const getTimeline = (userId: string, date: string = getKSTDateString()) =>
   parseApi<UsageLog.TimelineItem[]>(
     API.get(`/usage-log/time-line?userId=${userId}&date=${date}`)
