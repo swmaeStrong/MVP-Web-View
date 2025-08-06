@@ -237,21 +237,25 @@ export default function FindTeamPage() {
                 {/* Centered Action Button - appears on hover */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   {isGroupMember(group.groupId) ? (
-                    <Button
-                      className="bg-gray-700 text-white cursor-not-allowed shadow-lg hover:bg-gray-600 backdrop-blur-sm"
-                      size="default"
-                      disabled
-                    >
-                      Already Joined
-                    </Button>
+                    <div className="bg-white dark:bg-gray-900 rounded-lg">
+                      <Button
+                        className="bg-gray-600 text-white cursor-not-allowed shadow-lg hover:bg-gray-600"
+                        size="default"
+                        disabled
+                      >
+                        Already Joined
+                      </Button>
+                    </div>
                   ) : (
-                    <Button
-                      className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors cursor-pointer shadow-lg backdrop-blur-sm"
-                      size="default"
-                      onClick={() => handleViewDetail(group)}
-                    >
-                      See in Detail
-                    </Button>
+                    <div className="bg-white dark:bg-gray-900 rounded-lg">
+                      <Button
+                        className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors cursor-pointer shadow-lg"
+                        size="default"
+                        onClick={() => handleViewDetail(group)}
+                      >
+                        See in Detail
+                      </Button>
+                    </div>
                   )}
                 </div>
               </CardContent>
