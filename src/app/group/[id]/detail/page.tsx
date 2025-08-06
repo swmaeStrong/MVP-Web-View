@@ -266,7 +266,6 @@ export default function GroupDetailPage() {
         tags={groupDetail.tags}
         isOwner={isGroupOwner ?? false}
         onDescriptionUpdate={isGroupOwner ? handleDescriptionUpdate : undefined}
-        className="lg:col-span-3"
       />
 
       {/* 우측 상단 - 그라운드 룰 (2/5) */}
@@ -274,15 +273,14 @@ export default function GroupDetailPage() {
         rules={groupDetail.groundRule || ''}
         isOwner={isGroupOwner ?? false}
         onGroundRuleUpdate={isGroupOwner ? handleGroundRuleUpdate : undefined}
-        className="lg:col-span-2"
       />
 
       {/* Navigation Controls - 별도 컴포넌트 */}
-      <Card className={`${getCommonCardClass()} lg:col-span-3 row-span-1 flex items-center`}>
+      <Card className={`${getCommonCardClass()} col-span-3 row-span-1 flex items-center`}>
         <CardContent className="px-6 w-full">
           <div className="flex items-center justify-center relative w-full">
             {/* Date Navigation - 중앙 정렬 */}
-            <div className={`flex justify-center ${selectedPeriod === 'weekly' ? 'pr-20' : ''}`}>
+            <div className={`flex justify-center ${selectedPeriod === 'weekly' ? 'pr-12' : ''}`}>
               <DateNavigation
                 currentDate={selectedDate}
                 onPrevious={() => handleDateChange('prev')}
@@ -324,7 +322,6 @@ export default function GroupDetailPage() {
       <TeamLeaderboard 
         members={leaderboardMembers} 
         isLoading={isLeaderboardLoading}
-        className="lg:col-span-3"
       />
 
       {/* 우측 하단 - 오늘의 목표 설정 (2/5) */}
@@ -334,7 +331,6 @@ export default function GroupDetailPage() {
         groupMembers={groupDetail ? [groupDetail.owner, ...groupDetail.members] : []}
         selectedPeriod={selectedPeriod}
         date={selectedPeriod === 'weekly' ? getMondayOfWeek(dateStates[selectedPeriod]) : dateStates[selectedPeriod]}
-        className="lg:col-span-2"
       />
     </div>
   );

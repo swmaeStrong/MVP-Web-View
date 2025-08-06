@@ -12,10 +12,18 @@ declare namespace Group {
 		userId: string,
 		nickname: string,
 	}
+
+	interface GroupMemberInfo {
+		userId: string,
+		nickname: string,
+		profileImageUrl: string,
+		lastActivityTimestamp: number,
+		sessionMinutes: number,
+	}
 	
 	interface GroupDetailApiResponse {
 		owner: GroupUserInfo,
-		members: GroupUserInfo[],
+		members: GroupMemberInfo[],
 		name: string,
 		tags: string[],
 		description: string,

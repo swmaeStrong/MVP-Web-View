@@ -349,16 +349,20 @@ export default function GroupSettingsPage() {
                       }`}>
                         <div className="flex items-center gap-3">
                           <Avatar className="w-10 h-10">
-                            <AvatarFallback className={`text-sm font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                            {member.nickname.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
+                            {member.profileImageUrl ? (
+                              <img src={member.profileImageUrl} alt={member.nickname} className="w-full h-full object-cover" />
+                            ) : (
+                              <AvatarFallback className={`text-sm font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+                                {member.nickname.charAt(0)}
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
                         <div>
                           <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
                             {member.nickname}
                           </div>
                           <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            Member
+                            {member.sessionMinutes > 0 ? `${member.sessionMinutes}min today` : 'Member'}
                           </div>
                         </div>
                       </div>
@@ -691,16 +695,20 @@ export default function GroupSettingsPage() {
                     }`}>
                       <div className="flex items-center gap-3">
                         <Avatar className="w-8 h-8">
-                          <AvatarFallback className={`text-xs font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                            {member.nickname.charAt(0)}
-                          </AvatarFallback>
+                          {member.profileImageUrl ? (
+                            <img src={member.profileImageUrl} alt={member.nickname} className="w-full h-full object-cover rounded-full" />
+                          ) : (
+                            <AvatarFallback className={`text-xs font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
+                              {member.nickname.charAt(0)}
+                            </AvatarFallback>
+                          )}
                         </Avatar>
                         <div>
                           <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
                             {member.nickname}
                           </div>
                           <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            Member
+                            {member.sessionMinutes > 0 ? `${member.sessionMinutes}min` : 'Inactive'}
                           </div>
                         </div>
                       </div>

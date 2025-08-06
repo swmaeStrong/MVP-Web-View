@@ -1,12 +1,12 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
-import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Button } from '@/shadcn/ui/button';
-import { Textarea } from '@/shadcn/ui/textarea';
+import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Separator } from '@/shadcn/ui/separator';
+import { Textarea } from '@/shadcn/ui/textarea';
 import { spacing } from '@/styles/design-system';
-import { Edit3, Check, X, Plus, Trash2 } from 'lucide-react';
+import { Check, Edit3, Plus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface GroundRulesProps {
