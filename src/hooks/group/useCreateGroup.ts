@@ -30,9 +30,9 @@ export function useCreateGroup() {
         queryKey: myGroupsQueryKey(),
       });
       
-      // 성공 시 그룹 찾기 페이지로 이동
+      // 성공 시 그룹 검색 페이지로 이동
       setTimeout(() => {
-        router.push('/group/find');
+        router.push('/group/search');
       }, 1000);
     },
   });

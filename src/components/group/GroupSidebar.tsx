@@ -20,7 +20,7 @@ interface GroupSidebarProps {
 }
 
 const navItems: NavItem[] = [
-  { name: 'Search', href: '/group/find', icon: Search },
+  { name: 'Search', href: '/group/search', icon: Search },
   { name: 'Create', href: '/group/create', icon: Plus },
 ];
 
@@ -31,8 +31,8 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
 
   // Get selected group ID from URL - 메모이제이션
   const selectedGroupId = useMemo(() => {
-    if (!pathname.includes('/group/team/')) return null;
-    return pathname.split('/group/team/')[1]?.split('/')[0] || null;
+    if (!pathname.includes('/group/') || pathname === '/group' || pathname === '/group/create' || pathname === '/group/search') return null;
+    return pathname.split('/group/')[1]?.split('/')[0] || null;
   }, [pathname]);
 
   // isActive 함수 최적화 - useCallback으로 메모이제이션
@@ -42,12 +42,12 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
     }
     
     // 그룹 서브메뉴의 경우 정확한 매칭 필요
-    if (href.includes('/group/team/')) {
-      // Main 페이지: 정확히 해당 경로만 매칭
-      if (href.endsWith(`/group/team/${selectedGroupId}`)) {
+    if (href.includes('/group/') && selectedGroupId) {
+      // Detail 페이지: /group/[id]/detail 매칭
+      if (href.endsWith(`/group/${selectedGroupId}/detail`)) {
         return pathname === href;
       }
-      // Settings 페이지: settings로 끝나는 경우만 매칭
+      // Settings 페이지: /group/[id]/settings 매칭
       if (href.endsWith('/settings')) {
         return pathname === href;
       }
@@ -70,11 +70,11 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
     if (!selectedGroupId) return [];
     
     const baseItems = [
-      { name: 'Main', href: `/group/team/${selectedGroupId}`, icon: TrendingUp },
+      { name: 'Main', href: `/group/${selectedGroupId}/detail`, icon: TrendingUp },
     ];
     
     // 모든 멤버가 Settings 페이지에 접근 가능
-    baseItems.push({ name: 'Settings', href: `/group/team/${selectedGroupId}/settings`, icon: Settings });
+    baseItems.push({ name: 'Settings', href: `/group/${selectedGroupId}/settings`, icon: Settings });
     
     return baseItems;
   }, [selectedGroupId, groupInfo.isGroupOwner]);
@@ -108,7 +108,7 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
             
             {!error && groups.map((group) => {
               const isGroupSelected = selectedGroupId === group.groupId.toString();
-              const groupHref = `/group/team/${group.groupId}`;
+              const groupHref = `/group/${group.groupId}/detail`;
               
               return (
                 <div key={group.groupId}>

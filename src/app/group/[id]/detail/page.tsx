@@ -19,7 +19,7 @@ import { useParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import PageLoader from '../../../../components/common/PageLoader';
 
-export default function TeamDetailPage() {
+export default function GroupDetailPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const params = useParams();
   const currentUser = useCurrentUser();
@@ -104,8 +104,6 @@ export default function TeamDetailPage() {
 
     await updateGroupMutation.mutateAsync(request);
   };
-
-
 
   // 최소 날짜 제한 (8월 1일)
   const MIN_DATE = '2025-08-01';
@@ -268,6 +266,7 @@ export default function TeamDetailPage() {
         tags={groupDetail.tags}
         isOwner={isGroupOwner ?? false}
         onDescriptionUpdate={isGroupOwner ? handleDescriptionUpdate : undefined}
+        className="lg:col-span-3"
       />
 
       {/* 우측 상단 - 그라운드 룰 (2/5) */}
@@ -275,14 +274,15 @@ export default function TeamDetailPage() {
         rules={groupDetail.groundRule || ''}
         isOwner={isGroupOwner ?? false}
         onGroundRuleUpdate={isGroupOwner ? handleGroundRuleUpdate : undefined}
+        className="lg:col-span-2"
       />
 
       {/* Navigation Controls - 별도 컴포넌트 */}
-      <Card className={`${getCommonCardClass()} col-span-3 row-span-1 flex items-center`}>
+      <Card className={`${getCommonCardClass()} lg:col-span-3 row-span-1 flex items-center`}>
         <CardContent className="px-6 w-full">
           <div className="flex items-center justify-center relative w-full">
             {/* Date Navigation - 중앙 정렬 */}
-            <div className={`flex justify-center ${selectedPeriod === 'weekly' ? 'pr-12' : ''}`}>
+            <div className={`flex justify-center ${selectedPeriod === 'weekly' ? 'pr-20' : ''}`}>
               <DateNavigation
                 currentDate={selectedDate}
                 onPrevious={() => handleDateChange('prev')}
@@ -324,6 +324,7 @@ export default function TeamDetailPage() {
       <TeamLeaderboard 
         members={leaderboardMembers} 
         isLoading={isLeaderboardLoading}
+        className="lg:col-span-3"
       />
 
       {/* 우측 하단 - 오늘의 목표 설정 (2/5) */}
@@ -333,6 +334,7 @@ export default function TeamDetailPage() {
         groupMembers={groupDetail ? [groupDetail.owner, ...groupDetail.members] : []}
         selectedPeriod={selectedPeriod}
         date={selectedPeriod === 'weekly' ? getMondayOfWeek(dateStates[selectedPeriod]) : dateStates[selectedPeriod]}
+        className="lg:col-span-2"
       />
     </div>
   );
