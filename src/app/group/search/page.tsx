@@ -419,6 +419,20 @@ export default function FindTeamPage() {
                       onChange={(e) => setPassword(e.target.value)}
                       disabled={isJoining}
                       className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
+                      onPaste={(e) => {
+                        // 복붙 명시적 허용
+                        e.stopPropagation();
+                        // 기본 동작 유지하여 브라우저가 자동으로 처리하도록 함
+                      }}
+                      onContextMenu={(e) => {
+                        // 우클릭 메뉴 허용 (복사/붙여넣기 등)
+                        e.stopPropagation();
+                      }}
+                      style={{ 
+                        WebkitUserSelect: 'text', 
+                        userSelect: 'text' 
+                      }}
+                      autoComplete="current-password"
                     />
                   </div>
                 )}
