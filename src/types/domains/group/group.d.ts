@@ -29,6 +29,7 @@ declare namespace Group {
 		description: string,
 		groundRule: string,
 		isPublic: boolean,
+		password: string | null,
 		createdAt: string
 	}
 	

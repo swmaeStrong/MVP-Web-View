@@ -461,8 +461,8 @@ export default function GroupSettingsPage() {
 
   // 초대 코드 복사 함수
   const copyInviteCode = () => {
-    const inviteCode = `GROUP-${groupId}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
-    navigator.clipboard.writeText(inviteCode);
+    const textToCopy = groupDetail?.password || 'No password required';
+    navigator.clipboard.writeText(textToCopy);
     toast.success('Invite code copied to clipboard!');
   };
 
@@ -500,10 +500,10 @@ export default function GroupSettingsPage() {
           <Button
             variant="outline"
             onClick={copyInviteCode}
-            className="gap-2"
+            className={`gap-2 ${getThemeClass('component')} ${getThemeClass('border')}`}
           >
             <Copy className="h-4 w-4" />
-            Copy invite code
+            Invite Code: {groupDetail?.password || 'No password required'}
           </Button>
         </div>
       </div>
