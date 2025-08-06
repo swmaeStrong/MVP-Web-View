@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { useGroupTabStore } from '@/stores/groupTabStore';
 import PageLoader from '@/components/common/PageLoader';
+import { useGroupTabStore } from '@/stores/groupTabStore';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 export default function GroupPage() {
   const router = useRouter();
@@ -21,26 +21,26 @@ export default function GroupPage() {
       
       if (lastTab && lastTab.startsWith('/group/')) {
         // Validate the path format before redirecting
-        const validGroupPaths = ['/group/find', '/group/create'];
-        const isTeamPath = /^\/group\/team\/\d+(?:\/(?:settings|activities|calendar|members))?$/.test(lastTab);
+        const validGroupPaths = ['/group/search', '/group/create'];
+        const isGroupIdPath = /^\/group\/\d+(?:\/(?:detail|settings))?$/.test(lastTab);
         
-        if (validGroupPaths.includes(lastTab) || isTeamPath) {
+        if (validGroupPaths.includes(lastTab) || isGroupIdPath) {
           console.log('Redirecting to last tab:', lastTab);
           router.replace(lastTab);
         } else {
-          console.log('Invalid path, redirecting to /group/find');
-          router.replace('/group/find');
+          console.log('Invalid path, redirecting to /group/search');
+          router.replace('/group/search');
         }
       } else {
-        console.log('No valid last tab, redirecting to /group/find');
-        router.replace('/group/find');
+        console.log('No valid last tab, redirecting to /group/search');
+        router.replace('/group/search');
       }
       
       hasRedirected.current = true;
       setIsRedirecting(true);
     } catch (error) {
       console.error('Redirect error:', error);
-      router.replace('/group/find');
+      router.replace('/group/search');
       hasRedirected.current = true;
       setIsRedirecting(true);
     }
@@ -68,8 +68,8 @@ export default function GroupPage() {
     // 2초 후 강제 리다이렉트 (무한 로딩 방지)
     redirectTimer.current = setTimeout(() => {
       if (!hasRedirected.current) {
-        console.log('Force redirect to /group/find after 2 seconds');
-        router.replace('/group/find');
+        console.log('Force redirect to /group/search after 2 seconds');
+        router.replace('/group/search');
         hasRedirected.current = true;
         setIsRedirecting(true);
       }
