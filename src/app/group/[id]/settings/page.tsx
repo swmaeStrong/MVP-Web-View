@@ -52,6 +52,13 @@ export default function GroupSettingsPage() {
   // 권한 확인 - 그룹장만 접근 가능
   const isGroupOwner = groupDetail && currentUser && groupDetail.owner.userId === currentUser.id;
 
+  // 초대 코드 복사 함수
+  const copyInviteCode = () => {
+    const textToCopy = groupDetail?.password || 'No password required';
+    navigator.clipboard.writeText(textToCopy);
+    toast.success('Invite code copied to clipboard!');
+  };
+
   // Group mutations
   const updateGroupMutation = useUpdateGroup(groupId);
   const deleteGroupMutation = useDeleteGroup(groupId);
@@ -247,6 +254,17 @@ export default function GroupSettingsPage() {
                 </>
               )}
             </Badge>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              onClick={copyInviteCode}
+              className={`gap-2 ${getThemeClass('component')} ${getThemeClass('border')}`}
+            >
+              <Copy className="h-4 w-4" />
+              Invite Code: {groupDetail?.password || 'No password required'}
+            </Button>
           </div>
         </div>
 
@@ -458,13 +476,6 @@ export default function GroupSettingsPage() {
       </div>
     );
   }
-
-  // 초대 코드 복사 함수
-  const copyInviteCode = () => {
-    const textToCopy = groupDetail?.password || 'No password required';
-    navigator.clipboard.writeText(textToCopy);
-    toast.success('Invite code copied to clipboard!');
-  };
 
   return (
     <div className="space-y-6 px-6 py-6 max-w-6xl mx-auto">
