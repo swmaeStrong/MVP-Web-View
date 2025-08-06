@@ -3,24 +3,21 @@
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import PageLoader from '@/components/common/PageLoader';
 import StateDisplay from '@/components/common/StateDisplay';
-import { GroupNameInput } from '@/components/forms/GroupNameInput';
+import GroupActions from '@/components/group/GroupActions';
+import GroupBasicSettings from '@/components/group/GroupBasicSettings';
+import GroupHeader from '@/components/group/GroupHeader';
+import GroupInfo from '@/components/group/GroupInfo';
+import GroupMemberList from '@/components/group/GroupMemberList';
+import GroupMemberManagement from '@/components/group/GroupMemberManagement';
 import { GROUP_VALIDATION_MESSAGES } from '@/config/constants';
 import { useBanMember, useDeleteGroup, useLeaveGroup, useTransferOwnership, useUpdateGroup } from '@/hooks/group/useGroupSettings';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { UpdateGroupFormData, updateGroupSchema } from '@/schemas/groupSchema';
-import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
-import { Badge } from '@/shadcn/ui/badge';
-import { Button } from '@/shadcn/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shadcn/ui/dropdown-menu';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
-import { Input } from '@/shadcn/ui/input';
-import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { useCurrentUser } from '@/stores/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Copy, Crown, Globe, Hash, Lock, MoreVertical, Plus, Save, Trash2, UserMinus, Users, X } from 'lucide-react';
+import { Crown, Trash2, UserMinus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
@@ -75,8 +72,7 @@ export default function GroupSettingsPage() {
     },
   });
 
-  const { watch, setValue, getValues, reset } = form;
-  const watchedValues = watch();
+  const { reset } = form;
 
   // 그룹 데이터로 폼 초기화
   React.useEffect(() => {
@@ -88,20 +84,6 @@ export default function GroupSettingsPage() {
       });
     }
   }, [groupDetail, reset]);
-
-  // Add tag handler
-  const handleAddTag = (newTag: string) => {
-    const currentTags = getValues('tags');
-    if (newTag.trim() && !currentTags.includes(newTag.trim()) && currentTags.length < 5) {
-      setValue('tags', [...currentTags, newTag.trim()]);
-    }
-  };
-
-  // Remove tag handler
-  const handleRemoveTag = (tagToRemove: string) => {
-    const currentTags = getValues('tags');
-    setValue('tags', currentTags.filter(tag => tag !== tagToRemove));
-  };
 
   // Validation error handler
   const onError = (errors: any) => {
@@ -229,227 +211,35 @@ export default function GroupSettingsPage() {
     return (
       <div className="space-y-6 px-6 py-6 max-w-4xl mx-auto">
         {/* 헤더 */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-              {groupDetail.name}
-            </h1>
-            <Badge 
-              variant={groupDetail.isPublic ? "default" : "secondary"} 
-              className={`text-xs flex items-center gap-1 ${
-                groupDetail.isPublic 
-                  ? 'bg-green-100 text-green-700 border-green-200 hover:bg-green-200' 
-                  : 'bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-200'
-              }`}
-            >
-              {groupDetail.isPublic ? (
-                <>
-                  <Globe className="h-3 w-3" />
-                  Public
-                </>
-              ) : (
-                <>
-                  <Lock className="h-3 w-3" />
-                  Private
-                </>
-              )}
-            </Badge>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={copyInviteCode}
-              className={`gap-2 ${getThemeClass('component')} ${getThemeClass('border')}`}
-            >
-              <Copy className="h-4 w-4" />
-              Invite Code: {groupDetail?.password || 'No password required'}
-            </Button>
-          </div>
-        </div>
+        <GroupHeader 
+          groupName={groupDetail.name}
+          isPublic={groupDetail.isPublic}
+          password={groupDetail.password}
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* 그룹 정보 */}
-          <div className="lg:col-span-2">
-            <Card className={getCommonCardClass()}>
-              <CardHeader>
-                <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-                  Group Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {groupDetail.description && (
-                  <div>
-                    <div className={`text-sm font-medium ${getThemeTextColor('secondary')} mb-1`}>
-                      Description
-                    </div>
-                    <p className={`text-sm ${getThemeTextColor('primary')}`}>
-                      {groupDetail.description}
-                    </p>
-                  </div>
-                )}
-                
-                {groupDetail.groundRule && (
-                  <div>
-                    <div className={`text-sm font-medium ${getThemeTextColor('secondary')} mb-1`}>
-                      Ground Rules
-                    </div>
-                    <p className={`text-sm ${getThemeTextColor('primary')} whitespace-pre-line`}>
-                      {groupDetail.groundRule}
-                    </p>
-                  </div>
-                )}
-
-                {groupDetail.tags && groupDetail.tags.length > 0 && (
-                  <div>
-                    <div className={`text-sm font-medium ${getThemeTextColor('secondary')} mb-2`}>
-                      Tags
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {groupDetail.tags.map((tag) => (
-                        <Badge 
-                          key={tag} 
-                          variant="secondary" 
-                          className="gap-1"
-                        >
-                          <Hash className="h-3 w-3" />
-                          <span className="text-xs">{tag}</span>
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* 멤버 목록 */}
-            <Card className={`${getCommonCardClass()} mt-6`}>
-              <CardHeader>
-                <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-                  Group Members ({groupDetail.members.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {/* 그룹장 */}
-                  <div className={`flex items-center justify-between p-3 rounded-lg ${
-                    currentUser && groupDetail.owner.userId === currentUser.id
-                      ? 'bg-gray-50 dark:bg-gray-800'
-                      : ''
-                  }`}>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="w-10 h-10">
-                        <AvatarFallback className={`text-sm font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                          {groupDetail.owner.nickname.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                          {groupDetail.owner.nickname}
-                        </div>
-                        <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                          Group Owner
-                        </div>
-                      </div>
-                    </div>
-                    <Crown className="h-5 w-5 text-amber-500" />
-                  </div>
-                  
-                  {/* 일반 멤버 */}
-                  {groupDetail.members.filter(member => member.userId !== groupDetail.owner.userId).map((member) => {
-                    const isCurrentUser = currentUser && member.userId === currentUser.id;
-                    
-                    return (
-                      <div key={member.userId} className={`flex items-center justify-between p-3 rounded-lg ${
-                        isCurrentUser
-                          ? 'bg-gray-50 dark:bg-gray-800'
-                          : ''
-                      }`}>
-                        <div className="flex items-center gap-3">
-                          <Avatar className="w-10 h-10">
-                            {member.profileImageUrl ? (
-                              <img src={member.profileImageUrl} alt={member.nickname} className="w-full h-full object-cover" />
-                            ) : (
-                              <AvatarFallback className={`text-sm font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                                {member.nickname.charAt(0)}
-                              </AvatarFallback>
-                            )}
-                          </Avatar>
-                        <div>
-                          <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                            {member.nickname}
-                          </div>
-                          <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            {member.sessionMinutes > 0 ? `${member.sessionMinutes}min today` : 'Member'}
-                          </div>
-                        </div>
-                      </div>
-                      <Users className="h-5 w-5 text-gray-400" />
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {/* 그룹 정보 및 멤버 목록 */}
+          <GroupMemberList 
+            owner={groupDetail.owner}
+            members={groupDetail.members}
+            currentUserId={currentUser?.id}
+            description={groupDetail.description}
+            groundRule={groupDetail.groundRule}
+            tags={groupDetail.tags}
+          />
 
           {/* 사이드바 */}
           <div className="lg:col-span-1 space-y-6">
-            {/* 그룹 정보 */}
-            <Card className={getCommonCardClass()}>
-              <CardHeader>
-                <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-                  Group Details
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className={`text-sm ${getThemeTextColor('secondary')}`}>Total Members</span>
-                    <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                      {groupDetail.members.length}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className={`text-sm ${getThemeTextColor('secondary')}`}>Created</span>
-                    <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                      {new Date(groupDetail.createdAt).toLocaleDateString('ko-KR')}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className={`text-sm ${getThemeTextColor('secondary')}`}>Active Days</span>
-                    <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                      {new Date(groupDetail.createdAt).getFullYear() === new Date().getFullYear() 
-                        ? Math.ceil((new Date().getTime() - new Date(groupDetail.createdAt).getTime()) / (1000 * 60 * 60 * 24))
-                        : '365+'
-                      } days
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <GroupInfo 
+              totalMembers={groupDetail.members.length}
+              createdAt={groupDetail.createdAt}
+            />
 
-            {/* 그룹 탈퇴 */}
-            <Card className={`${getCommonCardClass()} border-red-200`}>
-              <CardHeader>
-                <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-                  Leave Group
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className={`text-sm ${getThemeTextColor('secondary')} mb-4`}>
-                  Are you sure you want to leave this group? You can rejoin later if the group is public.
-                </p>
-                <Button
-                  variant="destructive"
-                  onClick={() => setShowDeleteDialog(true)}
-                  className="w-full"
-                  size="sm"
-                >
-                  Leave Group
-                </Button>
-              </CardContent>
-            </Card>
+            <GroupActions 
+              isOwner={false}
+              groupName={groupDetail.name}
+              onLeaveGroup={() => setShowDeleteDialog(true)}
+            />
           </div>
         </div>
 
@@ -480,345 +270,50 @@ export default function GroupSettingsPage() {
   return (
     <div className="space-y-6 px-6 py-6 max-w-6xl mx-auto">
       {/* 헤더 */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h1 className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-            {groupDetail.name}
-          </h1>
-          <Badge 
-            variant={groupDetail.isPublic ? "default" : "secondary"} 
-            className={`text-xs flex items-center gap-1 ${
-              groupDetail.isPublic 
-                ? 'bg-green-100 text-green-700 border-green-200 hover:bg-green-200' 
-                : 'bg-orange-100 text-orange-700 border-orange-200 hover:bg-orange-200'
-            }`}
-          >
-            {groupDetail.isPublic ? (
-              <>
-                <Globe className="h-3 w-3" />
-                Public
-              </>
-            ) : (
-              <>
-                <Lock className="h-3 w-3" />
-                Private
-              </>
-            )}
-          </Badge>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            onClick={copyInviteCode}
-            className={`gap-2 ${getThemeClass('component')} ${getThemeClass('border')}`}
-          >
-            <Copy className="h-4 w-4" />
-            Invite Code: {groupDetail?.password || 'No password required'}
-          </Button>
-        </div>
-      </div>
+      <GroupHeader 
+        groupName={groupDetail.name}
+        isPublic={groupDetail.isPublic}
+        password={groupDetail.password}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Form */}
         <div className="lg:col-span-2">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onValidSubmit, onError)} className="space-y-4">
-              {/* 기본 설정 카드 */}
-              <Card className={getCommonCardClass()}>
-                <CardHeader>
-                  <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-                    Basic Settings
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* 그룹 이름 */}
-                  <GroupNameInput
-                    form={form}
-                    name="name"
-                    label="Group Name"
-                    placeholder="Enter group name"
-                    excludeFromValidation={groupDetail?.name}
-                  />
-
-                  {/* 공개 설정 */}
-                  <FormField
-                    control={form.control}
-                    name="isPublic"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={`text-sm font-medium ${getThemeTextColor('secondary')}`}>
-                          Privacy Setting
-                        </FormLabel>
-                        <FormControl>
-                          <ToggleGroup 
-                            type="single" 
-                            value={field.value ? 'public' : 'private'} 
-                            onValueChange={(value) => {
-                              // 값이 없으면 현재 값을 유지 (선택 해제 방지)
-                              if (value) {
-                                field.onChange(value === 'public');
-                              }
-                            }}
-                            className="w-full bg-white border border-gray-200 rounded-md mt-2"
-                          >
-                            <ToggleGroupItem 
-                              value="public" 
-                              className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50"
-                            >
-                              <Globe className="h-4 w-4" />
-                              <div className="text-left">
-                                <div className="font-medium">Public</div>
-                                <div className="text-xs opacity-75">Anyone can join</div>
-                              </div>
-                            </ToggleGroupItem>
-                            <ToggleGroupItem 
-                              value="private" 
-                              className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50"
-                            >
-                              <Lock className="h-4 w-4" />
-                              <div className="text-left">
-                                <div className="font-medium">Private</div>
-                                <div className="text-xs opacity-75">Invite code required</div>
-                              </div>
-                            </ToggleGroupItem>
-                          </ToggleGroup>
-                        </FormControl>
-                        <FormDescription className={`text-xs ${getThemeTextColor('secondary')} mt-2`}>
-                          Public groups can be discovered and joined by other users
-                        </FormDescription>
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* 태그 */}
-                  <FormField
-                    control={form.control}
-                    name="tags"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className={`text-sm font-medium ${getThemeTextColor('secondary')}`}>
-                          Tags
-                        </FormLabel>
-                        <div className="mt-2 space-y-3">
-                          {field.value.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                              {field.value.map((tag) => (
-                                <Badge 
-                                  key={tag} 
-                                  variant="secondary" 
-                                  className="gap-1 pl-2 pr-1 py-1"
-                                >
-                                  <Hash className="h-3 w-3" />
-                                  <span className="text-xs">{tag}</span>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleRemoveTag(tag)}
-                                    className="ml-1 hover:bg-gray-200 rounded-full p-0.5 transition-colors"
-                                  >
-                                    <X className="h-3 w-3" />
-                                  </button>
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-                          
-                          <TagInput
-                            onAddTag={handleAddTag}
-                            disabled={field.value.length >= 5}
-                          />
-                          
-                          <FormDescription className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            You can add up to 5 tags
-                          </FormDescription>
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-
-              {/* 저장 버튼 */}
-              <div className="flex justify-end">
-                <Button
-                  type="submit"
-                  className="gap-2 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
-                  disabled={form.formState.isSubmitting || updateGroupMutation.isPending}
-                >
-                  <Save className="h-4 w-4" />
-                  {(form.formState.isSubmitting || updateGroupMutation.isPending) ? 'Saving...' : 'Save Changes'}
-                </Button>
-              </div>
-            </form>
-          </Form>
+          <GroupBasicSettings 
+            form={form}
+            onSubmit={onValidSubmit}
+            onError={onError}
+            isSubmitting={form.formState.isSubmitting || updateGroupMutation.isPending}
+            excludeFromValidation={groupDetail?.name}
+          />
         </div>
 
         {/* Sidebar */}
         <div className="lg:col-span-1 space-y-6">
-          {/* 멤버 관리 */}
-          <Card className={getCommonCardClass()}>
-            <CardHeader>
-              <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-                Member Management
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {/* 그룹장 */}
-                <div className={`flex items-center justify-between p-2 rounded-lg ${
-                  currentUser && groupDetail.owner.userId === currentUser.id
-                    ? 'bg-gray-50 dark:bg-gray-800'
-                    : ''
-                }`}>
-                  <div className="flex items-center gap-3">
-                    <Avatar className="w-8 h-8">
-                      <AvatarFallback className={`text-xs font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                        {groupDetail.owner.nickname.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                        {groupDetail.owner.nickname}
-                      </div>
-                      <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                        Owner
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <div className="h-8 w-8 flex items-center justify-center">
-                      <Crown className="h-4 w-4 text-amber-500" />
-                    </div>
-                  </div>
-                </div>
-                
-                {/* 일반 멤버 */}
-                {groupDetail.members.filter(member => member.userId !== groupDetail.owner.userId).map((member) => {
-                  const isCurrentUser = currentUser && member.userId === currentUser.id;
-                  
-                  return (
-                    <div key={member.userId} className={`flex items-center justify-between p-2 rounded-lg ${
-                      isCurrentUser
-                        ? 'bg-gray-50 dark:bg-gray-800'
-                        : ''
-                    }`}>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="w-8 h-8">
-                          {member.profileImageUrl ? (
-                            <img src={member.profileImageUrl} alt={member.nickname} className="w-full h-full object-cover rounded-full" />
-                          ) : (
-                            <AvatarFallback className={`text-xs font-semibold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                              {member.nickname.charAt(0)}
-                            </AvatarFallback>
-                          )}
-                        </Avatar>
-                        <div>
-                          <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                            {member.nickname}
-                          </div>
-                          <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                            {member.sessionMinutes > 0 ? `${member.sessionMinutes}min` : 'Inactive'}
-                          </div>
-                        </div>
-                      </div>
-                    
-                    <div className="flex items-center">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-8 w-8 text-gray-600 hover:text-gray-700"
-                          >
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-44">
-                          <DropdownMenuItem
-                            className="cursor-pointer"
-                            onClick={() => {
-                              setSelectedMember(member);
-                              setShowTransferDialog(true);
-                            }}
-                          >
-                            Transfer Ownership
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-red-600 focus:text-red-700 cursor-pointer"
-                            onClick={() => {
-                              setSelectedMember(member);
-                              setShowBanDialog(true);
-                            }}
-                          >
-                            Remove Member
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
+          <GroupMemberManagement 
+            owner={groupDetail.owner}
+            members={groupDetail.members}
+            currentUserId={currentUser?.id}
+            onTransferOwnership={(member) => {
+              setSelectedMember(member);
+              setShowTransferDialog(true);
+            }}
+            onBanMember={(member) => {
+              setSelectedMember(member);
+              setShowBanDialog(true);
+            }}
+          />
 
-          {/* 그룹 정보 */}
-          <Card className={getCommonCardClass()}>
-            <CardHeader>
-              <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-                Group Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className={`text-sm ${getThemeTextColor('secondary')}`}>Total Members</span>
-                  <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                    {groupDetail.members.length}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className={`text-sm ${getThemeTextColor('secondary')}`}>Created</span>
-                  <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                    {new Date(groupDetail.createdAt).toLocaleDateString('ko-KR')}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className={`text-sm ${getThemeTextColor('secondary')}`}>Active Days</span>
-                  <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                    {new Date(groupDetail.createdAt).getFullYear() === new Date().getFullYear() 
-                      ? Math.ceil((new Date().getTime() - new Date(groupDetail.createdAt).getTime()) / (1000 * 60 * 60 * 24))
-                      : '365+'
-                    } days
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <GroupInfo 
+            totalMembers={groupDetail.members.length}
+            createdAt={groupDetail.createdAt}
+          />
 
-          {/* 그룹 삭제 */}
-          <Card className={`${getCommonCardClass()} border-red-200`}>
-            <CardHeader>
-              <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-                Delete Group
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className={`text-sm ${getThemeTextColor('secondary')} mb-4`}>
-                Deleting this group will permanently remove all data and cannot be undone.
-              </p>
-              <Button
-                variant="destructive"
-                onClick={() => setShowDeleteDialog(true)}
-                className="w-full"
-                size="sm"
-              >
-                Delete Group
-              </Button>
-            </CardContent>
-          </Card>
+          <GroupActions 
+            isOwner={true}
+            groupName={groupDetail.name}
+            onDeleteGroup={() => setShowDeleteDialog(true)}
+          />
         </div>
       </div>
 
@@ -910,43 +405,3 @@ export default function GroupSettingsPage() {
   );
 }
 
-// Tag Input Component
-function TagInput({ onAddTag, disabled }: { onAddTag: (tag: string) => void, disabled: boolean }) {
-  const [newTag, setNewTag] = React.useState('');
-
-  const handleAddTag = () => {
-    if (newTag.trim()) {
-      onAddTag(newTag.trim());
-      setNewTag('');
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddTag();
-    }
-  };
-
-  return (
-    <div className="flex gap-2">
-      <Input
-        type="text"
-        placeholder="Add tag (e.g., React, Python)..."
-        value={newTag}
-        onChange={(e) => setNewTag(e.target.value)}
-        onKeyPress={handleKeyPress}
-        className="flex-1"
-        disabled={disabled}
-      />
-      <Button
-        type="button"
-        onClick={handleAddTag}
-        disabled={!newTag.trim() || disabled}
-        size="sm"
-      >
-        <Plus className="h-4 w-4" />
-      </Button>
-    </div>
-  );
-}
