@@ -88,17 +88,8 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
                       size="lg"
                       isCurrentUser={isCurrentUser}
                       showBorder={false}
-                      className={`ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-2 hover:ring-gray-500 transition-all duration-200 ${
-                        member.isOnline ? 'ring-green-500 dark:ring-green-400' : ''
-                      }`}
+                      className="ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-2 hover:ring-gray-500 transition-all duration-200"
                     />
-                    {/* 온라인 상태 표시 */}
-                    <span className={`absolute -right-0 -bottom-0 size-4 rounded-full ${
-                      member.isOnline 
-                        ? 'bg-green-500 dark:bg-green-400' 
-                        : 'bg-gray-400 dark:bg-gray-500'
-                    }`}>
-                    </span>
                     {/* 랭킹 배지 */}
                     {member.rank <= 3 && (
                       <span className={`absolute -top-1 -left-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
