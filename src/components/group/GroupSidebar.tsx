@@ -129,7 +129,7 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
             </div>
           )}
           
-          <div className="space-y-1 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+          <div className="space-y-1">
             {error && (
               <div className="px-4 py-2">
                 <span className={`text-xs ${getThemeTextColor('secondary')}`}>
@@ -170,8 +170,8 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <span className="text-sm truncate max-w-[7.5rem]" title={group.name}>
-                        {group.name.length > 15 ? `${group.name.slice(0, 15)}...` : group.name}
+                      <span className="text-sm truncate" title={group.name}>
+                        {group.name}
                       </span>
                     </div>
                   </Link>
