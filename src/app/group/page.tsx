@@ -7,17 +7,21 @@ import { useEffect, useRef, useState } from 'react';
 
 export default function GroupPage() {
   const router = useRouter();
-  const getLastVisitedTab = useGroupTabStore((state) => state.getLastVisitedTab);
+  const { lastVisitedTab, getLastVisitedTab, _hasHydrated } = useGroupTabStore((state) => ({
+    lastVisitedTab: state.lastVisitedTab,
+    getLastVisitedTab: state.getLastVisitedTab,
+    _hasHydrated: state._hasHydrated
+  }));
   const [isRedirecting, setIsRedirecting] = useState(false);
   const hasRedirected = useRef(false);
   const redirectTimer = useRef<NodeJS.Timeout | null>(null);
 
   // 즉시 실행되는 리다이렉트 함수
   const performRedirect = () => {
-    if (hasRedirected.current) return;
+    if (hasRedirected.current || !_hasHydrated) return;
     
     try {
-      const lastTab = getLastVisitedTab();
+      const lastTab = lastVisitedTab || getLastVisitedTab();
       
       if (lastTab && lastTab.startsWith('/group/')) {
         // Validate the path format before redirecting
@@ -46,42 +50,38 @@ export default function GroupPage() {
     }
   };
 
-  // useEffect로 리다이렉트 시도
+  // useEffect로 리다이렉트 시도 - hydration과 lastVisitedTab 변경 감지
+  useEffect(() => {
+    if (hasRedirected.current || !_hasHydrated) return;
+    
+    // 약간의 지연을 두고 리다이렉트 (zustand persist 로딩 완료 대기)
+    const timer = setTimeout(() => {
+      performRedirect();
+    }, 50);
+    
+    return () => clearTimeout(timer);
+  }, [_hasHydrated, lastVisitedTab]);
+
+  // 백업 리다이렉트 (무한 로딩 방지)
   useEffect(() => {
     if (hasRedirected.current) return;
     
-    performRedirect();
-  }, [router, getLastVisitedTab]);
-
-  // 컴포넌트 마운트 후 즉시 실행 (useEffect 백업)
-  useEffect(() => {
-    if (hasRedirected.current) return;
-    
-    // 100ms 후 재시도 (useEffect가 안 걸린 경우 대비)
-    const immediateTimer = setTimeout(() => {
-      if (!hasRedirected.current) {
-        console.log('useEffect fallback - performing redirect');
-        performRedirect();
-      }
-    }, 100);
-
-    // 2초 후 강제 리다이렉트 (무한 로딩 방지)
+    // 3초 후 강제 리다이렉트 (무한 로딩 방지)
     redirectTimer.current = setTimeout(() => {
       if (!hasRedirected.current) {
-        console.log('Force redirect to /group/search after 2 seconds');
+        console.log('Force redirect to /group/search after 3 seconds');
         router.replace('/group/search');
         hasRedirected.current = true;
         setIsRedirecting(true);
       }
-    }, 2000);
+    }, 3000);
 
     return () => {
-      clearTimeout(immediateTimer);
       if (redirectTimer.current) {
         clearTimeout(redirectTimer.current);
       }
     };
-  }, []);
+  }, [router]);
 
   // Show loading while redirecting instead of null
   return <PageLoader message="Redirecting to your last group..." />;
