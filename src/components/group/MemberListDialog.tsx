@@ -3,6 +3,7 @@
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
+import { useCurrentUser } from '@/stores/userStore';
 
 interface MemberListDialogProps {
   open: boolean;
@@ -20,6 +21,7 @@ export default function MemberListDialog({
   groupMembers = []
 }: MemberListDialogProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
+  const currentUser = useCurrentUser();
 
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -40,6 +42,13 @@ export default function MemberListDialog({
   const members = type === 'achieved' 
     ? goal.members.filter(m => m.currentSeconds >= goal.goalSeconds)
     : goal.members.filter(m => m.currentSeconds < goal.goalSeconds);
+
+  // 현재 사용자를 맨 앞으로 정렬
+  const sortedMembers = [...members].sort((a, b) => {
+    if (a.userId === currentUser?.id) return -1;
+    if (b.userId === currentUser?.id) return 1;
+    return 0;
+  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -70,20 +79,22 @@ export default function MemberListDialog({
 
           {/* 스크롤 가능한 멤버 리스트 */}
           <div className="max-h-[320px] overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800">
-            {members.map((member, index) => (
-              <div key={member.userId} className={`flex items-center gap-3 p-3 rounded-lg hover:${getThemeClass('componentSecondary')} border ${getThemeClass('border')}`}>
-                <Avatar className="w-8 h-8">
-                  <AvatarImage src="" />
-                  <AvatarFallback className={`text-xs font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
-                    {getUserNickname(member.userId).slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className={`text-sm font-medium ${getThemeTextColor('primary')} flex-1`}>
-                  {getUserNickname(member.userId)}
-                </div>
-                <div className={`text-xs ${getThemeTextColor('secondary')} mr-3`}>
-                  {formatTime(member.currentSeconds)}
-                </div>
+            {sortedMembers.map((member, index) => {
+              const isCurrentUser = member.userId === currentUser?.id;
+              return (
+                <div key={member.userId} className={`flex items-center gap-3 p-3 rounded-lg hover:${getThemeClass('componentSecondary')} border ${isCurrentUser ? 'border-gray-400 dark:border-gray-500' : getThemeClass('border')}`}>
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src="" />
+                    <AvatarFallback className={`text-xs font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
+                      {getUserNickname(member.userId).slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className={`text-sm font-medium ${getThemeTextColor('primary')} flex-1`}>
+                    {getUserNickname(member.userId)}
+                  </div>
+                  <div className={`text-xs ${getThemeTextColor('secondary')} mr-3`}>
+                    {formatTime(member.currentSeconds)}
+                  </div>
                 {type === 'achieved' && (
                   <div className="ml-auto">
                     <span className="text-xs text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full font-medium">
@@ -98,8 +109,9 @@ export default function MemberListDialog({
                     </span>
                   </div>
                 )}
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
 
           {/* 통계 정보 */}
