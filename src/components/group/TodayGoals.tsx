@@ -93,7 +93,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
               className={`-ml-2 relative first:ml-0`} 
               style={{ zIndex: displayedUserIds.length - index }}
             >
-              <Avatar className={`w-6 h-6 ${isCurrentUser ? `ring-2 ${isAchieved ? 'ring-green-500 dark:ring-green-400' : 'ring-red-500 dark:ring-red-400'}` : 'ring-1 ring-gray-200 dark:ring-gray-700 group-hover:ring-gray-400 dark:group-hover:ring-gray-500'}`}>
+              <Avatar className={`w-6 h-6 ${isCurrentUser ? `ring-2 ${isAchieved ? 'ring-green-400 dark:ring-green-500' : 'ring-red-400 dark:ring-red-500'}` : 'ring-1 ring-gray-200 dark:ring-gray-700 group-hover:ring-gray-400 dark:group-hover:ring-gray-500'}`}>
                 <AvatarImage src="" />
                 <AvatarFallback className={`text-[8px] font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100`}>
                   {getUserNickname(userId).slice(0, 2).toUpperCase()}
@@ -269,7 +269,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
                 const isCurrentUserAchieved = currentUserMember ? currentUserMember.currentSeconds >= goal.goalSeconds : false;
                 
                 return (
-                  <div key={`${goal.category}-${goal.periodType}`} className={`p-3 rounded-lg ${getThemeClass('componentSecondary')} border-2 ${isCurrentUserAchieved ? 'border-green-500 dark:border-green-400' : currentUserMember ? 'border-red-500 dark:border-red-400' : 'border-transparent'}`}>
+                  <div key={`${goal.category}-${goal.periodType}`} className={`p-3 rounded-lg ${getThemeClass('componentSecondary')} border-2 ${isCurrentUserAchieved ? 'border-green-400 dark:border-green-500' : currentUserMember ? 'border-red-400 dark:border-red-500' : 'border-transparent'}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className={`w-5 h-5 rounded-full flex items-center justify-center ${isCurrentUserAchieved ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'}`}>
