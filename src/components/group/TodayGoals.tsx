@@ -107,7 +107,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
           <div className="-ml-2 relative">
             <div className="w-6 h-6 rounded-full ring-1 ring-gray-200 dark:ring-gray-700 group-hover:ring-gray-400 dark:group-hover:ring-gray-500 bg-white dark:bg-gray-800 flex items-center justify-center">
               <span className="text-[8px] font-semibold text-gray-900 dark:text-white group-hover:text-gray-900 dark:group-hover:text-white">
-                +{remainingCount}
+                +{remainingCount > 99 ? '99+' : remainingCount}
               </span>
             </div>
           </div>
@@ -190,7 +190,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
   
   if (isLoading) {
     return (
-      <Card className={`${getCommonCardClass()} col-span-2 row-span-1 h-[500px] flex flex-col`}>
+      <Card className={`${getCommonCardClass()} col-span-2 row-span-1 h-[400px] lg:h-[500px] flex flex-col`}>
         <CardHeader>
           <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
             Today's Goal
@@ -207,7 +207,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
   }
 
   return (
-    <Card className={`${getCommonCardClass()} col-span-2 row-span-1 h-[500px] flex flex-col`}>
+    <Card className={`${getCommonCardClass()} col-span-2 row-span-1 h-[400px] lg:h-[500px] flex flex-col`}>
       <CardHeader className="text-center relative flex-shrink-0">
         <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
           {selectedPeriod === 'daily' ? "Daily Goal" : "Weekly Goal"}

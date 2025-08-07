@@ -1,12 +1,12 @@
 'use client';
 
-import UserProfileTooltip from '@/components/common/UserProfileTooltip';
 import { UserAvatar } from '@/components/common';
+import UserProfileTooltip from '@/components/common/UserProfileTooltip';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Separator } from '@/shadcn/ui/separator';
 import { spacing } from '@/styles/design-system';
-import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 
 interface TeamLeaderboardProps {
   members: Group.GroupLeaderboardMember[];
@@ -59,7 +59,7 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
   }
 
   return (
-    <Card className={`${getCommonCardClass()} col-span-3 row-span-1 h-[500px] flex flex-col`}>
+    <Card className={`${getCommonCardClass()} col-span-3 row-span-1 h-[400px] lg:h-[500px] flex flex-col`}>
       <CardHeader className="flex-shrink-0">
         <div className={`text-lg font-bold ${getThemeTextColor('primary')} text-center`}>
           Leaderboard
@@ -68,7 +68,22 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
       </CardHeader>
       <CardContent className={`${spacing.inner.normal} flex-1 overflow-hidden`}>
         <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pr-2">
+          {members.length === 0 ? (
+            <div className="h-full flex items-center justify-center">
+              <div className={`text-center ${getThemeTextColor('secondary')}`}>
+                <div className="text-lg mb-2">No members yet</div>
+                <div className="text-sm">Members will appear here once they start tracking time</div>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Member count indicator */}
+              {members.length > 6 && (
+                <div className={`text-xs ${getThemeTextColor('secondary')} mb-3 text-center`}>
+                  Showing {members.length} member{members.length !== 1 ? 's' : ''}
+                </div>
+              )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pr-2">
             {members.map((member) => {
               const isCurrentUser = member.userId === currentUser?.id;
               return (
@@ -121,7 +136,9 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
               </div>
               );
             })}
-          </div>
+              </div>
+            </>
+          )}
         </div>
       </CardContent>
     </Card>
