@@ -1,10 +1,10 @@
 'use client';
 
+import { UserAvatar } from '@/components/common';
 import { useDeleteGroupGoal } from '@/hooks/group/useDeleteGroupGoal';
 import { useGroupGoals } from '@/hooks/group/useGroupGoals';
 import { useSetGroupGoal } from '@/hooks/group/useSetGroupGoal';
 import { useTheme } from '@/hooks/ui/useTheme';
-import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
@@ -90,25 +90,26 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
           return (
             <div 
               key={index} 
-              className={`-ml-2 relative first:ml-0`} 
+              className={`-ml-2 relative first:ml-0 group`} 
               style={{ zIndex: displayedUserIds.length - index }}
             >
-              <Avatar className={`w-6 h-6 ${isCurrentUser ? `ring-2 ${isAchieved ? 'ring-green-400 dark:ring-green-500' : 'ring-red-400 dark:ring-red-500'}` : 'ring-1 ring-gray-200 dark:ring-gray-700 group-hover:ring-gray-400 dark:group-hover:ring-gray-500'}`}>
-                <AvatarImage src="" />
-                <AvatarFallback className={`text-[8px] font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100`}>
-                  {getUserNickname(userId).slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar
+                nickname={getUserNickname(userId)}
+                size="xs"
+                isCurrentUser={isCurrentUser}
+                isAchieved={isAchieved}
+                showBorder={isCurrentUser}
+              />
             </div>
           );
         })}
         {remainingCount > 0 && (
           <div className="-ml-2 relative">
-            <Avatar className="w-6 h-6 ring-1 ring-gray-200 dark:ring-gray-700 group-hover:ring-gray-400 dark:group-hover:ring-gray-500">
-              <AvatarFallback className={`text-[8px] font-bold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100`}>
+            <div className="w-6 h-6 rounded-full ring-1 ring-gray-200 dark:ring-gray-700 group-hover:ring-gray-400 dark:group-hover:ring-gray-500 bg-white dark:bg-gray-800 flex items-center justify-center">
+              <span className="text-[8px] font-semibold text-gray-900 dark:text-white group-hover:text-gray-900 dark:group-hover:text-white">
                 +{remainingCount}
-              </AvatarFallback>
-            </Avatar>
+              </span>
+            </div>
           </div>
         )}
       </div>

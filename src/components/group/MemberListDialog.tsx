@@ -1,9 +1,9 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
-import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
 import { useCurrentUser } from '@/stores/userStore';
+import { UserAvatar } from '@/components/common';
 
 interface MemberListDialogProps {
   open: boolean;
@@ -83,12 +83,12 @@ export default function MemberListDialog({
               const isCurrentUser = member.userId === currentUser?.id;
               return (
                 <div key={member.userId} className={`flex items-center gap-3 p-3 rounded-lg hover:${getThemeClass('componentSecondary')} border ${isCurrentUser ? 'border-gray-400 dark:border-gray-500' : getThemeClass('border')}`}>
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage src="" />
-                    <AvatarFallback className={`text-xs font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
-                      {getUserNickname(member.userId).slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
+                  <UserAvatar
+                    nickname={getUserNickname(member.userId)}
+                    size="sm"
+                    isCurrentUser={isCurrentUser}
+                    showBorder={false}
+                  />
                   <div className={`text-sm font-medium ${getThemeTextColor('primary')} flex-1`}>
                     {getUserNickname(member.userId)}
                   </div>

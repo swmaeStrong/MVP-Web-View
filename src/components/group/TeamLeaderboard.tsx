@@ -1,11 +1,12 @@
 'use client';
 
 import UserProfileTooltip from '@/components/common/UserProfileTooltip';
+import { UserAvatar } from '@/components/common';
 import { useTheme } from '@/hooks/ui/useTheme';
-import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Separator } from '@/shadcn/ui/separator';
 import { spacing } from '@/styles/design-system';
+import { useCurrentUser } from '@/stores/userStore';
 
 interface TeamLeaderboardProps {
   members: Group.GroupLeaderboardMember[];
@@ -14,10 +15,7 @@ interface TeamLeaderboardProps {
 
 export default function TeamLeaderboard({ members, isLoading = false }: TeamLeaderboardProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
-
-  const getAvatarInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('');
-  };
+  const currentUser = useCurrentUser();
 
   const formatScore = (score: number) => {
     return Math.floor(score);
@@ -82,14 +80,16 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
                   align="center"
                 >
                   <div className="relative w-fit mx-auto mb-3 cursor-pointer">
-                    <Avatar className={`w-16 h-16 ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-2 hover:ring-gray-500 transition-all duration-200 ${
-                      member.isOnline ? 'ring-green-500 dark:ring-green-400' : ''
-                    }`}>
-                      <AvatarImage src={member.profileImageUrl} />
-                      <AvatarFallback className={`text-lg font-semibold ${getThemeClass('component')} ${getThemeTextColor('primary')}`}>
-                        {getAvatarInitials(member.nickname)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar
+                      nickname={member.nickname}
+                      imageUrl={member.profileImageUrl}
+                      size="lg"
+                      isCurrentUser={member.userId === currentUser?.id}
+                      showBorder={false}
+                      className={`ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-2 hover:ring-gray-500 transition-all duration-200 ${
+                        member.isOnline ? 'ring-green-500 dark:ring-green-400' : ''
+                      }`}
+                    />
                     {/* 온라인 상태 표시 */}
                     <span className={`absolute -right-0 -bottom-0 size-4 rounded-full ${
                       member.isOnline 
