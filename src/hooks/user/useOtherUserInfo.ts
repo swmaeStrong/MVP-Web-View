@@ -16,5 +16,7 @@ export function useOtherUserInfo({ userId, enabled = true }: UseOtherUserInfoOpt
     enabled: enabled && !!userId,
     retry: 1,
     staleTime: 1000 * 60 * 5, // 5분 캐시
+    refetchInterval: 60 * 1000, // 1분마다 폴링
+    refetchOnWindowFocus: false,
   });
 }

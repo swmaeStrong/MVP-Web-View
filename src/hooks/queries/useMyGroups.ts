@@ -10,5 +10,7 @@ export function useMyGroups() {
     queryFn: getMyGroups,
     staleTime: 5 * 60 * 1000, // 5분간 데이터를 fresh로 간주
     gcTime: 10 * 60 * 1000,   // 10분간 캐시 유지
+    refetchInterval: 60 * 1000, // 1분마다 폴링
+    refetchOnWindowFocus: false,
   });
 }

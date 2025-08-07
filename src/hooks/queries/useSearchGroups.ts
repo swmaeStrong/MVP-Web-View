@@ -9,5 +9,6 @@ export const useSearchGroups = () => {
     gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
     refetchOnWindowFocus: false,
     refetchOnMount: true,
+    refetchInterval: 60 * 1000, // 1분마다 폴링
   });
 };

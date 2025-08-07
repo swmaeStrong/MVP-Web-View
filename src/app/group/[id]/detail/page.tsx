@@ -67,6 +67,8 @@ export default function GroupDetailPage() {
     queryFn: () => getGroupLeaderboard(groupId, selectedDate),
     enabled: !!groupId,
     retry: 1,
+    refetchInterval: 60 * 1000, // 1분마다 폴링
+    refetchOnWindowFocus: false,
   });
 
   // 현재 사용자가 그룹장인지 확인

@@ -14,5 +14,7 @@ export function useGroupGoals({ groupId, date, enabled = true }: UseGroupGoalsOp
     queryKey: ['groupGoals', groupId, date],
     queryFn: () => getGroupGoals(groupId, date),
     enabled: enabled && !!groupId,
+    refetchInterval: 60 * 1000, // 1분마다 폴링
+    refetchOnWindowFocus: false,
   });
 }
