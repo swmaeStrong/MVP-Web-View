@@ -19,7 +19,7 @@ import {
   LeaderboardListSkeleton,
   MyRankBannerSkeleton
 } from '@/components/common/LeaderboardSkeleton';
-import { useCurrentUser } from '@/stores/userStore';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { useInitUser } from '@/hooks/common/useInitUser';
 
 // LeaderBoard.LeaderBoardResponse 타입을 직접 사용
@@ -30,7 +30,7 @@ import { getKSTDate, getKSTDateStringFromDate, getKSTMonthlyDateString, getKSTWe
 
 export default function Leaderboard() {
   // Hook 순서를 항상 동일하게 유지
-  const currentUser = useCurrentUser();
+  const currentUser = useCurrentUserData();
   const { initializeUser } = useInitUser();
   const queryClient = useQueryClient();
   // scrollToMyRank is now defined locally instead of using the hook

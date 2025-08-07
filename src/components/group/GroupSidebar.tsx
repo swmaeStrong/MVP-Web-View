@@ -1,7 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
-import { useCurrentUser } from '@/stores/userStore';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { Plus, Search, Settings, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -27,7 +27,7 @@ const navItems: NavItem[] = [
 export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
   const pathname = usePathname();
-  const currentUser = useCurrentUser();
+  const currentUser = useCurrentUserData();
 
   // Get selected group ID from URL - 메모이제이션
   const selectedGroupId = useMemo(() => {

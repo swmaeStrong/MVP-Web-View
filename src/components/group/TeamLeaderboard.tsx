@@ -6,7 +6,7 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Separator } from '@/shadcn/ui/separator';
 import { spacing } from '@/styles/design-system';
-import { useCurrentUser } from '@/stores/userStore';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 
 interface TeamLeaderboardProps {
   members: Group.GroupLeaderboardMember[];
@@ -15,7 +15,7 @@ interface TeamLeaderboardProps {
 
 export default function TeamLeaderboard({ members, isLoading = false }: TeamLeaderboardProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
-  const currentUser = useCurrentUser();
+  const currentUser = useCurrentUserData();
 
   const formatScore = (score: number) => {
     const hours = Math.floor(score / 3600);

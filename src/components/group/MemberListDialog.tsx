@@ -2,7 +2,7 @@
 
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
-import { useCurrentUser } from '@/stores/userStore';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { UserAvatar } from '@/components/common';
 
 interface MemberListDialogProps {
@@ -21,7 +21,7 @@ export default function MemberListDialog({
   groupMembers = []
 }: MemberListDialogProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
-  const currentUser = useCurrentUser();
+  const currentUser = useCurrentUserData();
 
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);

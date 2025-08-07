@@ -14,7 +14,7 @@ import { Input } from '@/shadcn/ui/input';
 import { Skeleton } from '@/shadcn/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { joinGroup } from '@/shared/api/post';
-import { useCurrentUser } from '@/stores/userStore';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { useQueryClient } from '@tanstack/react-query';
 import { Globe, Hash, Lock, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -24,7 +24,7 @@ import toast from 'react-hot-toast';
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const router = useRouter();
-  const currentUser = useCurrentUser();
+  const currentUser = useCurrentUserData();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'public' | 'private'>('all');

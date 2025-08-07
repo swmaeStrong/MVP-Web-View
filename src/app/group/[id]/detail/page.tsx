@@ -12,7 +12,7 @@ import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { getGroupLeaderboard } from '@/shared/api/get';
-import { useCurrentUser } from '@/stores/userStore';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { getKSTDateString, getMondayOfWeek } from '@/utils/timezone';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
@@ -22,7 +22,7 @@ import PageLoader from '../../../../components/common/PageLoader';
 export default function GroupDetailPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const params = useParams();
-  const currentUser = useCurrentUser();
+  const currentUser = useCurrentUserData();
   
   // Save current tab as last visited
   useLastGroupTab();

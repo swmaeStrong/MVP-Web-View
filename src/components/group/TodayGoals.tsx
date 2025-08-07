@@ -13,7 +13,7 @@ import { Label } from '@/shadcn/ui/label';
 import { Progress } from '@/shadcn/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/ui/select';
 import { Separator } from '@/shadcn/ui/separator';
-import { useCurrentUser } from '@/stores/userStore';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { spacing } from '@/styles/design-system';
 import { getKSTDateString } from '@/utils/timezone';
 import { Check, Edit3, Plus, Trash2, X } from 'lucide-react';
@@ -30,7 +30,7 @@ interface TodayGoalsProps {
 
 export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], selectedPeriod = 'daily', date = getKSTDateString() }: TodayGoalsProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
-  const currentUser = useCurrentUser();
+  const currentUser = useCurrentUserData();
   const [isEditing, setIsEditing] = useState(false);
   const [showAddGoalDialog, setShowAddGoalDialog] = useState(false);
   const [showMemberDialog, setShowMemberDialog] = useState(false);

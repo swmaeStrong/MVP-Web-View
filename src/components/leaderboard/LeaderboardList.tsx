@@ -5,7 +5,7 @@ import { LeaderboardListSkeleton } from '@/components/common/LeaderboardSkeleton
 import { useTheme } from '@/hooks/ui/useTheme';
 import { cn } from '@/shadcn/lib/utils';
 import { LEADERBOARD_CONFIG } from '@/config/constants/infinite-scroll';
-import { useCurrentUser } from '@/stores/userStore';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { FONT_SIZES } from '@/styles/font-sizes';
 import { useRef } from 'react';
 import EmptyState from './EmptyState';
@@ -42,7 +42,7 @@ export default function LeaderboardList({
   selectedDateIndex,
   containerRef,
 }: LeaderboardListProps) {
-  const currentUser = useCurrentUser();
+  const currentUser = useCurrentUserData();
   const { getThemeClass, getThemeTextColor } = useTheme();
   
   // 작은 사이즈 기준으로 통일된 컨테이너 높이

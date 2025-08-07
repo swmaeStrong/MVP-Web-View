@@ -1,8 +1,8 @@
-import { useCurrentUser } from '@/stores/userStore';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { useCallback } from 'react';
 
 export const useScrollToMyRank = () => {
-  const currentUser = useCurrentUser();
+  const currentUser = useCurrentUserData();
 
   const scrollToMyRank = useCallback(() => {
     if (!currentUser) return;

@@ -15,7 +15,7 @@ import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { UpdateGroupFormData, updateGroupSchema } from '@/schemas/groupSchema';
-import { useCurrentUser } from '@/stores/userStore';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Crown, Trash2, UserMinus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -28,7 +28,7 @@ export default function GroupSettingsPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const router = useRouter();
   const params = useParams();
-  const currentUser = useCurrentUser();
+  const currentUser = useCurrentUserData();
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [showBanDialog, setShowBanDialog] = React.useState(false);
   const [showTransferDialog, setShowTransferDialog] = React.useState(false);

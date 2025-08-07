@@ -4,9 +4,7 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import { spacing } from '@/styles/design-system';
 import GroupSidebar from '@/components/group/GroupSidebar';
 import { useMyGroups } from '@/hooks/queries/useMyGroups';
-import { useInitUser } from '@/hooks/common/useInitUser';
-import { useCurrentUser } from '@/stores/userStore';
-import { useEffect } from 'react';
+import { useCurrentUser } from '@/hooks/user/useCurrentUser';
 
 interface GroupLayoutProps {
   children: React.ReactNode;
@@ -15,15 +13,7 @@ interface GroupLayoutProps {
 export default function GroupLayout({ children }: GroupLayoutProps) {
   const { getThemeClass } = useTheme();
   const { data: groups, isLoading, error } = useMyGroups();
-  const { initializeUser } = useInitUser();
-  const currentUser = useCurrentUser();
-
-  // 사용자 정보 초기화
-  useEffect(() => {
-    if (!currentUser) {
-      initializeUser().catch(console.error);
-    }
-  }, [currentUser, initializeUser]);
+  const { data: currentUser, isLoading: userLoading } = useCurrentUser();
 
   return (
     <div className={`min-h-screen ${getThemeClass('background')}`}>
