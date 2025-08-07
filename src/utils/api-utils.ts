@@ -27,6 +27,12 @@ export async function parseApi<T>(
       }
     );
     
+    // 204 No Content 응답 처리
+    if (response.status === 204) {
+      // 204 No Content는 성공이지만 반환할 데이터가 없음
+      return null as unknown as T;
+    }
+    
     if (!data.isSuccess) {
       const error = new Error(data.message);
       

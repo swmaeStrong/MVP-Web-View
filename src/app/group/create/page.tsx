@@ -1,48 +1,41 @@
 'use client';
 
+import { GroundRulesInput } from '@/components/forms/GroundRulesInput';
+import { GroupNameInput } from '@/components/forms/GroupNameInput';
+import { GROUP_VALIDATION_MESSAGES } from '@/config/constants';
+import { useGroupNameValidation, useCreateGroupWithToast } from '@/hooks/group/useCreateGroup';
+import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { CreateGroupFormData, createGroupSchema } from '@/schemas/groupSchema';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
 import { Input } from '@/shadcn/ui/input';
-import { Textarea } from '@/shadcn/ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Globe, Hash, Lock, Plus, Target, TrendingUp, Users, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { createGroup } from '@/shared/api/post';
-import { validateGroupName } from '@/shared/api/get';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useDebounce } from '@/hooks/ui/useDebounce';
-import { groupNameCheckQueryKey, myGroupsQueryKey } from '@/config/constants/query-keys';
-import { useToast } from '@/hooks/ui/useToast';
 import toast from 'react-hot-toast';
-
-const formSchema = z.object({
-  groupName: z.string().min(3, 'Group name must be at least 3 characters').max(50, 'Group name must be less than 50 characters'),
-  description: z.string().min(10, 'Description must be at least 10 characters').max(500, 'Description must be less than 500 characters'),
-  isPublic: z.enum(['public', 'private']),
-  groundRule: z.string().min(10, 'Ground rule must be at least 10 characters').max(500, 'Ground rule must be less than 500 characters'),
-  tags: z.array(z.string()).min(1, 'At least one tag is required').max(5, 'Maximum 5 tags allowed'),
-});
+import { Textarea } from '../../../shadcn/ui/textarea';
 
 export default function CreateGroupPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const router = useRouter();
-  const queryClient = useQueryClient();
   
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  // Save current tab as last visited
+  useLastGroupTab();
+  
+  const form = useForm<CreateGroupFormData>({
+    resolver: zodResolver(createGroupSchema),
     defaultValues: {
       groupName: '',
       description: '',
       isPublic: 'public',
-      groundRule: '',
+      groundRules: [''],
       tags: [],
     },
   });
@@ -50,28 +43,22 @@ export default function CreateGroupPage() {
   const { watch, setValue, getValues } = form;
   const watchedValues = watch();
   
-  // 그룹 이름 디바운스
-  const debouncedGroupName = useDebounce(watchedValues.groupName, 500);
-  
   // 그룹 이름 중복 검사
-  const { data: isNameAvailable, isLoading: isCheckingName } = useQuery({
-    queryKey: groupNameCheckQueryKey(debouncedGroupName),
-    queryFn: () => validateGroupName(debouncedGroupName),
-    enabled: debouncedGroupName.length >= 3,
-  });
-
-  // 그룹 생성 mutation
-  const createGroupMutation = useMutation({
-    mutationFn: createGroup,
-  });
+  const { data: isNameAvailable, isLoading: isCheckingName } = useGroupNameValidation(watchedValues.groupName);
+  
+  // 그룹 생성
+  const { createGroupWithToast, isLoading: isCreatingGroup } = useCreateGroupWithToast();
 
   // Add tag handler
   const handleAddTag = (newTag: string) => {
     const currentTags = getValues('tags');
-    if (newTag.trim() && !currentTags.includes(newTag.trim()) && currentTags.length < 5) {
-      setValue('tags', [...currentTags, newTag.trim()]);
+    const trimmedTag = newTag.trim();
+    // 12글자 제한, 중복 체크, 5개 제한
+    if (trimmedTag && trimmedTag.length <= 12 && !currentTags.includes(trimmedTag) && currentTags.length < 5) {
+      setValue('tags', [...currentTags, trimmedTag]);
     }
   };
+
 
   // Remove tag handler
   const handleRemoveTag = (tagToRemove: string) => {
@@ -79,53 +66,49 @@ export default function CreateGroupPage() {
     setValue('tags', currentTags.filter(tag => tag !== tagToRemove));
   };
 
+  // Validation error handler
+  const onError = (errors: any) => {
+    // Show validation error toast with specific messages
+    if (errors.groupName) {
+      toast.error(`Group Name: ${errors.groupName.message}`);
+      return;
+    }
+    if (errors.description) {
+      toast.error(`Description: ${errors.description.message}`);
+      return;
+    }
+    if (errors.groundRules) {
+      toast.error(`Ground Rules: ${errors.groundRules.message || GROUP_VALIDATION_MESSAGES.GROUND_RULES.EMPTY}`);
+      return;
+    }
+    if (errors.tags) {
+      toast.error(`Tags: ${errors.tags.message}`);
+      return;
+    }
+  };
+
+  // Form submit handler for valid data
+  const onValidSubmit = async (values: CreateGroupFormData) => {
+    // Check if name is available (only after basic validation passes)
+    if (!isNameAvailable) {
+      toast.error(GROUP_VALIDATION_MESSAGES.GROUP_NAME.TAKEN);
+      return;
+    }
+    
+    await onSubmit(values);
+  };
+
   // Form submit handler
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: CreateGroupFormData) => {
     const request: Group.CreateGroupApiRequest = {
       name: values.groupName,
       isPublic: values.isPublic === 'public',
-      groundRule: values.groundRule,
+      groundRule: values.groundRules.filter(rule => rule.trim().length > 0).join('\n'),
       tags: values.tags,
       description: values.description,
     };
     
-    // react-hot-toast의 promise를 직접 사용
-    toast.promise(
-      createGroup(request),
-      {
-        loading: '그룹을 생성하고 있습니다...',
-        success: '그룹이 성공적으로 생성되었습니다!',
-        error: (err: any) => {
-          console.error('Failed to create group:', err);
-          
-          // 에러 메시지 추출
-          if (err?.message) {
-            return err.message;
-          } else if (err?.response?.data?.message) {
-            return err.response.data.message;
-          } else if (typeof err === 'string') {
-            return err;
-          }
-          
-          return '그룹 생성에 실패했습니다.';
-        },
-      },
-      {
-        id: 'create-group', // 중복 토스트 방지
-      }
-    ).then(() => {
-      // 성공 시 내 그룹 목록을 무효화하고 다시 가져오기
-      queryClient.invalidateQueries({
-        queryKey: myGroupsQueryKey(),
-      });
-      
-      // 성공 시 그룹 찾기 페이지로 이동
-      setTimeout(() => {
-        router.push('/group/find');
-      }, 1000);
-    }).catch(() => {
-      // 에러는 이미 토스트로 표시됨
-    });
+    await createGroupWithToast(request);
   };
 
   return (
@@ -134,7 +117,7 @@ export default function CreateGroupPage() {
           {/* Main Form */}
           <div className="lg:col-span-2">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(onValidSubmit, onError)} className="space-y-6">
                 {/* Basic Information */}
                 <Card className={getCommonCardClass()}>
                   <CardContent className="p-6">
@@ -144,40 +127,11 @@ export default function CreateGroupPage() {
                     
                     <div className="space-y-4">
                       {/* Group Name */}
-                      <FormField
-                        control={form.control}
+                      <GroupNameInput
+                        form={form}
                         name="groupName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                              Group Name
-                            </FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <Input
-                                  placeholder="Enter group name..."
-                                  className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
-                                  {...field}
-                                />
-                                {field.value.length >= 3 && (
-                                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                    {isCheckingName ? (
-                                      <div className="text-gray-400 text-xs">Checking...</div>
-                                    ) : isNameAvailable === true ? (
-                                      <div className="text-green-600 text-xs">✓ Available</div>
-                                    ) : isNameAvailable === false ? (
-                                      <div className="text-red-600 text-xs">✗ Taken</div>
-                                    ) : null}
-                                  </div>
-                                )}
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                            {field.value.length >= 3 && !isCheckingName && isNameAvailable === false && (
-                              <p className="text-xs text-red-600 mt-1">This group name is already taken</p>
-                            )}
-                          </FormItem>
-                        )}
+                        label="Group Name"
+                        placeholder="Enter group name..."
                       />
 
                       {/* Description */}
@@ -201,25 +155,12 @@ export default function CreateGroupPage() {
                         )}
                       />
 
-                      {/* Ground Rule */}
-                      <FormField
-                        control={form.control}
-                        name="groundRule"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                              Ground Rule
-                            </FormLabel>
-                            <FormControl>
-                              <Textarea
-                                placeholder="Set the ground rules for your group..."
-                                className="min-h-[100px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                      {/* Ground Rules */}
+                      <GroundRulesInput
+                        form={form}
+                        name="groundRules"
+                        label="Ground Rules"
+                        maxRules={10}
                       />
                     </div>
                   </CardContent>
@@ -241,7 +182,12 @@ export default function CreateGroupPage() {
                             <ToggleGroup 
                               type="single" 
                               value={field.value} 
-                              onValueChange={field.onChange}
+                              onValueChange={(value) => {
+                                // 값이 없으면 현재 값을 유지 (선택 해제 방지)
+                                if (value) {
+                                  field.onChange(value);
+                                }
+                              }}
                               className="w-full bg-white border border-gray-200 rounded-md"
                             >
                               <ToggleGroupItem 
@@ -299,7 +245,9 @@ export default function CreateGroupPage() {
                                   <Badge 
                                     key={tag} 
                                     variant="outline" 
-                                    className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')} pr-1`}
+                                    className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')} pr-1 ${
+                                      tag.length > 12 ? 'border-red-300 bg-red-50 text-red-700' : ''
+                                    }`}
                                   >
                                     <Hash className="h-3 w-3" />
                                     {tag}
@@ -339,9 +287,9 @@ export default function CreateGroupPage() {
                   <Button
                     type="submit"
                     className="flex-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
-                    disabled={form.formState.isSubmitting || isNameAvailable === false || isCheckingName}
+                    disabled={form.formState.isSubmitting || isCreatingGroup || isNameAvailable === false || isCheckingName}
                   >
-                    {form.formState.isSubmitting ? 'Creating...' : 'Create Group'}
+                    {form.formState.isSubmitting || isCreatingGroup ? 'Creating...' : 'Create Group'}
                   </Button>
                 </div>
               </form>
@@ -393,19 +341,28 @@ export default function CreateGroupPage() {
                   </div>
                   
                   {/* Description */}
-                  <p className={`text-xs ${getThemeTextColor('secondary')} leading-relaxed`}>
+                  <p className={`text-xs ${getThemeTextColor('secondary')} leading-relaxed whitespace-pre-wrap`}>
                     {watchedValues.description || 'Group description will appear here...'}
                   </p>
                   
                   {/* Ground Rule */}
-                  {watchedValues.groundRule && (
+                  {watchedValues.groundRules && watchedValues.groundRules.some(rule => rule.trim().length > 0) && (
                     <div>
-                      <div className={`text-xs font-semibold ${getThemeTextColor('primary')} mb-1`}>
-                        Ground Rule
+                      <div className={`text-xs font-semibold ${getThemeTextColor('primary')} mb-2`}>
+                        Ground Rules
                       </div>
-                      <p className={`text-xs ${getThemeTextColor('secondary')} leading-relaxed`}>
-                        {watchedValues.groundRule}
-                      </p>
+                      <div className="space-y-2">
+                        {watchedValues.groundRules
+                          .filter(rule => rule.trim().length > 0)
+                          .map((rule, index) => (
+                            <div key={index} className={`text-xs ${getThemeTextColor('secondary')} ${getThemeClass('componentSecondary')} p-2 rounded flex items-start gap-2`}>
+                              <span className={`font-semibold ${getThemeTextColor('primary')} flex-shrink-0`}>
+                                {index + 1}.
+                              </span>
+                              <span>{rule}</span>
+                            </div>
+                          ))}
+                      </div>
                     </div>
                   )}
                   
@@ -482,11 +439,13 @@ export default function CreateGroupPage() {
 
 // Tag Input Component
 function TagInput({ onAddTag, disabled }: { onAddTag: (tag: string) => void, disabled: boolean }) {
+  const { getThemeTextColor } = useTheme();
   const [newTag, setNewTag] = React.useState('');
 
   const handleAddTag = () => {
-    if (newTag.trim()) {
-      onAddTag(newTag.trim());
+    const trimmedTag = newTag.trim();
+    if (trimmedTag && trimmedTag.length <= 12) {
+      onAddTag(trimmedTag);
       setNewTag('');
     }
   };
@@ -499,24 +458,43 @@ function TagInput({ onAddTag, disabled }: { onAddTag: (tag: string) => void, dis
   };
 
   return (
-    <div className="flex gap-2">
-      <Input
-        type="text"
-        placeholder="Add a tag (e.g., React, Python)..."
-        value={newTag}
-        onChange={(e) => setNewTag(e.target.value)}
-        onKeyPress={handleKeyPress}
-        className="flex-1 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
-        disabled={disabled}
-      />
-      <Button
-        type="button"
-        onClick={handleAddTag}
-        disabled={!newTag.trim() || disabled}
-        className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90"
-      >
-        <Plus className="h-4 w-4" />
-      </Button>
+    <div className="space-y-1">
+      <div className="flex gap-2">
+        <Input
+          type="text"
+          placeholder="Add a tag (e.g., React, Python)..."
+          value={newTag}
+          onChange={(e) => {
+            // 12글자 제한
+            if (e.target.value.length <= 12) {
+              setNewTag(e.target.value);
+            }
+          }}
+          onKeyPress={handleKeyPress}
+          className={`flex-1 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] ${
+            newTag.length > 12 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : ''
+          }`}
+          disabled={disabled}
+        />
+        <Button
+          type="button"
+          onClick={handleAddTag}
+          disabled={!newTag.trim() || disabled || newTag.length > 12}
+          className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90"
+        >
+          <Plus className="h-4 w-4" />
+        </Button>
+      </div>
+      
+      <div className="flex justify-end">
+        <span className={`text-xs ${
+          newTag.length > 12 ? 'text-red-500' : 
+          newTag.length > 10 ? 'text-yellow-600' : 
+          getThemeTextColor('secondary')
+        }`}>
+          {newTag.length}/12
+        </span>
+      </div>
     </div>
   );
 }

@@ -3,4 +3,13 @@ declare namespace User {
     userId: string;
     nickname: string;
   }
+
+  interface OtherUserApiResponse {
+    userId: string;
+    nickname: string;
+    profileImageUrl: string;
+    currentStreak: number;
+    maxStreak: number;
+    totalSession: number;
+  }
 }

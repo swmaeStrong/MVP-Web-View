@@ -2,7 +2,7 @@
 
 import { canNavigateToNext, canNavigateToPrevious, getNextDate, getPreviousDate, useUsageStatistics } from '@/hooks/data/useStatistics';
 import { useTheme } from '@/hooks/ui/useTheme';
-import { useCurrentUser } from '@/stores/userStore';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 // namespace로 변경됨
 import { getKSTDateString } from '@/utils/timezone';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -30,7 +30,7 @@ export default function StatisticsPage() {
   // 초기 날짜 설정 (한국 시간대 기준)
   const [selectedDate, setSelectedDate] = useState(getKSTDateString());
   // Hook 순서를 항상 동일하게 유지
-  const currentUser = useCurrentUser();
+  const currentUser = useCurrentUserData();
   const { initializeUser } = useInitUser();
   const { getThemeClass } = useTheme();
 

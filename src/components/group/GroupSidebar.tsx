@@ -1,10 +1,12 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
-import { Plus, Search, Settings, TrendingUp } from 'lucide-react';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
+import { Input } from '@/shadcn/ui/input';
+import { Plus, Search, Settings, TrendingUp, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useCurrentUser } from '@/stores/userStore';
+import { useCallback, useMemo, useState } from 'react';
 
 interface NavItem {
   name: string;
@@ -19,32 +21,35 @@ interface GroupSidebarProps {
 }
 
 const navItems: NavItem[] = [
-  { name: 'Search', href: '/group/find', icon: Search },
+  { name: 'Search', href: '/group/search', icon: Search },
   { name: 'Create', href: '/group/create', icon: Plus },
 ];
 
 export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
   const pathname = usePathname();
-  const currentUser = useCurrentUser();
+  const currentUser = useCurrentUserData();
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Get selected group ID from URL
-  const selectedGroupId = pathname.includes('/group/team/') 
-    ? pathname.split('/group/team/')[1]?.split('/')[0] 
-    : null;
+  // Get selected group ID from URL - 메모이제이션
+  const selectedGroupId = useMemo(() => {
+    if (!pathname.includes('/group/') || pathname === '/group' || pathname === '/group/create' || pathname === '/group/search') return null;
+    return pathname.split('/group/')[1]?.split('/')[0] || null;
+  }, [pathname]);
 
-  const isActive = (href: string) => {
+  // isActive 함수 최적화 - useCallback으로 메모이제이션
+  const isActive = useCallback((href: string) => {
     if (href === '/group') {
       return pathname === href;
     }
     
     // 그룹 서브메뉴의 경우 정확한 매칭 필요
-    if (href.includes('/group/team/')) {
-      // Main 페이지: 정확히 해당 경로만 매칭
-      if (href.endsWith(`/group/team/${selectedGroupId}`)) {
+    if (href.includes('/group/') && selectedGroupId) {
+      // Detail 페이지: /group/[id]/detail 매칭
+      if (href.endsWith(`/group/${selectedGroupId}/detail`)) {
         return pathname === href;
       }
-      // Settings 페이지: settings로 끝나는 경우만 매칭
+      // Settings 페이지: /group/[id]/settings 매칭
       if (href.endsWith('/settings')) {
         return pathname === href;
       }
@@ -52,19 +57,42 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
     
     // 기타 경로는 기존 로직 유지
     return pathname === href || pathname.startsWith(href + '/');
-  };
+  }, [pathname, selectedGroupId]);
 
-  // 현재 선택된 그룹 찾기
-  const selectedGroup = groups.find(group => group.groupId.toString() === selectedGroupId);
-  
-  // 현재 사용자가 그룹장인지 확인
-  const isGroupOwner = selectedGroup && currentUser && selectedGroup.groupOwner.userId === currentUser.id;
+  // 선택된 그룹과 권한 정보 메모이제이션
+  const groupInfo = useMemo(() => {
+    const selectedGroup = groups.find(group => group.groupId.toString() === selectedGroupId);
+    const isGroupOwner = selectedGroup && currentUser && selectedGroup.groupOwner.userId === currentUser.id;
+    
+    return { selectedGroup, isGroupOwner };
+  }, [groups, selectedGroupId, currentUser]);
 
-  // Group submenu items - 그룹장만 Settings 메뉴 표시
-  const groupSubMenuItems = [
-    { name: 'Main', href: `/group/team/${selectedGroupId}`, icon: TrendingUp },
-    ...(isGroupOwner ? [{ name: 'Settings', href: `/group/team/${selectedGroupId}/settings`, icon: Settings }] : []),
-  ];
+  // Group submenu items 메모이제이션
+  const groupSubMenuItems = useMemo(() => {
+    if (!selectedGroupId) return [];
+    
+    const baseItems = [
+      { name: 'Main', href: `/group/${selectedGroupId}/detail`, icon: TrendingUp },
+    ];
+    
+    // 모든 멤버가 Settings 페이지에 접근 가능
+    baseItems.push({ name: 'Settings', href: `/group/${selectedGroupId}/settings`, icon: Settings });
+    
+    return baseItems;
+  }, [selectedGroupId, groupInfo.isGroupOwner]);
+
+  // 검색어로 그룹 필터링
+  const filteredGroups = useMemo(() => {
+    if (!searchTerm.trim()) return groups;
+    return groups.filter(group => 
+      group.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [groups, searchTerm]);
+
+  // 검색어 초기화
+  const clearSearch = useCallback(() => {
+    setSearchTerm('');
+  }, []);
 
   return (
     <aside
@@ -76,6 +104,31 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
           <div className={`text-xs font-semibold ${getThemeTextColor('secondary')} uppercase tracking-wider mb-3 px-4`}>
             My Groups
           </div>
+          
+          {/* Search Input */}
+          {groups.length > 5 && (
+            <div className="px-4 mb-3">
+              <div className="relative">
+                <Search size={14} className={`absolute left-2 top-1/2 transform -translate-y-1/2 ${getThemeTextColor('secondary')}`} />
+                <Input
+                  type="text"
+                  placeholder="Search groups..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={`pl-7 pr-7 py-1 text-xs h-7 ${getThemeClass('component')} ${getThemeClass('border')} border`}
+                />
+                {searchTerm && (
+                  <button
+                    onClick={clearSearch}
+                    className={`absolute right-2 top-1/2 transform -translate-y-1/2 ${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`}
+                  >
+                    <X size={12} />
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+          
           <div className="space-y-1">
             {error && (
               <div className="px-4 py-2">
@@ -93,26 +146,38 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
               </div>
             )}
             
-            {!error && groups.map((group) => {
+            {!error && searchTerm && filteredGroups.length === 0 && groups.length > 0 && (
+              <div className="px-4 py-2">
+                <span className={`text-xs ${getThemeTextColor('secondary')}`}>
+                  No groups found
+                </span>
+              </div>
+            )}
+            
+            {!error && filteredGroups.map((group) => {
               const isGroupSelected = selectedGroupId === group.groupId.toString();
+              const groupHref = `/group/${group.groupId}/detail`;
               
               return (
                 <div key={group.groupId}>
                   <Link
-                    href={`/group/team/${group.groupId}`}
-                    className={`flex items-center justify-between px-4 py-2 rounded-md transition-all duration-200 transform ${
+                    href={groupHref}
+                    prefetch={true}
+                    className={`flex items-center justify-between px-4 py-2 rounded-md transition-colors duration-150 ${
                       isGroupSelected
-                        ? `text-white bg-[#3F72AF] shadow-lg`
-                        : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10 hover:scale-105 hover:shadow-md`
+                        ? `text-white bg-[#3F72AF]`
+                        : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10`
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm truncate">{group.name}</span>
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <span className="text-sm truncate" title={group.name}>
+                        {group.name}
+                      </span>
                     </div>
                   </Link>
                   
                   {/* Group Submenu - Show right below the selected group */}
-                  {isGroupSelected && (
+                  {isGroupSelected && groupSubMenuItems.length > 0 && (
                     <div className="ml-4 mt-1 space-y-1">
                       {groupSubMenuItems.map((item) => {
                         const Icon = item.icon;
@@ -122,10 +187,11 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
                           <Link
                             key={item.href}
                             href={item.href}
-                            className={`flex items-center gap-3 px-3 py-1.5 rounded transition-all duration-200 transform relative ${
+                            prefetch={true}
+                            className={`flex items-center gap-3 px-3 py-1.5 rounded transition-colors duration-150 relative ${
                               active
                                 ? `${getThemeTextColor('primary')} font-medium bg-[#3F72AF]/15`
-                                : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10 hover:scale-105 hover:shadow-sm`
+                                : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10`
                             }`}
                           >
                             {/* Simple active indicator */}
@@ -156,10 +222,11 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-2 rounded-md transition-all duration-200 transform ${
+                prefetch={true}
+                className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors duration-150 ${
                   active
-                    ? `text-white bg-[#3F72AF] shadow-lg`
-                    : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10 hover:scale-105 hover:shadow-md`
+                    ? `text-white bg-[#3F72AF]`
+                    : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10`
                 }`}
               >
                 <Icon size={20} className="flex-shrink-0" />

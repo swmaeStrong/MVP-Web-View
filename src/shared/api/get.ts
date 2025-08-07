@@ -81,6 +81,10 @@ export const getRecentUsageLog = (date: string = getKSTDateString()) =>
 export const getUserInfo = () =>
   parseApi<User.UserApiResponse>(API.get('/user/my-info'));
 
+// 타 유저 정보 조회
+export const getOtherUserInfo = (userId: string) =>
+  parseApi<User.OtherUserApiResponse>(API.get(`/user?userId=${userId}`));
+
 export const getTimeline = (userId: string, date: string = getKSTDateString()) =>
   parseApi<UsageLog.TimelineItem[]>(
     API.get(`/usage-log/time-line?userId=${userId}&date=${date}`)
@@ -125,6 +129,12 @@ export const getGroupDetail = (groupId: number) =>
     API.get(`/group/${groupId}`)
   );
 
+// 그룹 목표 조회
+export const getGroupGoals = (groupId: number, date: string = getKSTDateString()) =>
+  parseApi<Group.GroupGoalsApiResponse[]>(
+    API.get(`/group/${groupId}/goal?date=${date}`)
+  );
+
 // 그룹 이름 유효성 검사
 export const validateGroupName = (name: string) =>
   parseApi<boolean>(
@@ -135,4 +145,10 @@ export const validateGroupName = (name: string) =>
 export const searchGroups = () =>
   parseApi<Group.GroupApiResponse[]>(
     API.get('/group/search')
+  );
+
+// 그룹 리더보드 조회
+export const getGroupLeaderboard = (groupId: number, date: string = getKSTDateString()) =>
+  parseApi<Group.GroupLeaderboardApiResponse>(
+    API.get(`/group/${groupId}/leaderboard?date=${date}`)
   );

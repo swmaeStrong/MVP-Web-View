@@ -34,7 +34,13 @@ export const createGroup = (request: Group.CreateGroupApiRequest) =>
 );
 
 // 그룹 가입
-export const joinGroup = (groupId: number) => 
+export const joinGroup = (groupId: number, request: Group.JoinGroupApiRequest) => 
   parseApi(
-    API.post(`/group/${groupId}/join`)
+    API.post(`/group/${groupId}/join`, request)
 );
+
+// 그룹 목표 설정
+export const setGroupGoal = (groupId: number, request: Group.SetGroupGoalApiRequest) =>
+  parseApi(
+    API.post(`/group/${groupId}/goal`, request)
+  );

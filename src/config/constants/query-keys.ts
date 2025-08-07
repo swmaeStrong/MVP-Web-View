@@ -16,7 +16,9 @@ export const QUERY_KEYS = {
   LEADERBOARD: 'leaderboard',
   
   // 사용자 관련
+  CURRENT_USER: 'currentUser',
   MY_RANK: 'myRank',
+  OTHER_USER_INFO: 'otherUserInfo',
   
   // 통계 관련
   USAGE_STATISTICS: 'usage-statistics',
@@ -197,6 +199,22 @@ export const groupNameCheckQueryKey = (groupName: string) => [
   groupName,
 ] as const;
 
+/**
+ * 현재 사용자 정보 쿼리키 생성
+ */
+export const currentUserQueryKey = () => [
+  QUERY_KEYS.CURRENT_USER,
+] as const;
+
+/**
+ * 타 유저 정보 쿼리키 생성
+ * @param userId - 조회할 사용자 ID
+ */
+export const otherUserInfoQueryKey = (userId: string) => [
+  QUERY_KEYS.OTHER_USER_INFO,
+  userId,
+] as const;
+
 // =============================================================================
 // 타입 정의
 // =============================================================================
@@ -208,6 +226,7 @@ export const groupNameCheckQueryKey = (groupName: string) => [
 export type QueryKeyTypes = {
   leaderboard: ReturnType<typeof leaderboardQueryKey>;
   myRank: ReturnType<typeof myRankQueryKey>;
+  currentUser: ReturnType<typeof currentUserQueryKey>;
   usageStatistics: ReturnType<typeof usageStatisticsQueryKey>;
   multiDateStatistics: ReturnType<typeof multiDateStatisticsQueryKey>;
   hourlyUsage: ReturnType<typeof hourlyUsageQueryKey>;
@@ -218,6 +237,7 @@ export type QueryKeyTypes = {
   myGroups: ReturnType<typeof myGroupsQueryKey>;
   groupDetail: ReturnType<typeof groupDetailQueryKey>;
   groupNameCheck: ReturnType<typeof groupNameCheckQueryKey>;
+  otherUserInfo: ReturnType<typeof otherUserInfoQueryKey>;
 };
 
 // =============================================================================
@@ -230,6 +250,9 @@ export type QueryKeyTypes = {
 export const INVALIDATION_KEYS = {
   // 리더보드 관련 모든 쿼리 무효화
   ALL_LEADERBOARD: [QUERY_KEYS.LEADERBOARD],
+  
+  // 사용자 관련 모든 쿼리 무효화
+  ALL_USER: [QUERY_KEYS.CURRENT_USER, QUERY_KEYS.MY_RANK, QUERY_KEYS.OTHER_USER_INFO],
   
   // 내 순위 관련 모든 쿼리 무효화
   ALL_MY_RANK: [QUERY_KEYS.MY_RANK],

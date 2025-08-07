@@ -6,30 +6,53 @@ import GroundRules from '@/components/group/GroundRules';
 import TeamCard from '@/components/group/TeamCard';
 import TeamLeaderboard from '@/components/group/TeamLeaderboard';
 import TodayGoals from '@/components/group/TodayGoals';
-import { groupDetailQueryKey } from '@/config/constants/query-keys';
+import { useUpdateGroup } from '@/hooks/group/useGroupSettings';
+import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
+import { useGroupLeaderboard } from '@/hooks/group/useGroupLeaderboard';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { updateGroup } from '@/shared/api/patch';
-import { useCurrentUser } from '@/stores/userStore';
-import { getKSTDateString, getKSTDateStringDaysAgo } from '@/utils/timezone';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { RefreshCw } from 'lucide-react';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
+import { getKSTDateString, getMondayOfWeek } from '@/utils/timezone';
 import { useParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
-import toast from 'react-hot-toast';
+import PageLoader from '../../../../components/common/PageLoader';
 
-export default function TeamDetailPage() {
+export default function GroupDetailPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const params = useParams();
-  const currentUser = useCurrentUser();
-  const queryClient = useQueryClient();
+  const currentUser = useCurrentUserData();
+  
+  // Save current tab as last visited
+  useLastGroupTab();
   
   const teamId = Array.isArray(params.id) ? params.id[0] : params.id;
   const groupId = teamId ? parseInt(teamId, 10) : 0;
 
   const [selectedPeriod, setSelectedPeriod] = useState<'daily' | 'weekly'>('daily');
-  const [selectedDate, setSelectedDate] = useState(getKSTDateString());
+  
+  // 각 모드별로 독립적인 날짜 상태 관리
+  const [dateStates, setDateStates] = useState({
+    daily: getKSTDateString(),
+    weekly: (() => {
+      // Weekly 초기값은 현재 주의 월요일
+      const today = new Date(getKSTDateString());
+      const dayOfWeek = today.getDay();
+      const daysFromMonday = (dayOfWeek + 6) % 7;
+      const mondayDate = new Date(today);
+      mondayDate.setDate(today.getDate() - daysFromMonday);
+      return mondayDate.toISOString().split('T')[0];
+    })()
+  });
+
+  // 현재 선택된 기간의 날짜
+  const selectedDate = dateStates[selectedPeriod];
+
+  // Period 변경 시 해당 모드의 저장된 날짜로 전환
+  const handlePeriodChange = useCallback((newPeriod: 'daily' | 'weekly') => {
+    setSelectedPeriod(newPeriod);
+    // 각 모드는 이미 저장된 날짜를 사용하므로 별도 처리 불필요
+  }, []);
 
   // 그룹 상세 정보 조회
   const { data: groupDetail, isLoading, error, refetch } = useGroupDetail({
@@ -37,24 +60,18 @@ export default function TeamDetailPage() {
     enabled: !!groupId,
   });
 
+  // 그룹 리더보드 조회
+  const { data: leaderboardData, isLoading: isLeaderboardLoading } = useGroupLeaderboard({
+    groupId,
+    selectedDate,
+    enabled: !!groupId,
+  });
+
   // 현재 사용자가 그룹장인지 확인
   const isGroupOwner = groupDetail && currentUser && groupDetail.owner.userId === currentUser.id;
 
   // 그룹 정보 업데이트 mutation
-  const updateGroupMutation = useMutation({
-    mutationFn: (request: Group.UpdateGroupApiRequest) => updateGroup(groupId, request),
-    onSuccess: () => {
-      // 성공 시 그룹 상세 정보 다시 조회
-      queryClient.invalidateQueries({
-        queryKey: groupDetailQueryKey(groupId),
-      });
-      toast.success('Group information updated successfully.');
-    },
-    onError: (error) => {
-      console.error('Failed to update group:', error);
-      toast.error('Failed to update group information.');
-    },
-  });
+  const updateGroupMutation = useUpdateGroup(groupId);
 
   // 그룹 설명 업데이트
   const handleDescriptionUpdate = async (newDescription: string) => {
@@ -86,64 +103,63 @@ export default function TeamDetailPage() {
     await updateGroupMutation.mutateAsync(request);
   };
 
-
-
-  // 사용 가능한 날짜 배열 생성 (오늘부터 과거 30일, 한국 시간 기준)
-  const availableDates = useMemo(() => {
-    const dates = [];
-    for (let i = 0; i < 30; i++) {
-      dates.push(getKSTDateStringDaysAgo(i));
-    }
-    return dates;
-  }, []);
-
-  // Mock data for leaderboard and goals (will be replaced with actual API calls later)
-  const mockLeaderboard = [
-    { rank: 1, name: 'John Doe', score: 95, hours: 32 },
-    { rank: 2, name: 'Sarah Wilson', score: 88, hours: 30 },
-    { rank: 3, name: 'Mike Johnson', score: 85, hours: 35 },
-    { rank: 4, name: 'Jane Smith', score: 82, hours: 28 },
-    { rank: 5, name: 'Tom Brown', score: 78, hours: 25 },
-    { rank: 6, name: 'Alice Kim', score: 75, hours: 22 },
-  ];
-
-  const mockTodayGoals = [
-    {
-      id: 1,
-      title: 'Complete React refactoring task',
-      achieved: ['John Doe', 'Sarah Wilson'],
-      notAchieved: ['Mike Johnson', 'Jane Smith', 'Tom Brown', 'Alice Kim']
-    },
-    {
-      id: 2,
-      title: 'Review team code submissions', 
-      achieved: ['John Doe', 'Mike Johnson', 'Jane Smith'],
-      notAchieved: ['Sarah Wilson', 'Tom Brown', 'Alice Kim']
-    },
-    {
-      id: 3,
-      title: 'Update project documentation',
-      achieved: ['Sarah Wilson', 'Tom Brown'],
-      notAchieved: ['John Doe', 'Mike Johnson', 'Jane Smith', 'Alice Kim']
-    }
-  ];
-
+  // 최소 날짜 제한 (8월 1일)
+  const MIN_DATE = '2025-08-01';
+  
+  // 리더보드 멤버 데이터
+  const leaderboardMembers = leaderboardData?.members || [];
 
   const handlePreviousDate = useCallback(() => {
-    const currentIndex = availableDates.indexOf(selectedDate);
-    if (currentIndex < availableDates.length - 1) {
-      const newDate = availableDates[currentIndex + 1];
-      setSelectedDate(newDate);
+    const currentDate = new Date(selectedDate);
+    let newDate: Date;
+    
+    if (selectedPeriod === 'daily') {
+      // Daily: 하루씩 이동
+      newDate = new Date(currentDate);
+      newDate.setDate(currentDate.getDate() - 1);
+    } else {
+      // Weekly: 일주일씩 이동
+      newDate = new Date(currentDate);
+      newDate.setDate(currentDate.getDate() - 7);
     }
-  }, [availableDates, selectedDate]);
+    
+    const newDateString = newDate.toISOString().split('T')[0];
+    
+    // 8월 1일 이전으로는 이동 불가
+    if (newDateString >= MIN_DATE) {
+      // 현재 모드의 날짜만 업데이트
+      setDateStates(prev => ({
+        ...prev,
+        [selectedPeriod]: newDateString
+      }));
+    }
+  }, [selectedDate, selectedPeriod]);
 
   const handleNextDate = useCallback(() => {
-    const currentIndex = availableDates.indexOf(selectedDate);
-    if (currentIndex > 0) {
-      const newDate = availableDates[currentIndex - 1];
-      setSelectedDate(newDate);
+    const currentDate = new Date(selectedDate);
+    const today = new Date(getKSTDateString());
+    let newDate: Date;
+    
+    if (selectedPeriod === 'daily') {
+      // Daily: 하루씩 이동
+      newDate = new Date(currentDate);
+      newDate.setDate(currentDate.getDate() + 1);
+    } else {
+      // Weekly: 일주일씩 이동
+      newDate = new Date(currentDate);
+      newDate.setDate(currentDate.getDate() + 7);
     }
-  }, [availableDates, selectedDate]);
+    
+    // 오늘 이후로는 이동 불가
+    if (newDate <= today) {
+      const newDateString = newDate.toISOString().split('T')[0];
+      // 현재 모드의 날짜만 업데이트
+      setDateStates(prev => ({
+        ...prev,
+        [selectedPeriod]: newDateString
+      }));
+    }
+  }, [selectedDate, selectedPeriod]);
 
   const handleDateChange = useCallback((direction: 'prev' | 'next') => {
     if (direction === 'prev') {
@@ -153,25 +169,53 @@ export default function TeamDetailPage() {
     }
   }, [handlePreviousDate, handleNextDate]);
 
-  // 이전/다음 버튼 활성화 상태 체크
+  // 이전/다음 버튼 활성화 상태 체크 (현재 선택된 모드 기준)
   const canGoPrevious = useMemo(() => {
-    const currentIndex = availableDates.indexOf(selectedDate);
-    return currentIndex < availableDates.length - 1; // 과거 날짜가 더 있으면 true
-  }, [availableDates, selectedDate]);
+    const currentDate = new Date(dateStates[selectedPeriod]);
+    let checkDate: Date;
+    
+    if (selectedPeriod === 'daily') {
+      checkDate = new Date(currentDate);
+      checkDate.setDate(currentDate.getDate() - 1);
+    } else {
+      checkDate = new Date(currentDate);
+      checkDate.setDate(currentDate.getDate() - 7);
+    }
+    
+    const checkDateString = checkDate.toISOString().split('T')[0];
+    return checkDateString >= MIN_DATE;
+  }, [dateStates, selectedPeriod]);
 
   const canGoNext = useMemo(() => {
-    const currentIndex = availableDates.indexOf(selectedDate);
-    return currentIndex > 0; // 오늘에 가까울수록 true
-  }, [availableDates, selectedDate]);
+    const currentDate = new Date(dateStates[selectedPeriod]);
+    const today = new Date(getKSTDateString());
+    let checkDate: Date;
+    
+    if (selectedPeriod === 'daily') {
+      checkDate = new Date(currentDate);
+      checkDate.setDate(currentDate.getDate() + 1);
+    } else {
+      checkDate = new Date(currentDate);
+      checkDate.setDate(currentDate.getDate() + 7);
+    }
+    
+    return checkDate <= today;
+  }, [dateStates, selectedPeriod]);
 
   const formatDate = useCallback((dateString: string) => {
     if (selectedPeriod === 'daily') {
       return dateString; // 이미 YYYY-MM-DD 형식
     } else {
       const date = new Date(dateString);
+      const dayOfWeek = date.getDay(); // 0=Sunday, 1=Monday, ...
+      const daysFromMonday = (dayOfWeek + 6) % 7; // Days elapsed from Monday
+      
+      // 월요일 찾기
       const startOfWeek = new Date(date);
-      const endOfWeek = new Date(date);
-      startOfWeek.setDate(date.getDate() - date.getDay());
+      startOfWeek.setDate(date.getDate() - daysFromMonday);
+      
+      // 일요일 찾기 (월요일로부터 6일 후)
+      const endOfWeek = new Date(startOfWeek);
       endOfWeek.setDate(startOfWeek.getDate() + 6);
       
       const formatDateToString = (d: Date) => {
@@ -188,14 +232,7 @@ export default function TeamDetailPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <RefreshCw className="h-8 w-8 animate-spin text-blue-500" />
-          <p className={`text-lg ${getThemeTextColor('primary')}`}>
-            Loading group information...
-          </p>
-        </div>
-      </div>
+      <PageLoader message="Loading group information..." />
     );
   }
 
@@ -215,7 +252,7 @@ export default function TeamDetailPage() {
   }
 
   return (
-    <div className="h-full grid grid-cols-5 gap-6 p-6" style={{ gridTemplateRows: 'auto auto 1fr' }}>
+    <div className="h-full grid grid-cols-1 lg:grid-cols-5 p-6 gap-y-6 lg:gap-6" style={{ gridTemplateRows: 'auto auto 1fr' }}>
       {/* 좌측 최상단 - 그룹 이름 및 팀장 정보 (3/5) */}
       <TeamCard 
         teamName={groupDetail.name}
@@ -231,7 +268,7 @@ export default function TeamDetailPage() {
 
       {/* 우측 상단 - 그라운드 룰 (2/5) */}
       <GroundRules 
-        rules={groupDetail.groundRule ? [groupDetail.groundRule] : []}
+        rules={groupDetail.groundRule || ''}
         isOwner={isGroupOwner ?? false}
         onGroundRuleUpdate={isGroupOwner ? handleGroundRuleUpdate : undefined}
       />
@@ -241,7 +278,7 @@ export default function TeamDetailPage() {
         <CardContent className="px-6 w-full">
           <div className="flex items-center justify-center relative w-full">
             {/* Date Navigation - 중앙 정렬 */}
-            <div className="flex justify-center">
+            <div className={`flex justify-center ${selectedPeriod === 'weekly' ? 'pr-12' : ''}`}>
               <DateNavigation
                 currentDate={selectedDate}
                 onPrevious={() => handleDateChange('prev')}
@@ -255,7 +292,7 @@ export default function TeamDetailPage() {
             {/* Period Selector - 우측 절대 위치 */}
             <div className={`absolute right-0 flex rounded-md ${getThemeClass('componentSecondary')} p-1`}>
               <button
-                onClick={() => setSelectedPeriod('daily')}
+                onClick={() => handlePeriodChange('daily')}
                 className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
                   selectedPeriod === 'daily'
                     ? `${getThemeClass('component')} ${getThemeTextColor('primary')}`
@@ -265,7 +302,7 @@ export default function TeamDetailPage() {
                 Daily
               </button>
               <button
-                onClick={() => setSelectedPeriod('weekly')}
+                onClick={() => handlePeriodChange('weekly')}
                 className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
                   selectedPeriod === 'weekly'
                     ? `${getThemeClass('component')} ${getThemeTextColor('primary')}`
@@ -280,10 +317,19 @@ export default function TeamDetailPage() {
       </Card>
 
       {/* 좌측 하단 - 리더보드 (3/5) */}
-      <TeamLeaderboard members={mockLeaderboard} />
+      <TeamLeaderboard 
+        members={leaderboardMembers} 
+        isLoading={isLeaderboardLoading}
+      />
 
       {/* 우측 하단 - 오늘의 목표 설정 (2/5) */}
-      <TodayGoals goals={mockTodayGoals} />
+      <TodayGoals 
+        groupId={groupId} 
+        isGroupOwner={isGroupOwner ?? false} 
+        groupMembers={groupDetail ? [groupDetail.owner, ...groupDetail.members] : []}
+        selectedPeriod={selectedPeriod}
+        date={selectedPeriod === 'weekly' ? getMondayOfWeek(dateStates[selectedPeriod]) : dateStates[selectedPeriod]}
+      />
     </div>
   );
 }

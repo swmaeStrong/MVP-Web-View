@@ -80,13 +80,13 @@ const UserCard = memo(function UserCard({
         <div className='flex-1 min-w-0'>
           <div className='flex items-center space-x-2'>
             <UserProfileTooltip 
+              userId={user.userId}
               userStats={{
                 nickname: user.nickname,
-                currentStreak: Math.floor(Math.random() * 30) + 1, // Mock data - replace with actual API
-                totalScore: user.score * 10 + Math.floor(Math.random() * 1000), // Mock data
-                totalSessions: Math.floor(Math.random() * 50) + 10, // Mock data
+                currentStreak: 0, // fallback data
+                maxStreak: 0, // fallback data
+                totalSessions: 0, // fallback data
                 rank: rank,
-                workTime: category === 'work' ? formatScoreToMinutes(user.score) : formatTime(user.score)
               }}
               side="top"
               align="start"
