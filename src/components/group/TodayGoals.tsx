@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useTheme } from '@/hooks/ui/useTheme';
+import { useDeleteGroupGoal } from '@/hooks/group/useDeleteGroupGoal';
 import { useGroupGoals } from '@/hooks/group/useGroupGoals';
 import { useSetGroupGoal } from '@/hooks/group/useSetGroupGoal';
-import { useDeleteGroupGoal } from '@/hooks/group/useDeleteGroupGoal';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
@@ -14,9 +13,11 @@ import { Label } from '@/shadcn/ui/label';
 import { Progress } from '@/shadcn/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/ui/select';
 import { Separator } from '@/shadcn/ui/separator';
+import { useCurrentUser } from '@/stores/userStore';
 import { spacing } from '@/styles/design-system';
 import { getKSTDateString } from '@/utils/timezone';
-import { Edit3, Plus, Trash2, X } from 'lucide-react';
+import { Check, Edit3, Plus, Trash2, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import MemberListDialog from './MemberListDialog';
 
 interface TodayGoalsProps {
@@ -29,6 +30,7 @@ interface TodayGoalsProps {
 
 export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], selectedPeriod = 'daily', date = getKSTDateString() }: TodayGoalsProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
+  const currentUser = useCurrentUser();
   const [isEditing, setIsEditing] = useState(false);
   const [showAddGoalDialog, setShowAddGoalDialog] = useState(false);
   const [showMemberDialog, setShowMemberDialog] = useState(false);
@@ -69,25 +71,37 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
   const renderAvatarGroup = (userIds: string[], isAchieved: boolean, goal: Group.GroupGoalsApiResponse) => {
     const maxVisible = 3;
     const totalAvatars = userIds.length;
-    const displayedUserIds = userIds.slice(0, maxVisible);
+    
+    // 현재 사용자가 리스트에 있으면 맨 앞으로 이동
+    let sortedUserIds = [...userIds];
+    const currentUserIndex = sortedUserIds.findIndex(id => id === currentUser?.id);
+    if (currentUserIndex > -1) {
+      const [currentUserId] = sortedUserIds.splice(currentUserIndex, 1);
+      sortedUserIds.unshift(currentUserId);
+    }
+    
+    const displayedUserIds = sortedUserIds.slice(0, maxVisible);
     const remainingCount = Math.max(totalAvatars - maxVisible, 0);
 
     return (
       <div className="flex items-center pointer-events-none">
-        {displayedUserIds.map((userId, index) => (
-          <div 
-            key={index} 
-            className={`-ml-2 relative first:ml-0`} 
-            style={{ zIndex: displayedUserIds.length - index }}
-          >
-            <Avatar className="w-6 h-6 ring-1 ring-gray-200 dark:ring-gray-700 group-hover:ring-gray-400 dark:group-hover:ring-gray-500">
-              <AvatarImage src="" />
-              <AvatarFallback className={`text-[8px] font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100`}>
-                {getUserNickname(userId).slice(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-        ))}
+        {displayedUserIds.map((userId, index) => {
+          const isCurrentUser = userId === currentUser?.id;
+          return (
+            <div 
+              key={index} 
+              className={`-ml-2 relative first:ml-0`} 
+              style={{ zIndex: displayedUserIds.length - index }}
+            >
+              <Avatar className={`w-6 h-6 ${isCurrentUser ? `ring-2 ${isAchieved ? 'ring-green-500 dark:ring-green-400' : 'ring-red-500 dark:ring-red-400'}` : 'ring-1 ring-gray-200 dark:ring-gray-700 group-hover:ring-gray-400 dark:group-hover:ring-gray-500'}`}>
+                <AvatarImage src="" />
+                <AvatarFallback className={`text-[8px] font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100`}>
+                  {getUserNickname(userId).slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+          );
+        })}
         {remainingCount > 0 && (
           <div className="-ml-2 relative">
             <Avatar className="w-6 h-6 ring-1 ring-gray-200 dark:ring-gray-700 group-hover:ring-gray-400 dark:group-hover:ring-gray-500">
@@ -250,12 +264,20 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
                 const notAchievedMembers = goal.members.filter(m => m.currentSeconds < goal.goalSeconds);
                 const progressPercentage = totalMembers > 0 ? (achievedMembers.length / totalMembers) * 100 : 0;
                 
+                // 현재 사용자가 이 목표를 달성했는지 확인
+                const currentUserMember = goal.members.find(m => m.userId === currentUser?.id);
+                const isCurrentUserAchieved = currentUserMember ? currentUserMember.currentSeconds >= goal.goalSeconds : false;
+                
                 return (
-                  <div key={`${goal.category}-${goal.periodType}`} className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
+                  <div key={`${goal.category}-${goal.periodType}`} className={`p-3 rounded-lg ${getThemeClass('componentSecondary')} border-2 ${isCurrentUserAchieved ? 'border-green-500 dark:border-green-400' : currentUserMember ? 'border-red-500 dark:border-red-400' : 'border-transparent'}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${getThemeClass('component')} ${getThemeTextColor('secondary')}`}>
-                          {index + 1}
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center ${isCurrentUserAchieved ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'}`}>
+                          {isCurrentUserAchieved ? (
+                            <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
+                          ) : (
+                            <X className="h-3 w-3 text-red-500 dark:text-red-400" />
+                          )}
                         </div>
                         <div className={`text-sm font-bold ${getThemeTextColor('primary')}`}>
                           {goal.category} - {formatTime(goal.goalSeconds)}
