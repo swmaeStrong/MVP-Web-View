@@ -160,15 +160,6 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
       
       GoalFormSchema.parse(formData);
       
-      // 중복 카테고리 검사
-      const isDuplicate = allGroupGoals.some(goal => 
-        goal.category === newGoalCategory && goal.periodType === newGoalPeriod
-      );
-      
-      if (isDuplicate) {
-        setValidationError(`A ${newGoalPeriod.toLowerCase()} goal for ${newGoalCategory} already exists`);
-        return false;
-      }
       
       return true;
     } catch (error) {
