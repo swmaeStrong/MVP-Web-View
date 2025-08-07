@@ -87,7 +87,7 @@ export default function GroupMemberManagement({
                       {member.nickname}
                     </div>
                     <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                      {member.sessionMinutes > 0 ? `${member.sessionMinutes}min` : 'Inactive'}
+                      Member
                     </div>
                   </div>
                 </div>

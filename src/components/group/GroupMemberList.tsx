@@ -139,7 +139,7 @@ export default function GroupMemberList({
                         {member.nickname}
                       </div>
                       <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                        {member.sessionMinutes > 0 ? `${member.sessionMinutes}min today` : 'Member'}
+                        Member
                       </div>
                     </div>
                   </div>
