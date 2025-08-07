@@ -15,8 +15,9 @@ interface SessionDetailProps {
 // Sub-components
 const SessionHeader: React.FC<{
   session: SessionData;
+  sessionApiResponse?: Session.SessionApiResponse;
   getThemeTextColor: (type: string) => string;
-}> = ({ session, getThemeTextColor }) => {
+}> = ({ session, sessionApiResponse, getThemeTextColor }) => {
   const formatTimeRange = (startTimestamp: number, duration: number): string => {
     const formatTimestamp = (timestamp: number): string => {
       const date = new Date(timestamp * 1000);
@@ -33,11 +34,20 @@ const SessionHeader: React.FC<{
     return `${startTime}-${endTime}`;
   };
 
+  // Early stop 검출 로직
+  const isEarlyStop = sessionApiResponse ? 
+    (sessionApiResponse.sessionMinutes * 60) - sessionApiResponse.duration >= 10 : false;
+
   return (
     <div className="flex items-center justify-between mb-4">
       <div>
-        <div className={`font-semibold ${getThemeTextColor('primary')}`}>
+        <div className={`font-semibold ${getThemeTextColor('primary')} flex items-center gap-2`}>
           {session.title}
+          {isEarlyStop && (
+            <span className={`text-xs ${getThemeTextColor('secondary')} font-normal`}>
+              (early stop)
+            </span>
+          )}
         </div>
         <p className={`text-sm ${getThemeTextColor('secondary')}`}>
           {formatTimeRange(session.timestamp, session.duration)}
@@ -248,12 +258,16 @@ export default function SessionDetail({
   }
 
   const segments = getTimelineBreakdown(selectedSession.id);
+  
+  // 해당 세션의 API 응답 데이터 찾기
+  const sessionApiResponse = sessionData?.find(session => session.session === selectedSession.id);
 
   return (
     <div className={`p-4 rounded-lg ${getThemeClass('componentSecondary')}`}>
       {/* Session Header */}
       <SessionHeader 
-        session={selectedSession} 
+        session={selectedSession}
+        sessionApiResponse={sessionApiResponse}
         getThemeTextColor={getThemeTextColor as (type: string) => string} 
       />
 
