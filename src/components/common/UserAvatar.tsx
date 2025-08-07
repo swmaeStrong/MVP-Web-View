@@ -57,13 +57,8 @@ export default function UserAvatar({
       return 'ring-1 ring-gray-200 dark:ring-gray-700';
     }
     
-    if (isAchieved !== undefined) {
-      return isAchieved
-        ? 'ring-2 ring-green-400 dark:ring-green-500'
-        : 'ring-2 ring-red-400 dark:ring-red-500';
-    }
-    
-    return 'ring-1 ring-gray-200 dark:ring-gray-700';
+    // 현재 사용자는 항상 진한 색 border (achieved 상태와 관계없이)
+    return 'ring-1 ring-gray-400 dark:ring-gray-500';
   };
 
   return (

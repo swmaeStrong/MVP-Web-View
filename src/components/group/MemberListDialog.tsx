@@ -97,15 +97,15 @@ export default function MemberListDialog({
                   </div>
                 {type === 'achieved' && (
                   <div className="ml-auto">
-                    <span className="text-xs text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full font-medium">
+                    <span className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full font-medium">
                       ✓ Achieved
                     </span>
                   </div>
                 )}
                 {type === 'notAchieved' && (
                   <div className="ml-auto">
-                    <span className="text-xs text-gray-600 bg-gray-50 dark:bg-gray-800 px-2 py-1 rounded-full font-medium">
-                      Pending
+                    <span className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-full font-medium">
+                      Not Achieved
                     </span>
                   </div>
                 )}

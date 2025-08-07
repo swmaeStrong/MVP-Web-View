@@ -320,7 +320,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
                         onClick={!isEditing ? () => handleShowMemberList(goal, 'achieved') : undefined}
                       >
                         <div className="flex items-center gap-2 mb-2">
-                          <span className={`text-xs font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100`}>
+                          <span className={`text-xs font-medium ${isCurrentUserAchieved ? 'text-green-600 dark:text-green-400 group-hover:text-green-700 dark:group-hover:text-green-300' : 'text-gray-600 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'}`}>
                             Achieved ({achievedMembers.length})
                           </span>
                         </div>
@@ -337,7 +337,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
                         onClick={!isEditing ? () => handleShowMemberList(goal, 'notAchieved') : undefined}
                       >
                         <div className="flex items-center gap-2 mb-2">
-                          <span className={`text-xs font-medium text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100`}>
+                          <span className={`text-xs font-medium ${!isCurrentUserAchieved ? 'text-red-600 dark:text-red-400 group-hover:text-red-700 dark:group-hover:text-red-300' : 'text-gray-600 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'}`}>
                             Not Achieved ({notAchievedMembers.length})
                           </span>
                         </div>
