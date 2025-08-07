@@ -341,7 +341,7 @@ export default function CreateGroupPage() {
                   </div>
                   
                   {/* Description */}
-                  <p className={`text-xs ${getThemeTextColor('secondary')} leading-relaxed`}>
+                  <p className={`text-xs ${getThemeTextColor('secondary')} leading-relaxed whitespace-pre-wrap`}>
                     {watchedValues.description || 'Group description will appear here...'}
                   </p>
                   

@@ -131,7 +131,7 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
                 </div>
               </div>
             ) : (
-              <p className={`text-sm h-24 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 ${getThemeTextColor('secondary')}`}>
+              <p className={`text-sm h-24 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 ${getThemeTextColor('secondary')} whitespace-pre-wrap`}>
                 {description}
               </p>
             )}

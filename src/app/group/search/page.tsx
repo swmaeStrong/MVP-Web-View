@@ -223,7 +223,7 @@ export default function FindTeamPage() {
                   {/* Description - 2 lines max with ellipsis */}
                   <div className="flex-1 min-h-0">
                     {group.description ? (
-                      <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed overflow-hidden line-clamp-2`}>
+                      <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed overflow-hidden line-clamp-2 whitespace-pre-wrap`}>
                         {group.description}
                       </p>
                     ) : (
@@ -340,7 +340,7 @@ export default function FindTeamPage() {
                     {/* Group Description */}
                     {selectedGroup.description && (
                       <div className="mb-4">
-                        <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed`}>
+                        <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed whitespace-pre-wrap`}>
                           {selectedGroup.description}
                         </p>
                       </div>
