@@ -1,6 +1,5 @@
 'use client';
 
-import { useTheme } from '@/hooks/ui/useTheme';
 import { RefreshCw } from 'lucide-react';
 
 interface PageLoaderProps {
@@ -8,13 +7,11 @@ interface PageLoaderProps {
 }
 
 export default function PageLoader({ message = 'Loading...' }: PageLoaderProps) {
-  const { getThemeClass, getThemeTextColor } = useTheme();
-
   return (
-    <div className={`min-h-screen flex items-center justify-center ${getThemeClass('background')}`}>
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
       <div className="flex flex-col items-center gap-4">
-        <RefreshCw className={`h-8 w-8 animate-spin ${getThemeTextColor('primary')}`} />
-        <p className={`text-lg font-medium ${getThemeTextColor('primary')}`}>
+        <RefreshCw className="h-8 w-8 animate-spin text-gray-900 dark:text-white" />
+        <p className="text-lg font-medium text-gray-900 dark:text-white">
           {message}
         </p>
       </div>
