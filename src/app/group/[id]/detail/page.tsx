@@ -63,6 +63,7 @@ export default function GroupDetailPage() {
   // 그룹 리더보드 조회
   const { data: leaderboardData, isLoading: isLeaderboardLoading } = useGroupLeaderboard({
     groupId,
+    period: selectedPeriod === 'daily' ? 'DAILY' : 'WEEKLY',
     selectedDate,
     enabled: !!groupId,
   });
