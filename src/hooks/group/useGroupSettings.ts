@@ -46,7 +46,7 @@ export function useDeleteGroup(groupId: number) {
     },
     onError: (error) => {
       console.error('Failed to delete group:', error);
-      toast.error(GROUP_ACTION_MESSAGES.DELETE.ERROR);
+      toast.error("To delete this group, you must first transfer ownership to another member or remove all members.");
     },
   });
 }
