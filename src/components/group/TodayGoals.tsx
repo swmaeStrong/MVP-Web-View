@@ -5,20 +5,45 @@ import { useDeleteGroupGoal } from '@/hooks/group/useDeleteGroupGoal';
 import { useGroupGoals } from '@/hooks/group/useGroupGoals';
 import { useSetGroupGoal } from '@/hooks/group/useSetGroupGoal';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
-import { Input } from '@/shadcn/ui/input';
 import { Label } from '@/shadcn/ui/label';
 import { Progress } from '@/shadcn/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/ui/select';
 import { Separator } from '@/shadcn/ui/separator';
-import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { spacing } from '@/styles/design-system';
 import { getKSTDateString } from '@/utils/timezone';
 import { Check, Edit3, Plus, Trash2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { z } from 'zod';
 import MemberListDialog from './MemberListDialog';
+
+// Zod 스키마 정의
+const GoalFormSchema = z.object({
+  category: z.enum(['Development', 'Design', 'Documentation', 'Education']),
+  hours: z.number().min(0, 'Hours must be 0 or greater'),
+  minutes: z.number().min(0, 'Minutes must be 0 or greater').max(59, 'Minutes must be less than 60'),
+  period: z.enum(['DAILY', 'WEEKLY'])
+}).refine((data) => {
+  // 최소 시간 체크 (최소 30분)
+  const totalMinutes = data.hours * 60 + data.minutes;
+  return totalMinutes >= 30;
+}, {
+  message: "Goal must be at least 30 minutes",
+  path: ["minutes"]
+}).refine((data) => {
+  // 최대 시간 체크
+  const totalMinutes = data.hours * 60 + data.minutes;
+  const maxMinutes = data.period === 'DAILY' ? 24 * 60 : 168 * 60; // 24시간 (일간), 168시간 (주간)
+  return totalMinutes <= maxMinutes;
+}, {
+  message: "Goal time exceeds maximum limit",
+  path: ["hours"]
+});
+
+type GoalFormData = z.infer<typeof GoalFormSchema>;
 
 interface TodayGoalsProps {
   groupId: number;
@@ -39,10 +64,14 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
   
   // Form states for new goal
   const [newGoalCategory, setNewGoalCategory] = useState<'Development' | 'Design' | 'Documentation' | 'Education'>('Development');
-  const [newGoalHours, setNewGoalHours] = useState('');
+  const [newGoalHours, setNewGoalHours] = useState(1);
+  const [newGoalMinutes, setNewGoalMinutes] = useState(0);
   const [newGoalPeriod, setNewGoalPeriod] = useState<'DAILY' | 'WEEKLY'>(
     selectedPeriod === 'daily' ? 'DAILY' : 'WEEKLY'
   );
+  
+  // Validation states
+  const [validationError, setValidationError] = useState<string>('');
   
   // API hooks
   const { data: allGroupGoals = [], isLoading, refetch } = useGroupGoals({ groupId, date });
@@ -57,6 +86,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
   // Update new goal period when selected period changes
   useEffect(() => {
     setNewGoalPeriod(selectedPeriod === 'daily' ? 'DAILY' : 'WEEKLY');
+    setValidationError(''); // Clear validation error when period changes
   }, [selectedPeriod]);
 
   const getAvatarInitials = (name: string) => {
@@ -116,10 +146,50 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
     );
   };
 
-  const handleGoalSave = async () => {
-    if (!newGoalHours.trim()) return;
+  const validateForm = (): boolean => {
+    setValidationError('');
     
-    const goalSeconds = parseInt(newGoalHours) * 3600; // Convert hours to seconds
+    try {
+      // Zod 검증
+      const formData: GoalFormData = {
+        category: newGoalCategory,
+        hours: newGoalHours,
+        minutes: newGoalMinutes,
+        period: newGoalPeriod
+      };
+      
+      GoalFormSchema.parse(formData);
+      
+      // 중복 카테고리 검사
+      const isDuplicate = allGroupGoals.some(goal => 
+        goal.category === newGoalCategory && goal.periodType === newGoalPeriod
+      );
+      
+      if (isDuplicate) {
+        setValidationError(`A ${newGoalPeriod.toLowerCase()} goal for ${newGoalCategory} already exists`);
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const firstError = error.issues[0];
+        if (firstError.message === "Goal time exceeds maximum limit") {
+          const maxHours = newGoalPeriod === 'DAILY' ? 24 : 168;
+          setValidationError(`Goal time cannot exceed ${maxHours} hours for ${newGoalPeriod.toLowerCase()} goals`);
+        } else {
+          setValidationError(firstError.message);
+        }
+      }
+      return false;
+    }
+  };
+
+  const handleGoalSave = async () => {
+    if (!validateForm()) return;
+    
+    // Convert hours and minutes to seconds
+    const goalSeconds = (newGoalHours * 3600) + (newGoalMinutes * 60);
     
     try {
       await setGoalMutation.mutateAsync({
@@ -130,8 +200,10 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
       
       // Reset form and close dialog
       setNewGoalCategory('Development');
-      setNewGoalHours('');
+      setNewGoalHours(1);
+      setNewGoalMinutes(0);
       setNewGoalPeriod(selectedPeriod === 'daily' ? 'DAILY' : 'WEEKLY');
+      setValidationError('');
       setShowAddGoalDialog(false);
       
       // Exit edit mode after adding
@@ -172,7 +244,28 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
   };
 
   const handleAddGoalInEdit = () => {
+    setValidationError('');
     setShowAddGoalDialog(true);
+  };
+
+  const handleHoursChange = (value: string) => {
+    setNewGoalHours(parseInt(value));
+    setValidationError(''); // Clear validation error on input change
+  };
+
+  const handleMinutesChange = (value: string) => {
+    setNewGoalMinutes(parseInt(value));
+    setValidationError(''); // Clear validation error on input change
+  };
+
+  const handleCategoryChange = (value: 'Development' | 'Design' | 'Documentation' | 'Education') => {
+    setNewGoalCategory(value);
+    setValidationError(''); // Clear validation error on input change
+  };
+
+  const handlePeriodChange = (value: 'DAILY' | 'WEEKLY') => {
+    setNewGoalPeriod(value);
+    setValidationError(''); // Clear validation error on input change
   };
   
   const formatTime = (seconds: number) => {
@@ -378,7 +471,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="category" className={getThemeTextColor('primary')}>Category</Label>
-              <Select value={newGoalCategory} onValueChange={(value: 'Development' | 'Design' | 'Documentation' | 'Education') => setNewGoalCategory(value)}>
+              <Select value={newGoalCategory} onValueChange={handleCategoryChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
@@ -390,21 +483,40 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="hours" className={getThemeTextColor('primary')}>Goal Hours</Label>
-              <Input
-                id="hours"
-                type="number"
-                placeholder="Enter hours (e.g., 8)"
-                value={newGoalHours}
-                onChange={(e) => setNewGoalHours(e.target.value)}
-                min="1"
-                max="24"
-              />
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className={getThemeTextColor('primary')}>Hours</Label>
+                <Select value={newGoalHours.toString()} onValueChange={handleHoursChange}>
+                  <SelectTrigger className={`w-full min-w-[120px] ${validationError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px]">
+                    {Array.from({ length: newGoalPeriod === 'DAILY' ? 25 : 169 }, (_, i) => (
+                      <SelectItem key={i} value={i.toString()}>{i}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className={getThemeTextColor('primary')}>Minutes</Label>
+                <Select value={newGoalMinutes.toString()} onValueChange={handleMinutesChange}>
+                  <SelectTrigger className={`w-full min-w-[120px] ${validationError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px]">
+                    {[0, 15, 30, 45].map((minute) => (
+                      <SelectItem key={minute} value={minute.toString()}>{minute}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="text-xs text-gray-500 mt-1">
+              {newGoalPeriod === 'DAILY' ? 'Daily goal range: 30 minutes to 24 hours' : 'Weekly goal range: 30 minutes to 168 hours'}
             </div>
             <div className="space-y-2">
               <Label htmlFor="period" className={getThemeTextColor('primary')}>Period</Label>
-              <Select value={newGoalPeriod} onValueChange={(value: 'DAILY' | 'WEEKLY') => setNewGoalPeriod(value)}>
+              <Select value={newGoalPeriod} onValueChange={handlePeriodChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select period" />
                 </SelectTrigger>
@@ -414,6 +526,13 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
                 </SelectContent>
               </Select>
             </div>
+            
+            {/* Validation Error Message */}
+            {validationError && (
+              <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+                <p className="text-sm text-red-600 dark:text-red-400">{validationError}</p>
+              </div>
+            )}
           </div>
           <div className="flex justify-end gap-3">
             <Button
@@ -424,7 +543,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
             </Button>
             <Button
               onClick={handleGoalSave}
-              disabled={!newGoalHours.trim() || setGoalMutation.isPending}
+              disabled={setGoalMutation.isPending || !!validationError || (newGoalHours === 0 && newGoalMinutes === 0)}
             >
               {setGoalMutation.isPending ? 'Adding...' : 'Add Goal'}
             </Button>
