@@ -3,10 +3,7 @@
 import { FormControl, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
 import { Input } from '@/shadcn/ui/input';
 import { useTheme } from '@/hooks/ui/useTheme';
-import { useDebounce } from '@/hooks/ui/useDebounce';
-import { useQuery } from '@tanstack/react-query';
-import { validateGroupName } from '@/shared/api/get';
-import { groupNameCheckQueryKey } from '@/config/constants/query-keys';
+import { useGroupNameValidation } from '@/hooks/group/useCreateGroup';
 import { FieldPath, FieldValues, UseFormReturn } from 'react-hook-form';
 
 interface GroupNameInputProps<
@@ -35,17 +32,15 @@ export function GroupNameInput<
   const { getThemeTextColor } = useTheme();
   
   const fieldValue = form.watch(name) as string;
-  const debouncedName = useDebounce(fieldValue, 500);
   
   // 중복 검사 (편집 시 현재 이름은 제외)
-  const shouldCheckName = debouncedName.length >= 1 && 
-    (!excludeFromValidation || debouncedName !== excludeFromValidation);
+  const shouldCheckName = fieldValue.length >= 1 && 
+    (!excludeFromValidation || fieldValue !== excludeFromValidation);
   
-  const { data: isNameAvailable, isLoading: isCheckingName } = useQuery({
-    queryKey: groupNameCheckQueryKey(debouncedName),
-    queryFn: () => validateGroupName(debouncedName),
-    enabled: shouldCheckName && !disabled,
-  });
+  // useGroupNameValidation 훅 사용하되, 조건부로 활성화
+  const { data: isNameAvailable, isLoading: isCheckingName } = useGroupNameValidation(
+    shouldCheckName && !disabled ? fieldValue : ''
+  );
 
   return (
     <FormItem>
@@ -68,7 +63,7 @@ export function GroupNameInput<
             }`}
             disabled={disabled}
           />
-          {shouldCheckName && (
+          {shouldCheckName && !disabled && fieldValue && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
               {isCheckingName ? (
                 <div className="text-gray-400 text-xs">Checking...</div>

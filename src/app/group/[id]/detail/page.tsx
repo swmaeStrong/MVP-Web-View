@@ -9,12 +9,11 @@ import TodayGoals from '@/components/group/TodayGoals';
 import { useUpdateGroup } from '@/hooks/group/useGroupSettings';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
+import { useGroupLeaderboard } from '@/hooks/group/useGroupLeaderboard';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { getGroupLeaderboard } from '@/shared/api/get';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { getKSTDateString, getMondayOfWeek } from '@/utils/timezone';
-import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import PageLoader from '../../../../components/common/PageLoader';
@@ -62,13 +61,10 @@ export default function GroupDetailPage() {
   });
 
   // 그룹 리더보드 조회
-  const { data: leaderboardData, isLoading: isLeaderboardLoading } = useQuery({
-    queryKey: ['groupLeaderboard', groupId, selectedDate],
-    queryFn: () => getGroupLeaderboard(groupId, selectedDate),
+  const { data: leaderboardData, isLoading: isLeaderboardLoading } = useGroupLeaderboard({
+    groupId,
+    selectedDate,
     enabled: !!groupId,
-    retry: 1,
-    refetchInterval: 60 * 1000, // 1분마다 폴링
-    refetchOnWindowFocus: false,
   });
 
   // 현재 사용자가 그룹장인지 확인
