@@ -269,7 +269,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
                 const isCurrentUserAchieved = currentUserMember ? currentUserMember.currentSeconds >= goal.goalSeconds : false;
                 
                 return (
-                  <div key={`${goal.category}-${goal.periodType}`} className={`p-3 rounded-lg ${getThemeClass('componentSecondary')} border-2 ${isCurrentUserAchieved ? 'border-green-400 dark:border-green-500' : currentUserMember ? 'border-red-400 dark:border-red-500' : 'border-transparent'}`}>
+                  <div key={`${goal.category}-${goal.periodType}`} className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className={`w-5 h-5 rounded-full flex items-center justify-center ${isCurrentUserAchieved ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'}`}>
