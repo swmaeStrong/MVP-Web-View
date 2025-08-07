@@ -18,7 +18,13 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
   const currentUser = useCurrentUser();
 
   const formatScore = (score: number) => {
-    return Math.floor(score);
+    const hours = Math.floor(score / 3600);
+    const minutes = Math.floor((score % 3600) / 60);
+    
+    if (hours > 0) {
+      return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+    }
+    return `${minutes}m`;
   };
 
   if (isLoading) {
