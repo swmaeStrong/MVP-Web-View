@@ -63,8 +63,10 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
       <CardContent className={`${spacing.inner.normal} flex-1 overflow-hidden`}>
         <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pr-2">
-            {members.map((member) => (
-              <div key={member.userId} className={`p-4 rounded-md ${getThemeClass('componentSecondary')} ${getThemeClass('border')} border text-center relative`}>
+            {members.map((member) => {
+              const isCurrentUser = member.userId === currentUser?.id;
+              return (
+              <div key={member.userId} className={`p-4 rounded-md ${isCurrentUser ? 'bg-[#3F72AF]/10 dark:bg-[#3F72AF]/15' : 'bg-white dark:bg-white'} ${isCurrentUser ? 'border-[#3F72AF]/30' : getThemeClass('border')} border text-center relative`}>
                 
                 {/* 아바타 */}
                 <UserProfileTooltip
@@ -84,7 +86,7 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
                       nickname={member.nickname}
                       imageUrl={member.profileImageUrl}
                       size="lg"
-                      isCurrentUser={member.userId === currentUser?.id}
+                      isCurrentUser={isCurrentUser}
                       showBorder={false}
                       className={`ring-1 ring-gray-200 dark:ring-gray-700 hover:ring-2 hover:ring-gray-500 transition-all duration-200 ${
                         member.isOnline ? 'ring-green-500 dark:ring-green-400' : ''
@@ -123,7 +125,8 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
                   </p>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </CardContent>
