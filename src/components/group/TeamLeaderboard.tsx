@@ -105,11 +105,8 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
                 
                 {/* 정보 */}
                 <div>
-                  <p className={`text-sm font-medium truncate ${getThemeTextColor('primary')} mb-1`}>
+                  <p className={`text-sm font-medium truncate ${getThemeTextColor('primary')} mb-2`}>
                     {member.nickname}
-                  </p>
-                  <p className={`text-xs ${getThemeTextColor('secondary')} mb-1`}>
-                    Rank #{member.rank}
                   </p>
                   <p className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
                     {formatScore(member.score)}
