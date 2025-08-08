@@ -5,6 +5,7 @@ declare namespace Group {
 		groupOwner: GroupUserInfo,
 		tags: string[] | null,
 		description: string | null,
+		memberCount: number,
 		isPublic: boolean,
 	}
 
@@ -58,8 +59,8 @@ declare namespace Group {
 	}
 
 	interface SetGroupGoalApiRequest {
-		category: 'Development' | 'Design' | 'Documentation' | 'Education',
-		goalSeconds: number,
+		category: 'Development' | 'Design' | 'Documentation' | 'Education' | 'work' | 'sessionScore' | 'sessionCount',
+		goalValue: number,
 		period: 'DAILY' | 'WEEKLY',
 	}
 
@@ -75,7 +76,7 @@ declare namespace Group {
 
 	interface GroupGoalsApiResponse {
 		category: string,
-		goalSeconds: number,
+		goalValue: number,
 		periodType: 'DAILY' | 'WEEKLY',
 		members: GroupGoalMember[],
 	}

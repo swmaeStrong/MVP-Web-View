@@ -32,6 +32,28 @@ export default function MemberListDialog({
     return `${minutes}m`;
   };
 
+  const formatGoalValue = (category: string, value: number) => {
+    if (category === 'sessionScore') {
+      return `${value} points`;
+    }
+    if (category === 'sessionCount') {
+      return `${value} session${value > 1 ? 's' : ''}`;
+    }
+    return formatTime(value);
+  };
+
+  const formatMemberProgress = (category: string, currentValue: number) => {
+    // For session-based goals, currentSeconds actually contains the session value
+    if (category === 'sessionScore') {
+      return `${currentValue} points`;
+    }
+    if (category === 'sessionCount') {
+      return `${currentValue} session${currentValue > 1 ? 's' : ''}`;
+    }
+    // For time-based goals, currentSeconds contains actual seconds
+    return formatTime(currentValue);
+  };
+
   const getUserNickname = (userId: string) => {
     const member = groupMembers.find(m => m.userId === userId);
     return member?.nickname || userId;
@@ -40,8 +62,8 @@ export default function MemberListDialog({
   if (!goal || !type) return null;
 
   const members = type === 'achieved' 
-    ? goal.members.filter(m => m.currentSeconds >= goal.goalSeconds)
-    : goal.members.filter(m => m.currentSeconds < goal.goalSeconds);
+    ? goal.members.filter(m => m.currentSeconds >= goal.goalValue)
+    : goal.members.filter(m => m.currentSeconds < goal.goalValue);
 
   // 현재 사용자를 맨 앞으로 정렬
   const sortedMembers = [...members].sort((a, b) => {
@@ -63,7 +85,12 @@ export default function MemberListDialog({
           {/* 목표 제목 */}
           <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
             <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-              "{goal.category} - {formatTime(goal.goalSeconds)}"
+              {goal.category === 'sessionScore' 
+                ? `Earn ${goal.goalValue} Focus Points`
+                : goal.category === 'sessionCount'
+                ? `Complete ${goal.goalValue} Session${goal.goalValue > 1 ? 's' : ''}`
+                : `${goal.category === 'work' ? 'Work' : goal.category} for ${formatTime(goal.goalValue)}`
+              }
             </div>
           </div>
 
@@ -93,7 +120,7 @@ export default function MemberListDialog({
                     {getUserNickname(member.userId)}
                   </div>
                   <div className={`text-xs ${getThemeTextColor('secondary')} mr-3`}>
-                    {formatTime(member.currentSeconds)}
+                    {formatMemberProgress(goal.category, member.currentSeconds)}
                   </div>
                 {type === 'achieved' && (
                   <div className="ml-auto">
@@ -121,7 +148,7 @@ export default function MemberListDialog({
                 Total: {goal.members.length} members
               </span>
               <span className={getThemeTextColor('secondary')}>
-                Progress: {Math.round((goal.members.filter(m => m.currentSeconds >= goal.goalSeconds).length / goal.members.length) * 100)}%
+                Progress: {Math.round((goal.members.filter(m => m.currentSeconds >= goal.goalValue).length / goal.members.length) * 100)}%
               </span>
             </div>
           </div>

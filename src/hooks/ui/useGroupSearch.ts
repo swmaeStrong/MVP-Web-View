@@ -46,6 +46,14 @@ export function useGroupSearch({
     const sorted = [...searchedGroups];
     
     sorted.sort((a, b) => {
+      // 이벤트 관련 그룹을 가장 앞에 배치
+      const aHasEvent = /이벤트|event/i.test(a.name) || /이벤트|event/i.test(a.description || '');
+      const bHasEvent = /이벤트|event/i.test(b.name) || /이벤트|event/i.test(b.description || '');
+      
+      if (aHasEvent && !bHasEvent) return -1;
+      if (!aHasEvent && bHasEvent) return 1;
+      
+      // 이벤트 우선순위가 같다면 기존 정렬 기준 적용
       switch (sortBy) {
         case 'name':
           return a.name.localeCompare(b.name);

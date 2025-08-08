@@ -8,21 +8,21 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
 import { Label } from '@/shadcn/ui/label';
 import { Progress } from '@/shadcn/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/ui/select';
 import { Separator } from '@/shadcn/ui/separator';
 import { spacing } from '@/styles/design-system';
 import { getKSTDateString } from '@/utils/timezone';
-import { Check, Edit3, Plus, Trash2, X } from 'lucide-react';
+import { Check, Clock, Edit3, Plus, Target, Trash2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import MemberListDialog from './MemberListDialog';
 
 // Zod 스키마 정의
 const GoalFormSchema = z.object({
-  category: z.enum(['Development', 'Design', 'Documentation', 'Education']),
+  category: z.enum(['Development', 'Design', 'Documentation', 'Education', 'work']),
   hours: z.number().min(0, 'Hours must be 0 or greater'),
   minutes: z.number().min(0, 'Minutes must be 0 or greater').max(59, 'Minutes must be less than 60'),
   period: z.enum(['DAILY', 'WEEKLY'])
@@ -58,14 +58,18 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
   const currentUser = useCurrentUserData();
   const [isEditing, setIsEditing] = useState(false);
   const [showAddGoalDialog, setShowAddGoalDialog] = useState(false);
+  const [showGoalTypeDialog, setShowGoalTypeDialog] = useState(false);
+  const [goalType, setGoalType] = useState<'time' | 'sessionScore' | 'sessionCount' | null>(null);
   const [showMemberDialog, setShowMemberDialog] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<Group.GroupGoalsApiResponse | null>(null);
   const [selectedType, setSelectedType] = useState<'achieved' | 'notAchieved' | null>(null);
   
   // Form states for new goal
-  const [newGoalCategory, setNewGoalCategory] = useState<'Development' | 'Design' | 'Documentation' | 'Education'>('Development');
+  const [newGoalCategory, setNewGoalCategory] = useState<'Development' | 'Design' | 'Documentation' | 'Education' | 'work'>('Development');
   const [newGoalHours, setNewGoalHours] = useState(1);
   const [newGoalMinutes, setNewGoalMinutes] = useState(0);
+  const [newGoalSessions, setNewGoalSessions] = useState(3);
+  const [newGoalSessionScore, setNewGoalSessionScore] = useState(300);
   const [newGoalPeriod, setNewGoalPeriod] = useState<'DAILY' | 'WEEKLY'>(
     selectedPeriod === 'daily' ? 'DAILY' : 'WEEKLY'
   );
@@ -78,10 +82,29 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
   const setGoalMutation = useSetGroupGoal(groupId);
   const deleteGoalMutation = useDeleteGroupGoal(groupId);
 
-  // Filter goals by selected period
-  const groupGoals = allGroupGoals.filter(goal => 
-    goal.periodType === (selectedPeriod === 'daily' ? 'DAILY' : 'WEEKLY')
-  );
+  // Filter goals by selected period and sort with priority
+  const groupGoals = allGroupGoals
+    .filter(goal => goal.periodType === (selectedPeriod === 'daily' ? 'DAILY' : 'WEEKLY'))
+    .sort((a, b) => {
+      // Priority order: sessionScore -> sessionCount -> work -> Work -> Development -> others alphabetically
+      const getPriority = (category: string) => {
+        if (category === 'sessionScore') return 0;
+        if (category === 'sessionCount') return 1;
+        if (category === 'work' || category === 'Work') return 2;
+        if (category === 'Development') return 3;
+        return 4;
+      };
+      
+      const priorityA = getPriority(a.category);
+      const priorityB = getPriority(b.category);
+      
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+      
+      // If same priority, sort alphabetically
+      return a.category.localeCompare(b.category);
+    });
 
   // Update new goal period when selected period changes
   useEffect(() => {
@@ -177,15 +200,29 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
   };
 
   const handleGoalSave = async () => {
-    if (!validateForm()) return;
+    if (goalType === 'time' && !validateForm()) return;
     
-    // Convert hours and minutes to seconds
-    const goalSeconds = (newGoalHours * 3600) + (newGoalMinutes * 60);
+    let goalValue: number;
+    let category: 'Development' | 'Design' | 'Documentation' | 'Education' | 'work' | 'sessionScore' | 'sessionCount';
+    
+    if (goalType === 'sessionScore') {
+      // For session score goals: category='sessionScore', goalValue=total score
+      category = 'sessionScore';
+      goalValue = newGoalSessionScore;
+    } else if (goalType === 'sessionCount') {
+      // For session count goals: category='sessionCount', goalValue=number of sessions
+      category = 'sessionCount';
+      goalValue = newGoalSessions;
+    } else {
+      // For time-based goals, convert hours and minutes to seconds
+      category = newGoalCategory;
+      goalValue = (newGoalHours * 3600) + (newGoalMinutes * 60);
+    }
     
     try {
       await setGoalMutation.mutateAsync({
-        category: newGoalCategory,
-        goalSeconds,
+        category,
+        goalValue,
         period: newGoalPeriod
       });
       
@@ -193,9 +230,12 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
       setNewGoalCategory('Development');
       setNewGoalHours(1);
       setNewGoalMinutes(0);
+      setNewGoalSessions(3);
+      setNewGoalSessionScore(300);
       setNewGoalPeriod(selectedPeriod === 'daily' ? 'DAILY' : 'WEEKLY');
       setValidationError('');
       setShowAddGoalDialog(false);
+      setGoalType(null);
       
       // Exit edit mode after adding
       if (isEditing) {
@@ -236,6 +276,12 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
 
   const handleAddGoalInEdit = () => {
     setValidationError('');
+    setShowGoalTypeDialog(true);
+  };
+  
+  const handleGoalTypeSelect = (type: 'time' | 'sessionScore' | 'sessionCount') => {
+    setGoalType(type);
+    setShowGoalTypeDialog(false);
     setShowAddGoalDialog(true);
   };
 
@@ -249,7 +295,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
     setValidationError(''); // Clear validation error on input change
   };
 
-  const handleCategoryChange = (value: 'Development' | 'Design' | 'Documentation' | 'Education') => {
+  const handleCategoryChange = (value: 'Development' | 'Design' | 'Documentation' | 'Education' | 'work') => {
     setNewGoalCategory(value);
     setValidationError(''); // Clear validation error on input change
   };
@@ -268,8 +314,8 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
     return `${minutes}m`;
   };
   
-  const getProgressPercentage = (currentSeconds: number, goalSeconds: number) => {
-    return Math.min((currentSeconds / goalSeconds) * 100, 100);
+  const getProgressPercentage = (currentSeconds: number, goalValue: number) => {
+    return Math.min((currentSeconds / goalValue) * 100, 100);
   };
   
   if (isLoading) {
@@ -317,9 +363,9 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
           </Button>
         )}
       </CardHeader>
-      <CardContent className={`${spacing.inner.normal} flex-1 overflow-hidden`}>
-        <Separator className="mb-4" />
-        <div className="space-y-4 h-full flex flex-col">
+      <CardContent className={`${spacing.inner.normal} flex-1 flex flex-col overflow-hidden`}>
+        <Separator className="mb-4 flex-shrink-0" />
+        <div className="flex-1 flex flex-col min-h-0">
           {groupGoals.length === 0 ? (
             <div className="space-y-4">
               <div className={`text-center py-8 ${getThemeTextColor('secondary')}`}>
@@ -342,16 +388,16 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
               )}
             </div>
           ) : (
-            <div className="space-y-4 flex-1 overflow-y-auto">
+            <div className="space-y-4 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
               {groupGoals.map((goal, index) => {
                 const totalMembers = goal.members.length;
-                const achievedMembers = goal.members.filter(m => m.currentSeconds >= goal.goalSeconds);
-                const notAchievedMembers = goal.members.filter(m => m.currentSeconds < goal.goalSeconds);
+                const achievedMembers = goal.members.filter(m => m.currentSeconds >= goal.goalValue);
+                const notAchievedMembers = goal.members.filter(m => m.currentSeconds < goal.goalValue);
                 const progressPercentage = totalMembers > 0 ? (achievedMembers.length / totalMembers) * 100 : 0;
                 
                 // 현재 사용자가 이 목표를 달성했는지 확인
                 const currentUserMember = goal.members.find(m => m.userId === currentUser?.id);
-                const isCurrentUserAchieved = currentUserMember ? currentUserMember.currentSeconds >= goal.goalSeconds : false;
+                const isCurrentUserAchieved = currentUserMember ? currentUserMember.currentSeconds >= goal.goalValue : false;
                 
                 return (
                   <div key={`${goal.category}-${goal.periodType}`} className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
@@ -365,7 +411,12 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
                           )}
                         </div>
                         <div className={`text-sm font-bold ${getThemeTextColor('primary')}`}>
-                          {goal.category} - {formatTime(goal.goalSeconds)}
+                          {goal.category === 'sessionScore' 
+                            ? `Earn ${goal.goalValue} Focus Points`
+                            : goal.category === 'sessionCount'
+                            ? `Complete ${goal.goalValue} Session${goal.goalValue > 1 ? 's' : ''}`
+                            : `${goal.category === 'work' ? 'Work' : goal.category} for ${formatTime(goal.goalValue)}`
+                          }
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -453,58 +504,181 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
         </div>
       </CardContent>
 
-      {/* 목표 추가 다이얼로그 */}
-      <Dialog open={showAddGoalDialog} onOpenChange={setShowAddGoalDialog}>
+      {/* 목표 타입 선택 다이얼로그 */}
+      <Dialog open={showGoalTypeDialog} onOpenChange={setShowGoalTypeDialog}>
         <DialogContent className={`sm:max-w-md ${getCommonCardClass()}`}>
           <DialogHeader>
-            <DialogTitle className={`text-lg font-bold ${getThemeTextColor('primary')}`}>Add New {selectedPeriod === 'daily' ? 'Daily' : 'Weekly'} Goal</DialogTitle>
+            <DialogTitle className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
+              Select Goal Type
+            </DialogTitle>
+            <DialogDescription className={`${getThemeTextColor('secondary')}`}>
+              Choose how you want to set your {selectedPeriod} goal
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4 py-4">
+            <button
+              onClick={() => handleGoalTypeSelect('time')}
+              className={`p-4 rounded-lg border-2 ${getThemeClass('border')} ${getThemeClass('component')} hover:${getThemeClass('componentSecondary')} transition-all duration-200 group`}
+            >
+              <div className="flex items-start gap-3">
+                <Clock className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')} group-hover:text-blue-500`} />
+                <div className="text-left flex-1">
+                  <div className={`font-semibold ${getThemeTextColor('primary')}`}>
+                    Time-based Goal
+                  </div>
+                  <div className={`text-sm mt-1 ${getThemeTextColor('secondary')}`}>
+                    Set goals based on specific time duration for each category (e.g., 2 hours of Development)
+                  </div>
+                </div>
+              </div>
+            </button>
+            
+            <button
+              onClick={() => handleGoalTypeSelect('sessionScore')}
+              className={`p-4 rounded-lg border-2 ${getThemeClass('border')} ${getThemeClass('component')} hover:${getThemeClass('componentSecondary')} transition-all duration-200 group`}
+            >
+              <div className="flex items-start gap-3">
+                <Target className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')} group-hover:text-green-500`} />
+                <div className="text-left flex-1">
+                  <div className={`font-semibold ${getThemeTextColor('primary')}`}>
+                    Focus Points Goal
+                  </div>
+                  <div className={`text-sm mt-1 ${getThemeTextColor('secondary')}`}>
+                    Earn points through quality focused work sessions
+                  </div>
+                </div>
+              </div>
+            </button>
+            
+            <button
+              onClick={() => handleGoalTypeSelect('sessionCount')}
+              className={`p-4 rounded-lg border-2 ${getThemeClass('border')} ${getThemeClass('component')} hover:${getThemeClass('componentSecondary')} transition-all duration-200 group`}
+            >
+              <div className="flex items-start gap-3">
+                <Target className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')} group-hover:text-purple-500`} />
+                <div className="text-left flex-1">
+                  <div className={`font-semibold ${getThemeTextColor('primary')}`}>
+                    Deep Work Sessions
+                  </div>
+                  <div className={`text-sm mt-1 ${getThemeTextColor('secondary')}`}>
+                    Complete a target number of focused work sessions
+                  </div>
+                </div>
+              </div>
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 목표 추가 다이얼로그 */}
+      <Dialog open={showAddGoalDialog} onOpenChange={(open) => {
+        setShowAddGoalDialog(open);
+        if (!open) {
+          // When closing the dialog, go back to goal type selection
+          setShowGoalTypeDialog(true);
+          setGoalType(null);
+          setValidationError('');
+        }
+      }}>
+        <DialogContent className={`sm:max-w-md ${getCommonCardClass()}`}>
+          <DialogHeader>
+            <DialogTitle className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
+              Add New {goalType === 'sessionScore' ? 'Focus Points' : goalType === 'sessionCount' ? 'Deep Work' : 'Time'} Goal
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="category" className={getThemeTextColor('primary')}>Category</Label>
-              <Select value={newGoalCategory} onValueChange={handleCategoryChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Development">Development</SelectItem>
-                  <SelectItem value="Design">Design</SelectItem>
-                  <SelectItem value="Documentation">Documentation</SelectItem>
-                  <SelectItem value="Education">Education</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-2 gap-6">
+            {goalType === 'time' && (
               <div className="space-y-2">
-                <Label className={getThemeTextColor('primary')}>Hours</Label>
-                <Select value={newGoalHours.toString()} onValueChange={handleHoursChange}>
-                  <SelectTrigger className={`w-full min-w-[120px] ${validationError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}>
-                    <SelectValue />
+                <Label htmlFor="category" className={getThemeTextColor('primary')}>Category</Label>
+                <Select value={newGoalCategory} onValueChange={handleCategoryChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-[200px]">
-                    {Array.from({ length: newGoalPeriod === 'DAILY' ? 25 : 169 }, (_, i) => (
-                      <SelectItem key={i} value={i.toString()}>{i}</SelectItem>
-                    ))}
+                  <SelectContent>
+                    <SelectItem value="Development">Development</SelectItem>
+                    <SelectItem value="Design">Design</SelectItem>
+                    <SelectItem value="Documentation">Documentation</SelectItem>
+                    <SelectItem value="Education">Education</SelectItem>
+                    <SelectItem value="work">Work</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label className={getThemeTextColor('primary')}>Minutes</Label>
-                <Select value={newGoalMinutes.toString()} onValueChange={handleMinutesChange}>
-                  <SelectTrigger className={`w-full min-w-[120px] ${validationError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[200px]">
-                    {[0, 15, 30, 45].map((minute) => (
-                      <SelectItem key={minute} value={minute.toString()}>{minute}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="text-xs text-gray-500 mt-1">
-              {newGoalPeriod === 'DAILY' ? 'Daily goal range: 30 minutes to 24 hours' : 'Weekly goal range: 30 minutes to 168 hours'}
-            </div>
+            )}
+            
+            {goalType === 'time' ? (
+              <>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label className={getThemeTextColor('primary')}>Hours</Label>
+                    <Select value={newGoalHours.toString()} onValueChange={handleHoursChange}>
+                      <SelectTrigger className={`w-full min-w-[120px] ${validationError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[200px]">
+                        {Array.from({ length: newGoalPeriod === 'DAILY' ? 25 : 169 }, (_, i) => (
+                          <SelectItem key={i} value={i.toString()}>{i}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className={getThemeTextColor('primary')}>Minutes</Label>
+                    <Select value={newGoalMinutes.toString()} onValueChange={handleMinutesChange}>
+                      <SelectTrigger className={`w-full min-w-[120px] ${validationError ? 'border-red-500 focus:border-red-500 focus:ring-red-200' : ''}`}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[200px]">
+                        {[0, 15, 30, 45].map((minute) => (
+                          <SelectItem key={minute} value={minute.toString()}>{minute}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  {newGoalPeriod === 'DAILY' ? 'Daily goal range: 30 minutes to 24 hours' : 'Weekly goal range: 30 minutes to 168 hours'}
+                </div>
+              </>
+            ) : goalType === 'sessionScore' ? (
+              <>
+                <div className="space-y-2">
+                  <Label className={getThemeTextColor('primary')}>Target Session Score</Label>
+                  <Select value={newGoalSessionScore.toString()} onValueChange={(value) => setNewGoalSessionScore(parseInt(value))}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      {[100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1200, 1500, 2000].map((score) => (
+                        <SelectItem key={score} value={score.toString()}>{score} points</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  Track your total session quality score across all work sessions
+                </div>
+              </>
+            ) : goalType === 'sessionCount' ? (
+              <>
+                <div className="space-y-2">
+                  <Label className={getThemeTextColor('primary')}>Target Number of Sessions</Label>
+                  <Select value={newGoalSessions.toString()} onValueChange={(value) => setNewGoalSessions(parseInt(value))}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      {Array.from({ length: newGoalPeriod === 'DAILY' ? 20 : 100 }, (_, i) => (
+                        <SelectItem key={i + 1} value={(i + 1).toString()}>{i + 1} session{i > 0 ? 's' : ''}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  Track the number of focused work sessions you complete
+                </div>
+              </>
+            ) : null}
+            
             <div className="space-y-2">
               <Label htmlFor="period" className={getThemeTextColor('primary')}>Period</Label>
               <Select value={newGoalPeriod} onValueChange={handlePeriodChange}>
@@ -528,13 +702,18 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
           <div className="flex justify-end gap-3">
             <Button
               variant="outline"
-              onClick={() => setShowAddGoalDialog(false)}
+              onClick={() => {
+                setShowAddGoalDialog(false);
+                setShowGoalTypeDialog(true);
+                setGoalType(null);
+                setValidationError('');
+              }}
             >
               Cancel
             </Button>
             <Button
               onClick={handleGoalSave}
-              disabled={setGoalMutation.isPending || !!validationError || (newGoalHours === 0 && newGoalMinutes === 0)}
+              disabled={setGoalMutation.isPending || (goalType === 'time' && (!!validationError || (newGoalHours === 0 && newGoalMinutes === 0)))}
             >
               {setGoalMutation.isPending ? 'Adding...' : 'Add Goal'}
             </Button>

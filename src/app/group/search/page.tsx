@@ -6,6 +6,7 @@ import { useMyGroups } from '@/hooks/queries/useMyGroups';
 import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
 import { useGroupSearch } from '@/hooks/ui/useGroupSearch';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
@@ -14,9 +15,8 @@ import { Input } from '@/shadcn/ui/input';
 import { Skeleton } from '@/shadcn/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { joinGroup } from '@/shared/api/post';
-import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { useQueryClient } from '@tanstack/react-query';
-import { Globe, Hash, Lock, Search } from 'lucide-react';
+import { Globe, Hash, Lock, Search, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -99,9 +99,12 @@ export default function FindTeamPage() {
 
   return (
     <div className="space-y-6 px-6 py-6 max-w-7xl mx-auto">
+      {/* Event Banner */}
+      {/* <EventBanner /> */}
+
       {/* Search and Filter Section */}
-      <Card className={getCommonCardClass()}>
-        <CardContent className="p-6">
+      <Card className={`${getCommonCardClass()} py-0`}>
+        <CardContent className="p-4">
           <div className="flex items-center gap-4">
             {/* Search Bar */}
             <div className="flex-1">
@@ -167,7 +170,7 @@ export default function FindTeamPage() {
                 </Card>
               ))}
             </div>
-          ) : searchQuery.trim() !== '' ? (
+          ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredGroups.map((group) => (
             <Card key={group.groupId} className={`${getCommonCardClass()} h-52 hover:bg-gray-50 dark:hover:bg-gray-800 group relative`}>
@@ -196,9 +199,17 @@ export default function FindTeamPage() {
                       </div>
                     </div>
                     
-                    {/* Owner Info */}
-                    <div className={`text-sm ${getThemeTextColor('secondary')} truncate`}>
-                      Created by @{group.groupOwner.nickname}
+                    {/* Owner Info and Member Count */}
+                    <div className="flex items-center gap-3">
+                      <div className={`text-sm ${getThemeTextColor('secondary')} truncate flex-1`}>
+                        Created by @{group.groupOwner.nickname}
+                      </div>
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <Users className={`h-4 w-4 ${getThemeTextColor('secondary')}`} />
+                        <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                          {group.memberCount || 0}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   
@@ -262,25 +273,9 @@ export default function FindTeamPage() {
                 </Card>
               ))}
             </div>
-          ) : null}
-
-          {!isLoading && searchQuery.trim() === '' && (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center">
-                <div className={`w-20 h-20 rounded-full ${getThemeClass('componentSecondary')} flex items-center justify-center mx-auto mb-6`}>
-                  <Search className={`h-10 w-10 ${getThemeTextColor('secondary')}`} />
-                </div>
-                <div className={`text-xl font-bold mb-3 ${getThemeTextColor('primary')}`}>
-                  Search for groups
-                </div>
-                <p className={`text-base ${getThemeTextColor('secondary')} mb-6 max-w-md mx-auto`}>
-                  Enter a search term to find groups by name, description, tags, or leader.
-                </p>
-              </div>
-            </div>
           )}
 
-          {!isLoading && searchQuery.trim() !== '' && filteredGroups.length === 0 && (
+          {!isLoading && filteredGroups.length === 0 && (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
                 <div className={`w-20 h-20 rounded-full ${getThemeClass('componentSecondary')} flex items-center justify-center mx-auto mb-6`}>
@@ -290,7 +285,7 @@ export default function FindTeamPage() {
                   No groups found
                 </div>
                 <p className={`text-base ${getThemeTextColor('secondary')} mb-6 max-w-md mx-auto`}>
-                  We couldn't find any groups matching your search criteria. Try adjusting your search terms.
+                  {searchQuery.trim() ? 'We couldn\'t find any groups matching your search criteria. Try adjusting your search terms.' : 'No groups available at the moment.'}
                 </p>
                 <Button 
                   className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90"

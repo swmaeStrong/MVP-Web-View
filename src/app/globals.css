@@ -398,14 +398,14 @@ a,
   pointer-events: auto;
 }
 
-/* 선택 스타일 개선 */
+/* 선택 스타일 개선 - 프로젝트 테마 색상 사용 */
 ::selection {
-  background-color: #8b5cf6;
+  background-color: #3F72AF;
   color: white;
 }
 
 ::-moz-selection {
-  background-color: #8b5cf6;
+  background-color: #3F72AF;
   color: white;
 }
 

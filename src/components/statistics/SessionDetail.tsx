@@ -1,10 +1,10 @@
 'use client';
 
-import React from 'react';
-import { Target } from 'lucide-react';
-import { useTheme } from '@/hooks/ui/useTheme';
 import { useSessionTimeline } from '@/hooks/ui/useSessionTimeline';
+import { useTheme } from '@/hooks/ui/useTheme';
 import type { SessionData } from '@/types/domains/usage/session';
+import { Target } from 'lucide-react';
+import React from 'react';
 
 interface SessionDetailProps {
   selectedSession: SessionData | null;
@@ -84,9 +84,9 @@ const ProgressBar: React.FC<{
     if (hours > 0) {
       return `${hours}h ${minutes}m`;
     } else if (minutes > 0) {
-      return `${minutes}분 ${remainingSeconds}초`;
+      return `${minutes}m ${remainingSeconds}s`;
     } else {
-      return `${remainingSeconds}초`;
+      return `${remainingSeconds}s`;
     }
   };
 
@@ -194,9 +194,9 @@ const DistractionsList: React.FC<{
     if (hours > 0) {
       return `${hours}h ${minutes}m`;
     } else if (minutes > 0) {
-      return `${minutes}분 ${remainingSeconds}초`;
+      return `${minutes}m ${remainingSeconds}s`;
     } else {
-      return `${remainingSeconds}초`;
+      return `${remainingSeconds}s`;
     }
   };
 
