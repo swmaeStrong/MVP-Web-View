@@ -1,11 +1,13 @@
 'use client';
 
+import EventBanner from '@/components/group/EventBanner';
 import { myGroupsQueryKey } from '@/config/constants/query-keys';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useMyGroups } from '@/hooks/queries/useMyGroups';
 import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
 import { useGroupSearch } from '@/hooks/ui/useGroupSearch';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
@@ -14,13 +16,11 @@ import { Input } from '@/shadcn/ui/input';
 import { Skeleton } from '@/shadcn/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { joinGroup } from '@/shared/api/post';
-import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { useQueryClient } from '@tanstack/react-query';
 import { Globe, Hash, Lock, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import EventBanner from '@/components/group/EventBanner';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
@@ -104,8 +104,8 @@ export default function FindTeamPage() {
       <EventBanner />
 
       {/* Search and Filter Section */}
-      <Card className={getCommonCardClass()}>
-        <CardContent className="p-6">
+      <Card className={`${getCommonCardClass()} py-0`}>
+        <CardContent className="p-4">
           <div className="flex items-center gap-4">
             {/* Search Bar */}
             <div className="flex-1">
