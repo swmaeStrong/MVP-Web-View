@@ -22,7 +22,7 @@ import MemberListDialog from './MemberListDialog';
 
 // Zod 스키마 정의
 const GoalFormSchema = z.object({
-  category: z.enum(['Development', 'Design', 'Documentation', 'Education']),
+  category: z.enum(['Development', 'Design', 'Documentation', 'Education', 'Work']),
   hours: z.number().min(0, 'Hours must be 0 or greater'),
   minutes: z.number().min(0, 'Minutes must be 0 or greater').max(59, 'Minutes must be less than 60'),
   period: z.enum(['DAILY', 'WEEKLY'])
@@ -63,7 +63,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
   const [selectedType, setSelectedType] = useState<'achieved' | 'notAchieved' | null>(null);
   
   // Form states for new goal
-  const [newGoalCategory, setNewGoalCategory] = useState<'Development' | 'Design' | 'Documentation' | 'Education'>('Development');
+  const [newGoalCategory, setNewGoalCategory] = useState<'Development' | 'Design' | 'Documentation' | 'Education' | 'Work'>('Development');
   const [newGoalHours, setNewGoalHours] = useState(1);
   const [newGoalMinutes, setNewGoalMinutes] = useState(0);
   const [newGoalPeriod, setNewGoalPeriod] = useState<'DAILY' | 'WEEKLY'>(
@@ -249,7 +249,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
     setValidationError(''); // Clear validation error on input change
   };
 
-  const handleCategoryChange = (value: 'Development' | 'Design' | 'Documentation' | 'Education') => {
+  const handleCategoryChange = (value: 'Development' | 'Design' | 'Documentation' | 'Education' | 'Work') => {
     setNewGoalCategory(value);
     setValidationError(''); // Clear validation error on input change
   };
@@ -471,6 +471,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
                   <SelectItem value="Design">Design</SelectItem>
                   <SelectItem value="Documentation">Documentation</SelectItem>
                   <SelectItem value="Education">Education</SelectItem>
+                  <SelectItem value="Work">Work</SelectItem>
                 </SelectContent>
               </Select>
             </div>
