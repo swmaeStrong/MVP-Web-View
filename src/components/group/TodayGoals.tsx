@@ -412,10 +412,10 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
                         </div>
                         <div className={`text-sm font-bold ${getThemeTextColor('primary')}`}>
                           {goal.category === 'sessionScore' 
-                            ? `Session Score - ${goal.goalValue} points`
+                            ? `Earn ${goal.goalValue} Focus Points`
                             : goal.category === 'sessionCount'
-                            ? `Session Count - ${goal.goalValue} session${goal.goalValue > 1 ? 's' : ''}`
-                            : `${goal.category === 'work' ? 'Work' : goal.category} - ${formatTime(goal.goalValue)}`
+                            ? `Complete ${goal.goalValue} Session${goal.goalValue > 1 ? 's' : ''}`
+                            : `${goal.category === 'work' ? 'Work' : goal.category} for ${formatTime(goal.goalValue)}`
                           }
                         </div>
                       </div>
@@ -541,10 +541,10 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
                 <Target className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')} group-hover:text-green-500`} />
                 <div className="text-left flex-1">
                   <div className={`font-semibold ${getThemeTextColor('primary')}`}>
-                    Session Score Goal
+                    Focus Points Goal
                   </div>
                   <div className={`text-sm mt-1 ${getThemeTextColor('secondary')}`}>
-                    Set goals based on total session quality score
+                    Earn points through quality focused work sessions
                   </div>
                 </div>
               </div>
@@ -558,10 +558,10 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
                 <Target className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')} group-hover:text-purple-500`} />
                 <div className="text-left flex-1">
                   <div className={`font-semibold ${getThemeTextColor('primary')}`}>
-                    Session Count Goal
+                    Deep Work Sessions
                   </div>
                   <div className={`text-sm mt-1 ${getThemeTextColor('secondary')}`}>
-                    Set goals based on number of focused work sessions
+                    Complete a target number of focused work sessions
                   </div>
                 </div>
               </div>
@@ -583,7 +583,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
         <DialogContent className={`sm:max-w-md ${getCommonCardClass()}`}>
           <DialogHeader>
             <DialogTitle className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
-              Add New {goalType === 'sessionScore' ? 'Session Score' : goalType === 'sessionCount' ? 'Session Count' : 'Time'}-based {selectedPeriod === 'daily' ? 'Daily' : 'Weekly'} Goal
+              Add New {goalType === 'sessionScore' ? 'Focus Points' : goalType === 'sessionCount' ? 'Deep Work' : 'Time'} Goal
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">

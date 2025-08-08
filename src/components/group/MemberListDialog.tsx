@@ -86,12 +86,10 @@ export default function MemberListDialog({
           <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
             <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
               {goal.category === 'sessionScore' 
-                ? `Session Score - ${goal.goalValue} points`
+                ? `Earn ${goal.goalValue} Focus Points`
                 : goal.category === 'sessionCount'
-                ? `Session Count - ${goal.goalValue} session${goal.goalValue > 1 ? 's' : ''}`
-                : goal.category === 'work'
-                ? `Work - ${formatTime(goal.goalValue)}`
-                : `${goal.category} - ${formatTime(goal.goalValue)}`
+                ? `Complete ${goal.goalValue} Session${goal.goalValue > 1 ? 's' : ''}`
+                : `${goal.category === 'work' ? 'Work' : goal.category} for ${formatTime(goal.goalValue)}`
               }
             </div>
           </div>
