@@ -60,7 +60,7 @@ declare namespace Group {
 
 	interface SetGroupGoalApiRequest {
 		category: 'Development' | 'Design' | 'Documentation' | 'Education' | 'work' | 'sessionScore' | 'sessionCount',
-		goalSeconds: number,
+		goalValue: number,
 		period: 'DAILY' | 'WEEKLY',
 	}
 
@@ -76,7 +76,7 @@ declare namespace Group {
 
 	interface GroupGoalsApiResponse {
 		category: string,
-		goalSeconds: number,
+		goalValue: number,
 		periodType: 'DAILY' | 'WEEKLY',
 		members: GroupGoalMember[],
 	}

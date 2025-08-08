@@ -202,27 +202,27 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
   const handleGoalSave = async () => {
     if (goalType === 'time' && !validateForm()) return;
     
-    let goalSeconds: number;
+    let goalValue: number;
     let category: 'Development' | 'Design' | 'Documentation' | 'Education' | 'work' | 'sessionScore' | 'sessionCount';
     
     if (goalType === 'sessionScore') {
-      // For session score goals: category='sessionScore', goalSeconds=total score
+      // For session score goals: category='sessionScore', goalValue=total score
       category = 'sessionScore';
-      goalSeconds = newGoalSessionScore;
+      goalValue = newGoalSessionScore;
     } else if (goalType === 'sessionCount') {
-      // For session count goals: category='sessionCount', goalSeconds=number of sessions
+      // For session count goals: category='sessionCount', goalValue=number of sessions
       category = 'sessionCount';
-      goalSeconds = newGoalSessions;
+      goalValue = newGoalSessions;
     } else {
       // For time-based goals, convert hours and minutes to seconds
       category = newGoalCategory;
-      goalSeconds = (newGoalHours * 3600) + (newGoalMinutes * 60);
+      goalValue = (newGoalHours * 3600) + (newGoalMinutes * 60);
     }
     
     try {
       await setGoalMutation.mutateAsync({
         category,
-        goalSeconds,
+        goalValue,
         period: newGoalPeriod
       });
       
@@ -314,8 +314,8 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
     return `${minutes}m`;
   };
   
-  const getProgressPercentage = (currentSeconds: number, goalSeconds: number) => {
-    return Math.min((currentSeconds / goalSeconds) * 100, 100);
+  const getProgressPercentage = (currentSeconds: number, goalValue: number) => {
+    return Math.min((currentSeconds / goalValue) * 100, 100);
   };
   
   if (isLoading) {
@@ -391,13 +391,13 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
             <div className="space-y-4 flex-1 overflow-y-auto">
               {groupGoals.map((goal, index) => {
                 const totalMembers = goal.members.length;
-                const achievedMembers = goal.members.filter(m => m.currentSeconds >= goal.goalSeconds);
-                const notAchievedMembers = goal.members.filter(m => m.currentSeconds < goal.goalSeconds);
+                const achievedMembers = goal.members.filter(m => m.currentSeconds >= goal.goalValue);
+                const notAchievedMembers = goal.members.filter(m => m.currentSeconds < goal.goalValue);
                 const progressPercentage = totalMembers > 0 ? (achievedMembers.length / totalMembers) * 100 : 0;
                 
                 // 현재 사용자가 이 목표를 달성했는지 확인
                 const currentUserMember = goal.members.find(m => m.userId === currentUser?.id);
-                const isCurrentUserAchieved = currentUserMember ? currentUserMember.currentSeconds >= goal.goalSeconds : false;
+                const isCurrentUserAchieved = currentUserMember ? currentUserMember.currentSeconds >= goal.goalValue : false;
                 
                 return (
                   <div key={`${goal.category}-${goal.periodType}`} className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
@@ -412,10 +412,10 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
                         </div>
                         <div className={`text-sm font-bold ${getThemeTextColor('primary')}`}>
                           {goal.category === 'sessionScore' 
-                            ? `Session Score - ${goal.goalSeconds} points`
+                            ? `Session Score - ${goal.goalValue} points`
                             : goal.category === 'sessionCount'
-                            ? `Session Count - ${goal.goalSeconds} session${goal.goalSeconds > 1 ? 's' : ''}`
-                            : `${goal.category === 'work' ? 'Work' : goal.category} - ${formatTime(goal.goalSeconds)}`
+                            ? `Session Count - ${goal.goalValue} session${goal.goalValue > 1 ? 's' : ''}`
+                            : `${goal.category === 'work' ? 'Work' : goal.category} - ${formatTime(goal.goalValue)}`
                           }
                         </div>
                       </div>

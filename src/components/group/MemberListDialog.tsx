@@ -40,8 +40,8 @@ export default function MemberListDialog({
   if (!goal || !type) return null;
 
   const members = type === 'achieved' 
-    ? goal.members.filter(m => m.currentSeconds >= goal.goalSeconds)
-    : goal.members.filter(m => m.currentSeconds < goal.goalSeconds);
+    ? goal.members.filter(m => m.currentSeconds >= goal.goalValue)
+    : goal.members.filter(m => m.currentSeconds < goal.goalValue);
 
   // 현재 사용자를 맨 앞으로 정렬
   const sortedMembers = [...members].sort((a, b) => {
@@ -63,7 +63,7 @@ export default function MemberListDialog({
           {/* 목표 제목 */}
           <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
             <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-              "{goal.category} - {formatTime(goal.goalSeconds)}"
+              "{goal.category} - {formatTime(goal.goalValue)}"
             </div>
           </div>
 
@@ -121,7 +121,7 @@ export default function MemberListDialog({
                 Total: {goal.members.length} members
               </span>
               <span className={getThemeTextColor('secondary')}>
-                Progress: {Math.round((goal.members.filter(m => m.currentSeconds >= goal.goalSeconds).length / goal.members.length) * 100)}%
+                Progress: {Math.round((goal.members.filter(m => m.currentSeconds >= goal.goalValue).length / goal.members.length) * 100)}%
               </span>
             </div>
           </div>
