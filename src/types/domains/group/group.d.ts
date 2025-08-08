@@ -59,7 +59,7 @@ declare namespace Group {
 	}
 
 	interface SetGroupGoalApiRequest {
-		category: 'Development' | 'Design' | 'Documentation' | 'Education' | 'Work',
+		category: 'Development' | 'Design' | 'Documentation' | 'Education' | 'work',
 		goalSeconds: number,
 		period: 'DAILY' | 'WEEKLY',
 	}
