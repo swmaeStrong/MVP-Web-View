@@ -20,6 +20,7 @@ import { Globe, Hash, Lock, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import EventBanner from '@/components/group/EventBanner';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
@@ -99,6 +100,9 @@ export default function FindTeamPage() {
 
   return (
     <div className="space-y-6 px-6 py-6 max-w-7xl mx-auto">
+      {/* Event Banner */}
+      <EventBanner />
+
       {/* Search and Filter Section */}
       <Card className={getCommonCardClass()}>
         <CardContent className="p-6">
