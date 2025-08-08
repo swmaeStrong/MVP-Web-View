@@ -2,8 +2,7 @@
 
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
-import { Input } from '@/shadcn/ui/input';
-import { Plus, Search, Settings, TrendingUp, X } from 'lucide-react';
+import { Plus, Search, Settings, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
@@ -29,7 +28,6 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
   const { getThemeClass, getThemeTextColor } = useTheme();
   const pathname = usePathname();
   const currentUser = useCurrentUserData();
-  const [searchTerm, setSearchTerm] = useState('');
 
   // Get selected group ID from URL - 메모이제이션
   const selectedGroupId = useMemo(() => {
@@ -81,19 +79,6 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
     return baseItems;
   }, [selectedGroupId, groupInfo.isGroupOwner]);
 
-  // 검색어로 그룹 필터링
-  const filteredGroups = useMemo(() => {
-    if (!searchTerm.trim()) return groups;
-    return groups.filter(group => 
-      group.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [groups, searchTerm]);
-
-  // 검색어 초기화
-  const clearSearch = useCallback(() => {
-    setSearchTerm('');
-  }, []);
-
   return (
     <aside
       className={`fixed top-0 left-0 h-full w-40 ${getThemeClass('component')} ${getThemeClass('border')} border-r z-40`}
@@ -104,30 +89,6 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
           <div className={`text-xs font-semibold ${getThemeTextColor('secondary')} uppercase tracking-wider mb-3 px-4`}>
             My Groups
           </div>
-          
-          {/* Search Input */}
-          {groups.length > 5 && (
-            <div className="px-4 mb-3">
-              <div className="relative">
-                <Search size={14} className={`absolute left-2 top-1/2 transform -translate-y-1/2 ${getThemeTextColor('secondary')}`} />
-                <Input
-                  type="text"
-                  placeholder="Search groups..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className={`pl-7 pr-7 py-1 text-xs h-7 ${getThemeClass('component')} ${getThemeClass('border')} border`}
-                />
-                {searchTerm && (
-                  <button
-                    onClick={clearSearch}
-                    className={`absolute right-2 top-1/2 transform -translate-y-1/2 ${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`}
-                  >
-                    <X size={12} />
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
           
           <div className="space-y-1">
             {error && (
@@ -146,15 +107,8 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
               </div>
             )}
             
-            {!error && searchTerm && filteredGroups.length === 0 && groups.length > 0 && (
-              <div className="px-4 py-2">
-                <span className={`text-xs ${getThemeTextColor('secondary')}`}>
-                  No groups found
-                </span>
-              </div>
-            )}
             
-            {!error && filteredGroups.map((group) => {
+            {!error && groups.map((group) => {
               const isGroupSelected = selectedGroupId === group.groupId.toString();
               const groupHref = `/group/${group.groupId}/detail`;
               
