@@ -571,7 +571,15 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
       </Dialog>
 
       {/* 목표 추가 다이얼로그 */}
-      <Dialog open={showAddGoalDialog} onOpenChange={setShowAddGoalDialog}>
+      <Dialog open={showAddGoalDialog} onOpenChange={(open) => {
+        setShowAddGoalDialog(open);
+        if (!open) {
+          // When closing the dialog, go back to goal type selection
+          setShowGoalTypeDialog(true);
+          setGoalType(null);
+          setValidationError('');
+        }
+      }}>
         <DialogContent className={`sm:max-w-md ${getCommonCardClass()}`}>
           <DialogHeader>
             <DialogTitle className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
@@ -694,7 +702,12 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
           <div className="flex justify-end gap-3">
             <Button
               variant="outline"
-              onClick={() => setShowAddGoalDialog(false)}
+              onClick={() => {
+                setShowAddGoalDialog(false);
+                setShowGoalTypeDialog(true);
+                setGoalType(null);
+                setValidationError('');
+              }}
             >
               Cancel
             </Button>
