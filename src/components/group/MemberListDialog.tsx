@@ -32,6 +32,28 @@ export default function MemberListDialog({
     return `${minutes}m`;
   };
 
+  const formatGoalValue = (category: string, value: number) => {
+    if (category === 'sessionScore') {
+      return `${value} points`;
+    }
+    if (category === 'sessionCount') {
+      return `${value} session${value > 1 ? 's' : ''}`;
+    }
+    return formatTime(value);
+  };
+
+  const formatMemberProgress = (category: string, currentValue: number) => {
+    // For session-based goals, currentSeconds actually contains the session value
+    if (category === 'sessionScore') {
+      return `${currentValue} points`;
+    }
+    if (category === 'sessionCount') {
+      return `${currentValue} session${currentValue > 1 ? 's' : ''}`;
+    }
+    // For time-based goals, currentSeconds contains actual seconds
+    return formatTime(currentValue);
+  };
+
   const getUserNickname = (userId: string) => {
     const member = groupMembers.find(m => m.userId === userId);
     return member?.nickname || userId;
@@ -63,7 +85,14 @@ export default function MemberListDialog({
           {/* 목표 제목 */}
           <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
             <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-              "{goal.category} - {formatTime(goal.goalValue)}"
+              {goal.category === 'sessionScore' 
+                ? `Session Score - ${goal.goalValue} points`
+                : goal.category === 'sessionCount'
+                ? `Session Count - ${goal.goalValue} session${goal.goalValue > 1 ? 's' : ''}`
+                : goal.category === 'work'
+                ? `Work - ${formatTime(goal.goalValue)}`
+                : `${goal.category} - ${formatTime(goal.goalValue)}`
+              }
             </div>
           </div>
 
@@ -93,7 +122,7 @@ export default function MemberListDialog({
                     {getUserNickname(member.userId)}
                   </div>
                   <div className={`text-xs ${getThemeTextColor('secondary')} mr-3`}>
-                    {formatTime(member.currentSeconds)}
+                    {formatMemberProgress(goal.category, member.currentSeconds)}
                   </div>
                 {type === 'achieved' && (
                   <div className="ml-auto">
