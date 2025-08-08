@@ -17,7 +17,7 @@ import { Skeleton } from '@/shadcn/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { joinGroup } from '@/shared/api/post';
 import { useQueryClient } from '@tanstack/react-query';
-import { Globe, Hash, Lock, Search } from 'lucide-react';
+import { Globe, Hash, Lock, Search, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -200,9 +200,17 @@ export default function FindTeamPage() {
                       </div>
                     </div>
                     
-                    {/* Owner Info */}
-                    <div className={`text-sm ${getThemeTextColor('secondary')} truncate`}>
-                      Created by @{group.groupOwner.nickname}
+                    {/* Owner Info and Member Count */}
+                    <div className="flex items-center gap-3">
+                      <div className={`text-sm ${getThemeTextColor('secondary')} truncate flex-1`}>
+                        Created by @{group.groupOwner.nickname}
+                      </div>
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <Users className={`h-4 w-4 ${getThemeTextColor('secondary')}`} />
+                        <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
+                          {group.memberCount || 0}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   
