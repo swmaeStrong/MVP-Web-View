@@ -13,7 +13,7 @@ import {
   TotalTimeCardSkeleton
 } from '@/components/common/StatisticsSkeleton';
 import SessionCarousel from '@/components/statistics/CycleCarousel';
-import MonthlyStreak from '@/components/statistics/MonthlyStreak';
+import WeeklyStreak from '@/components/statistics/WeeklyStreak';
 import SessionTimelineView from '@/components/statistics/SessionTimelineView';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
 import { useInitUser } from '@/hooks/common/useInitUser';
@@ -192,11 +192,8 @@ export default function StatisticsPage() {
                 data={dailyData || null}
                 currentDate={selectedDate}
               />
-          {/* 오른쪽: 월별 스트릭 컴포넌트 (기존 ActivityList 위치) */}
-          <MonthlyStreak 
-            initialMonth={currentMonth}
-            onMonthChange={setCurrentMonth}
-          />
+          {/* 오른쪽: 주별 스트릭 컴포넌트 (기존 ActivityList 위치) */}
+          <WeeklyStreak />
 
         </div>
 
