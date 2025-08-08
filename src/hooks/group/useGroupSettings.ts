@@ -110,7 +110,7 @@ export function useTransferOwnership(groupId: number) {
       });
       toast.success('Group ownership has been transferred successfully');
       // 그룹 페이지로 리다이렉트 (더 이상 관리자가 아니므로)
-      router.push(`/group/team/${groupId}`);
+      router.push(`/group/${groupId}/detail`);
     },
     onError: (error) => {
       console.error('Failed to transfer ownership:', error);
