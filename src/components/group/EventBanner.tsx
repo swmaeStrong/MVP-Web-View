@@ -7,13 +7,16 @@ interface EventBannerProps {
 }
 
 export default function EventBanner({ className = '' }: EventBannerProps) {
+  const handleClick = () => {
+    window.open("https://nebula-pickle-084.notion.site/24936fef248e80ac94afefb9fca3c3e8", '_blank');
+  };
+
   return (
     <div className={`${className} bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 border-b border-purple-800/30`}>
       <a 
         href="https://nebula-pickle-084.notion.site/24936fef248e80ac94afefb9fca3c3e8"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block group"
+        onClick={handleClick}
+        className="block group cursor-pointer"
       >
         <div className="px-6 py-2.5 flex items-center justify-center">
           <div className="flex items-center gap-3">
