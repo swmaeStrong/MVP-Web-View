@@ -6,7 +6,10 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Separator } from '@/shadcn/ui/separator';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
 import { spacing } from '@/styles/design-system';
+import { FONT_SIZES } from '@/styles/font-sizes';
+import { Info } from 'lucide-react';
 
 interface TeamLeaderboardProps {
   members: Group.GroupLeaderboardMember[];
@@ -14,7 +17,7 @@ interface TeamLeaderboardProps {
 }
 
 export default function TeamLeaderboard({ members, isLoading = false }: TeamLeaderboardProps) {
-  const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
+  const { getThemeClass, getThemeTextColor, getCommonCardClass, isDarkMode } = useTheme();
   const currentUser = useCurrentUserData();
 
   const formatScore = (score: number) => {
@@ -59,7 +62,40 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
   }
 
   return (
-    <Card className={`${getCommonCardClass()} col-span-3 row-span-1 h-[400px] lg:h-[500px] flex flex-col`}>
+    <Card className={`${getCommonCardClass()} col-span-3 row-span-1 h-[400px] lg:h-[500px] flex flex-col relative`}>
+      {/* Info 버튼 */}
+      <div className='absolute top-3 right-3 z-10'>
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger asChild>
+            <div 
+              className={`group inline-flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200 cursor-pointer ${
+                isDarkMode 
+                  ? `hover:bg-gray-700/50` 
+                  : `hover:bg-gray-100`
+              }`} 
+            >
+              <Info className={`h-4 w-4 ${getThemeTextColor('secondary')} group-hover:${getThemeTextColor('primary')} transition-colors`} />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="left" align="center" className={`max-w-xs text-sm leading-relaxed ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+            <div className='space-y-3'>
+              <div className="leading-relaxed">
+                <span className={`font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Data Updates:</span>
+                <br />
+                <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>Data is updated when members stop their timers</span>
+              </div>
+              <div className="leading-relaxed">
+                <span className={`font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Tracking Categories:</span>
+                <br />
+                <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>Development, Design, Documentation, Education, Work</span>
+                <br />
+                <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>Time spent in these categories counts towards the leaderboard</span>
+              </div>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </div>
+
       <CardHeader className="flex-shrink-0">
         <div className={`text-lg font-bold ${getThemeTextColor('primary')} text-center`}>
           Leaderboard
