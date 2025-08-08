@@ -363,9 +363,9 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
           </Button>
         )}
       </CardHeader>
-      <CardContent className={`${spacing.inner.normal} flex-1 overflow-hidden`}>
-        <Separator className="mb-4" />
-        <div className="space-y-4 h-full flex flex-col">
+      <CardContent className={`${spacing.inner.normal} flex-1 flex flex-col overflow-hidden`}>
+        <Separator className="mb-4 flex-shrink-0" />
+        <div className="flex-1 flex flex-col min-h-0">
           {groupGoals.length === 0 ? (
             <div className="space-y-4">
               <div className={`text-center py-8 ${getThemeTextColor('secondary')}`}>
@@ -388,7 +388,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
               )}
             </div>
           ) : (
-            <div className="space-y-4 flex-1 overflow-y-auto">
+            <div className="space-y-4 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
               {groupGoals.map((goal, index) => {
                 const totalMembers = goal.members.length;
                 const achievedMembers = goal.members.filter(m => m.currentSeconds >= goal.goalValue);
