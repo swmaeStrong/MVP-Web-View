@@ -1,6 +1,5 @@
 'use client';
 
-import EventBanner from '@/components/group/EventBanner';
 import { myGroupsQueryKey } from '@/config/constants/query-keys';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useMyGroups } from '@/hooks/queries/useMyGroups';
@@ -101,7 +100,7 @@ export default function FindTeamPage() {
   return (
     <div className="space-y-6 px-6 py-6 max-w-7xl mx-auto">
       {/* Event Banner */}
-      <EventBanner />
+      {/* <EventBanner /> */}
 
       {/* Search and Filter Section */}
       <Card className={`${getCommonCardClass()} py-0`}>
