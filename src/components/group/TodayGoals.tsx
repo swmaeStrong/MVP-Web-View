@@ -78,10 +78,27 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
   const setGoalMutation = useSetGroupGoal(groupId);
   const deleteGoalMutation = useDeleteGroupGoal(groupId);
 
-  // Filter goals by selected period
-  const groupGoals = allGroupGoals.filter(goal => 
-    goal.periodType === (selectedPeriod === 'daily' ? 'DAILY' : 'WEEKLY')
-  );
+  // Filter goals by selected period and sort with priority
+  const groupGoals = allGroupGoals
+    .filter(goal => goal.periodType === (selectedPeriod === 'daily' ? 'DAILY' : 'WEEKLY'))
+    .sort((a, b) => {
+      // Priority order: work -> Work -> Development -> others alphabetically
+      const getPriority = (category: string) => {
+        if (category === 'work' || category === 'Work') return 0;
+        if (category === 'Development') return 1;
+        return 2;
+      };
+      
+      const priorityA = getPriority(a.category);
+      const priorityB = getPriority(b.category);
+      
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+      
+      // If same priority, sort alphabetically
+      return a.category.localeCompare(b.category);
+    });
 
   // Update new goal period when selected period changes
   useEffect(() => {
@@ -365,7 +382,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
                           )}
                         </div>
                         <div className={`text-sm font-bold ${getThemeTextColor('primary')}`}>
-                          {goal.category} - {formatTime(goal.goalSeconds)}
+                          {goal.category === 'work' ? 'Work' : goal.category} - {formatTime(goal.goalSeconds)}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
