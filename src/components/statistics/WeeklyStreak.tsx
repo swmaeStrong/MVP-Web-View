@@ -200,18 +200,18 @@ export default function WeeklyStreak({
     
     // 오늘은 특별한 색상 (파란색 계열 유지하되 세션 수에 따라 강도 조정)
     if (isToday) {
-      if (sessionCount >= 20) return 'bg-gradient-to-t from-blue-600 to-cyan-500';
-      if (sessionCount >= 10) return 'bg-blue-600';
+      if (sessionCount >= 15) return 'bg-gradient-to-t from-blue-600 to-cyan-500';
+      if (sessionCount >= 7) return 'bg-blue-600';
       return 'bg-blue-500';
     }
     
     // 세션 개수에 따른 색상 단계
-    if (sessionCount >= 20) {
-      return 'bg-gradient-to-t from-orange-500 to-red-500'; // 20+ 세션: 오렌지-빨강 그라데이션 (열정/에너지)
-    } else if (sessionCount >= 10) {
-      return 'bg-amber-500'; // 10-19 세션: 앰버색 (성취감)
+    if (sessionCount >= 15) {
+      return 'bg-gradient-to-t from-orange-500 to-red-500'; // 15+ 세션: 오렌지-빨강 그라데이션 (열정/에너지)
+    } else if (sessionCount >= 7) {
+      return 'bg-amber-500'; // 7-14 세션: 앰버색 (성취감)
     } else {
-      return 'bg-[#5ed462]'; // 1-9 세션: SessionDetail과 같은 초록색
+      return 'bg-[#5ed462]'; // 1-6 세션: SessionDetail과 같은 초록색
     }
   };
 
@@ -271,14 +271,14 @@ export default function WeeklyStreak({
                                 opacity: day.isFuture ? 0.5 : 1
                               }}
                             >
-                              {/* 10세션 이상일 때 별 표시 */}
-                              {day.sessionCount >= 10 && day.sessionCount < 20 && (
+                              {/* 7세션 이상일 때 별 표시 */}
+                              {day.sessionCount >= 7 && day.sessionCount < 15 && (
                                 <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
                                   <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
                                 </div>
                               )}
-                              {/* 20세션 이상일 때 불꽃 표시 */}
-                              {day.sessionCount >= 20 && (
+                              {/* 15세션 이상일 때 불꽃 표시 */}
+                              {day.sessionCount >= 15 && (
                                 <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
                                   <Flame className="h-3 w-3 text-red-400 fill-red-400" />
                                 </div>
@@ -314,20 +314,20 @@ export default function WeeklyStreak({
                             <div className="space-y-1">
                               <div className="flex items-center gap-2">
                                 <div className={`w-2 h-2 rounded-full ${
-                                  day.sessionCount >= 20 ? 'bg-gradient-to-r from-orange-500 to-red-500' :
-                                  day.sessionCount >= 10 ? 'bg-amber-500' : 'bg-[#5ed462]'
+                                  day.sessionCount >= 15 ? 'bg-gradient-to-r from-orange-500 to-red-500' :
+                                  day.sessionCount >= 7 ? 'bg-amber-500' : 'bg-[#5ed462]'
                                 }`} />
                                 <span className={`text-sm font-medium flex items-center gap-1 ${
-                                  day.sessionCount >= 20 ? 'text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600' :
-                                  day.sessionCount >= 10 ? 'text-amber-600 dark:text-amber-400' :
+                                  day.sessionCount >= 15 ? 'text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600' :
+                                  day.sessionCount >= 7 ? 'text-amber-600 dark:text-amber-400' :
                                   'text-green-600 dark:text-green-400'
                                 }`}>
-                                  {day.sessionCount >= 20 ? (
+                                  {day.sessionCount >= 15 ? (
                                     <>
                                       <Flame className="h-3 w-3 text-red-500" />
                                       Incredible Day!
                                     </>
-                                  ) : day.sessionCount >= 10 ? (
+                                  ) : day.sessionCount >= 7 ? (
                                     <>
                                       <Star className="h-3 w-3 text-yellow-500" />
                                       Great Day!
@@ -342,8 +342,8 @@ export default function WeeklyStreak({
                               </div>
                               <div className={`text-sm ${getThemeClass('textSecondary')} pl-4`}>
                                 {day.sessionCount} {day.sessionCount === 1 ? 'session' : 'sessions'}
-                                {day.sessionCount >= 20 && ' - Outstanding productivity!'}
-                                {day.sessionCount >= 10 && day.sessionCount < 20 && ' - Keep it up!'}
+                                {day.sessionCount >= 15 && ' - Outstanding productivity!'}
+                                {day.sessionCount >= 7 && day.sessionCount < 15 && ' - Keep it up!'}
                               </div>
                             </div>
                           ) : day.isFuture ? (
