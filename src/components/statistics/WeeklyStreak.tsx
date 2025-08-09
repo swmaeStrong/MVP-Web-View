@@ -174,23 +174,23 @@ export default function WeeklyStreak({
     };
   }, [currentWeek]);
 
-  // 막대 높이 계산 (최대 130px, 세션 개수 기준)
+  // 주간 최대 세션 수 계산
+  const maxWeeklySessionCount = useMemo(() => {
+    return Math.max(...weekData.map(day => day.sessionCount), 1); // 최소 1로 설정하여 0으로 나누기 방지
+  }, [weekData]);
+
+  // 막대 높이 계산 (주간 최대값 기준으로 상대적 높이)
   const getBarHeight = (sessionCount: number) => {
-    const maxHeight = 130;
+    const maxHeight = 160;
+    const minHeight = 12; // 최소 높이 보장
     
     if (sessionCount === 0) return 0;
-    if (sessionCount >= 20) return maxHeight; // 20세션 이상은 최대 높이
     
-    // 구간별 높이 설정
-    if (sessionCount >= 10) {
-      // 10-19 세션: 75%-100% 높이 (97.5px-130px)
-      const ratio = (sessionCount - 10) / 10; // 0-1 범위
-      return Math.floor(maxHeight * 0.75 + ratio * maxHeight * 0.25);
-    } else {
-      // 1-9 세션: 15%-75% 높이 (19.5px-97.5px)
-      const ratio = sessionCount / 10; // 0.1-0.9 범위
-      return Math.floor(maxHeight * 0.15 + ratio * maxHeight * 0.6);
-    }
+    // 주간 최대값 기준으로 비례 계산하되, 최소 높이 보장
+    const ratio = sessionCount / maxWeeklySessionCount;
+    const calculatedHeight = ratio * maxHeight;
+    
+    return Math.max(Math.floor(calculatedHeight), minHeight);
   };
   
   // 세션 개수에 따른 색상 결정
@@ -255,14 +255,14 @@ export default function WeeklyStreak({
 
             {/* 주간 바 차트 - 고정 폭 컨테이너 */}
             <div className={`flex-shrink-0 w-[280px] flex justify-center`}>
-              <div className='w-[260px] h-[220px]'>
+              <div className='w-[260px] h-[240px]'>
                 <div className="h-full flex items-end justify-center gap-3 pb-4">
                   {weekData.map((day, index) => (
                     <Tooltip key={index} delayDuration={0}>
                       <TooltipTrigger asChild>
                         <div className="flex flex-col items-center gap-2" style={{ width: '32px' }}>
                           {/* Bar */}
-                          <div className="flex items-end relative" style={{ height: '150px', width: '32px' }}>
+                          <div className="flex items-end relative" style={{ height: '180px', width: '32px' }}>
                             <div 
                               className={`rounded-t transition-all duration-300 ${getBarColor(day.sessionCount, day.isToday, day.isFuture)}`}
                               style={{ 
