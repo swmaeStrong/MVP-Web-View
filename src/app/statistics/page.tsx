@@ -13,13 +13,14 @@ import {
   TotalTimeCardSkeleton
 } from '@/components/common/StatisticsSkeleton';
 import SessionCarousel from '@/components/statistics/CycleCarousel';
-import WeeklyStreak from '@/components/statistics/WeeklyStreak';
 import SessionTimelineView from '@/components/statistics/SessionTimelineView';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
+import WeeklyStreak from '@/components/statistics/WeeklyStreak';
 import { useInitUser } from '@/hooks/common/useInitUser';
 // generateMockCycles import 제거 - API 사용으로 대체됨
 import StateDisplay from '../../components/common/StateDisplay';
 import TotalTimeCard from '../../components/statistics/DateNavigationCard';
+import MonthlyStreak from '../../components/statistics/MonthlyStreak';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<Statistics.PeriodType>('daily');
@@ -33,7 +34,7 @@ export default function StatisticsPage() {
   const currentUser = useCurrentUserData();
   const { initializeUser } = useInitUser();
   const { getThemeClass } = useTheme();
-
+  const [selectedStreak, setSelectedStreak] = useState<'weekly' | 'monthly'>('weekly');
   // Handle user initialization with useEffect
   useEffect(() => {
     if (!currentUser) {
@@ -193,8 +194,9 @@ export default function StatisticsPage() {
                 currentDate={selectedDate}
               />
           {/* 오른쪽: 주별 스트릭 컴포넌트 (기존 ActivityList 위치) */}
-          <WeeklyStreak />
 
+          {selectedStreak === 'weekly' && <WeeklyStreak changeStreak={setSelectedStreak}/>}
+          {selectedStreak === 'monthly' && <MonthlyStreak initialMonth={currentMonth} onMonthChange={setCurrentMonth} changeStreak={setSelectedStreak}/>}
         </div>
 
         {/* 세션 타임라인 뷰 */}

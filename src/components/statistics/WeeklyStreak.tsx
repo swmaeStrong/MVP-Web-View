@@ -1,7 +1,7 @@
 'use client';
 
 import { addWeeks, eachDayOfInterval, endOfWeek, format, startOfWeek, subWeeks } from 'date-fns';
-import { ChevronLeft, ChevronRight, Flame } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Flame } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { useStreakCalendar, useStreakCount } from '@/hooks/data/useStreak';
@@ -15,7 +15,7 @@ interface WeeklyStreakProps {
   // 이번주만 표시하므로 props 단순화
 }
 
-export default function WeeklyStreak() {
+export default function WeeklyStreak({changeStreak}: {changeStreak: (streak: 'weekly' | 'monthly') => void}) {
   const { getThemeClass, isDarkMode } = useTheme();
   const [currentWeek, setCurrentWeek] = useState(new Date(getKSTDateString())); // 주 네비게이션 가능
 
@@ -82,6 +82,9 @@ export default function WeeklyStreak() {
     const prevWeek = subWeeks(currentWeek, 1);
     setCurrentWeek(prevWeek);
   };
+  const handleChangeStreak = () => {
+    changeStreak('monthly');
+  };
 
   const handleNextWeek = () => {
     const nextWeek = addWeeks(currentWeek, 1);
@@ -104,7 +107,18 @@ export default function WeeklyStreak() {
   };
 
   return (
-    <Card className={`h-[360px] flex flex-col rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+    <Card className={`h-[360px] flex flex-col rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')} relative`}>
+      {/* 스트릭 변경 버튼 - 우측 상단 고정 */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleChangeStreak}
+        className={`absolute top-2 right-2 h-7 w-7 p-0 z-10 ${getThemeClass('textSecondary')} hover:${getThemeClass('textPrimary')} transition-colors`}
+        title="Switch to Monthly Streak"
+      >
+        <Calendar className="h-4 w-4" />
+      </Button>
+      
       <CardContent className='flex-1 flex flex-col p-3 overflow-hidden'>
         {/* 차트를 중앙 배치 */}
         <div className={`flex-1 flex flex-col justify-center items-center w-full`}>

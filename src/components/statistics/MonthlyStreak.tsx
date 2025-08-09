@@ -1,7 +1,7 @@
 'use client';
 
 import { eachDayOfInterval, endOfMonth, startOfMonth } from 'date-fns';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { BarChart3, ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 
 import { useStreakCalendar, useStreakCount } from '@/hooks/data/useStreak';
@@ -13,11 +13,13 @@ import { getKSTDateString } from '@/utils/timezone';
 interface MonthlyStreakProps {
   initialMonth?: Date;
   onMonthChange?: (month: Date) => void;
+  changeStreak?: (streak: 'weekly' | 'monthly') => void;
 }
 
 export default function MonthlyStreak({ 
   initialMonth, 
-  onMonthChange 
+  onMonthChange,
+  changeStreak
 }: MonthlyStreakProps) {
   const { getThemeClass, isDarkMode } = useTheme();
   const [currentMonth, setCurrentMonth] = useState(initialMonth || new Date(getKSTDateString()));
@@ -181,11 +183,24 @@ export default function MonthlyStreak({
     }
   };
 
-
+  const handleChangeStreak = () => {
+    changeStreak?.('weekly');
+  };
 
 
   return (
-    <Card className={`h-[360px] ${getThemeClass('component')} ${getThemeClass('border')}`}>
+    <Card className={`h-[360px] ${getThemeClass('component')} ${getThemeClass('border')} relative`}>
+      {/* 스트릭 변경 버튼 - 우측 상단 고정 */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleChangeStreak}
+        className={`absolute top-2 right-2 h-7 w-7 p-0 z-10 ${getThemeClass('textSecondary')} hover:${getThemeClass('textPrimary')} transition-colors`}
+        title="Switch to Weekly Streak"
+      >
+        <BarChart3 className="h-4 w-4" />
+      </Button>
+      
       <CardContent className="flex-1 p-3">
         <div className="grid grid-cols-2 gap-3 w-full h-full items-stretch">
           {/* 좌측: 히트맵 스타일 캘린더 */}
