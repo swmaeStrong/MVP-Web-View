@@ -195,7 +195,7 @@ export default function StatisticsPage() {
               />
           {/* 오른쪽: 주별 스트릭 컴포넌트 (기존 ActivityList 위치) */}
 
-          {selectedStreak === 'weekly' && <WeeklyStreak changeStreak={setSelectedStreak}/>}
+          {selectedStreak === 'weekly' && <WeeklyStreak initialMonth={currentMonth} onMonthChange={setCurrentMonth} changeStreak={setSelectedStreak}/>}
           {selectedStreak === 'monthly' && <MonthlyStreak initialMonth={currentMonth} onMonthChange={setCurrentMonth} changeStreak={setSelectedStreak}/>}
         </div>
 

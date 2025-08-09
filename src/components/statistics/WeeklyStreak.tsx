@@ -2,7 +2,7 @@
 
 import { addWeeks, eachDayOfInterval, endOfWeek, format, startOfWeek, subWeeks } from 'date-fns';
 import { Calendar, ChevronLeft, ChevronRight, Flame } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { useStreakCalendar, useStreakCount } from '@/hooks/data/useStreak';
 import { useTheme } from '@/hooks/ui/useTheme';
@@ -12,18 +12,67 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
 import { getKSTDateString } from '@/utils/timezone';
 
 interface WeeklyStreakProps {
-  // 이번주만 표시하므로 props 단순화
+  initialMonth?: Date;
+  onMonthChange?: (month: Date) => void;
+  changeStreak?: (streak: 'weekly' | 'monthly') => void;
 }
 
-export default function WeeklyStreak({changeStreak}: {changeStreak: (streak: 'weekly' | 'monthly') => void}) {
+export default function WeeklyStreak({ 
+  initialMonth, 
+  onMonthChange,
+  changeStreak
+}: WeeklyStreakProps) {
   const { getThemeClass, isDarkMode } = useTheme();
-  const [currentWeek, setCurrentWeek] = useState(new Date(getKSTDateString())); // 주 네비게이션 가능
+  const [currentWeek, setCurrentWeek] = useState(initialMonth || new Date(getKSTDateString())); // 주 네비게이션 가능
 
-  // API 데이터 조회
-  const { data: streakData, isLoading: isCalendarLoading } = useStreakCalendar(
-    currentWeek.getFullYear(), 
-    currentWeek.getMonth()
+  // initialMonth가 변경되면 currentWeek 업데이트
+  React.useEffect(() => {
+    if (initialMonth) {
+      setCurrentWeek(initialMonth);
+    }
+  }, [initialMonth]);
+
+  // 주가 속한 월들을 계산 (주가 두 달에 걸칠 수 있음)
+  const monthsToFetch = useMemo(() => {
+    const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
+    const weekEnd = endOfWeek(currentWeek, { weekStartsOn: 1 });
+    
+    const months = new Set<string>();
+    months.add(`${weekStart.getFullYear()}-${weekStart.getMonth()}`);
+    months.add(`${weekEnd.getFullYear()}-${weekEnd.getMonth()}`);
+    
+    return Array.from(months).map(monthStr => {
+      const [year, month] = monthStr.split('-').map(Number);
+      return { year, month };
+    });
+  }, [currentWeek]);
+
+  // API 데이터 조회 - 주가 걸친 모든 월의 데이터 조회
+  const { data: streakDataMonth1, isLoading: isLoadingMonth1 } = useStreakCalendar(
+    monthsToFetch[0].year, 
+    monthsToFetch[0].month
   );
+  
+  const { data: streakDataMonth2, isLoading: isLoadingMonth2 } = useStreakCalendar(
+    monthsToFetch[1]?.year || monthsToFetch[0].year, 
+    monthsToFetch[1]?.month || monthsToFetch[0].month
+  );
+  
+  // 두 달의 데이터를 합침
+  const streakData = useMemo(() => {
+    if (!streakDataMonth1 && !streakDataMonth2) return null;
+    
+    const data1 = streakDataMonth1 || [];
+    const data2 = streakDataMonth2 || [];
+    
+    // 두 달에 걸친 경우 데이터 합치기
+    if (monthsToFetch.length === 2) {
+      return [...data1, ...data2];
+    }
+    return data1;
+  }, [streakDataMonth1, streakDataMonth2, monthsToFetch]);
+  
+  const isCalendarLoading = isLoadingMonth1 || isLoadingMonth2;
 
   // 스트릭 카운트 조회
   const { data: streakCountData, isLoading: isCountLoading } = useStreakCount();
@@ -79,24 +128,49 @@ export default function WeeklyStreak({changeStreak}: {changeStreak: (streak: 'we
 
   // 네비게이션 함수
   const handlePreviousWeek = () => {
-    const prevWeek = subWeeks(currentWeek, 1);
-    setCurrentWeek(prevWeek);
+    if (navigationLimits.canGoPrevious) {
+      const prevWeek = subWeeks(currentWeek, 1);
+      setCurrentWeek(prevWeek);
+      // 주가 다른 월로 이동했을 때 부모에 알림
+      const prevWeekMonth = startOfWeek(prevWeek, { weekStartsOn: 1 });
+      onMonthChange?.(prevWeekMonth);
+    }
   };
+  
   const handleChangeStreak = () => {
-    changeStreak('monthly');
+    changeStreak?.('monthly');
   };
 
   const handleNextWeek = () => {
-    const nextWeek = addWeeks(currentWeek, 1);
-    const today = new Date();
-    if (nextWeek <= today) {
+    if (navigationLimits.canGoNext) {
+      const nextWeek = addWeeks(currentWeek, 1);
       setCurrentWeek(nextWeek);
+      // 주가 다른 월로 이동했을 때 부모에 알림
+      const nextWeekMonth = startOfWeek(nextWeek, { weekStartsOn: 1 });
+      onMonthChange?.(nextWeekMonth);
     }
   };
 
-  const canGoNext = useMemo(() => {
+  // 네비게이션 제한 계산 (2025년 7월부터 현재까지만)
+  const navigationLimits = useMemo(() => {
+    const minDate = new Date(2025, 6, 1); // 2025년 7월 1일
+    const today = new Date();
     const nextWeek = addWeeks(currentWeek, 1);
-    return nextWeek <= new Date();
+    const prevWeek = subWeeks(currentWeek, 1);
+    
+    // 이전 주의 시작일이 최소 날짜 이후인지 확인
+    const prevWeekStart = startOfWeek(prevWeek, { weekStartsOn: 1 });
+    const canGoPrevious = prevWeekStart >= minDate;
+    
+    // 다음 주가 오늘 이전인지 확인
+    const canGoNext = nextWeek <= today;
+    
+    return {
+      canGoPrevious,
+      canGoNext,
+      minDate,
+      today
+    };
   }, [currentWeek]);
 
   // 막대 높이 계산 (최대 130px, 세션 개수 기반)
@@ -138,6 +212,7 @@ export default function WeeklyStreak({changeStreak}: {changeStreak: (streak: 'we
               variant="ghost"
               size="sm"
               onClick={handlePreviousWeek}
+              disabled={!navigationLimits.canGoPrevious}
               className={`h-8 w-8 p-0 ${getThemeClass('textPrimary')}`}
             >
               <ChevronLeft className="h-5 w-5" />
@@ -227,7 +302,7 @@ export default function WeeklyStreak({changeStreak}: {changeStreak: (streak: 'we
               variant="ghost"
               size="sm"
               onClick={handleNextWeek}
-              disabled={!canGoNext}
+              disabled={!navigationLimits.canGoNext}
               className={`h-8 w-8 p-0 ${getThemeClass('textPrimary')}`}
             >
               <ChevronRight className="h-5 w-5" />
