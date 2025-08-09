@@ -1,7 +1,7 @@
 'use client';
 
 import { addWeeks, eachDayOfInterval, endOfWeek, format, startOfWeek, subWeeks } from 'date-fns';
-import { Calendar, ChevronLeft, ChevronRight, Flame } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Flame, MapPin, Sprout, Star } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 
 import { useStreakCalendar, useStreakCount } from '@/hooks/data/useStreak';
@@ -101,14 +101,15 @@ export default function WeeklyStreak({
     const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     
     return weekInfo.days.map((day, index) => {
-      const isActive = activeDates.some(activeDate => 
-        activeDate.toDateString() === day.toDateString()
-      );
+      const dayStr = format(day, 'yyyy-MM-dd');
+      
+      // API 데이터에서 해당 날짜의 데이터 찾기
+      const dayData = streakData?.find(item => item.date === dayStr);
+      const sessionCount = dayData?.activityCount || 0;
+      const isActive = sessionCount > 0;
+      
       const isToday = day.toDateString() === weekInfo.today.toDateString();
       const isFuture = day > weekInfo.today;
-      
-      // 세션 개수 계산 (실제 데이터가 있다면 여기서 처리)
-      const sessionCount = isActive ? Math.floor(Math.random() * 5) + 1 : 0; // 임시 데이터
       
       return {
         date: day,
@@ -119,10 +120,10 @@ export default function WeeklyStreak({
         isToday,
         isFuture,
         sessionCount,
-        formattedDate: format(day, 'yyyy-MM-dd')
+        formattedDate: dayStr
       };
     });
-  }, [weekInfo, activeDates]);
+  }, [weekInfo, streakData]);
 
   // 이번주만 표시하므로 4주간 데이터 제거
 
@@ -173,11 +174,45 @@ export default function WeeklyStreak({
     };
   }, [currentWeek]);
 
-  // 막대 높이 계산 (최대 130px, 세션 개수 기반)
+  // 막대 높이 계산 (최대 130px, 세션 개수 기준)
   const getBarHeight = (sessionCount: number) => {
     const maxHeight = 130;
-    const maxSessions = 5;
-    return Math.min((sessionCount / maxSessions) * maxHeight, maxHeight);
+    
+    if (sessionCount === 0) return 0;
+    if (sessionCount >= 20) return maxHeight; // 20세션 이상은 최대 높이
+    
+    // 구간별 높이 설정
+    if (sessionCount >= 10) {
+      // 10-19 세션: 75%-100% 높이 (97.5px-130px)
+      const ratio = (sessionCount - 10) / 10; // 0-1 범위
+      return Math.floor(maxHeight * 0.75 + ratio * maxHeight * 0.25);
+    } else {
+      // 1-9 세션: 15%-75% 높이 (19.5px-97.5px)
+      const ratio = sessionCount / 10; // 0.1-0.9 범위
+      return Math.floor(maxHeight * 0.15 + ratio * maxHeight * 0.6);
+    }
+  };
+  
+  // 세션 개수에 따른 색상 결정
+  const getBarColor = (sessionCount: number, isToday: boolean, isFuture: boolean) => {
+    if (isFuture) return isDarkMode ? 'bg-gray-700' : 'bg-gray-100';
+    if (sessionCount === 0) return isDarkMode ? 'bg-gray-600' : 'bg-gray-200';
+    
+    // 오늘은 특별한 색상 (파란색 계열 유지하되 세션 수에 따라 강도 조정)
+    if (isToday) {
+      if (sessionCount >= 20) return 'bg-gradient-to-t from-blue-600 to-cyan-500';
+      if (sessionCount >= 10) return 'bg-blue-600';
+      return 'bg-blue-500';
+    }
+    
+    // 세션 개수에 따른 색상 단계
+    if (sessionCount >= 20) {
+      return 'bg-gradient-to-t from-orange-500 to-red-500'; // 20+ 세션: 오렌지-빨강 그라데이션 (열정/에너지)
+    } else if (sessionCount >= 10) {
+      return 'bg-amber-500'; // 10-19 세션: 앰버색 (성취감)
+    } else {
+      return 'bg-[#5ed462]'; // 1-9 세션: SessionDetail과 같은 초록색
+    }
   };
 
   return (
@@ -200,7 +235,7 @@ export default function WeeklyStreak({
           <div className="text-center mb-6">
             <div className="flex items-center justify-center gap-2">
               <Flame className="h-5 w-5 text-red-500" />
-              <span className={`text-xl font-bold ${getThemeClass('textPrimary')}`}>
+              <span className={`text-lg font-medium ${getThemeClass('textPrimary')}`}>
                 {isCountLoading ? '-' : streakCountData?.currentStreak || 0} days streak
               </span>
             </div>
@@ -227,23 +262,28 @@ export default function WeeklyStreak({
                       <TooltipTrigger asChild>
                         <div className="flex flex-col items-center gap-2" style={{ width: '32px' }}>
                           {/* Bar */}
-                          <div className="flex items-end" style={{ height: '150px', width: '32px' }}>
+                          <div className="flex items-end relative" style={{ height: '150px', width: '32px' }}>
                             <div 
-                              className={`rounded-t transition-all duration-300 ${
-                                day.isActive 
-                                  ? day.isToday 
-                                    ? 'bg-blue-600' 
-                                    : 'bg-green-600'
-                                  : day.isFuture 
-                                    ? `${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`
-                                    : `${isDarkMode ? 'bg-gray-600' : 'bg-gray-300'}`
-                              }`}
+                              className={`rounded-t transition-all duration-300 ${getBarColor(day.sessionCount, day.isToday, day.isFuture)}`}
                               style={{ 
                                 width: '32px',
                                 height: day.isActive ? `${getBarHeight(day.sessionCount)}px` : '4px',
                                 opacity: day.isFuture ? 0.5 : 1
                               }}
-                            />
+                            >
+                              {/* 10세션 이상일 때 별 표시 */}
+                              {day.sessionCount >= 10 && day.sessionCount < 20 && (
+                                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                                  <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
+                                </div>
+                              )}
+                              {/* 20세션 이상일 때 불꽃 표시 */}
+                              {day.sessionCount >= 20 && (
+                                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                                  <Flame className="h-3 w-3 text-red-400 fill-red-400" />
+                                </div>
+                              )}
+                            </div>
                           </div>
                           
                           {/* Day Label */}
@@ -273,13 +313,37 @@ export default function WeeklyStreak({
                           {day.isActive ? (
                             <div className="space-y-1">
                               <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-green-500" />
-                                <span className="text-sm text-green-600 dark:text-green-400 font-medium">
-                                  Active Day
+                                <div className={`w-2 h-2 rounded-full ${
+                                  day.sessionCount >= 20 ? 'bg-gradient-to-r from-orange-500 to-red-500' :
+                                  day.sessionCount >= 10 ? 'bg-amber-500' : 'bg-[#5ed462]'
+                                }`} />
+                                <span className={`text-sm font-medium flex items-center gap-1 ${
+                                  day.sessionCount >= 20 ? 'text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600' :
+                                  day.sessionCount >= 10 ? 'text-amber-600 dark:text-amber-400' :
+                                  'text-green-600 dark:text-green-400'
+                                }`}>
+                                  {day.sessionCount >= 20 ? (
+                                    <>
+                                      <Flame className="h-3 w-3 text-red-500" />
+                                      Incredible Day!
+                                    </>
+                                  ) : day.sessionCount >= 10 ? (
+                                    <>
+                                      <Star className="h-3 w-3 text-yellow-500" />
+                                      Great Day!
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Sprout className="h-3 w-3" style={{ color: '#5ed462' }} />
+                                      Active Day
+                                    </>
+                                  )}
                                 </span>
                               </div>
                               <div className={`text-sm ${getThemeClass('textSecondary')} pl-4`}>
                                 {day.sessionCount} {day.sessionCount === 1 ? 'session' : 'sessions'}
+                                {day.sessionCount >= 20 && ' - Outstanding productivity!'}
+                                {day.sessionCount >= 10 && day.sessionCount < 20 && ' - Keep it up!'}
                               </div>
                             </div>
                           ) : day.isFuture ? (
@@ -298,7 +362,7 @@ export default function WeeklyStreak({
                           {day.isToday && (
                             <div className="pt-1 border-t border-opacity-20">
                               <div className="text-sm text-blue-500 font-semibold flex items-center gap-1">
-                                <span className="text-xs">📍</span> Today
+                                <MapPin className="h-3 w-3" /> Today
                               </div>
                             </div>
                           )}
