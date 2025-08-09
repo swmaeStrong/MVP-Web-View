@@ -9,7 +9,7 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
-import { getKSTDateString } from '@/utils/timezone';
+import { getKSTDate, getKSTDateString } from '@/utils/timezone';
 
 interface WeeklyStreakProps {
   initialMonth?: Date;
@@ -82,7 +82,7 @@ export default function WeeklyStreak({
     const start = startOfWeek(currentWeek, { weekStartsOn: 1 }); // 월요일 시작
     const end = endOfWeek(currentWeek, { weekStartsOn: 1 }); // 일요일 끝
     const days = eachDayOfInterval({ start, end });
-    const today = new Date();
+    const today = getKSTDate(); // KST 기준 오늘 날짜
     
     return { start, end, days, today };
   }, [currentWeek]);
@@ -154,7 +154,7 @@ export default function WeeklyStreak({
   // 네비게이션 제한 계산 (2025년 7월부터 현재까지만)
   const navigationLimits = useMemo(() => {
     const minDate = new Date(2025, 6, 1); // 2025년 7월 1일
-    const today = new Date();
+    const today = getKSTDate(); // KST 기준 오늘 날짜
     const nextWeek = addWeeks(currentWeek, 1);
     const prevWeek = subWeeks(currentWeek, 1);
     
@@ -261,32 +261,45 @@ export default function WeeklyStreak({
                           </div>
                         </div>
                       </TooltipTrigger>
-                      <TooltipContent side="top" className="p-3">
-                        <div className="space-y-1">
-                          <div className="font-semibold">
-                            {format(day.date, 'EEEE, MMMM d')}
+                      <TooltipContent 
+                        side="top" 
+                        className={`p-3 ${getThemeClass('component')} ${getThemeClass('border')} shadow-lg`}
+                      >
+                        <div className="space-y-2">
+                          <div className={`font-semibold ${getThemeClass('textPrimary')}`}>
+                            {format(day.date, 'EEEE, MMMM d, yyyy')}
                           </div>
+                          
                           {day.isActive ? (
-                            <>
-                              <div className="text-sm text-green-600 dark:text-green-400">
-                                ✓ Active Day
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-green-500" />
+                                <span className="text-sm text-green-600 dark:text-green-400 font-medium">
+                                  Active Day
+                                </span>
                               </div>
-                              <div className="text-sm text-gray-600 dark:text-gray-400">
-                                {day.sessionCount} sessions
+                              <div className={`text-sm ${getThemeClass('textSecondary')} pl-4`}>
+                                {day.sessionCount} {day.sessionCount === 1 ? 'session' : 'sessions'}
                               </div>
-                            </>
+                            </div>
                           ) : day.isFuture ? (
-                            <div className="text-sm text-gray-500">
+                            <div className={`text-sm ${getThemeClass('textSecondary')} italic`}>
                               Future date
                             </div>
                           ) : (
-                            <div className="text-sm text-gray-500">
-                              No activity
+                            <div className="flex items-center gap-2">
+                              <div className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-gray-600' : 'bg-gray-400'}`} />
+                              <span className={`text-sm ${getThemeClass('textSecondary')}`}>
+                                No activity
+                              </span>
                             </div>
                           )}
+                          
                           {day.isToday && (
-                            <div className="text-sm text-blue-600 font-medium">
-                              Today
+                            <div className="pt-1 border-t border-opacity-20">
+                              <div className="text-sm text-blue-500 font-semibold flex items-center gap-1">
+                                <span className="text-xs">📍</span> Today
+                              </div>
                             </div>
                           )}
                         </div>

@@ -8,7 +8,8 @@ import { useStreakCalendar, useStreakCount } from '@/hooks/data/useStreak';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { getKSTDateString } from '@/utils/timezone';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
+import { getKSTDate, getKSTDateString } from '@/utils/timezone';
 
 interface MonthlyStreakProps {
   initialMonth?: Date;
@@ -44,7 +45,7 @@ export default function MonthlyStreak({
     const end = endOfMonth(currentMonth);
     const startWeek = start.getDay();
     const days = eachDayOfInterval({ start, end });
-    const today = new Date();
+    const today = getKSTDate(); // KST 기준 오늘 날짜
     
     return { start, end, startWeek, days, today };
   }, [currentMonth]);
@@ -393,14 +394,51 @@ export default function MonthlyStreak({
                     } 
                     
                     return (
-                      <div
-                        key={date.toISOString()}
-                        className={cellClass}
-                        style={todayStyle}
-                        title={`${date.getDate()}${isActive ? ' - Active Day' : ''}${isToday ? ' (Today)' : ''}`}
-                      >
-                        {date.getDate()}
-                      </div>
+                      <Tooltip key={date.toISOString()} delayDuration={0}>
+                        <TooltipTrigger asChild>
+                          <div
+                            className={cellClass}
+                            style={todayStyle}
+                          >
+                            {date.getDate()}
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent 
+                          side="top" 
+                          className={`p-2 ${getThemeClass('component')} ${getThemeClass('border')} shadow-lg`}
+                        >
+                          <div className="space-y-1">
+                            <div className={`text-xs font-semibold ${getThemeClass('textPrimary')}`}>
+                              {date.toLocaleDateString('en-US', { 
+                                weekday: 'long',
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                              })}
+                            </div>
+                            {isActive ? (
+                              <div className="flex items-center gap-1">
+                                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                                <span className="text-xs text-green-600 dark:text-green-400">
+                                  Active Day
+                                </span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1">
+                                <div className={`w-1.5 h-1.5 rounded-full ${isDarkMode ? 'bg-gray-600' : 'bg-gray-400'}`} />
+                                <span className={`text-xs ${getThemeClass('textSecondary')}`}>
+                                  No activity
+                                </span>
+                              </div>
+                            )}
+                            {isToday && (
+                              <div className="text-xs text-blue-500 font-medium">
+                                📍 Today
+                              </div>
+                            )}
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
                     );
                   });
                   
