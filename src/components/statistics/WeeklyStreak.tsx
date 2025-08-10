@@ -9,7 +9,7 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
-import { getKSTDate, getKSTDateString } from '@/utils/timezone';
+import { getKSTDate, getKSTDateString, getKSTDateStringFromDate } from '@/utils/timezone';
 
 interface WeeklyStreakProps {
   initialMonth?: Date;
@@ -108,7 +108,9 @@ export default function WeeklyStreak({
       const sessionCount = dayData?.activityCount || 0;
       const isActive = sessionCount > 0;
       
-      const isToday = day.toDateString() === weekInfo.today.toDateString();
+      // KST 기준으로 날짜 비교 (YYYY-MM-DD 형식)
+      const todayStr = getKSTDateString();
+      const isToday = dayStr === todayStr;
       const isFuture = day > weekInfo.today;
       
       return {

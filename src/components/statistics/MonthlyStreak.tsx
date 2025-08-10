@@ -370,7 +370,10 @@ export default function MonthlyStreak({
                   // 날짜 셀들 - 투명 배경
                   const dateCells = days.map(date => {
                     const dateStr = date.toDateString();
-                    const isToday = date.toDateString() === today.toDateString();
+                    // KST 기준으로 오늘 날짜 비교
+                    const todayStr = getKSTDateString();
+                    const currentDateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                    const isToday = currentDateStr === todayStr;
                     const isActive = activeDates.some(activeDay => 
                       activeDay.toDateString() === dateStr
                     );
