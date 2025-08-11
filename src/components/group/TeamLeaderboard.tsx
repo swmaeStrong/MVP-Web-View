@@ -8,15 +8,15 @@ import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Separator } from '@/shadcn/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
 import { spacing } from '@/styles/design-system';
-import { FONT_SIZES } from '@/styles/font-sizes';
-import { Info } from 'lucide-react';
+import { Clock, Info, RadioIcon } from 'lucide-react';
 
 interface TeamLeaderboardProps {
-  members: Group.GroupLeaderboardMember[];
+  membersLeaderboard: Group.GroupLeaderboardMember[];
+  groupMembers?: Group.GroupMemberInfo[];
   isLoading?: boolean;
 }
 
-export default function TeamLeaderboard({ members, isLoading = false }: TeamLeaderboardProps) {
+export default function TeamLeaderboard({ membersLeaderboard, groupMembers, isLoading = false }: TeamLeaderboardProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass, isDarkMode } = useTheme();
   const currentUser = useCurrentUserData();
 
@@ -28,6 +28,50 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
       return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
     }
     return `${minutes}m`;
+  };
+
+  // 활동 상태 판단 함수
+  const getActivityStatus = (member: Group.GroupLeaderboardMember) => {
+    // groupMembers에서 해당 멤버의 정보 찾기
+    const memberInfo = groupMembers?.find(m => m.userId === member.userId);
+    
+    // groupMembers 정보가 있으면 우선 사용, 없으면 leaderboard 정보 사용
+    const lastActivity = memberInfo?.lastActivityTimestamp;
+    const sessionMinutes = memberInfo?.sessionMinutes;
+    
+    if (!lastActivity) return null;
+    
+    const now = Date.now() / 1000; // 현재 시간 (초)
+    const sessionEndTime = lastActivity + ((sessionMinutes ?? 0) * 60);
+    
+    // 세션이 진행 중인지 확인 (lastActivityTime + sessionMinutes가 현재 시간보다 미래)
+    if (sessionEndTime > now && (sessionMinutes ?? 0) > 0) {
+      return {
+        type: 'active',
+        text: `Working ${sessionMinutes}m session`,
+        color: 'text-green-500'
+      };
+    }
+    
+    // 세션이 끝났으면 마지막 활동 시간 표시
+    const timeDiff = now - lastActivity;
+    let timeText = '';
+    
+    if (timeDiff < 60) {
+      timeText = 'Just now';
+    } else if (timeDiff < 3600) {
+      timeText = `${Math.floor(timeDiff / 60)}m ago`;
+    } else if (timeDiff < 86400) {
+      timeText = `${Math.floor(timeDiff / 3600)}h ago`;
+    } else {
+      timeText = `${Math.floor(timeDiff / 86400)}d ago`;
+    }
+    
+    return {
+      type: 'inactive',
+      text: timeText,
+      color: getThemeTextColor('secondary')
+    };
   };
 
   if (isLoading) {
@@ -104,7 +148,7 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
       </CardHeader>
       <CardContent className={`${spacing.inner.normal} flex-1 overflow-hidden`}>
         <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
-          {members.length === 0 ? (
+          {membersLeaderboard.length === 0 ? (
             <div className="h-full flex items-center justify-center">
               <div className={`text-center ${getThemeTextColor('secondary')}`}>
                 <div className="text-lg mb-2">No members yet</div>
@@ -114,13 +158,13 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
           ) : (
             <>
               {/* Member count indicator */}
-              {members.length > 6 && (
+              {membersLeaderboard.length > 6 && (
                 <div className={`text-xs ${getThemeTextColor('secondary')} mb-3 text-center`}>
-                  Showing {members.length} member{members.length !== 1 ? 's' : ''}
+                  Showing {membersLeaderboard.length} member{membersLeaderboard.length !== 1 ? 's' : ''}
                 </div>
               )}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pr-2">
-            {members.map((member) => {
+            {membersLeaderboard.map((member) => {
               const isCurrentUser = member.userId === currentUser?.id;
               return (
               <div key={member.userId} className={`p-4 rounded-md ${isCurrentUser ? 'bg-[#3F72AF]/10 dark:bg-[#3F72AF]/15' : 'bg-white dark:bg-white'} ${isCurrentUser ? 'border-[#3F72AF]/30' : getThemeClass('border')} border text-center relative`}>
@@ -157,6 +201,17 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
                         {member.rank}
                       </span>
                     )}
+                    {/* 활동 상태 점 */}
+                    {(() => {
+                      const status = getActivityStatus(member);
+                      
+                      // 데이터가 없어도 회색 점 표시
+                      const dotColor = status?.type === 'active' ? 'bg-green-500' : 'bg-gray-400';
+                      
+                      return (
+                        <span className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${dotColor}`} />
+                      );
+                    })()}
                   </div>
                 </UserProfileTooltip>
                 
@@ -168,6 +223,27 @@ export default function TeamLeaderboard({ members, isLoading = false }: TeamLead
                   <p className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
                     {formatScore(member.score)}
                   </p>
+                  
+                  {/* 추가 정보 */}
+                  <div className='mt-2 space-y-1'>
+                    {(() => {
+                      const status = getActivityStatus(member);
+                      if (!status) return null;
+                      
+                      return (
+                        <div className='flex items-center justify-center gap-1'>
+                          {status.type === 'active' ? (
+                            <RadioIcon className={`w-3 h-3 ${status.color}`} />
+                          ) : (
+                            <Clock className={`w-3 h-3 ${status.color}`} />
+                          )}
+                          <span className={`text-xs ${status.color} ${status.type === 'active' ? 'font-medium' : ''}`}>
+                            {status.text}
+                          </span>
+                        </div>
+                      );
+                    })()}
+                  </div>
                 </div>
               </div>
               );

@@ -319,7 +319,8 @@ export default function GroupDetailPage() {
 
       {/* 좌측 하단 - 리더보드 (3/5) */}
       <TeamLeaderboard 
-        members={leaderboardMembers} 
+        membersLeaderboard={leaderboardMembers} 
+        groupMembers={groupDetail?.members}
         isLoading={isLeaderboardLoading}
       />
 
