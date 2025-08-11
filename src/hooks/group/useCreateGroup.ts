@@ -1,6 +1,6 @@
 'use client';
 
-import { groupNameCheckQueryKey, myGroupsQueryKey, GROUP_ACTION_MESSAGES } from '@/config/constants';
+import { GROUP_ACTION_MESSAGES, groupNameCheckQueryKey, groupSearchQueryKey, myGroupsQueryKey } from '@/config/constants';
 import { useDebounce } from '@/hooks/ui/useDebounce';
 import { validateGroupName } from '@/shared/api/get';
 import { createGroup } from '@/shared/api/post';
@@ -28,6 +28,11 @@ export function useCreateGroup() {
       // refetchQueries는 캐시에 없어도 강제로 새 데이터를 가져옴 (첫 그룹 생성에 적합)
       queryClient.refetchQueries({
         queryKey: myGroupsQueryKey(),
+      });
+      
+      // 그룹 검색 결과도 무효화 (새로 생성된 그룹이 검색 결과에 반영되도록)
+      queryClient.invalidateQueries({
+        queryKey: groupSearchQueryKey(),
       });
       
       // 성공 시 그룹 검색 페이지로 이동

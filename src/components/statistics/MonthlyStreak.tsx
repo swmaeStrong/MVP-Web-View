@@ -1,23 +1,26 @@
 'use client';
 
 import { eachDayOfInterval, endOfMonth, startOfMonth } from 'date-fns';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { BarChart3, ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 
 import { useStreakCalendar, useStreakCount } from '@/hooks/data/useStreak';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { getKSTDateString } from '@/utils/timezone';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
+import { getKSTDate, getKSTDateString } from '@/utils/timezone';
 
 interface MonthlyStreakProps {
   initialMonth?: Date;
   onMonthChange?: (month: Date) => void;
+  changeStreak?: (streak: 'weekly' | 'monthly') => void;
 }
 
 export default function MonthlyStreak({ 
   initialMonth, 
-  onMonthChange 
+  onMonthChange,
+  changeStreak
 }: MonthlyStreakProps) {
   const { getThemeClass, isDarkMode } = useTheme();
   const [currentMonth, setCurrentMonth] = useState(initialMonth || new Date(getKSTDateString()));
@@ -42,7 +45,7 @@ export default function MonthlyStreak({
     const end = endOfMonth(currentMonth);
     const startWeek = start.getDay();
     const days = eachDayOfInterval({ start, end });
-    const today = new Date();
+    const today = getKSTDate(); // KST 기준 오늘 날짜
     
     return { start, end, startWeek, days, today };
   }, [currentMonth]);
@@ -181,11 +184,24 @@ export default function MonthlyStreak({
     }
   };
 
-
+  const handleChangeStreak = () => {
+    changeStreak?.('weekly');
+  };
 
 
   return (
-    <Card className={`h-[360px] ${getThemeClass('component')} ${getThemeClass('border')}`}>
+    <Card className={`h-[360px] ${getThemeClass('component')} ${getThemeClass('border')} relative`}>
+      {/* 스트릭 변경 버튼 - 우측 상단 고정 */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleChangeStreak}
+        className={`absolute top-2 right-2 h-7 w-7 p-0 z-10 ${getThemeClass('textSecondary')} hover:${getThemeClass('textPrimary')} transition-colors`}
+        title="Switch to Weekly Streak"
+      >
+        <BarChart3 className="h-4 w-4" />
+      </Button>
+      
       <CardContent className="flex-1 p-3">
         <div className="grid grid-cols-2 gap-3 w-full h-full items-stretch">
           {/* 좌측: 히트맵 스타일 캘린더 */}
@@ -354,7 +370,10 @@ export default function MonthlyStreak({
                   // 날짜 셀들 - 투명 배경
                   const dateCells = days.map(date => {
                     const dateStr = date.toDateString();
-                    const isToday = date.toDateString() === today.toDateString();
+                    // KST 기준으로 오늘 날짜 비교
+                    const todayStr = getKSTDateString();
+                    const currentDateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                    const isToday = currentDateStr === todayStr;
                     const isActive = activeDates.some(activeDay => 
                       activeDay.toDateString() === dateStr
                     );
@@ -378,14 +397,51 @@ export default function MonthlyStreak({
                     } 
                     
                     return (
-                      <div
-                        key={date.toISOString()}
-                        className={cellClass}
-                        style={todayStyle}
-                        title={`${date.getDate()}${isActive ? ' - Active Day' : ''}${isToday ? ' (Today)' : ''}`}
-                      >
-                        {date.getDate()}
-                      </div>
+                      <Tooltip key={date.toISOString()} delayDuration={0}>
+                        <TooltipTrigger asChild>
+                          <div
+                            className={cellClass}
+                            style={todayStyle}
+                          >
+                            {date.getDate()}
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent 
+                          side="top" 
+                          className={`p-2 ${getThemeClass('component')} ${getThemeClass('border')} shadow-lg`}
+                        >
+                          <div className="space-y-1">
+                            <div className={`text-xs font-semibold ${getThemeClass('textPrimary')}`}>
+                              {date.toLocaleDateString('en-US', { 
+                                weekday: 'long',
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                              })}
+                            </div>
+                            {isActive ? (
+                              <div className="flex items-center gap-1">
+                                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                                <span className="text-xs text-green-600 dark:text-green-400">
+                                  Active Day
+                                </span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1">
+                                <div className={`w-1.5 h-1.5 rounded-full ${isDarkMode ? 'bg-gray-600' : 'bg-gray-400'}`} />
+                                <span className={`text-xs ${getThemeClass('textSecondary')}`}>
+                                  No activity
+                                </span>
+                              </div>
+                            )}
+                            {isToday && (
+                              <div className="text-xs text-blue-500 font-medium">
+                                📍 Today
+                              </div>
+                            )}
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
                     );
                   });
                   

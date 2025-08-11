@@ -1,71 +1,132 @@
-// Korean Standard Time (KST, UTC+9) utilities
+// User's local timezone utilities
+// Automatically detects and uses the user's browser timezone
+
+/**
+ * Get the user's current timezone offset in hours from UTC
+ */
+const getUserTimezoneOffset = (): number => {
+  // getTimezoneOffset returns minutes, negative for timezones ahead of UTC
+  // For example, KST (UTC+9) returns -540
+  return -new Date().getTimezoneOffset() / 60;
+};
+
+/**
+ * Get current date in user's local timezone.
+ */
+export const getLocalDate = (): Date => {
+  return new Date();
+};
 
 /**
  * Get current date in Korean Standard Time (KST).
+ * Legacy function kept for backward compatibility.
  */
 export const getKSTDate = (): Date => {
+  return getLocalDate();
+};
+
+/**
+ * Generate date string (YYYY-MM-DD) based on user's local timezone.
+ */
+export const getLocalDateString = (): string => {
   const now = new Date();
-  // Add 9 hours (Korean timezone) to UTC time
-  const kstTime = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-  return kstTime;
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 };
 
 /**
  * Generate date string (YYYY-MM-DD) based on Korean Standard Time.
+ * Legacy function kept for backward compatibility.
  */
 export const getKSTDateString = (): string => {
-  const kstDate = getKSTDate();
-  return kstDate.toISOString().split('T')[0];
+  return getLocalDateString();
+};
+
+/**
+ * Convert given date to user's local timezone.
+ * This is mainly for display purposes as JavaScript Date already handles timezones.
+ */
+export const convertToLocal = (date: Date): Date => {
+  return new Date(date);
 };
 
 /**
  * Convert given date to Korean Standard Time.
+ * Legacy function kept for backward compatibility.
  */
 export const convertToKST = (date: Date): Date => {
-  const utcTime = date.getTime() + date.getTimezoneOffset() * 60 * 1000;
-  const kstTime = new Date(utcTime + 9 * 60 * 60 * 1000);
-  return kstTime;
+  return convertToLocal(date);
+};
+
+/**
+ * Generate date string for n days ago based on user's local timezone.
+ */
+export const getLocalDateStringDaysAgo = (daysAgo: number): string => {
+  const now = new Date();
+  const targetDate = new Date(now);
+  targetDate.setDate(targetDate.getDate() - daysAgo);
+  
+  const year = targetDate.getFullYear();
+  const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+  const day = String(targetDate.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 };
 
 /**
  * Generate date string for n days ago based on Korean Standard Time.
+ * Legacy function kept for backward compatibility.
  */
 export const getKSTDateStringDaysAgo = (daysAgo: number): string => {
-  const kstDate = getKSTDate();
-  const targetDate = new Date(
-    kstDate.getTime() - daysAgo * 24 * 60 * 60 * 1000
-  );
-  return targetDate.toISOString().split('T')[0];
+  return getLocalDateStringDaysAgo(daysAgo);
+};
+
+/**
+ * Generate date string for a specific date based on user's local timezone.
+ */
+export const getLocalDateStringFromDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 };
 
 /**
  * Generate date string for a specific date based on Korean Standard Time.
+ * Legacy function kept for backward compatibility.
  */
 export const getKSTDateStringFromDate = (date: Date): string => {
-  const kstDate = convertToKST(date);
-  return kstDate.toISOString().split('T')[0];
+  return getLocalDateStringFromDate(date);
 };
 
 /**
- * Generate first day of month string (1st) based on Korean Standard Time.
+ * Generate first day of month string (1st) based on user's local timezone.
  * Used for monthly statistics or leaderboard queries, always fixed to the 1st of the month.
  */
-export const getKSTFirstDayOfMonth = (year: number, month: number): string => {
+export const getLocalFirstDayOfMonth = (year: number, month: number): string => {
   // month는 0-based (0 = January)
-  // 간단하게 문자열로 직접 생성 (YYYY-MM-01 형태)
   const yearStr = year.toString();
   const monthStr = (month + 1).toString().padStart(2, '0'); // Convert to 1-based
   return `${yearStr}-${monthStr}-01`;
 };
 
 /**
+ * Generate first day of month string (1st) based on Korean Standard Time.
+ * Legacy function kept for backward compatibility.
+ */
+export const getKSTFirstDayOfMonth = (year: number, month: number): string => {
+  return getLocalFirstDayOfMonth(year, month);
+};
+
+/**
  * Return first day (1st) string of n months ago based on current date.
  * Used for monthly leaderboard or statistics queries, always fixed to the 1st of the month.
  */
-export const getKSTMonthlyDateString = (monthsAgo: number): string => {
-  const today = getKSTDate();
-  const currentYear = today.getUTCFullYear();
-  const currentMonth = today.getUTCMonth(); // 0-based
+export const getLocalMonthlyDateString = (monthsAgo: number): string => {
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth(); // 0-based
 
   let targetYear = currentYear;
   let targetMonth = currentMonth - monthsAgo;
@@ -76,61 +137,86 @@ export const getKSTMonthlyDateString = (monthsAgo: number): string => {
     targetYear -= 1;
   }
 
-  const result = getKSTFirstDayOfMonth(targetYear, targetMonth);
+  const result = getLocalFirstDayOfMonth(targetYear, targetMonth);
 
   // Debug log
   console.log(
-    `getKSTMonthlyDateString: monthsAgo=${monthsAgo}, today=${today.toISOString().split('T')[0]}, currentYear=${currentYear}, currentMonth=${currentMonth + 1}, targetYear=${targetYear}, targetMonth=${targetMonth + 1}, result=${result}`
+    `getLocalMonthlyDateString: monthsAgo=${monthsAgo}, today=${getLocalDateString()}, currentYear=${currentYear}, currentMonth=${currentMonth + 1}, targetYear=${targetYear}, targetMonth=${targetMonth + 1}, result=${result}`
   );
 
   return result;
 };
 
 /**
- * Generate time string (HH:MM) based on current Korean Standard Time.
+ * Return first day (1st) string of n months ago based on Korean Standard Time.
+ * Legacy function kept for backward compatibility.
  */
-export const getKSTTimeString = (): string => {
-  const kstDate = getKSTDate();
-  const hours = String(kstDate.getUTCHours()).padStart(2, '0');
-  const minutes = String(kstDate.getUTCMinutes()).padStart(2, '0');
+export const getKSTMonthlyDateString = (monthsAgo: number): string => {
+  return getLocalMonthlyDateString(monthsAgo);
+};
+
+/**
+ * Generate time string (HH:MM) based on user's local timezone.
+ */
+export const getLocalTimeString = (): string => {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
   return `${hours}:${minutes}`;
 };
 
 /**
- * Return formatted date string based on Korean Standard Time.
+ * Generate time string (HH:MM) based on Korean Standard Time.
+ * Legacy function kept for backward compatibility.
  */
-export const formatKSTDate = (date: Date): string => {
-  const kstDate = convertToKST(date);
-  const year = kstDate.getUTCFullYear();
-  const month = String(kstDate.getUTCMonth() + 1).padStart(2, '0');
-  const day = String(kstDate.getUTCDate()).padStart(2, '0');
+export const getKSTTimeString = (): string => {
+  return getLocalTimeString();
+};
+
+/**
+ * Return formatted date string based on user's local timezone.
+ */
+export const formatLocalDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
   return `${year}.${month}.${day}`;
 };
 
 /**
- * Return formatted date string with day of week based on Korean Standard Time.
+ * Return formatted date string based on Korean Standard Time.
+ * Legacy function kept for backward compatibility.
  */
-export const formatKSTDateWithDay = (dateStr: string): string => {
-  const date = new Date(dateStr + 'T00:00:00Z'); // Parse as UTC
-  const kstDate = convertToKST(date);
-  const today = getKSTDate();
-  const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+export const formatKSTDate = (date: Date): string => {
+  return formatLocalDate(date);
+};
 
-  // Function to check if it's the same day (KST based)
+/**
+ * Return formatted date string with day of week based on user's local timezone.
+ */
+export const formatLocalDateWithDay = (dateStr: string): string => {
+  const date = new Date(dateStr + 'T00:00:00'); // Parse as local date
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  // Function to check if it's the same day (local timezone based)
   const isSameDay = (d1: Date, d2: Date) => {
-    return d1.toISOString().split('T')[0] === d2.toISOString().split('T')[0];
+    return d1.getFullYear() === d2.getFullYear() &&
+           d1.getMonth() === d2.getMonth() &&
+           d1.getDate() === d2.getDate();
   };
 
-  const year = kstDate.getUTCFullYear();
-  const month = String(kstDate.getUTCMonth() + 1).padStart(2, '0');
-  const day = String(kstDate.getUTCDate()).padStart(2, '0');
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
   const dayOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][
-    kstDate.getUTCDay()
+    date.getDay()
   ];
 
-  if (isSameDay(kstDate, today)) {
+  if (isSameDay(date, today)) {
     return `${year}.${month}.${day} (Today)`;
-  } else if (isSameDay(kstDate, yesterday)) {
+  } else if (isSameDay(date, yesterday)) {
     return `${year}.${month}.${day} (Yesterday)`;
   } else {
     return `${year}.${month}.${day} (${dayOfWeek})`;
@@ -138,25 +224,41 @@ export const formatKSTDateWithDay = (dateStr: string): string => {
 };
 
 /**
+ * Return formatted date string with day of week based on Korean Standard Time.
+ * Legacy function kept for backward compatibility.
+ */
+export const formatKSTDateWithDay = (dateStr: string): string => {
+  return formatLocalDateWithDay(dateStr);
+};
+
+/**
  * Return Monday date string of n weeks ago based on current date.
  * Used for weekly leaderboard or statistics queries, calculating Monday-Sunday as one week.
  */
-export const getKSTWeeklyDateString = (weeksAgo: number): string => {
-  const today = getKSTDate();
-
+export const getLocalWeeklyDateString = (weeksAgo: number): string => {
+  const today = new Date();
+  
   // Calculate date n weeks ago
-  const targetDate = new Date(
-    today.getTime() - weeksAgo * 7 * 24 * 60 * 60 * 1000
-  );
-
+  const targetDate = new Date(today);
+  targetDate.setDate(targetDate.getDate() - (weeksAgo * 7));
+  
   // Find Monday of that week
-  const dayOfWeek = targetDate.getUTCDay(); // 0=Sunday, 1=Monday, ...
+  const dayOfWeek = targetDate.getDay(); // 0=Sunday, 1=Monday, ...
   const daysFromMonday = (dayOfWeek + 6) % 7; // Days elapsed from Monday
-  const mondayOfWeek = new Date(
-    targetDate.getTime() - daysFromMonday * 24 * 60 * 60 * 1000
-  );
+  targetDate.setDate(targetDate.getDate() - daysFromMonday);
+  
+  const year = targetDate.getFullYear();
+  const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+  const day = String(targetDate.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
-  return mondayOfWeek.toISOString().split('T')[0];
+/**
+ * Return Monday date string of n weeks ago based on Korean Standard Time.
+ * Legacy function kept for backward compatibility.
+ */
+export const getKSTWeeklyDateString = (weeksAgo: number): string => {
+  return getLocalWeeklyDateString(weeksAgo);
 };
 
 /**
@@ -164,10 +266,27 @@ export const getKSTWeeklyDateString = (weeksAgo: number): string => {
  * Used for converting any date to its corresponding Monday (start of week).
  */
 export const getMondayOfWeek = (dateString: string): string => {
-  const date = new Date(dateString + 'T00:00:00Z'); // Parse as UTC
-  const dayOfWeek = date.getUTCDay(); // 0=Sunday, 1=Monday, ...
+  const date = new Date(dateString + 'T00:00:00'); // Parse as local date
+  const dayOfWeek = date.getDay(); // 0=Sunday, 1=Monday, ...
   const daysFromMonday = (dayOfWeek + 6) % 7; // Days elapsed from Monday
-  const mondayOfWeek = new Date(date.getTime() - daysFromMonday * 24 * 60 * 60 * 1000);
+  const mondayOfWeek = new Date(date);
+  mondayOfWeek.setDate(mondayOfWeek.getDate() - daysFromMonday);
   
-  return mondayOfWeek.toISOString().split('T')[0];
+  const year = mondayOfWeek.getFullYear();
+  const month = String(mondayOfWeek.getMonth() + 1).padStart(2, '0');
+  const day = String(mondayOfWeek.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+/**
+ * Get user's timezone information for display
+ */
+export const getUserTimezoneInfo = (): { offset: number; name: string } => {
+  const offset = getUserTimezoneOffset();
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  
+  return {
+    offset,
+    name: timezone
+  };
 };
