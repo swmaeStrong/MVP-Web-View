@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-import { useUserStore } from '@/stores/userStore';
 import { handleApiError } from '@/utils/error-handler';
 import { requestTokenFromSwift } from '../../utils/token-bridge';
 import { noAccessTokenCode } from '../errorCode';
@@ -72,13 +71,13 @@ const isTokenRetryNeeded = (error: any): boolean => {
  * 에러 로깅 및 리포팅
  */
 const logAndReportError = (error: any, instanceName: string, isTokenRefreshFailure = false) => {
-  const currentUser = useUserStore.getState().currentUser;
+  // React Query로 관리되는 유저 정보는 여기서 직접 접근하지 않음
+  // 필요시 컴포넌트 레벨에서 처리
   
   // 인증 에러 중 토큰 갱신 실패인 경우 추가 컨텍스트 포함
   const errorContext = {
     feature: 'api-request',
     component: `axios-${instanceName}-interceptor`,
-    userId: currentUser?.id,
     ...(isTokenRefreshFailure && {
       action: 'token-refresh-failure',
       isAuthRecoveryFailed: true,
