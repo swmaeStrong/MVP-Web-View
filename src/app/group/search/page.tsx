@@ -21,7 +21,7 @@ import { Globe, Hash, Lock, Search, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import EventBanner from '../../../components/group/EventBanner';
+import EventBanner from '@/components/group/search/EventBanner';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
