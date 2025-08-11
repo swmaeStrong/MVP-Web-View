@@ -4,6 +4,7 @@ import { FormControl, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form'
 import { Input } from '@/shadcn/ui/input';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useGroupNameValidation } from '@/hooks/group/useCreateGroup';
+import { brandColors } from '@/styles/colors';
 import { FieldPath, FieldValues, UseFormReturn } from 'react-hook-form';
 
 interface GroupNameInputProps<
@@ -58,7 +59,7 @@ export function GroupNameInput<
               }
             }}
             placeholder={placeholder}
-            className={`bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] ${
+            className={`bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border} ${
               fieldValue.length > 16 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : ''
             }`}
             disabled={disabled}

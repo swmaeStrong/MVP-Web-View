@@ -9,6 +9,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/shadcn/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { Badge } from '@/shadcn/ui/badge';
+import { brandColors } from '@/styles/colors';
 import { Globe, Lock, Hash, X, Plus, Save } from 'lucide-react';
 import * as React from 'react';
 import { UseFormReturn } from 'react-hook-form';
@@ -90,7 +91,7 @@ export default function GroupBasicSettings({
                     >
                       <ToggleGroupItem 
                         value="public" 
-                        className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50"
+                        className={`flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!${brandColors.accent.bg} data-[state=on]:!text-white hover:bg-gray-50`}
                       >
                         <Globe className="h-4 w-4" />
                         <div className="text-left">
@@ -100,7 +101,7 @@ export default function GroupBasicSettings({
                       </ToggleGroupItem>
                       <ToggleGroupItem 
                         value="private" 
-                        className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50"
+                        className={`flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!${brandColors.accent.bg} data-[state=on]:!text-white hover:bg-gray-50`}
                       >
                         <Lock className="h-4 w-4" />
                         <div className="text-left">
@@ -171,7 +172,7 @@ export default function GroupBasicSettings({
         <div className="flex justify-end">
           <Button
             type="submit"
-            className="gap-2 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
+            className={`gap-2 ${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90 transition-colors`}
             disabled={isSubmitting}
           >
             <Save className="h-4 w-4" />

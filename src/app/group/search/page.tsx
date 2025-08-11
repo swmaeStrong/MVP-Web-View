@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader } from '@/shadcn/ui/dialog';
 import { Input } from '@/shadcn/ui/input';
 import { Skeleton } from '@/shadcn/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
+import { brandColors } from '@/styles/colors';
 import { joinGroup } from '@/shared/api/post';
 import { useQueryClient } from '@tanstack/react-query';
 import { Globe, Hash, Lock, Search, Users } from 'lucide-react';
@@ -117,21 +118,21 @@ export default function FindTeamPage() {
                   placeholder="Search groups (by name, description, tags, or group leader's nickname)"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
+                  className="pl-10 h-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border}"
                 />
               </div>
             </div>
 
             {/* Filter Controls */}
             <ToggleGroup type="single" value={filterType} onValueChange={(value) => value && setFilterType(value as 'all' | 'public' | 'private')} className="h-10">
-              <ToggleGroupItem value="all" className="px-4 h-10 text-sm bg-white border border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50 rounded-l-md">
+              <ToggleGroupItem value="all" className={`px-4 h-10 text-sm bg-white border border-gray-200 text-gray-700 data-[state=on]:${brandColors.accent.bg} data-[state=on]:text-white data-[state=on]:${brandColors.accent.border} hover:bg-gray-50 rounded-l-md`}>
                 All
               </ToggleGroupItem>
-              <ToggleGroupItem value="public" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50">
+              <ToggleGroupItem value="public" className={`px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:${brandColors.accent.bg} data-[state=on]:text-white data-[state=on]:${brandColors.accent.border} hover:bg-gray-50`}>
                 <Globe className="h-3.5 w-3.5" />
                 Public
               </ToggleGroupItem>
-              <ToggleGroupItem value="private" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50 rounded-r-md">
+              <ToggleGroupItem value="private" className={`px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:${brandColors.accent.bg} data-[state=on]:text-white data-[state=on]:${brandColors.accent.border} hover:bg-gray-50 rounded-r-md`}>
                 <Lock className="h-3.5 w-3.5" />
                 Private
               </ToggleGroupItem>
@@ -262,7 +263,7 @@ export default function FindTeamPage() {
                   ) : (
                     <div className="bg-white dark:bg-gray-900 rounded-lg">
                       <Button
-                        className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors cursor-pointer shadow-lg"
+                        className={`${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90 transition-colors cursor-pointer shadow-lg`}
                         size="default"
                         onClick={() => handleViewDetail(group)}
                       >
@@ -290,7 +291,7 @@ export default function FindTeamPage() {
                   {searchQuery.trim() ? 'We couldn\'t find any groups matching your search criteria. Try adjusting your search terms.' : 'No groups available at the moment.'}
                 </p>
                 <Button 
-                  className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90"
+                  className={`${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90`}
                   onClick={() => router.push('/group/create')}
                 >
                   Create New Group
@@ -386,7 +387,7 @@ export default function FindTeamPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       disabled={isJoining}
-                      className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
+                      className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border}"
                       onPaste={(e) => {
                         // 복붙 명시적 허용
                         e.stopPropagation();
@@ -424,7 +425,7 @@ export default function FindTeamPage() {
                   </Button>
                   {!isGroupMember(selectedGroup.groupId) ? (
                     <Button
-                      className="flex-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
+                      className={`flex-1 ${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90 transition-colors`}
                       onClick={() => handleJoinGroup(selectedGroup)}
                       disabled={isJoining || (!selectedGroup.isPublic && !password)}
                     >

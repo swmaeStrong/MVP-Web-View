@@ -4,6 +4,7 @@ import { Button } from '@/shadcn/ui/button';
 import { FormControl, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
 import { Textarea } from '@/shadcn/ui/textarea';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { brandColors } from '@/styles/colors';
 import { Plus, Trash2 } from 'lucide-react';
 import { FieldPath, FieldValues, UseFormReturn } from 'react-hook-form';
 import { useRef, useCallback } from 'react';
@@ -109,7 +110,7 @@ export function GroundRulesInput<
                   onChange={(e) => updateRule(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, index)}
                   placeholder="Enter a ground rule... (Press Enter to add next rule)"
-                  className={`flex-1 min-h-[60px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] resize-none ${
+                  className={`flex-1 min-h-[60px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border} resize-none ${
                     rule.length > 30 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : ''
                   }`}
                   rows={2}

@@ -6,6 +6,7 @@ import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { Textarea } from '@/shadcn/ui/textarea';
 import { spacing } from '@/styles/design-system';
+import { brandColors } from '@/styles/colors';
 import { Check, Edit3, X } from 'lucide-react';
 import { useState } from 'react';
 
@@ -105,7 +106,7 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
                 <Textarea
                   value={editedDescription}
                   onChange={(e) => setEditedDescription(e.target.value)}
-                  className="h-20 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900"
+                  className={`h-20 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border} dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900`}
                   placeholder="Enter group description..."
                 />
                 <div className="flex gap-2 justify-end">
@@ -123,7 +124,7 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
                     size="sm"
                     onClick={handleSaveDescription}
                     disabled={isSaving || editedDescription.trim().length < 10}
-                    className="gap-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90"
+                    className={`gap-1 ${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90`}
                   >
                     <Check className="h-3 w-3" />
                     {isSaving ? 'Saving...' : 'Save'}
