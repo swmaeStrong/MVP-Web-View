@@ -11,6 +11,7 @@ import {
 } from '@/shadcn/ui/dialog';
 import { Textarea } from '@/shadcn/ui/textarea';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { brandColors } from '@/styles/colors';
 import { LucideIcon } from 'lucide-react';
 import * as React from 'react';
 
@@ -98,7 +99,7 @@ export default function ConfirmDialog({
     if (variant === 'destructive') {
       return 'bg-red-600 hover:bg-red-700 text-white';
     }
-    return 'bg-[#3F72AF] hover:bg-[#3F72AF]/90 text-white';
+    return `${brandColors.accent.bg} ${brandColors.accent.hover}/90 text-white`;
   };
 
   return (

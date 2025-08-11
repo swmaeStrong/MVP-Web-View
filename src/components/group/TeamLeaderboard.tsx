@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Separator } from '@/shadcn/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
 import { spacing } from '@/styles/design-system';
+import { brandColors } from '@/styles/colors';
 import { Clock, Info, RadioIcon } from 'lucide-react';
 
 interface TeamLeaderboardProps {
@@ -167,7 +168,7 @@ export default function TeamLeaderboard({ membersLeaderboard, groupMembers, isLo
             {membersLeaderboard.map((member) => {
               const isCurrentUser = member.userId === currentUser?.id;
               return (
-              <div key={member.userId} className={`p-4 rounded-md ${isCurrentUser ? 'bg-[#3F72AF]/10 dark:bg-[#3F72AF]/15' : 'bg-white dark:bg-white'} ${isCurrentUser ? 'border-[#3F72AF]/30' : getThemeClass('border')} border text-center relative`}>
+              <div key={member.userId} className={`p-4 rounded-md ${isCurrentUser ? `${brandColors.accent.light} dark:${brandColors.accent.bg}/15` : 'bg-white dark:bg-white'} ${isCurrentUser ? brandColors.accent.lightBorder : getThemeClass('border')} border text-center relative`}>
                 
                 {/* 아바타 */}
                 <UserProfileTooltip

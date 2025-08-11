@@ -14,6 +14,7 @@ import { Card, CardContent } from '@/shadcn/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
 import { Input } from '@/shadcn/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
+import { brandColors } from '@/styles/colors';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Globe, Hash, Lock, Plus, Target, TrendingUp, Users, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -146,7 +147,7 @@ export default function CreateGroupPage() {
                             <FormControl>
                               <Textarea
                                 placeholder="Describe your group's purpose and goals..."
-                                className="min-h-[100px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF]"
+                                className="min-h-[100px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border}"
                                 {...field}
                               />
                             </FormControl>
@@ -192,7 +193,7 @@ export default function CreateGroupPage() {
                             >
                               <ToggleGroupItem 
                                 value="public" 
-                                className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50"
+                                className={`flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!${brandColors.accent.bg} data-[state=on]:!text-white hover:bg-gray-50`}
                               >
                                 <Globe className="h-4 w-4" />
                                 <div className="text-left">
@@ -202,7 +203,7 @@ export default function CreateGroupPage() {
                               </ToggleGroupItem>
                               <ToggleGroupItem 
                                 value="private" 
-                                className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!bg-[#3F72AF] data-[state=on]:!text-white hover:bg-gray-50"
+                                className={`flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!${brandColors.accent.bg} data-[state=on]:!text-white hover:bg-gray-50`}
                               >
                                 <Lock className="h-4 w-4" />
                                 <div className="text-left">
@@ -286,7 +287,7 @@ export default function CreateGroupPage() {
                   </Button>
                   <Button
                     type="submit"
-                    className="flex-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90 transition-colors"
+                    className={`flex-1 ${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90 transition-colors`}
                     disabled={form.formState.isSubmitting || isCreatingGroup || isNameAvailable === false || isCheckingName}
                   >
                     {form.formState.isSubmitting || isCreatingGroup ? 'Creating...' : 'Create Group'}
@@ -471,7 +472,7 @@ function TagInput({ onAddTag, disabled }: { onAddTag: (tag: string) => void, dis
             }
           }}
           onKeyPress={handleKeyPress}
-          className={`flex-1 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] ${
+          className={`flex-1 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border} ${
             newTag.length > 12 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : ''
           }`}
           disabled={disabled}
@@ -480,7 +481,7 @@ function TagInput({ onAddTag, disabled }: { onAddTag: (tag: string) => void, dis
           type="button"
           onClick={handleAddTag}
           disabled={!newTag.trim() || disabled || newTag.length > 12}
-          className="bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90"
+          className={`${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90`}
         >
           <Plus className="h-4 w-4" />
         </Button>

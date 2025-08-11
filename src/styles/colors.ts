@@ -77,6 +77,16 @@ export const brandColors = {
     light: 'pink-50',
     text: 'pink-700',
   },
+  accent: {
+    solid: '#3F72AF',
+    bg: 'bg-[#3F72AF]',
+    text: 'text-[#3F72AF]',
+    border: 'border-[#3F72AF]',
+    ring: 'ring-[#3F72AF]',
+    hover: 'hover:bg-[#3F72AF]',
+    light: 'bg-[#3F72AF]/10',
+    lightBorder: 'border-[#3F72AF]/30',
+  },
 };
 
 // 카테고리별 통합 컬러 시스템 - 진행바, 배지, 인디케이터 등 모든 UI 요소에 사용

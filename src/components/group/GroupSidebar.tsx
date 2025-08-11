@@ -2,6 +2,7 @@
 
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
+import { brandColors } from '@/styles/colors';
 import { Plus, Search, Settings, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -119,8 +120,8 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
                     prefetch={true}
                     className={`flex items-center justify-between px-4 py-2 rounded-md transition-colors duration-150 ${
                       isGroupSelected
-                        ? `text-white bg-[#3F72AF]`
-                        : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10`
+                        ? `text-white ${brandColors.accent.bg}`
+                        : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:${brandColors.accent.bg}/10`
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -144,13 +145,13 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
                             prefetch={true}
                             className={`flex items-center gap-3 px-3 py-1.5 rounded transition-colors duration-150 relative ${
                               active
-                                ? `${getThemeTextColor('primary')} font-medium bg-[#3F72AF]/15`
-                                : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10`
+                                ? `${getThemeTextColor('primary')} font-medium ${brandColors.accent.bg}/15`
+                                : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:${brandColors.accent.bg}/10`
                             }`}
                           >
                             {/* Simple active indicator */}
                             <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                              active ? 'bg-[#3F72AF]' : 'bg-transparent'
+                              active ? brandColors.accent.bg : 'bg-transparent'
                             }`} />
                             
                             <Icon size={14} className="flex-shrink-0" />
@@ -179,8 +180,8 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
                 prefetch={true}
                 className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors duration-150 ${
                   active
-                    ? `text-white bg-[#3F72AF]`
-                    : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-[#3F72AF]/10`
+                    ? `text-white ${brandColors.accent.bg}`
+                    : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:${brandColors.accent.bg}/10`
                 }`}
               >
                 <Icon size={20} className="flex-shrink-0" />

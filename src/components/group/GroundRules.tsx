@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Separator } from '@/shadcn/ui/separator';
 import { Textarea } from '@/shadcn/ui/textarea';
 import { spacing } from '@/styles/design-system';
+import { brandColors } from '@/styles/colors';
 import { Check, Edit3, Plus, Trash2, X } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 
@@ -156,7 +157,7 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
                       value={rule}
                       onChange={(e) => handleRuleChange(index, e.target.value)}
                       onKeyDown={(e) => handleKeyDown(e, index)}
-                      className={`flex-1 min-h-[60px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-[#3F72AF] focus:border-[#3F72AF] dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900 resize-none ${
+                      className={`flex-1 min-h-[60px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border} dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900 resize-none ${
                         rule.length > 30 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : ''
                       }`}
                       placeholder="Enter a ground rule... (Press Enter to add next rule)"
@@ -229,7 +230,7 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
                   size="sm"
                   onClick={handleSave}
                   disabled={isSaving || editedRules.every(rule => rule.trim().length === 0)}
-                  className="gap-1 bg-[#3F72AF] text-white hover:bg-[#3F72AF]/90"
+                  className={`gap-1 ${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90`}
                 >
                   <Check className="h-3 w-3" />
                   {isSaving ? 'Saving...' : 'Save'}
