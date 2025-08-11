@@ -1,8 +1,8 @@
 'use client';
 
-import { useMemo, useRef, useCallback, useState } from 'react';
 import { useTheme } from '@/hooks/ui/useTheme';
 import type { SessionData } from '@/types/domains/usage/session';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 interface ChartData {
   session: string;
@@ -136,7 +136,10 @@ export const useSessionChart = ({
         cursor: 'pointer',
         transition: 'all 0.3s ease'
       },
-      onClick: () => onSessionSelect(payload.sessionData),
+      onClick: () => {
+        onSessionSelect(payload.sessionData);
+        scrollToSession(payload.sessionData.id);
+      },
       onMouseEnter: () => setHoveredSessionId(payload.sessionData.id),
       onMouseLeave: () => setHoveredSessionId(null),
       textProps: {
@@ -151,6 +154,26 @@ export const useSessionChart = ({
       }
     };
   }, [selectedSession, isDarkMode, hoveredSessionId, onSessionSelect]);
+
+  // Scroll to specific session
+  const scrollToSession = useCallback((sessionId: number) => {
+    if (chartContainerRef.current && allChartData.length > 0) {
+      const sessionIndex = allChartData.findIndex(item => item.sessionData.id === sessionId);
+      
+      if (sessionIndex !== -1) {
+        const scrollContainer = chartContainerRef.current.closest('[data-radix-scroll-area-viewport]');
+        if (scrollContainer) {
+          const barWidth = 110;
+          const scrollPosition = sessionIndex * barWidth - (scrollContainer.clientWidth / 2) + (barWidth / 2);
+          
+          scrollContainer.scrollTo({
+            left: Math.max(0, scrollPosition),
+            behavior: 'smooth'
+          });
+        }
+      }
+    }
+  }, [allChartData]);
 
   // Auto-scroll to most recent session
   const scrollToMostRecent = useCallback(() => {
@@ -189,6 +212,7 @@ export const useSessionChart = ({
     getCustomBarProps,
     chartContainerRef,
     scrollToMostRecent,
+    scrollToSession,
     resetScroll,
     hoveredSessionId,
     setHoveredSessionId,

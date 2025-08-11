@@ -37,6 +37,7 @@ export const QUERY_KEYS = {
   MY_GROUPS: 'myGroups',
   GROUP_DETAIL: 'groupDetail',
   GROUP_NAME_CHECK: 'groupNameCheck',
+  GROUP_SEARCH: 'groupSearch',
 } as const;
 
 // =============================================================================
@@ -200,6 +201,13 @@ export const groupNameCheckQueryKey = (groupName: string) => [
 ] as const;
 
 /**
+ * 그룹 검색 쿼리키 생성
+ */
+export const groupSearchQueryKey = () => [
+  QUERY_KEYS.GROUP_SEARCH,
+] as const;
+
+/**
  * 현재 사용자 정보 쿼리키 생성
  */
 export const currentUserQueryKey = () => [
@@ -237,6 +245,7 @@ export type QueryKeyTypes = {
   myGroups: ReturnType<typeof myGroupsQueryKey>;
   groupDetail: ReturnType<typeof groupDetailQueryKey>;
   groupNameCheck: ReturnType<typeof groupNameCheckQueryKey>;
+  groupSearch: ReturnType<typeof groupSearchQueryKey>;
   otherUserInfo: ReturnType<typeof otherUserInfoQueryKey>;
 };
 
@@ -270,5 +279,5 @@ export const INVALIDATION_KEYS = {
   ALL_STREAK: [QUERY_KEYS.STREAK_CALENDAR, QUERY_KEYS.STREAK_COUNT],
   
   // 그룹 관련 모든 쿼리 무효화
-  ALL_GROUPS: [QUERY_KEYS.MY_GROUPS, QUERY_KEYS.GROUP_DETAIL, QUERY_KEYS.GROUP_NAME_CHECK],
+  ALL_GROUPS: [QUERY_KEYS.MY_GROUPS, QUERY_KEYS.GROUP_DETAIL, QUERY_KEYS.GROUP_NAME_CHECK, QUERY_KEYS.GROUP_SEARCH],
 } as const;

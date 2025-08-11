@@ -21,9 +21,9 @@ export const GROUP_VALIDATION_MESSAGES = {
 // 공통 성공/에러 메시지
 export const GROUP_ACTION_MESSAGES = {
   CREATE: {
-    LOADING: '그룹을 생성하고 있습니다...',
-    SUCCESS: '그룹이 성공적으로 생성되었습니다!',
-    ERROR: '그룹 생성에 실패했습니다.',
+    LOADING: 'Creating group...',
+    SUCCESS: 'Group created successfully!',
+    ERROR: 'Failed to create group.',
   },
   UPDATE: {
     LOADING: 'Updating group information...',
