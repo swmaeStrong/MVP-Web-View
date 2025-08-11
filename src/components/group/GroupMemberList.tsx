@@ -2,10 +2,9 @@
 
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
-import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
-import { Crown, Users, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { Crown, Users } from 'lucide-react';
+import { useMemo } from 'react';
 
 interface GroupMemberListProps {
   owner: Group.GroupUserInfo;
@@ -25,31 +24,12 @@ export default function GroupMemberList({
   tags
 }: GroupMemberListProps) {
   const { getThemeTextColor, getCommonCardClass, getThemeClass } = useTheme();
-  const [currentPage, setCurrentPage] = useState(1);
-  const membersPerPage = 10;
 
   // 오너를 제외한 일반 멤버들
   const regularMembers = useMemo(() => 
     members.filter(member => member.userId !== owner.userId), 
     [members, owner.userId]
   );
-
-  // 페이지네이션 계산
-  const totalPages = Math.ceil(regularMembers.length / membersPerPage);
-  const startIndex = (currentPage - 1) * membersPerPage;
-  const paginatedMembers = regularMembers.slice(startIndex, startIndex + membersPerPage);
-
-  const goToNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const goToPrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
 
   return (
     <div className="lg:col-span-2 space-y-6">
@@ -109,43 +89,14 @@ export default function GroupMemberList({
       </Card>
 
       {/* 멤버 목록 */}
-      <Card className={getCommonCardClass()}>
+      <Card className={`${getCommonCardClass()}`}>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-              Group Members ({members.length})
-            </CardTitle>
-            {totalPages > 1 && (
-              <div className="flex items-center gap-2">
-                <span className={`text-sm ${getThemeTextColor('secondary')}`}>
-                  Page {currentPage} of {totalPages}
-                </span>
-                <div className="flex gap-1">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={goToPrevPage}
-                    disabled={currentPage === 1}
-                    className="h-6 w-6 p-0"
-                  >
-                    <ChevronLeft size={14} />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={goToNextPage}
-                    disabled={currentPage === totalPages}
-                    className="h-6 w-6 p-0"
-                  >
-                    <ChevronRight size={14} />
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
+          <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
+            Group Members ({members.length})
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
+          <div className="space-y-2 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
             {/* 그룹장 */}
             <div className={`flex items-center justify-between p-3 rounded-lg ${
               currentUserId && owner.userId === currentUserId
@@ -170,8 +121,8 @@ export default function GroupMemberList({
               <Crown className="h-5 w-5 text-amber-500" />
             </div>
             
-            {/* 일반 멤버 (페이지네이션) */}
-            {paginatedMembers.map((member) => {
+            {/* 일반 멤버 */}
+            {regularMembers.map((member) => {
               const isCurrentUser = currentUserId && member.userId === currentUserId;
               
               return (

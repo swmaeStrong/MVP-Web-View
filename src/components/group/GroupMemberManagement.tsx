@@ -11,6 +11,7 @@ interface GroupMemberManagementProps {
   owner: Group.GroupUserInfo;
   members: Group.GroupMemberInfo[];
   currentUserId?: string;
+  isGroupOwner?: boolean;
   onTransferOwnership: (member: Group.GroupMemberInfo) => void;
   onBanMember: (member: Group.GroupMemberInfo) => void;
 }
@@ -19,6 +20,7 @@ export default function GroupMemberManagement({
   owner,
   members,
   currentUserId,
+  isGroupOwner = false,
   onTransferOwnership,
   onBanMember
 }: GroupMemberManagementProps) {
@@ -32,7 +34,7 @@ export default function GroupMemberManagement({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
+        <div className="space-y-2 h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
           {/* 그룹장 */}
           <div className={`flex items-center justify-between p-2 rounded-lg ${
             currentUserId && owner.userId === currentUserId
@@ -93,31 +95,33 @@ export default function GroupMemberManagement({
                 </div>
               
                 <div className="flex items-center">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 text-gray-600 hover:text-gray-700"
-                      >
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-44">
-                      <DropdownMenuItem
-                        className="cursor-pointer"
-                        onClick={() => onTransferOwnership(member)}
-                      >
-                        Transfer Ownership
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className="text-red-600 focus:text-red-700 cursor-pointer"
-                        onClick={() => onBanMember(member)}
-                      >
-                        Remove Member
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  {isGroupOwner && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-8 w-8 text-gray-600 hover:text-gray-700"
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-44">
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={() => onTransferOwnership(member)}
+                        >
+                          Transfer Ownership
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="text-red-600 focus:text-red-700 cursor-pointer"
+                          onClick={() => onBanMember(member)}
+                        >
+                          Remove Member
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                 </div>
               </div>
             );
