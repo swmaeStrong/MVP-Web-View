@@ -3,12 +3,12 @@
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import PageLoader from '@/components/common/PageLoader';
 import StateDisplay from '@/components/common/StateDisplay';
-import GroupActions from '@/components/group/GroupActions';
-import GroupBasicSettings from '@/components/group/GroupBasicSettings';
-import GroupHeader from '@/components/group/GroupHeader';
-import GroupInfo from '@/components/group/GroupInfo';
-import GroupMemberList from '@/components/group/GroupMemberList';
-import GroupMemberManagement from '@/components/group/GroupMemberManagement';
+import GroupActions from '@/components/group/setting/GroupActions';
+import GroupBasicSettings from '@/components/group/setting/GroupBasicSettings';
+import GroupHeader from '@/components/group/setting/GroupHeader';
+import GroupInfo from '@/components/group/setting/GroupInfo';
+import GroupMemberList from '@/components/group/setting/GroupMemberList';
+import GroupMemberManagement from '@/components/group/setting/GroupMemberManagement';
 import { GROUP_VALIDATION_MESSAGES } from '@/config/constants';
 import { useBanMember, useDeleteGroup, useLeaveGroup, useTransferOwnership, useUpdateGroup } from '@/hooks/group/useGroupSettings';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';

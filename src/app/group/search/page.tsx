@@ -21,7 +21,7 @@ import { Globe, Hash, Lock, Search, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import EventBanner from '../../../components/group/EventBanner';
+import EventBanner from '@/components/group/search/EventBanner';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
@@ -125,14 +125,14 @@ export default function FindTeamPage() {
 
             {/* Filter Controls */}
             <ToggleGroup type="single" value={filterType} onValueChange={(value) => value && setFilterType(value as 'all' | 'public' | 'private')} className="h-10">
-              <ToggleGroupItem value="all" className={`px-4 h-10 text-sm bg-white border border-gray-200 text-gray-700 data-[state=on]:${brandColors.accent.bg} data-[state=on]:text-white data-[state=on]:${brandColors.accent.border} hover:bg-gray-50 rounded-l-md`}>
+              <ToggleGroupItem value="all" className="px-4 h-10 text-sm bg-white border border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50 rounded-l-md">
                 All
               </ToggleGroupItem>
-              <ToggleGroupItem value="public" className={`px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:${brandColors.accent.bg} data-[state=on]:text-white data-[state=on]:${brandColors.accent.border} hover:bg-gray-50`}>
+              <ToggleGroupItem value="public" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50">
                 <Globe className="h-3.5 w-3.5" />
                 Public
               </ToggleGroupItem>
-              <ToggleGroupItem value="private" className={`px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:${brandColors.accent.bg} data-[state=on]:text-white data-[state=on]:${brandColors.accent.border} hover:bg-gray-50 rounded-r-md`}>
+              <ToggleGroupItem value="private" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50 rounded-r-md">
                 <Lock className="h-3.5 w-3.5" />
                 Private
               </ToggleGroupItem>

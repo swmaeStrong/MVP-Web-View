@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { getLastGroupTab } from '@/hooks/group/useLastGroupTab';
 
 export default function GroupPage() {
   const router = useRouter();
@@ -17,14 +18,7 @@ export default function GroupPage() {
 
     const performRedirect = () => {
       try {
-        // localStorage에서 직접 읽기
-        const storedData = localStorage.getItem('group-tab-storage');
-        let lastTab = null;
-
-        if (storedData) {
-          const parsedData = JSON.parse(storedData);
-          lastTab = parsedData.state?.lastVisitedTab;
-        }
+        const lastTab = getLastGroupTab();
 
         if (lastTab && lastTab.startsWith('/group/')) {
           const validGroupPaths = ['/group/search', '/group/create'];
