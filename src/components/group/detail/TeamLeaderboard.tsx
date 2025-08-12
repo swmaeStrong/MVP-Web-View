@@ -54,8 +54,8 @@ export default function TeamLeaderboard({ membersLeaderboard, groupMembers, isLo
       };
     }
     
-    // 세션이 끝났으면 마지막 활동 시간 표시
-    const timeDiff = now - lastActivity;
+    // 세션이 끝났으면 세션 종료 시간 기준으로 표시 (lastActivityTimestamp + sessionMinutes)
+    const timeDiff = now - sessionEndTime;
     let timeText = '';
     
     if (timeDiff < 60) {
