@@ -2,23 +2,22 @@
 
 import { GroundRulesInput } from '@/components/forms/GroundRulesInput';
 import { GroupNameInput } from '@/components/forms/GroupNameInput';
+import TagInput from '@/components/group/create/TagInput';
+import GroupPreview from '@/components/group/create/GroupPreview';
 import { GROUP_VALIDATION_MESSAGES } from '@/config/constants';
 import { useGroupNameValidation, useCreateGroupWithToast } from '@/hooks/group/useCreateGroup';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { CreateGroupFormData, createGroupSchema } from '@/schemas/groupSchema';
-import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
-import { Input } from '@/shadcn/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { brandColors } from '@/styles/colors';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Globe, Hash, Lock, Plus, Target, TrendingUp, Users, X } from 'lucide-react';
+import { Globe, Hash, Lock, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { Textarea } from '../../../shadcn/ui/textarea';
@@ -193,7 +192,7 @@ export default function CreateGroupPage() {
                             >
                               <ToggleGroupItem 
                                 value="public" 
-                                className={`flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!${brandColors.accent.bg} data-[state=on]:!text-white hover:bg-gray-50`}
+                                className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white hover:bg-gray-50"
                               >
                                 <Globe className="h-4 w-4" />
                                 <div className="text-left">
@@ -203,7 +202,7 @@ export default function CreateGroupPage() {
                               </ToggleGroupItem>
                               <ToggleGroupItem 
                                 value="private" 
-                                className={`flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!${brandColors.accent.bg} data-[state=on]:!text-white hover:bg-gray-50`}
+                                className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white hover:bg-gray-50"
                               >
                                 <Lock className="h-4 w-4" />
                                 <div className="text-left">
@@ -298,204 +297,14 @@ export default function CreateGroupPage() {
           </div>
 
           {/* Preview */}
-          <div className="lg:col-span-1 space-y-6">
-            <Card className={getCommonCardClass()}>
-              <CardContent className="p-6">
-                <div className={`text-lg font-semibold ${getThemeTextColor('primary')} mb-4`}>
-                  Preview
-                </div>
-                
-                <div className="space-y-4">
-                  {/* Group Header */}
-                  <div className="flex items-center gap-6">
-                    <Avatar className="w-12 h-12">
-                      <AvatarFallback className={`text-lg font-bold ${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`}>
-                        {watchedValues.groupName?.charAt(0) || 'G'}
-                      </AvatarFallback>
-                    </Avatar>
-                    
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-1">
-                        <div className={`text-sm font-bold ${getThemeTextColor('primary')} truncate`}>
-                          {watchedValues.groupName || 'Group Name'}
-                        </div>
-                        <Badge variant={watchedValues.isPublic === 'public' ? "default" : "secondary"} className={`gap-1 flex-shrink-0 text-xs ${
-                          watchedValues.isPublic === 'public'
-                            ? 'bg-green-100 text-green-700 hover:bg-green-100'
-                            : 'bg-amber-100 text-amber-700 hover:bg-amber-100'
-                        }`}>
-                          {watchedValues.isPublic === 'public' ? (
-                            <>
-                              <Globe className="h-2 w-2" />
-                              Public
-                            </>
-                          ) : (
-                            <>
-                              <Lock className="h-2 w-2" />
-                              Private
-                            </>
-                          )}
-                        </Badge>
-                      </div>
-                      
-                    </div>
-                  </div>
-                  
-                  {/* Description */}
-                  <p className={`text-xs ${getThemeTextColor('secondary')} leading-relaxed whitespace-pre-wrap`}>
-                    {watchedValues.description || 'Group description will appear here...'}
-                  </p>
-                  
-                  {/* Ground Rule */}
-                  {watchedValues.groundRules && watchedValues.groundRules.some(rule => rule.trim().length > 0) && (
-                    <div>
-                      <div className={`text-xs font-semibold ${getThemeTextColor('primary')} mb-2`}>
-                        Ground Rules
-                      </div>
-                      <div className="space-y-2">
-                        {watchedValues.groundRules
-                          .filter(rule => rule.trim().length > 0)
-                          .map((rule, index) => (
-                            <div key={index} className={`text-xs ${getThemeTextColor('secondary')} ${getThemeClass('componentSecondary')} p-2 rounded flex items-start gap-2`}>
-                              <span className={`font-semibold ${getThemeTextColor('primary')} flex-shrink-0`}>
-                                {index + 1}.
-                              </span>
-                              <span>{rule}</span>
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Tags */}
-                  {watchedValues.tags && watchedValues.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {watchedValues.tags.map((tag) => (
-                        <Badge 
-                          key={tag} 
-                          variant="outline" 
-                          className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
-                        >
-                          <Hash className="h-2 w-2" />
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Group Benefits */}
-            <Card className={getCommonCardClass()}>
-              <CardContent className="p-6">
-                <div className={`text-lg font-semibold ${getThemeTextColor('primary')} mb-4`}>
-                  Group Benefits
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="flex items-start gap-4">
-                    <Users className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')}`} />
-                    <div>
-                      <div className={`font-medium ${getThemeTextColor('primary')}`}>
-                        Collaborate
-                      </div>
-                      <div className={`text-sm ${getThemeTextColor('secondary')}`}>
-                        Work together on projects and share progress
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-4">
-                    <Target className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')}`} />
-                    <div>
-                      <div className={`font-medium ${getThemeTextColor('primary')}`}>
-                        Set Common Goals
-                      </div>
-                      <div className={`text-sm ${getThemeTextColor('secondary')}`}>
-                        Create shared objectives and track achievement progress
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-4">
-                    <TrendingUp className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')}`} />
-                    <div>
-                      <div className={`font-medium ${getThemeTextColor('primary')}`}>
-                        Monitor Progress
-                      </div>
-                      <div className={`text-sm ${getThemeTextColor('secondary')}`}>
-                        View group productivity and goal completion rates
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <GroupPreview 
+            groupName={watchedValues.groupName}
+            description={watchedValues.description}
+            isPublic={watchedValues.isPublic}
+            groundRules={watchedValues.groundRules}
+            tags={watchedValues.tags}
+          />
         </div>
-    </div>
-  );
-}
-
-// Tag Input Component
-function TagInput({ onAddTag, disabled }: { onAddTag: (tag: string) => void, disabled: boolean }) {
-  const { getThemeTextColor } = useTheme();
-  const [newTag, setNewTag] = React.useState('');
-
-  const handleAddTag = () => {
-    const trimmedTag = newTag.trim();
-    if (trimmedTag && trimmedTag.length <= 12) {
-      onAddTag(trimmedTag);
-      setNewTag('');
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddTag();
-    }
-  };
-
-  return (
-    <div className="space-y-1">
-      <div className="flex gap-2">
-        <Input
-          type="text"
-          placeholder="Add a tag (e.g., React, Python)..."
-          value={newTag}
-          onChange={(e) => {
-            // 12글자 제한
-            if (e.target.value.length <= 12) {
-              setNewTag(e.target.value);
-            }
-          }}
-          onKeyPress={handleKeyPress}
-          className={`flex-1 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border} ${
-            newTag.length > 12 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : ''
-          }`}
-          disabled={disabled}
-        />
-        <Button
-          type="button"
-          onClick={handleAddTag}
-          disabled={!newTag.trim() || disabled || newTag.length > 12}
-          className={`${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90`}
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
-      </div>
-      
-      <div className="flex justify-end">
-        <span className={`text-xs ${
-          newTag.length > 12 ? 'text-red-500' : 
-          newTag.length > 10 ? 'text-yellow-600' : 
-          getThemeTextColor('secondary')
-        }`}>
-          {newTag.length}/12
-        </span>
-      </div>
     </div>
   );
 }

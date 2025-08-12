@@ -2,16 +2,21 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { useGroupTabStore } from '@/stores/groupTabStore';
+
+const LAST_GROUP_TAB_KEY = 'last-visited-group-tab';
 
 export function useLastGroupTab() {
   const pathname = usePathname();
-  const setLastVisitedTab = useGroupTabStore((state) => state.setLastVisitedTab);
 
   useEffect(() => {
-    // Save current group tab to Zustand store with persist if it's a group page
+    // Save current group tab to localStorage if it's a group page
     if (pathname && pathname.startsWith('/group/')) {
-      setLastVisitedTab(pathname);
+      localStorage.setItem(LAST_GROUP_TAB_KEY, pathname);
     }
-  }, [pathname, setLastVisitedTab]);
+  }, [pathname]);
+}
+
+export function getLastGroupTab(): string | null {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(LAST_GROUP_TAB_KEY);
 }

@@ -5,8 +5,6 @@
 import { setRccToken } from '../config/api/csrConfig';
 import { setOsEnv } from '../config/api/osConfig';
 import { setRscToken } from '../config/api/ssrConfig';
-import { getUserInfo } from '../shared/api/get';
-import { useUserStore } from '../stores/userStore';
 
 // TypeScript 타입 정의
 declare global {
@@ -33,26 +31,9 @@ const initializeTheme = () => {
 
 /**
  * 유저 정보 초기화 함수
+ * React Query로 전환된 후에는 별도 초기화 불필요
+ * 컴포넌트에서 useCurrentUser 훅을 사용하면 자동으로 로드됨
  */
-const initializeUserInfo = async () => {
-  try {
-    console.log('initializeUserInfo');
-    const userInfo = await getUserInfo();
-
-    if (userInfo && userInfo.userId && userInfo.nickname) {
-      // 스토어 직접 접근하여 유저 정보 설정
-      useUserStore.getState().setCurrentUser({
-        id: userInfo.userId,
-        nickname: userInfo.nickname,
-      });
-      return userInfo;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    throw error;
-  }
-};
 
 /**
  * 테마 초기화 내보내기 (필요시 다른 곳에서 호출 가능)
@@ -121,8 +102,8 @@ if (typeof window !== 'undefined') {
       await setRccToken(token);
       await setRscToken(token);
       await setOsEnv(osEnv);
-      // 유저 정보 초기화 (일반 함수 호출)
-      await initializeUserInfo();
+      // React Query로 전환된 후 유저 정보는 컴포넌트에서 useCurrentUser 훅으로 자동 로드
+      // await initializeUserInfo(); // 더 이상 필요없음
 
       // 테마 초기화 및 리스너 설정
       initializeTheme();

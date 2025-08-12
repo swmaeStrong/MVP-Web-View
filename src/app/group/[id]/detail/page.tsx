@@ -2,10 +2,10 @@
 
 import DateNavigation from '@/components/common/DateNavigation';
 import StateDisplay from '@/components/common/StateDisplay';
-import GroundRules from '@/components/group/GroundRules';
-import TeamCard from '@/components/group/TeamCard';
-import TeamLeaderboard from '@/components/group/TeamLeaderboard';
-import TodayGoals from '@/components/group/TodayGoals';
+import GroundRules from '@/components/group/detail/GroundRules';
+import TeamCard from '@/components/group/detail/TeamCard';
+import TeamLeaderboard from '@/components/group/detail/TeamLeaderboard';
+import TodayGoals from '@/components/group/detail/TodayGoals';
 import { useUpdateGroup } from '@/hooks/group/useGroupSettings';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
