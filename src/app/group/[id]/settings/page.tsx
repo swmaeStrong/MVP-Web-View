@@ -294,6 +294,7 @@ export default function GroupSettingsPage() {
             owner={groupDetail.owner}
             members={groupDetail.members}
             currentUserId={currentUser?.id}
+            isGroupOwner={groupDetail.owner.userId === currentUser?.id}
             onTransferOwnership={(member) => {
               setSelectedMember(member);
               setShowTransferDialog(true);
