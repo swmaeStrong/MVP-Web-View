@@ -5,7 +5,7 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 // namespace로 변경됨
 import { getKSTDateString } from '@/utils/timezone';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 // 컴포넌트 임포트
 import {
@@ -16,7 +16,6 @@ import SessionCarousel from '@/components/statistics/CycleCarousel';
 import SessionTimelineView from '@/components/statistics/SessionTimelineView';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
 import WeeklyStreak from '@/components/statistics/WeeklyStreak';
-import { useInitUser } from '@/hooks/common/useInitUser';
 // generateMockCycles import 제거 - API 사용으로 대체됨
 import StateDisplay from '../../components/common/StateDisplay';
 import TotalTimeCard from '../../components/statistics/DateNavigationCard';
@@ -32,19 +31,10 @@ export default function StatisticsPage() {
   const [selectedDate, setSelectedDate] = useState(getKSTDateString());
   // Hook 순서를 항상 동일하게 유지
   const currentUser = useCurrentUserData();
-  const { initializeUser } = useInitUser();
   const { getThemeClass } = useTheme();
   const [selectedStreak, setSelectedStreak] = useState<'weekly' | 'monthly'>('weekly');
-  // Handle user initialization with useEffect
-  useEffect(() => {
-    if (!currentUser) {
-      console.log('🔄 사용자 정보가 없어 초기화 시도...');
-      initializeUser().catch(error => {
-        console.error('❌ 사용자 초기화 실패:', error);
-      });
-    }
-  }, [currentUser, initializeUser]);
 
+  
   // 선택된 날짜의 통계 데이터 조회
   const {
     data: dailyData,
