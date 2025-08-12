@@ -192,7 +192,7 @@ export default function CreateGroupPage() {
                             >
                               <ToggleGroupItem 
                                 value="public" 
-                                className={`flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!${brandColors.accent.bg} data-[state=on]:!text-white hover:bg-gray-50`}
+                                className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white hover:bg-gray-50"
                               >
                                 <Globe className="h-4 w-4" />
                                 <div className="text-left">
@@ -202,7 +202,7 @@ export default function CreateGroupPage() {
                               </ToggleGroupItem>
                               <ToggleGroupItem 
                                 value="private" 
-                                className={`flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:!${brandColors.accent.bg} data-[state=on]:!text-white hover:bg-gray-50`}
+                                className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white hover:bg-gray-50"
                               >
                                 <Lock className="h-4 w-4" />
                                 <div className="text-left">
