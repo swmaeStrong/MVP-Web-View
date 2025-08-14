@@ -344,5 +344,43 @@ export const categoryColors = {
   },
 };
 
+// 세션 타임라인 색상 시스템
+export const sessionTimelineColors = {
+  work: {
+    hex: '#3F72AF',
+    bg: 'bg-[#3F72AF]',
+    text: 'text-[#3F72AF]',
+  },
+  distraction: {
+    hex: '#C2D1E5',
+    bg: 'bg-[#C2D1E5]',
+    text: 'text-[#C2D1E5]',
+  },
+  afk: {
+    hex: '#939397',
+    bg: 'bg-[#939397]',
+    text: 'text-[#939397]',
+  },
+};
+
+// 스트릭/활동 색상 시스템
+export const streakColors = {
+  active: {
+    hex: '#3F72AF',
+    bg: 'bg-[#3F72AF]',
+    text: 'text-[#3F72AF]',
+  },
+  today: {
+    hex: '#3F72AF',
+    bg: 'bg-[#3F72AF]',
+    text: 'text-[#3F72AF]',
+  },
+  past: {
+    hex: '#A8C5E8', // 연한 파란색
+    bg: 'bg-[#A8C5E8]',
+    text: 'text-[#A8C5E8]',
+  },
+};
+
 
 

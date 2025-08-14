@@ -2,6 +2,7 @@
 
 import { useTheme } from '@/hooks/ui/useTheme';
 import type { SessionData } from '@/types/domains/usage/session';
+import { sessionTimelineColors } from '@/styles/colors';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 interface ChartData {
@@ -127,8 +128,8 @@ export const useSessionChart = ({
       y: adjustedY,
       width,
       height: adjustedHeight,
-      fill: isSelected ? (isDarkMode ? '#1e3a8a' : '#1e40af') : payload.fill,
-      stroke: isSelected ? (isDarkMode ? '#60a5fa' : '#3b82f6') : 'transparent',
+      fill: isSelected ? sessionTimelineColors.work.hex : payload.fill,
+      stroke: isSelected ? sessionTimelineColors.work.hex : 'transparent',
       strokeWidth: isSelected ? 2 : 0,
       rx: 4,
       ry: 4,
