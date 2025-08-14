@@ -363,5 +363,24 @@ export const sessionTimelineColors = {
   },
 };
 
+// 스트릭/활동 색상 시스템
+export const streakColors = {
+  active: {
+    hex: '#3F72AF',
+    bg: 'bg-[#3F72AF]',
+    text: 'text-[#3F72AF]',
+  },
+  today: {
+    hex: '#3F72AF',
+    bg: 'bg-[#3F72AF]',
+    text: 'text-[#3F72AF]',
+  },
+  past: {
+    hex: '#A8C5E8', // 연한 파란색
+    bg: 'bg-[#A8C5E8]',
+    text: 'text-[#A8C5E8]',
+  },
+};
+
 
 
