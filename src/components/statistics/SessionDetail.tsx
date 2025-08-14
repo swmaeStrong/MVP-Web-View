@@ -3,6 +3,7 @@
 import { useSessionTimeline } from '@/hooks/ui/useSessionTimeline';
 import { useTheme } from '@/hooks/ui/useTheme';
 import type { SessionData } from '@/types/domains/usage/session';
+import { sessionTimelineColors } from '@/styles/colors';
 import { Target } from 'lucide-react';
 import React from 'react';
 
@@ -121,7 +122,7 @@ const ProgressBar: React.FC<{
                     className="h-full" 
                     style={{ 
                       width: `${workPercent}%`,
-                      backgroundColor: '#5ed462'
+                      backgroundColor: sessionTimelineColors.work.hex
                     }}
                   />
                 )}
@@ -130,14 +131,17 @@ const ProgressBar: React.FC<{
                     className="h-full"
                     style={{ 
                       width: `${distractionPercent}%`,
-                      backgroundColor: '#ff5871'
+                      backgroundColor: sessionTimelineColors.distraction.hex
                     }}
                   />
                 )}
                 {afkPercent > 0 && (
                   <div 
-                    className="bg-yellow-500 h-full" 
-                    style={{ width: `${afkPercent}%` }}
+                    className="h-full" 
+                    style={{ 
+                      width: `${afkPercent}%`,
+                      backgroundColor: sessionTimelineColors.afk.hex
+                    }}
                   />
                 )}
               </div>
@@ -163,16 +167,16 @@ const ProgressBar: React.FC<{
       {/* Legend */}
       <div className="flex items-center justify-center gap-4 mt-3 flex-wrap">
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded" style={{ backgroundColor: '#5ed462' }}></div>
+          <div className="w-2 h-2 rounded" style={{ backgroundColor: sessionTimelineColors.work.hex }}></div>
           <span className={`text-xs ${getThemeTextColor('secondary')}`}>Work</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded" style={{ backgroundColor: '#ff5871' }}></div>
+          <div className="w-2 h-2 rounded" style={{ backgroundColor: sessionTimelineColors.distraction.hex }}></div>
           <span className={`text-xs ${getThemeTextColor('secondary')}`}>Distraction</span>
         </div>
         {segments.some(segment => segment.afkTime > 0) && (
           <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded bg-yellow-500"></div>
+            <div className="w-2 h-2 rounded" style={{ backgroundColor: sessionTimelineColors.afk.hex }}></div>
             <span className={`text-xs ${getThemeTextColor('secondary')}`}>AFK</span>
           </div>
         )}

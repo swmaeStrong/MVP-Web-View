@@ -2,6 +2,7 @@
 
 import { useTheme } from '@/hooks/ui/useTheme';
 import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
+import { sessionTimelineColors } from '@/styles/colors';
 import { getKSTDateString } from '@/utils/timezone';
 import React, { memo, useEffect, useState } from 'react';
 import 'swiper/css';
@@ -100,11 +101,11 @@ const SessionCarousel = memo(function SessionCarousel({
       const getCategoryColor = (type: string) => {
         switch (type) {
           case 'work':
-            return 'bg-purple-600'; // 보라색
+            return sessionTimelineColors.work.bg;
           case 'distraction':
-            return 'bg-red-500'; // 빨간색
+            return sessionTimelineColors.distraction.bg;
           case 'afk':
-            return 'bg-yellow-500'; // 노란색
+            return sessionTimelineColors.afk.bg;
           default:
             return 'bg-gray-400';
             }
@@ -158,11 +159,11 @@ const SessionCarousel = memo(function SessionCarousel({
   const getSegmentColorClass = (segment: CycleSegment) => {
     switch (segment.type) {
       case 'work':
-        return 'bg-purple-600'; // 보라색
+        return sessionTimelineColors.work.bg;
       case 'distraction':
-        return 'bg-red-500'; // 빨간색
+        return sessionTimelineColors.distraction.bg;
       case 'afk':
-        return 'bg-yellow-500'; // 노란색
+        return sessionTimelineColors.afk.bg;
       default:
         return 'bg-gray-400';
     }
@@ -278,16 +279,16 @@ const SessionCarousel = memo(function SessionCarousel({
           </div>
           <div className="flex items-center justify-center gap-2 mt-1 flex-wrap">
             <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded bg-purple-500 flex-shrink-0"></div>
+              <div className="w-2 h-2 rounded flex-shrink-0" style={{ backgroundColor: sessionTimelineColors.work.hex }}></div>
               <span className={`text-xs ${getThemeClass('textSecondary')}`}>Work ({workTime}m)</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded bg-red-500 flex-shrink-0"></div>
+              <div className="w-2 h-2 rounded flex-shrink-0" style={{ backgroundColor: sessionTimelineColors.distraction.hex }}></div>
               <span className={`text-xs ${getThemeClass('textSecondary')}`}>Distraction ({cycle.breakTime}m)</span>
             </div>
             {cycle.afkTime > 0 && (
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 rounded bg-yellow-500 flex-shrink-0"></div>
+                <div className="w-2 h-2 rounded flex-shrink-0" style={{ backgroundColor: sessionTimelineColors.afk.hex }}></div>
                 <span className={`text-xs ${getThemeClass('textSecondary')}`}>AFK ({cycle.afkTime}m)</span>
               </div>
             )}

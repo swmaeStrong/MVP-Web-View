@@ -2,6 +2,7 @@
 
 import { useTheme } from '@/hooks/ui/useTheme';
 import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
+import { sessionTimelineColors } from '@/styles/colors';
 import { ArrowLeft, Clock, Coffee, UserX } from 'lucide-react';
 import React from 'react';
 
@@ -63,11 +64,11 @@ export default function InlineTimeline({ cycles, date, onBack, showHeader = true
   const getSegmentColor = (segment: CycleSegment) => {
     switch (segment.type) {
       case 'work':
-        return '#9333ea'; // 보라색
+        return sessionTimelineColors.work.hex;
       case 'distraction':
-        return '#ef4444'; // 빨간색
+        return sessionTimelineColors.distraction.hex;
       case 'afk':
-        return '#eab308'; // 노란색
+        return sessionTimelineColors.afk.hex;
       default:
         return '#e5e5e5';
     }
@@ -141,16 +142,16 @@ export default function InlineTimeline({ cycles, date, onBack, showHeader = true
             {/* Summary */}
             <div className="flex items-center gap-4 text-sm">
               <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-purple-500"></div>
+                <div className="w-3 h-3 rounded" style={{ backgroundColor: sessionTimelineColors.work.hex }}></div>
                 <span className={getThemeClass('textSecondary')}>Work {totalWorkTime}m</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded bg-red-500"></div>
+                <div className="w-3 h-3 rounded" style={{ backgroundColor: sessionTimelineColors.distraction.hex }}></div>
                 <span className={getThemeClass('textSecondary')}>Break {totalBreakTime}m</span>
               </div>
               {totalAfkTime > 0 && (
                 <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded bg-yellow-500"></div>
+                  <div className="w-3 h-3 rounded" style={{ backgroundColor: sessionTimelineColors.afk.hex }}></div>
                   <span className={getThemeClass('textSecondary')}>AFK {totalAfkTime}m</span>
                 </div>
               )}
