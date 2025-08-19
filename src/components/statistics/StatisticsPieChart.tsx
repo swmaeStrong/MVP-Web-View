@@ -66,7 +66,6 @@ export default function StatisticsPieChart({
   // Data validation
   const totalTime = data.totalTime || 0;
   const hasValidData = finalCategories.length > 0 && totalTime > 0;
-  const hasMinimumData = finalCategories.length >= 2; // Pie chart needs at least 2 categories
 
   if (!hasValidData) {
     return (
@@ -76,24 +75,6 @@ export default function StatisticsPieChart({
             type='empty'
             title='No categories to analyze'
             message='Cannot display pie chart due to lack of activity data.'
-            icon={Activity}
-            showBorder={false}
-            size='small'
-          />
-        </div>
-        <div className='flex-1'></div>
-      </div>
-    );
-  }
-
-  if (!hasMinimumData) {
-    return (
-      <div className={`flex items-center p-4 gap-24`}>
-        <div className={`flex-shrink-0 w-[140px] h-[140px] flex items-center justify-center`}>
-          <StateDisplay
-            type='empty'
-            title='Insufficient categories'
-            message='At least 2 categories are needed for meaningful pie chart analysis.'
             icon={Activity}
             showBorder={false}
             size='small'
