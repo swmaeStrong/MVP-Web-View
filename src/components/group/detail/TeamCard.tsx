@@ -28,6 +28,32 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
   const [editedDescription, setEditedDescription] = useState(description);
   const [isSaving, setIsSaving] = useState(false);
 
+  // URL 패턴을 감지하는 정규식
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+  // 텍스트를 파싱하여 URL을 링크로 변환하는 함수
+  const renderDescriptionWithLinks = (text: string) => {
+    const parts = text.split(urlRegex);
+    
+    return parts.map((part, index) => {
+      if (part.match(urlRegex)) {
+        return (
+          <a
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${brandColors.accent.text} underline hover:opacity-80 transition-opacity`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
+  };
+
   const handleSaveDescription = async () => {
     if (!onDescriptionUpdate || editedDescription === description) {
       setIsEditingDescription(false);
@@ -133,7 +159,7 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
               </div>
             ) : (
               <p className={`text-sm h-24 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 ${getThemeTextColor('secondary')} whitespace-pre-wrap`}>
-                {description}
+                {renderDescriptionWithLinks(description)}
               </p>
             )}
           </div>
