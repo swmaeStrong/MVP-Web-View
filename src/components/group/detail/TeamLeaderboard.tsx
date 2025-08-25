@@ -165,10 +165,10 @@ export default function TeamLeaderboard({ membersLeaderboard, groupMembers, isLo
                 </div>
               )}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pr-2">
-            {membersLeaderboard.map((member) => {
+            {membersLeaderboard.map((member, index) => {
               const isCurrentUser = member.userId === currentUser?.id;
               return (
-              <div key={member.userId} className={`p-4 rounded-md ${isCurrentUser ? `${brandColors.accent.light} dark:${brandColors.accent.bg}/15` : 'bg-white dark:bg-white'} ${isCurrentUser ? brandColors.accent.lightBorder : getThemeClass('border')} border text-center relative`}>
+              <div key={`${member.userId}-${index}`} className={`p-4 rounded-md ${isCurrentUser ? `${brandColors.accent.light} dark:${brandColors.accent.bg}/15` : 'bg-white dark:bg-white'} ${isCurrentUser ? brandColors.accent.lightBorder : getThemeClass('border')} border text-center relative`}>
                 
                 {/* 아바타 */}
                 <UserProfileTooltip
