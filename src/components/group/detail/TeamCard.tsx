@@ -33,24 +33,36 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
 
   // 텍스트를 파싱하여 URL을 링크로 변환하는 함수
   const renderDescriptionWithLinks = (text: string) => {
-    const parts = text.split(urlRegex);
+    // 줄바꿈을 유지하면서 처리하기 위해 줄별로 분리
+    const lines = text.split('\n');
     
-    return parts.map((part, index) => {
-      if (part.match(urlRegex)) {
-        return (
-          <a
-            key={index}
-            href={part}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${brandColors.accent.text} underline hover:opacity-80 transition-opacity break-all`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {part}
-          </a>
-        );
-      }
-      return part;
+    return lines.map((line, lineIndex) => {
+      const parts = line.split(urlRegex);
+      const renderedParts = parts.map((part, partIndex) => {
+        if (part.match(urlRegex)) {
+          return (
+            <a
+              key={`${lineIndex}-${partIndex}`}
+              href={part}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${brandColors.accent.text} underline hover:opacity-80 transition-opacity break-all`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {part}
+            </a>
+          );
+        }
+        return part;
+      });
+      
+      // 마지막 줄이 아니면 줄바꿈 추가
+      return (
+        <span key={lineIndex}>
+          {renderedParts}
+          {lineIndex < lines.length - 1 && '\n'}
+        </span>
+      );
     });
   };
 

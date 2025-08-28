@@ -3,6 +3,7 @@
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
+import { brandColors } from '@/styles/colors';
 import { Crown, Users } from 'lucide-react';
 import { useMemo } from 'react';
 
@@ -25,6 +26,44 @@ export default function GroupMemberList({
 }: GroupMemberListProps) {
   const { getThemeTextColor, getCommonCardClass, getThemeClass } = useTheme();
 
+  // URL 패턴을 감지하는 정규식
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+  // 텍스트를 파싱하여 URL을 링크로 변환하는 함수
+  const renderTextWithLinks = (text: string) => {
+    // 줄바꿈을 유지하면서 처리하기 위해 줄별로 분리
+    const lines = text.split('\n');
+    
+    return lines.map((line, lineIndex) => {
+      const parts = line.split(urlRegex);
+      const renderedParts = parts.map((part, partIndex) => {
+        if (part.match(urlRegex)) {
+          return (
+            <a
+              key={`${lineIndex}-${partIndex}`}
+              href={part}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${brandColors.accent.text} underline hover:opacity-80 transition-opacity break-all`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {part}
+            </a>
+          );
+        }
+        return part;
+      });
+      
+      // 마지막 줄이 아니면 줄바꿈 추가
+      return (
+        <span key={lineIndex}>
+          {renderedParts}
+          {lineIndex < lines.length - 1 && '\n'}
+        </span>
+      );
+    });
+  };
+
   // 오너를 제외한 일반 멤버들
   const regularMembers = useMemo(() => 
     members.filter(member => member.userId !== owner.userId), 
@@ -46,8 +85,8 @@ export default function GroupMemberList({
               <div className={`text-sm font-medium ${getThemeTextColor('secondary')} mb-1`}>
                 Description
               </div>
-              <p className={`text-sm ${getThemeTextColor('primary')}`}>
-                {description}
+              <p className={`text-sm ${getThemeTextColor('primary')} whitespace-pre-wrap break-words overflow-x-hidden`}>
+                {renderTextWithLinks(description)}
               </p>
             </div>
           )}
