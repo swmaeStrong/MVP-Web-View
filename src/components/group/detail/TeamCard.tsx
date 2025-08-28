@@ -161,7 +161,7 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
                   <Button
                     size="sm"
                     onClick={handleSaveDescription}
-                    disabled={isSaving || editedDescription.trim().length < 10}
+                    disabled={isSaving}
                     className={`gap-1 ${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90`}
                   >
                     <Check className="h-3 w-3" />

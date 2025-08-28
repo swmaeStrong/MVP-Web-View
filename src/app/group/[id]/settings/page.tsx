@@ -65,8 +65,10 @@ export default function GroupSettingsPage() {
 
   const form = useForm<UpdateGroupFormData>({
     resolver: zodResolver(updateGroupSchema),
+    mode: 'onChange', // 실시간 유효성 검사 활성화
     defaultValues: {
       name: '',
+      description: '',
       isPublic: true,
       tags: [],
     },
@@ -79,6 +81,7 @@ export default function GroupSettingsPage() {
     if (groupDetail) {
       reset({
         name: groupDetail.name,
+        description: groupDetail.description,
         isPublic: groupDetail.isPublic,
         tags: groupDetail.tags,
       });

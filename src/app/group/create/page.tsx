@@ -2,10 +2,10 @@
 
 import { GroundRulesInput } from '@/components/forms/GroundRulesInput';
 import { GroupNameInput } from '@/components/forms/GroupNameInput';
-import TagInput from '@/components/group/create/TagInput';
 import GroupPreview from '@/components/group/create/GroupPreview';
+import TagInput from '@/components/group/create/TagInput';
 import { GROUP_VALIDATION_MESSAGES } from '@/config/constants';
-import { useGroupNameValidation, useCreateGroupWithToast } from '@/hooks/group/useCreateGroup';
+import { useCreateGroupWithToast, useGroupNameValidation } from '@/hooks/group/useCreateGroup';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { CreateGroupFormData, createGroupSchema } from '@/schemas/groupSchema';
@@ -105,7 +105,7 @@ export default function CreateGroupPage() {
       isPublic: values.isPublic === 'public',
       groundRule: values.groundRules.filter(rule => rule.trim().length > 0).join('\n'),
       tags: values.tags,
-      description: values.description,
+      description: values.description || '',
     };
     
     await createGroupWithToast(request);
@@ -299,7 +299,7 @@ export default function CreateGroupPage() {
           {/* Preview */}
           <GroupPreview 
             groupName={watchedValues.groupName}
-            description={watchedValues.description}
+            description={watchedValues.description || ''}
             isPublic={watchedValues.isPublic}
             groundRules={watchedValues.groundRules}
             tags={watchedValues.tags}
