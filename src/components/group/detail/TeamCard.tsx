@@ -5,8 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { Textarea } from '@/shadcn/ui/textarea';
-import { spacing } from '@/styles/design-system';
 import { brandColors } from '@/styles/colors';
+import { spacing } from '@/styles/design-system';
 import { Check, Edit3, X } from 'lucide-react';
 import { useState } from 'react';
 
@@ -43,7 +43,7 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
             href={part}
             target="_blank"
             rel="noopener noreferrer"
-            className={`${brandColors.accent.text} underline hover:opacity-80 transition-opacity`}
+            className={`${brandColors.accent.text} underline hover:opacity-80 transition-opacity break-all`}
             onClick={(e) => e.stopPropagation()}
           >
             {part}
@@ -158,7 +158,7 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
                 </div>
               </div>
             ) : (
-              <p className={`text-sm h-24 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 ${getThemeTextColor('secondary')} whitespace-pre-wrap`}>
+              <p className={`text-sm h-24 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 ${getThemeTextColor('secondary')} whitespace-pre-wrap break-words`}>
                 {renderDescriptionWithLinks(description)}
               </p>
             )}
