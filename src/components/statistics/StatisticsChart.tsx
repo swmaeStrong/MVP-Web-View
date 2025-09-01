@@ -1,7 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
-import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
+import { Card, CardContent } from '@/shadcn/ui/card';
 // 이제 namespace 사용으로 인해 직접 import 불가능
 import {
   Activity
@@ -33,7 +33,7 @@ export default function StatisticsChart({
   if (isLoading) {
     return (
       <Card className={`h-[360px] flex flex-col rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
-        <CardContent className='flex-1 flex flex-col justify-center items-center p-3 overflow-hidden'>
+        <CardContent className='h-full flex flex-col justify-center items-center p-3 overflow-hidden'>
             <div className='flex justify-center w-full'>
               <div className='flex items-center gap-6'>
                 {/* Pie Chart Skeleton - Same size as actual chart */}
@@ -69,19 +69,20 @@ export default function StatisticsChart({
 
   return (
     <Card className={`h-[360px] flex flex-col rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <CardContent className='flex-1 flex flex-col justify-center items-center p-3 overflow-hidden'>
+      <CardContent className='h-full flex flex-col justify-center items-center p-3 overflow-hidden'>
         {dailyData && dailyData.categories && dailyData.categories.length > 0 ? (
-          // TODO: 실제 차트 컴포넌트 렌더링
           <StatisticsPieChart data={dailyData} />
         ) : (
-          <StateDisplay
-            type="empty"
-            title='No Activity Data'
-            message='No activities recorded for the selected date.'
-            icon={Activity}
-            showBorder={false}
-            size='large'
-          />
+          <div className='flex justify-center items-center w-full h-full'>
+            <StateDisplay
+              type="empty"
+              title='No Activity Data'
+              message='No activities recorded for the selected date.'
+              icon={Activity}
+              showBorder={false}
+              size='large'
+            />
+          </div>
         )}
       </CardContent>
     </Card>
