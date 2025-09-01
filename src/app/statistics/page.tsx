@@ -8,11 +8,6 @@ import { getKSTDateString } from '@/utils/timezone';
 import React, { useCallback, useMemo, useState } from 'react';
 
 // 컴포넌트 임포트
-import {
-  StatisticsChartSkeleton,
-  TotalTimeCardSkeleton
-} from '@/components/common/StatisticsSkeleton';
-import SessionCarousel from '@/components/statistics/CycleCarousel';
 import SessionTimelineView from '@/components/statistics/SessionTimelineView';
 import StatisticsChart from '@/components/statistics/StatisticsChart';
 import WeeklyStreak from '@/components/statistics/WeeklyStreak';
@@ -115,20 +110,16 @@ export default function StatisticsPage() {
       <div className='mx-auto max-w-6xl space-y-4 sm:space-y-6'>
         {/* 메인 콘텐츠 */}
         <TotalTimeCard
-                totalTime={dailyData?.totalTime || 0}
                 currentDate={selectedDate}
                 onPrevious={handlePreviousDate}
                 onNext={handleNextDate}
                 canGoPrevious={canGoPrevious}
                 canGoNext={canGoNext}
-                goalTime={8 * 3600} // 8 hours default goal
-                isLoading={isLoading}
               />
         <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
           {/* 왼쪽: 날짜 네비게이션, 목표 설정, 카테고리 분석 */}
           
               <StatisticsChart
-                selectedPeriod={selectedPeriod}
                 data={dailyData || null}
                 currentDate={selectedDate}
                 isLoading={isLoading}

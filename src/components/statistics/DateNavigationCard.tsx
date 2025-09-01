@@ -6,25 +6,19 @@ import { Card, CardContent } from '@/shadcn/ui/card';
 import { cardSystem, componentStates, spacing } from '@/styles/design-system';
 
 interface TotalTimeCardProps {
-  totalTime: number; // seconds
   currentDate: string;
   onPrevious: () => void;
   onNext: () => void;
   canGoPrevious: boolean;
   canGoNext: boolean;
-  goalTime?: number; // seconds, default 8 hours
-  isLoading?: boolean;
 }
 
 export default function TotalTimeCard({
-  totalTime,
   currentDate,
   onPrevious,
   onNext,
   canGoPrevious,
   canGoNext,
-  goalTime = 8 * 3600, // 8 hours default
-  isLoading = false,
 }: TotalTimeCardProps) {
   const { getThemeClass } = useTheme();
 

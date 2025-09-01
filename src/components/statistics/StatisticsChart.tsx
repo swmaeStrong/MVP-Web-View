@@ -10,14 +10,13 @@ import StateDisplay from '../common/StateDisplay';
 import StatisticsPieChart from './StatisticsPieChart';
 
 interface StatisticsChartProps {
-  selectedPeriod: Statistics.PeriodType;
   data: Statistics.DailyStatistics | null;
   currentDate: string;
   isLoading?: boolean;
 }
 
+
 export default function StatisticsChart({
-  selectedPeriod,
   data,
   currentDate,
   isLoading = false,
