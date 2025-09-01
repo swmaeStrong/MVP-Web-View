@@ -321,15 +321,17 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
   if (isLoading) {
     return (
       <Card className={`${getCommonCardClass()} col-span-2 row-span-1 h-[400px] lg:h-[500px] flex flex-col`}>
-        <CardHeader>
+        <CardHeader className="text-center relative flex-shrink-0">
           <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
-            Today's Goal
+            {selectedPeriod === 'daily' ? "Daily Goal" : "Weekly Goal"}
           </div>
         </CardHeader>
-        <CardContent className={spacing.inner.normal}>
+        <CardContent className={`${spacing.inner.normal} flex-1 flex flex-col overflow-hidden`}>
+          <Separator className="mb-4 flex-shrink-0" />
           <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-gray-200 rounded"></div>
-            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
           </div>
         </CardContent>
       </Card>
