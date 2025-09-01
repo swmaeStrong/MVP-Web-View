@@ -32,17 +32,34 @@ export default function StatisticsChart({
   const { getThemeClass } = useTheme();
   if (isLoading) {
     return (
-      <Card className={`h-[400px] flex flex-col rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
-        <CardHeader className='pb-2'>
-          <div className='flex items-center justify-between'>
-            <div className={`h-6 w-32 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-          </div>
-        </CardHeader>
-
-        <CardContent className='flex-1 flex flex-col justify-center items-center p-3 pt-0 overflow-hidden'>
-            <div className='h-full flex items-center justify-center'>
-              <div className='relative w-full h-full flex items-center justify-center'>
-                <div className={`aspect-square w-full h-full min-h-[180px] max-h-[350px] min-w-[180px] max-w-[350px] animate-pulse rounded-full ${getThemeClass('componentSecondary')}`}></div>
+      <Card className={`h-[360px] flex flex-col rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+        <CardContent className='flex-1 flex flex-col justify-center items-center p-3 overflow-hidden'>
+            <div className='flex justify-center w-full'>
+              <div className='flex items-center gap-6'>
+                {/* Pie Chart Skeleton - Same size as actual chart */}
+                <div className='flex-shrink-0 w-[200px] flex justify-center'>
+                  <div className='aspect-square w-[180px] h-[180px] flex items-center justify-center'>
+                    <div className={`w-[170px] h-[170px] animate-pulse rounded-full ${getThemeClass('componentSecondary')}`}>
+                      {/* Donut chart effect - inner circle */}
+                      <div className='relative w-full h-full flex items-center justify-center'>
+                        <div className={`absolute w-[120px] h-[120px] rounded-full ${getThemeClass('component')}`}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Category Details Skeleton - Same size as actual details */}
+                <div className='w-[200px] flex flex-col gap-2'>
+                  {[...Array(4)].map((_, index) => (
+                    <div key={index} className='flex items-center gap-2'>
+                      <div className={`w-3 h-3 rounded-full flex-shrink-0 animate-pulse ${getThemeClass('borderLight')}`}></div>
+                      <div className='flex flex-col min-w-0 flex-1'>
+                        <div className={`h-3 w-24 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+                        <div className={`h-3 w-16 mt-1 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
         </CardContent>
