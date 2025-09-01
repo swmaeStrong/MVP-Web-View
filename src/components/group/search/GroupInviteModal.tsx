@@ -17,8 +17,9 @@ interface GroupInviteModalProps {
   isLoadingInvite: boolean;
   inviteError: string;
   isGroupMember: (groupId: number) => boolean;
-  onJoinInviteGroup: (group: Group.GroupApiResponse) => Promise<void>;
+  onJoinInviteGroup: (inviteCode: string) => Promise<void>;
   isJoining: boolean;
+  inviteCode: string | null;
 }
 
 export default function GroupInviteModal({
@@ -29,14 +30,15 @@ export default function GroupInviteModal({
   inviteError,
   isGroupMember,
   onJoinInviteGroup,
-  isJoining
+  isJoining,
+  inviteCode
 }: GroupInviteModalProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const router = useRouter();
 
   const handleJoin = async () => {
-    if (!inviteGroup) return;
-    await onJoinInviteGroup(inviteGroup);
+    if (!inviteCode) return;
+    await onJoinInviteGroup(inviteCode);
   };
 
   const handleGoToGroup = () => {

@@ -39,6 +39,12 @@ export const joinGroup = (groupId: number, request: Group.JoinGroupApiRequest) =
     API.post(`/group/${groupId}/join`, request)
 );
 
+// 초대 코드로 그룹 가입
+export const joinGroupByInviteCode = (inviteCode: string) =>
+  parseApi(
+    API.post(`/group/invite?code=${inviteCode}`, {})
+);
+
 // 그룹 목표 설정
 export const setGroupGoal = (groupId: number, request: Group.SetGroupGoalApiRequest) =>
   parseApi(

@@ -4,6 +4,8 @@ import EventBanner from '@/components/group/search/EventBanner';
 import GroupDetailModal from '@/components/group/search/GroupDetailModal';
 import GroupInviteModal from '@/components/group/search/GroupInviteModal';
 import { myGroupsQueryKey } from '@/config/constants/query-keys';
+import { useJoinGroup } from '@/hooks/group/useJoinGroup';
+import { useJoinGroupByInvite } from '@/hooks/group/useJoinGroupByInvite';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useMyGroups } from '@/hooks/queries/useMyGroups';
 import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
@@ -17,20 +19,16 @@ import { Input } from '@/shadcn/ui/input';
 import { Skeleton } from '@/shadcn/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { getGroupByInviteCode } from '@/shared/api/get';
-import { joinGroup } from '@/shared/api/post';
 import { brandColors } from '@/styles/colors';
-import { useQueryClient } from '@tanstack/react-query';
 import { Globe, Hash, Lock, Search, Users } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import toast from 'react-hot-toast';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentUser = useCurrentUserData();
-  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'public' | 'private'>('all');
   
@@ -50,6 +48,7 @@ export default function FindTeamPage() {
   const fetchInviteGroupInfo = async (inviteCode: string) => {
     setIsLoadingInvite(true);
     setInviteError('');
+    setCurrentInviteCode(inviteCode);
     
     try {
       const groupInfo = await getGroupByInviteCode(inviteCode);
@@ -58,13 +57,13 @@ export default function FindTeamPage() {
     } catch (error) {
       console.error('Failed to fetch invite group info:', error);
       setInviteError('Failed to load group information. The invite code may be invalid or expired.');
+      setIsInviteModalOpen(true); // Show modal even on error to display error message
     } finally {
       setIsLoadingInvite(false);
     }
   };
   const [selectedGroup, setSelectedGroup] = useState<Group.GroupApiResponse | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isJoining, setIsJoining] = useState(false);
   const [joinError, setJoinError] = useState('');
   
   // Invite group states
@@ -72,6 +71,30 @@ export default function FindTeamPage() {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isLoadingInvite, setIsLoadingInvite] = useState(false);
   const [inviteError, setInviteError] = useState('');
+  const [currentInviteCode, setCurrentInviteCode] = useState<string | null>(null);
+
+  // Hooks for joining groups
+  const joinGroupMutation = useJoinGroup({
+    onSuccess: (group) => {
+      handleCloseModal();
+      router.push(`/group/${group.groupId}/detail`);
+    },
+    onError: () => {
+      setJoinError('Failed to join the group. Please try again.');
+    }
+  });
+
+  const joinGroupByInviteMutation = useJoinGroupByInvite({
+    onSuccess: () => {
+      handleCloseInviteModal();
+      if (inviteGroup) {
+        router.push(`/group/${inviteGroup.groupId}/detail`);
+      }
+    },
+    onError: () => {
+      setInviteError('Failed to join the group. Please try again.');
+    }
+  });
 
   // Fetch groups from API
   const { data: groups = [], isLoading } = useSearchGroups();
@@ -99,13 +122,13 @@ export default function FindTeamPage() {
     setIsModalOpen(false);
     setSelectedGroup(null);
     setJoinError('');
-    setIsJoining(false);
   };
 
   const handleCloseInviteModal = () => {
     setIsInviteModalOpen(false);
     setInviteGroup(null);
     setInviteError('');
+    setCurrentInviteCode(null);
     
     // Remove inviteCode from URL
     const url = new URL(window.location.href);
@@ -113,62 +136,14 @@ export default function FindTeamPage() {
     router.replace(url.pathname + url.search, { scroll: false });
   };
 
-  const handleJoinInviteGroup = async (group: Group.GroupApiResponse) => {
-    setIsJoining(true);
+  const handleJoinInviteGroup = async (inviteCode: string) => {
     setInviteError('');
-    
-    try {
-      // For invite groups, password is not required - the invite code serves as authorization
-      const request: Group.JoinGroupApiRequest = {
-        password: null
-      };
-      
-      await joinGroup(group.groupId, request);
-      
-      // 성공 시 내 그룹 목록 다시 불러오기
-      await queryClient.invalidateQueries({
-        queryKey: myGroupsQueryKey(),
-      });
-      
-      toast.success('Successfully joined the group!');
-      handleCloseInviteModal();
-      router.push(`/group/${group.groupId}/detail`);
-    } catch (error) {
-      console.error('Failed to join group:', error);
-      setInviteError('Failed to join the group. Please try again.');
-      toast.error('Failed to join the group.');
-    } finally {
-      setIsJoining(false);
-    }
+    joinGroupByInviteMutation.mutate(inviteCode);
   };
 
   const handleJoinGroup = async (group: Group.GroupApiResponse, password: string) => {
-    setIsJoining(true);
     setJoinError('');
-    
-    try {
-      // public 그룹이면 password를 null로, private 그룹이면 입력된 password 사용
-      const request: Group.JoinGroupApiRequest = {
-        password: group.isPublic ? null : password || null
-      };
-      
-      await joinGroup(group.groupId, request);
-      
-      // 성공 시 내 그룹 목록 다시 불러오기
-      await queryClient.invalidateQueries({
-        queryKey: myGroupsQueryKey(),
-      });
-      
-      toast.success('Successfully joined the group!');
-      handleCloseModal();
-      router.push(`/group/${group.groupId}/detail`);
-    } catch (error) {
-      console.error('Failed to join group:', error);
-      setJoinError('Failed to join the group. Please try again.');
-      toast.error('Failed to join the group.');
-    } finally {
-      setIsJoining(false);
-    }
+    joinGroupMutation.mutate({ group, password });
   };
 
   return (
@@ -390,7 +365,7 @@ export default function FindTeamPage() {
         group={selectedGroup}
         isGroupMember={isGroupMember}
         onJoinGroup={handleJoinGroup}
-        isJoining={isJoining}
+        isJoining={joinGroupMutation.isPending}
         joinError={joinError}
       />
 
@@ -403,7 +378,8 @@ export default function FindTeamPage() {
         inviteError={inviteError}
         isGroupMember={isGroupMember}
         onJoinInviteGroup={handleJoinInviteGroup}
-        isJoining={isJoining}
+        isJoining={joinGroupByInviteMutation.isPending}
+        inviteCode={currentInviteCode}
       />
     </div>
   );
