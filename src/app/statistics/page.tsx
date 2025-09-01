@@ -87,59 +87,7 @@ export default function StatisticsPage() {
 
 
 
-  // 로딩 상태
-  if (isLoading) {
-    return (
-      <div className={`min-h-screen p-3 sm:p-4 lg:p-6 ${getThemeClass('background')}`}>
-        <div className='mx-auto max-w-6xl space-y-4 sm:space-y-6'>
-          {/* 메인 콘텐츠 스켈레톤 */}
-          <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
-            {/* 왼쪽: 총 작업시간 & 상위 카테고리 스켈레톤 */}
-            <div className='flex flex-col space-y-3'>
-              <div className='flex-shrink-0'>
-                <TotalTimeCardSkeleton />
-              </div>
-              <div className='flex-1'>
-                <StatisticsChartSkeleton />
-              </div>
-            </div>
-
-            {/* 오른쪽: 월별 스트릭 컴포넌트 (스켈레톤) */}
-            <div className={`h-[400px] rounded-lg border-2 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
-              <div className={`h-6 w-32 m-4 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-              <div className="p-4 space-y-3">
-                {[...Array(3)].map((_, index) => (
-                  <div key={index} className={`h-4 w-full animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* 세션 타임라인 스켈레톤 */}
-          <div className={`rounded-lg border-2 shadow-sm p-6 ${getThemeClass('border')} ${getThemeClass('component')}`}>
-            <div className={`h-6 w-40 mb-4 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-            <div className="space-y-4">
-              {[...Array(3)].map((_, index) => (
-                <div key={index} className="flex items-center gap-4">
-                  <div className={`h-12 w-12 animate-pulse rounded-full ${getThemeClass('componentSecondary')}`}></div>
-                  <div className="flex-1 space-y-2">
-                    <div className={`h-4 w-32 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
-                    <div className={`h-3 w-24 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
-                  </div>
-                  <div className={`h-8 w-16 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 하단: 세션 캐러셀 스켈레톤 */}
-          <div className="w-full">
-            <SessionCarousel selectedDate={selectedDate} />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // 메인 렌더링 로직에서 스켈레톤은 각 컴포넌트에서 처리
 
   // 에러 상태
   if (isError) {
@@ -174,6 +122,7 @@ export default function StatisticsPage() {
                 canGoPrevious={canGoPrevious}
                 canGoNext={canGoNext}
                 goalTime={8 * 3600} // 8 hours default goal
+                isLoading={isLoading}
               />
         <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
           {/* 왼쪽: 날짜 네비게이션, 목표 설정, 카테고리 분석 */}
@@ -182,6 +131,7 @@ export default function StatisticsPage() {
                 selectedPeriod={selectedPeriod}
                 data={dailyData || null}
                 currentDate={selectedDate}
+                isLoading={isLoading}
               />
           {/* 오른쪽: 주별 스트릭 컴포넌트 (기존 ActivityList 위치) */}
 
