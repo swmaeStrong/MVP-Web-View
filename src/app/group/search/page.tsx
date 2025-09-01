@@ -1,5 +1,6 @@
 'use client';
 
+import EventBanner from '@/components/group/search/EventBanner';
 import { myGroupsQueryKey } from '@/config/constants/query-keys';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useMyGroups } from '@/hooks/queries/useMyGroups';
@@ -10,18 +11,17 @@ import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { Dialog, DialogContent, DialogHeader } from '@/shadcn/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
 import { Input } from '@/shadcn/ui/input';
 import { Skeleton } from '@/shadcn/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
-import { brandColors } from '@/styles/colors';
 import { joinGroup } from '@/shared/api/post';
+import { brandColors } from '@/styles/colors';
 import { useQueryClient } from '@tanstack/react-query';
 import { Globe, Hash, Lock, Search, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import EventBanner from '@/components/group/search/EventBanner';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
@@ -176,7 +176,17 @@ export default function FindTeamPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredGroups.map((group) => (
-            <Card key={group.groupId} className={`${getCommonCardClass()} h-52 hover:bg-gray-50 dark:hover:bg-gray-800 group relative`}>
+            <Card 
+              key={group.groupId} 
+              className={`${getCommonCardClass()} h-52 hover:bg-gray-50 dark:hover:bg-gray-800 group relative cursor-pointer transition-all duration-200 hover:shadow-lg`}
+              onClick={() => {
+                if (isGroupMember(group.groupId)) {
+                  router.push(`/group/${group.groupId}/detail`);
+                } else {
+                  handleViewDetail(group);
+                }
+              }}
+            >
               <CardContent className="px-4 h-full">
                 <div className="h-full flex flex-col gap-3">
                   {/* Group Header */}
@@ -249,15 +259,14 @@ export default function FindTeamPage() {
                 </div>
                 
                 {/* Centered Action Button - appears on hover */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
                   {isGroupMember(group.groupId) ? (
                     <div className="bg-white dark:bg-gray-900 rounded-lg">
                       <Button
-                        className="bg-gray-600 text-white cursor-not-allowed shadow-lg hover:bg-gray-600"
+                        className="bg-green-600 text-white hover:bg-green-700 shadow-lg transition-colors"
                         size="default"
-                        disabled
                       >
-                        Already Joined
+                        Go to My Group
                       </Button>
                     </div>
                   ) : (
@@ -265,7 +274,6 @@ export default function FindTeamPage() {
                       <Button
                         className={`${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90 transition-colors cursor-pointer shadow-lg`}
                         size="default"
-                        onClick={() => handleViewDetail(group)}
                       >
                         See in Detail
                       </Button>
@@ -309,9 +317,9 @@ export default function FindTeamPage() {
           {selectedGroup && (
             <>
               <DialogHeader className="pb-4">
-                <div className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
+                <DialogTitle className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
                   Group Details
-                </div>
+                </DialogTitle>
               </DialogHeader>
               
               <div className="space-y-4">
