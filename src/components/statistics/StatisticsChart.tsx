@@ -6,21 +6,29 @@ import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import {
   Activity
 } from 'lucide-react';
+import { useUsageStatistics } from '../../hooks/data/useStatistics';
+import { useCurrentUserData } from '../../hooks/user/useCurrentUser';
 import StateDisplay from '../common/StateDisplay';
 import StatisticsPieChart from './StatisticsPieChart';
-
 interface StatisticsChartProps {
-  data: Statistics.DailyStatistics | null;
   currentDate: string;
-  isLoading?: boolean;
 }
 
 
 export default function StatisticsChart({
-  data,
   currentDate,
-  isLoading = false,
 }: StatisticsChartProps) {
+  const currentUser = useCurrentUserData();
+  const {
+    data: dailyData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useUsageStatistics(currentDate, currentUser?.id || '');
+
+
+
   const { getThemeClass } = useTheme();
   if (isLoading) {
     return (
@@ -45,9 +53,9 @@ export default function StatisticsChart({
   return (
     <Card className={`h-[360px] flex flex-col rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
       <CardContent className='flex-1 flex flex-col justify-center items-center p-3 overflow-hidden'>
-        {data && data.categories && data.categories.length > 0 ? (
+        {dailyData && dailyData.categories && dailyData.categories.length > 0 ? (
           // TODO: 실제 차트 컴포넌트 렌더링
-          <StatisticsPieChart data={data} />
+          <StatisticsPieChart data={dailyData} />
         ) : (
           <StateDisplay
             type="empty"

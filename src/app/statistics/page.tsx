@@ -120,9 +120,7 @@ export default function StatisticsPage() {
           {/* 왼쪽: 날짜 네비게이션, 목표 설정, 카테고리 분석 */}
           
               <StatisticsChart
-                data={dailyData || null}
                 currentDate={selectedDate}
-                isLoading={isLoading}
               />
           {/* 오른쪽: 주별 스트릭 컴포넌트 (기존 ActivityList 위치) */}
 
