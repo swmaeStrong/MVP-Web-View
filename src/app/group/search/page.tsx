@@ -19,13 +19,14 @@ import { joinGroup } from '@/shared/api/post';
 import { brandColors } from '@/styles/colors';
 import { useQueryClient } from '@tanstack/react-query';
 import { Globe, Hash, Lock, Search, Users } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const currentUser = useCurrentUserData();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
@@ -34,6 +35,14 @@ export default function FindTeamPage() {
   // Save current tab as last visited
   useLastGroupTab();
   const [sortBy, setSortBy] = useState<'created' | 'name'>('name');
+
+  // Read inviteCode query parameter and log to console
+  useEffect(() => {
+    const inviteCode = searchParams.get('inviteCode');
+    if (inviteCode) {
+      console.log('Invite Code from URL:', inviteCode);
+    }
+  }, [searchParams]);
   const [selectedGroup, setSelectedGroup] = useState<Group.GroupApiResponse | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [password, setPassword] = useState('');
