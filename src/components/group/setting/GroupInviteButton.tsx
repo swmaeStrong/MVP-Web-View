@@ -2,7 +2,10 @@
 
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Button } from '@/shadcn/ui/button';
-import { Copy } from 'lucide-react';
+import { generateGroupInviteLink } from '@/shared/api/post';
+import { Link } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface GroupInviteButtonProps {
@@ -12,26 +15,35 @@ interface GroupInviteButtonProps {
 
 export default function GroupInviteButton({ password, isPublic }: GroupInviteButtonProps) {
   const { getThemeClass } = useTheme();
+  const params = useParams();
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+  
+  const groupId = Array.isArray(params.id) ? parseInt(params.id[0], 10) : parseInt(params.id as string, 10);
 
-  // Public 그룹의 경우 invite code 버튼을 보이지 않게 함
-  if (isPublic) {
-    return null;
-  }
-
-  const copyInviteCode = () => {
-    const textToCopy = password || 'No password required';
-    navigator.clipboard.writeText(textToCopy);
-    toast.success('Invite code copied to clipboard!');
+  const generateAndCopyInviteLink = async () => {
+    setIsGeneratingLink(true);
+    try {
+      const request: Group.GenerateInviteLinkApiRequest = { emails: [""] };
+      const response = await generateGroupInviteLink(groupId, request);
+      await navigator.clipboard.writeText(response.link);
+      toast.success('Invite link copied to clipboard!');
+    } catch (error) {
+      console.error('Failed to generate invite link:', error);
+      toast.error('Failed to generate invite link. Please try again.');
+    } finally {
+      setIsGeneratingLink(false);
+    }
   };
 
   return (
     <Button
       variant="outline"
-      onClick={copyInviteCode}
+      onClick={generateAndCopyInviteLink}
+      disabled={isGeneratingLink}
       className={`gap-2 ${getThemeClass('component')} ${getThemeClass('border')}`}
     >
-      <Copy className="h-4 w-4" />
-      Invite Code: {password || 'No password required'}
+      <Link className="h-4 w-4" />
+      {isGeneratingLink ? 'Generating...' : 'Copy Invite Link'}
     </Button>
   );
 }
