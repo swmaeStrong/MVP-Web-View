@@ -45,6 +45,15 @@ export const joinGroupByInviteCode = (inviteCode: string) =>
     API.post(`/group/invite?code=${inviteCode}`, {})
 );
 
+// 그룹 초대 링크 생성
+export const generateGroupInviteLink = (
+  groupId: number, 
+  request: Group.GenerateInviteLinkApiRequest = { emails: [""] }
+) =>
+  parseApi<Group.GenerateInviteLinkApiResponse>(
+    API.post(`/group/${groupId}/invite`, request)
+);
+
 // 그룹 목표 설정
 export const setGroupGoal = (groupId: number, request: Group.SetGroupGoalApiRequest) =>
   parseApi(

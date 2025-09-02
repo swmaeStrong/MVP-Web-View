@@ -58,6 +58,14 @@ declare namespace Group {
 		password: string | null,
 	}
 
+	interface GenerateInviteLinkApiRequest {
+		emails: string[],
+	}
+
+	interface GenerateInviteLinkApiResponse {
+		link: string,
+	}
+
 	interface SetGroupGoalApiRequest {
 		category: 'Development' | 'Design' | 'Documentation' | 'Education' | 'work' | 'sessionScore' | 'sessionCount',
 		goalValue: number,
