@@ -147,6 +147,12 @@ export const searchGroups = () =>
     API.get('/group/search')
   );
 
+// 그룹 초대 코드로 그룹 정보 조회
+export const getGroupByInviteCode = (inviteCode: string) =>
+  parseApi<Group.GroupApiResponse>(
+    API.get(`/group/invite?code=${inviteCode}`)
+  );
+
 // 그룹 리더보드 조회
 export const getGroupLeaderboard = (
   groupId: number, 
