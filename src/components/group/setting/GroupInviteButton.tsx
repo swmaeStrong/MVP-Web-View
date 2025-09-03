@@ -25,6 +25,8 @@ export default function GroupInviteButton({ password, isPublic }: GroupInviteBut
     try {
       const request: Group.GenerateInviteLinkApiRequest = { emails: [""] };
       const response = await generateGroupInviteLink(groupId, request);
+      console.log(response.link);
+      await navigator.clipboard.writeText("qwerqwer");
       await navigator.clipboard.writeText(response.link);
       toast.success('Invite link copied to clipboard!');
     } catch (error) {
