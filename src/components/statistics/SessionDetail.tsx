@@ -5,7 +5,7 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import type { SessionData } from '@/types/domains/usage/session';
 import { sessionTimelineColors } from '@/styles/colors';
 import { Target } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 
 interface SessionDetailProps {
   selectedSession: SessionData | null;
@@ -185,11 +185,49 @@ const ProgressBar: React.FC<{
   );
 };
 
-const DistractionsList: React.FC<{
-  distractions: Session.AppUsageDetail[];
+const AppUsageToggle: React.FC<{
+  activeTab: 'work' | 'distractions';
+  onTabChange: (tab: 'work' | 'distractions') => void;
+  isDarkMode: boolean;
+  getThemeClass: (type: string) => string;
+  getThemeTextColor: (type: string) => string;
+}> = ({ activeTab, onTabChange, isDarkMode, getThemeClass, getThemeTextColor }) => {
+  return (
+    <div className={`flex rounded-lg p-1 mb-4 ${getThemeClass('componentSecondary')}`}>
+      <button
+        onClick={() => onTabChange('work')}
+        className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+          activeTab === 'work'
+            ? `${isDarkMode ? 'bg-green-800 text-green-100' : 'bg-green-100 text-green-800'}`
+            : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
+        }`}
+      >
+        <span className="flex items-center justify-center gap-2">
+          ✅ Work
+        </span>
+      </button>
+      <button
+        onClick={() => onTabChange('distractions')}
+        className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+          activeTab === 'distractions'
+            ? `${isDarkMode ? 'bg-red-800 text-red-100' : 'bg-red-100 text-red-800'}`
+            : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
+        }`}
+      >
+        <span className="flex items-center justify-center gap-2">
+          🚫 Distractions
+        </span>
+      </button>
+    </div>
+  );
+};
+
+const AppUsageList: React.FC<{
+  apps: Session.AppUsageDetail[];
+  type: 'work' | 'distractions';
   isDarkMode: boolean;
   getThemeTextColor: (type: string) => string;
-}> = ({ distractions, isDarkMode, getThemeTextColor }) => {
+}> = ({ apps, type, isDarkMode, getThemeTextColor }) => {
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -204,18 +242,39 @@ const DistractionsList: React.FC<{
     }
   };
 
+  const isWork = type === 'work';
+  const borderColor = isDarkMode 
+    ? (isWork ? 'border-green-400 bg-green-900/20' : 'border-red-400 bg-red-900/20')
+    : (isWork ? 'border-green-300 bg-green-50' : 'border-red-300 bg-red-50');
+
+  if (!apps || apps.length === 0) {
+    return (
+      <div className="space-y-3 mb-4">
+        <div className={`text-sm font-medium ${getThemeTextColor('primary')} flex items-center gap-2`}>
+          <span>{isWork ? '✅' : '🚫'}</span>
+          {isWork ? 'Work Apps' : 'Distractions'}
+        </div>
+        <div className={`py-4 px-3 rounded-lg border ${borderColor} text-center`}>
+          <p className={`text-sm ${getThemeTextColor('secondary')}`}>
+            No {isWork ? 'work' : 'distraction'} apps used during this session
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3 mb-4">
       <div className={`text-sm font-medium ${getThemeTextColor('primary')} flex items-center gap-2`}>
-        <span>🚫</span>
-        Distractions
+        <span>{isWork ? '✅' : '🚫'}</span>
+        {isWork ? 'Work Apps' : 'Distractions'}
       </div>
       <div className="space-y-2">
-        {distractions
+        {apps
           .sort((a, b) => b.duration - a.duration)
           .slice(0, 3)
           .map((detail, index) => (
-            <div key={index} className={`py-2 px-3 rounded-lg border ${isDarkMode ? 'border-red-400 bg-red-900/20' : 'border-red-300 bg-red-50'}`}>
+            <div key={index} className={`py-2 px-3 rounded-lg border ${borderColor}`}>
               <div className="flex items-center justify-between mb-1">
                 <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
                   {detail.app}
@@ -251,6 +310,7 @@ export default function SessionDetail({
 }: SessionDetailProps) {
   const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
   const { getTimelineBreakdown } = useSessionTimeline({ sessionData });
+  const [activeTab, setActiveTab] = useState<'work' | 'distractions'>('distractions');
 
   if (!selectedSession) {
     return (
@@ -292,13 +352,24 @@ export default function SessionDetail({
         />
       )}
 
-      {/* Distractions */}
-      {sessionDetailData && sessionDetailData.distractedAppUsage && sessionDetailData.distractedAppUsage.length > 0 && (
-        <DistractionsList 
-          distractions={sessionDetailData.distractedAppUsage}
-          isDarkMode={isDarkMode}
-          getThemeTextColor={getThemeTextColor as (type: string) => string}
-        />
+      {/* App Usage Toggle and List */}
+      {sessionDetailData && (sessionDetailData.workAppUsage?.length > 0 || sessionDetailData.distractedAppUsage?.length > 0) && (
+        <>
+          <AppUsageToggle
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            isDarkMode={isDarkMode}
+            getThemeClass={getThemeClass as (type: string) => string}
+            getThemeTextColor={getThemeTextColor as (type: string) => string}
+          />
+          
+          <AppUsageList
+            apps={activeTab === 'work' ? sessionDetailData.workAppUsage || [] : sessionDetailData.distractedAppUsage || []}
+            type={activeTab}
+            isDarkMode={isDarkMode}
+            getThemeTextColor={getThemeTextColor as (type: string) => string}
+          />
+        </>
       )}
     </div>
   );
