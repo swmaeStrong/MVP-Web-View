@@ -1,6 +1,11 @@
 'use client';
 
+import EventBanner from '@/components/group/search/EventBanner';
+import GroupDetailModal from '@/components/group/search/GroupDetailModal';
+import GroupInviteModal from '@/components/group/search/GroupInviteModal';
 import { myGroupsQueryKey } from '@/config/constants/query-keys';
+import { useJoinGroup } from '@/hooks/group/useJoinGroup';
+import { useJoinGroupByInvite } from '@/hooks/group/useJoinGroupByInvite';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useMyGroups } from '@/hooks/queries/useMyGroups';
 import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
@@ -10,35 +15,86 @@ import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { Dialog, DialogContent, DialogHeader } from '@/shadcn/ui/dialog';
 import { Input } from '@/shadcn/ui/input';
 import { Skeleton } from '@/shadcn/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
+import { getGroupByInviteCode } from '@/shared/api/get';
 import { brandColors } from '@/styles/colors';
-import { joinGroup } from '@/shared/api/post';
-import { useQueryClient } from '@tanstack/react-query';
 import { Globe, Hash, Lock, Search, Users } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import toast from 'react-hot-toast';
-import EventBanner from '@/components/group/search/EventBanner';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const currentUser = useCurrentUserData();
-  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'public' | 'private'>('all');
   
   // Save current tab as last visited
   useLastGroupTab();
   const [sortBy, setSortBy] = useState<'created' | 'name'>('name');
+
+  // Read inviteCode query parameter and fetch group information
+  useEffect(() => {
+    const inviteCode = searchParams.get('inviteCode');
+    if (inviteCode) {
+      console.log('Invite Code from URL:', inviteCode);
+      fetchInviteGroupInfo(inviteCode);
+    }
+  }, [searchParams]);
+
+  const fetchInviteGroupInfo = async (inviteCode: string) => {
+    setIsLoadingInvite(true);
+    setInviteError('');
+    setCurrentInviteCode(inviteCode);
+    
+    try {
+      const groupInfo = await getGroupByInviteCode(inviteCode);
+      setInviteGroup(groupInfo);
+      setIsInviteModalOpen(true);
+    } catch (error) {
+      console.error('Failed to fetch invite group info:', error);
+      setInviteError('Failed to load group information. The invite code may be invalid or expired.');
+      setIsInviteModalOpen(true); // Show modal even on error to display error message
+    } finally {
+      setIsLoadingInvite(false);
+    }
+  };
   const [selectedGroup, setSelectedGroup] = useState<Group.GroupApiResponse | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [password, setPassword] = useState('');
-  const [isJoining, setIsJoining] = useState(false);
   const [joinError, setJoinError] = useState('');
+  
+  // Invite group states
+  const [inviteGroup, setInviteGroup] = useState<Group.GroupApiResponse | null>(null);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isLoadingInvite, setIsLoadingInvite] = useState(false);
+  const [inviteError, setInviteError] = useState('');
+  const [currentInviteCode, setCurrentInviteCode] = useState<string | null>(null);
+
+  // Hooks for joining groups
+  const joinGroupMutation = useJoinGroup({
+    onSuccess: (group) => {
+      handleCloseModal();
+      router.push(`/group/${group.groupId}/detail`);
+    },
+    onError: () => {
+      setJoinError('Failed to join the group. Please try again.');
+    }
+  });
+
+  const joinGroupByInviteMutation = useJoinGroupByInvite({
+    onSuccess: () => {
+      handleCloseInviteModal();
+      if (inviteGroup) {
+        router.push(`/group/${inviteGroup.groupId}/detail`);
+      }
+    },
+    onError: () => {
+      setInviteError('Failed to join the group. Please try again.');
+    }
+  });
 
   // Fetch groups from API
   const { data: groups = [], isLoading } = useSearchGroups();
@@ -65,38 +121,29 @@ export default function FindTeamPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedGroup(null);
-    setPassword('');
     setJoinError('');
-    setIsJoining(false);
   };
 
-  const handleJoinGroup = async (group: Group.GroupApiResponse) => {
-    setIsJoining(true);
-    setJoinError('');
+  const handleCloseInviteModal = () => {
+    setIsInviteModalOpen(false);
+    setInviteGroup(null);
+    setInviteError('');
+    setCurrentInviteCode(null);
     
-    try {
-      // public 그룹이면 password를 null로, private 그룹이면 입력된 password 사용
-      const request: Group.JoinGroupApiRequest = {
-        password: group.isPublic ? null : password || null
-      };
-      
-      await joinGroup(group.groupId, request);
-      
-      // 성공 시 내 그룹 목록 다시 불러오기
-      await queryClient.invalidateQueries({
-        queryKey: myGroupsQueryKey(),
-      });
-      
-      toast.success('Successfully joined the group!');
-      handleCloseModal();
-      router.push(`/group/${group.groupId}/detail`);
-    } catch (error) {
-      console.error('Failed to join group:', error);
-      setJoinError('Failed to join the group. Please try again.');
-      toast.error('Failed to join the group.');
-    } finally {
-      setIsJoining(false);
-    }
+    // Remove inviteCode from URL
+    const url = new URL(window.location.href);
+    url.searchParams.delete('inviteCode');
+    router.replace(url.pathname + url.search, { scroll: false });
+  };
+
+  const handleJoinInviteGroup = async (inviteCode: string) => {
+    setInviteError('');
+    joinGroupByInviteMutation.mutate(inviteCode);
+  };
+
+  const handleJoinGroup = async (group: Group.GroupApiResponse, password: string) => {
+    setJoinError('');
+    joinGroupMutation.mutate({ group, password });
   };
 
   return (
@@ -176,7 +223,17 @@ export default function FindTeamPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredGroups.map((group) => (
-            <Card key={group.groupId} className={`${getCommonCardClass()} h-52 hover:bg-gray-50 dark:hover:bg-gray-800 group relative`}>
+            <Card 
+              key={group.groupId} 
+              className={`${getCommonCardClass()} h-52 hover:bg-gray-50 dark:hover:bg-gray-800 group relative cursor-pointer transition-all duration-200 hover:shadow-lg`}
+              onClick={() => {
+                if (isGroupMember(group.groupId)) {
+                  router.push(`/group/${group.groupId}/detail`);
+                } else {
+                  handleViewDetail(group);
+                }
+              }}
+            >
               <CardContent className="px-4 h-full">
                 <div className="h-full flex flex-col gap-3">
                   {/* Group Header */}
@@ -249,15 +306,14 @@ export default function FindTeamPage() {
                 </div>
                 
                 {/* Centered Action Button - appears on hover */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
                   {isGroupMember(group.groupId) ? (
                     <div className="bg-white dark:bg-gray-900 rounded-lg">
                       <Button
-                        className="bg-gray-600 text-white cursor-not-allowed shadow-lg hover:bg-gray-600"
+                        className="bg-green-600 text-white hover:bg-green-700 shadow-lg transition-colors"
                         size="default"
-                        disabled
                       >
-                        Already Joined
+                        Go to My Group
                       </Button>
                     </div>
                   ) : (
@@ -265,7 +321,6 @@ export default function FindTeamPage() {
                       <Button
                         className={`${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90 transition-colors cursor-pointer shadow-lg`}
                         size="default"
-                        onClick={() => handleViewDetail(group)}
                       >
                         See in Detail
                       </Button>
@@ -304,147 +359,28 @@ export default function FindTeamPage() {
       </Card>
 
       {/* Group Detail Modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className={`max-w-2xl ${getCommonCardClass()}`}>
-          {selectedGroup && (
-            <>
-              <DialogHeader className="pb-4">
-                <div className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-                  Group Details
-                </div>
-              </DialogHeader>
-              
-              <div className="space-y-4">
-                {/* Group Header */}
-                <Card className={getCommonCardClass()}>
-                  <CardContent className="p-6">
-                    <div className="mb-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-                          {selectedGroup.name}
-                        </div>
-                        {selectedGroup.isPublic ? (
-                          <Globe className="h-6 w-6 text-green-500 flex-shrink-0" />
-                        ) : (
-                          <Lock className="h-6 w-6 text-orange-500 flex-shrink-0" />
-                        )}
-                      </div>
-                      
-                      <div className={`text-sm ${getThemeTextColor('secondary')}`}>
-                        Created by @{selectedGroup.groupOwner.nickname}
-                      </div>
-                    </div>
+      <GroupDetailModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        group={selectedGroup}
+        isGroupMember={isGroupMember}
+        onJoinGroup={handleJoinGroup}
+        isJoining={joinGroupMutation.isPending}
+        joinError={joinError}
+      />
 
-                    {/* Group Description */}
-                    {selectedGroup.description && (
-                      <div className="mb-4">
-                        <p className={`text-sm ${getThemeTextColor('secondary')} leading-relaxed whitespace-pre-wrap`}>
-                          {selectedGroup.description}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Group Owner */}
-                    <div className="mb-4">
-                      <div className={`text-sm font-medium ${getThemeTextColor('primary')} mb-2`}>
-                        Group Owner
-                      </div>
-                      <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                        @{selectedGroup.groupOwner.nickname}
-                      </div>
-                    </div>
-
-                    {/* Tags */}
-                    {selectedGroup.tags && selectedGroup.tags.length > 0 && (
-                      <div>
-                        <div className="flex flex-wrap gap-2">
-                          {selectedGroup.tags.map((tag) => (
-                            <Badge 
-                              key={tag} 
-                              variant="outline" 
-                              className={`gap-1 text-xs ${getThemeClass('border')} ${getThemeTextColor('secondary')}`}
-                            >
-                              <Hash className="h-3 w-3" />
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-                
-                {/* Password Input for Private Groups */}
-                {!selectedGroup.isPublic && !isGroupMember(selectedGroup.groupId) && (
-                  <div className="space-y-2">
-                    <label htmlFor="password" className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                      Password required for private group
-                    </label>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="Enter group password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      disabled={isJoining}
-                      className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border}"
-                      onPaste={(e) => {
-                        // 복붙 명시적 허용
-                        e.stopPropagation();
-                        // 기본 동작 유지하여 브라우저가 자동으로 처리하도록 함
-                      }}
-                      onContextMenu={(e) => {
-                        // 우클릭 메뉴 허용 (복사/붙여넣기 등)
-                        e.stopPropagation();
-                      }}
-                      style={{ 
-                        WebkitUserSelect: 'text', 
-                        userSelect: 'text' 
-                      }}
-                      autoComplete="current-password"
-                    />
-                  </div>
-                )}
-                
-                {/* Error Message */}
-                {joinError && (
-                  <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-                    <p className="text-sm text-red-600 dark:text-red-400">{joinError}</p>
-                  </div>
-                )}
-                
-                {/* Action Buttons */}
-                <div className="flex gap-3 pt-2">
-                  <Button
-                    variant="outline"
-                    className="flex-1 bg-white border-gray-200 text-gray-900 hover:bg-gray-50 disabled:opacity-50"
-                    onClick={handleCloseModal}
-                    disabled={isJoining}
-                  >
-                    Cancel
-                  </Button>
-                  {!isGroupMember(selectedGroup.groupId) ? (
-                    <Button
-                      className={`flex-1 ${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90 transition-colors`}
-                      onClick={() => handleJoinGroup(selectedGroup)}
-                      disabled={isJoining || (!selectedGroup.isPublic && !password)}
-                    >
-                      {isJoining ? 'Joining...' : 'Join Group'}
-                    </Button>
-                  ) : (
-                    <Button
-                      className="flex-1 bg-gray-400 text-white cursor-not-allowed"
-                      disabled
-                    >
-                      Already Joined
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Group Invite Modal */}
+      <GroupInviteModal
+        isOpen={isInviteModalOpen}
+        onClose={handleCloseInviteModal}
+        inviteGroup={inviteGroup}
+        isLoadingInvite={isLoadingInvite}
+        inviteError={inviteError}
+        isGroupMember={isGroupMember}
+        onJoinInviteGroup={handleJoinInviteGroup}
+        isJoining={joinGroupByInviteMutation.isPending}
+        inviteCode={currentInviteCode}
+      />
     </div>
   );
 }

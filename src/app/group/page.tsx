@@ -7,17 +7,28 @@ import { getLastGroupTab } from '@/hooks/group/useLastGroupTab';
 export default function GroupPage() {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+  const [isRouterReady, setIsRouterReady] = useState(false);
   const hasRedirected = useRef(false);
 
   useEffect(() => {
     setIsMounted(true);
+    
+    // Router 초기화 완료를 기다리는 추가 지연
+    const timer = setTimeout(() => {
+      setIsRouterReady(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    if (!isMounted || hasRedirected.current) return;
+    if (!isMounted || !isRouterReady || hasRedirected.current) return;
 
-    const performRedirect = () => {
+    const performRedirect = async () => {
       try {
+        // 추가 지연으로 Router 완전 초기화 대기
+        await new Promise(resolve => setTimeout(resolve, 50));
+        
         const lastTab = getLastGroupTab();
 
         if (lastTab && lastTab.startsWith('/group/')) {
@@ -36,17 +47,24 @@ export default function GroupPage() {
         hasRedirected.current = true;
       } catch (error) {
         console.error('Redirect error:', error);
-        router.replace('/group/search');
+        try {
+          router.replace('/group/search');
+        } catch (routerError) {
+          console.error('Router replace failed:', routerError);
+          // 폴백: window.location 사용
+          if (typeof window !== 'undefined') {
+            window.location.href = '/group/search';
+          }
+        }
         hasRedirected.current = true;
       }
     };
 
-    // 즉시 실행
     performRedirect();
-  }, [isMounted, router]);
+  }, [isMounted, isRouterReady, router]);
 
   // 로딩 화면
-  if (!isMounted) {
+  if (!isMounted || !isRouterReady) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
         <div className="flex flex-col items-center gap-4">

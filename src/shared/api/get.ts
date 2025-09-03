@@ -112,7 +112,7 @@ export const getSession = (date: string = getKSTDateString()) =>
 
 // 세션 상세 데이터 조회
 export const getSessionDetail = (session: number, date: string = getKSTDateString()) =>
-  parseApi<Session.SessionDetailApiResponse[]>(
+  parseApi<Session.SessionDetailApiResponse>(
     API.get(`/usage-log/pomodoro/details?session=${session}&date=${date}`)
   );
 
@@ -145,6 +145,12 @@ export const validateGroupName = (name: string) =>
 export const searchGroups = () =>
   parseApi<Group.GroupApiResponse[]>(
     API.get('/group/search')
+  );
+
+// 그룹 초대 코드로 그룹 정보 조회
+export const getGroupByInviteCode = (inviteCode: string) =>
+  parseApi<Group.GroupApiResponse>(
+    API.get(`/group/invite?code=${inviteCode}`)
   );
 
 // 그룹 리더보드 조회

@@ -17,14 +17,14 @@ interface SessionTimelineViewProps {
   selectedDate?: string;
 }
 
-// Loading skeleton component
+// Loading skeleton component - responsive height
 const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = ({ getThemeClass }) => (
-  <Card className={`rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
-    <CardContent className="p-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <div className="h-64 w-full">
-            <div className="h-full flex items-end gap-2 px-4">
+  <Card className={`h-auto lg:h-[500px] rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
+    <CardContent className="h-auto lg:h-full p-3">
+      <div className="min-h-[400px] lg:h-full grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="flex flex-col space-y-2">
+          <div className="flex-1 min-h-[400px]">
+            <div className="h-full flex items-end gap-2 px-4 pb-4">
               {[...Array(10)].map((_, index) => (
                 <div key={index} className="flex-1 flex flex-col items-center gap-1">
                   <div 
@@ -37,9 +37,9 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
             </div>
           </div>
         </div>
-        <div className="space-y-4">
+        <div className="flex flex-col space-y-2">
           <div className={`h-6 w-32 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {[...Array(4)].map((_, index) => (
               <div key={index} className="flex items-center gap-3">
                 <div className={`h-4 w-4 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
@@ -99,11 +99,11 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
     return <LoadingSkeleton getThemeClass={getThemeClass as (type: string) => string} />;
   }
 
-  // Error state
+  // Error state - responsive height
   if (isError || !sessionData) {
     return (
-      <Card className={`rounded-lg border-2 ${getThemeClass('border')} ${getThemeClass('component')}`}>
-        <CardContent className="p-6">
+      <Card className={`h-auto lg:h-[500px] rounded-lg border-2 ${getThemeClass('border')} ${getThemeClass('component')}`}>
+        <CardContent className="min-h-[300px] lg:h-full p-3 flex items-center justify-center">
           <StateDisplay
             type="error"
             title="Unable to load session data"
@@ -118,11 +118,11 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
     );
   }
 
-  // Empty state
+  // Empty state - responsive height
   if (processedSessions.length === 0) {
     return (
-      <Card className={`rounded-lg border-2 ${getThemeClass('border')} ${getThemeClass('component')}`}>
-        <CardContent className="p-6">
+      <Card className={`h-auto lg:h-[500px] rounded-lg border-2 ${getThemeClass('border')} ${getThemeClass('component')}`}>
+        <CardContent className="min-h-[300px] lg:h-full p-3 flex items-center justify-center">
           <StateDisplay
             type="empty"
             title="No sessions recorded"
@@ -137,19 +137,21 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
   }
 
   return (
-    <Card className={`rounded-lg border-2 transition-all duration-300 py-2 pb-0 ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <CardContent className="pt-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <Card className={`h-auto lg:h-[500px] rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <CardContent className="h-auto lg:h-full p-3">
+        <div className="min-h-[400px] lg:h-full grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Left: Chart */}
-          <SessionChart
-            sessionData={sessionData}
-            selectedSession={selectedSession}
-            onSessionSelect={handleSessionSelect}
-            onScrollToMostRecent={handleScrollToMostRecent}
-          />
+          <div className="min-h-[400px] lg:h-full overflow-hidden">
+            <SessionChart
+              sessionData={sessionData}
+              selectedSession={selectedSession}
+              onSessionSelect={handleSessionSelect}
+              onScrollToMostRecent={handleScrollToMostRecent}
+            />
+          </div>
 
           {/* Right: Session Details */}
-          <div className={`space-y-4 ${selectedSession ? 'min-h-96' : ''}`}>
+          <div className="min-h-[300px] lg:h-full overflow-hidden">
             <SessionDetail
               selectedSession={selectedSession}
               sessionData={sessionData}

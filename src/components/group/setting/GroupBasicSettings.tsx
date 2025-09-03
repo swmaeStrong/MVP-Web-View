@@ -173,7 +173,12 @@ export default function GroupBasicSettings({
           <Button
             type="submit"
             className={`gap-2 ${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90 transition-colors`}
-            disabled={isSubmitting}
+            disabled={
+              isSubmitting || 
+              !form.formState.isValid ||
+              !form.formState.isDirty ||
+              !form.getValues('name')?.trim()
+            }
           >
             <Save className="h-4 w-4" />
             {isSubmitting ? 'Saving...' : 'Save Changes'}

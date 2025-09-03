@@ -26,7 +26,7 @@ export const useSessions = (selectedDate: string) => {
 export const useSessionDetail = (sessionId: number | undefined, selectedDate: string) => {
   return useQuery({
     queryKey: sessionDetailQueryKey(sessionId, selectedDate),
-    queryFn: () => sessionId ? getSessionDetail(sessionId, selectedDate) : Promise.resolve([]),
+    queryFn: () => sessionId ? getSessionDetail(sessionId, selectedDate) : Promise.resolve(undefined),
     enabled: Boolean(sessionId),
     retry: 1,
     staleTime: 1000 * 60 * 5, // 5분간 fresh

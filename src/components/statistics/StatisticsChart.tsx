@@ -1,109 +1,79 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
+import { Card, CardContent } from '@/shadcn/ui/card';
 // 이제 namespace 사용으로 인해 직접 import 불가능
 import {
-  Activity,
-  BarChart3,
-  Target,
+  Activity
 } from 'lucide-react';
+import { useUsageStatistics } from '../../hooks/data/useStatistics';
+import { useCurrentUserData } from '../../hooks/user/useCurrentUser';
 import StateDisplay from '../common/StateDisplay';
 import StatisticsPieChart from './StatisticsPieChart';
-
 interface StatisticsChartProps {
-  selectedPeriod: Statistics.PeriodType;
-  data: Statistics.DailyStatistics | null;
   currentDate: string;
-  isLoading?: boolean;
 }
 
+
 export default function StatisticsChart({
-  selectedPeriod,
-  data,
   currentDate,
-  isLoading = false,
 }: StatisticsChartProps) {
-  const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
-  
+  const currentUser = useCurrentUserData();
+  const {
+    data: dailyData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useUsageStatistics(currentDate, currentUser?.id || '');
+
+
+
+  const { getThemeClass } = useTheme();
   if (isLoading) {
     return (
-      <Card className={`h-[400px] flex flex-col rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
-        <CardHeader className='pb-2'>
-          <div className='flex items-center justify-between'>
-            <div className={`h-6 w-32 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-          </div>
-        </CardHeader>
-
-        <CardContent className='flex-1 flex flex-col justify-center items-center p-3 pt-0 overflow-hidden'>
-          {selectedPeriod === 'daily' ? (
-            // Pie chart skeleton
-            <div className='h-full flex items-center justify-center'>
-              <div className='relative w-full h-full flex items-center justify-center'>
-                <div className={`aspect-square w-full h-full min-h-[180px] max-h-[350px] min-w-[180px] max-w-[350px] animate-pulse rounded-full ${getThemeClass('componentSecondary')}`}></div>
-              </div>
-            </div>
-          ) : (
-            // Bar chart skeleton
-            <div className='space-y-6'>
-              <div className='h-[400px] w-full'>
-                <div className='h-full flex items-end gap-4 px-4'>
-                  {[...Array(selectedPeriod === 'weekly' ? 4 : 3)].map((_, index) => (
-                    <div key={index} className='flex-1 flex flex-col items-center gap-2'>
-                      <div className={`w-full animate-pulse rounded ${getThemeClass('componentSecondary')}`} style={{ height: `${Math.random() * 200 + 100}px` }}></div>
-                      <div className={`h-4 w-16 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+      <Card className={`h-[360px] flex flex-col rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+        <CardContent className='h-full flex flex-col justify-center items-center p-3 overflow-hidden'>
+            <div className='flex justify-center w-full'>
+              <div className='flex items-center gap-6'>
+                {/* Pie Chart Skeleton - Same size as actual chart */}
+                <div className='flex-shrink-0 w-[200px] flex justify-center'>
+                  <div className='aspect-square w-[180px] h-[180px] flex items-center justify-center'>
+                    <div className={`w-[170px] h-[170px] animate-pulse rounded-full ${getThemeClass('componentSecondary')}`}>
+                      {/* Donut chart effect - inner circle */}
+                      <div className='relative w-full h-full flex items-center justify-center'>
+                        <div className={`absolute w-[120px] h-[120px] rounded-full ${getThemeClass('component')}`}></div>
+                      </div>
                     </div>
-                  ))}
+                  </div>
                 </div>
-              </div>
-              {/* Legend skeleton */}
-              <div className={`rounded-xl p-4 shadow-sm ${getThemeClass('border')} ${getThemeClass('component')}`}>
-                <div className={`mb-3 h-5 w-32 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
-                <div className='grid grid-cols-2 gap-3 lg:grid-cols-3'>
-                  {[...Array(6)].map((_, index) => (
+                
+                {/* Category Details Skeleton - Same size as actual details */}
+                <div className='w-[200px] flex flex-col gap-2'>
+                  {[...Array(4)].map((_, index) => (
                     <div key={index} className='flex items-center gap-2'>
-                      <div className={`h-4 w-4 animate-pulse rounded-full ${getThemeClass('borderLight')}`}></div>
-                      <div className={`h-4 w-20 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+                      <div className={`w-3 h-3 rounded-full flex-shrink-0 animate-pulse ${getThemeClass('borderLight')}`}></div>
+                      <div className='flex flex-col min-w-0 flex-1'>
+                        <div className={`h-3 w-24 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
+                        <div className={`h-3 w-16 mt-1 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
-          )}
         </CardContent>
       </Card>
     );
   }
 
-  const getChartTitle = () => {
-    switch (selectedPeriod) {
-      case 'daily':
-        return 'Category Analysis';
-      case 'weekly':
-        return 'Weekly Work Patterns';
-      case 'monthly':
-        return 'Monthly Productivity Trends';
-      default:
-        return 'Work Analysis';
-    }
-  };
-
-  const getChartIcon = () => {
-    return selectedPeriod === 'daily' ? (
-      <Target className='h-5 w-5 text-purple-600' />
-    ) : (
-      <BarChart3 className='h-5 w-5 text-blue-600' />
-    );
-  };
-
   return (
     <Card className={`h-[360px] flex flex-col rounded-lg shadow-sm transition-all duration-300 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <CardContent className='flex-1 flex flex-col justify-center items-center p-3 overflow-hidden'>
-          {selectedPeriod === 'daily' && data && data.categories.length > 0 ? (
-            <StatisticsPieChart data={data} />
-          ) : selectedPeriod === 'weekly' || selectedPeriod === 'monthly' ? (
-            <>추후 추가 예정</>
-          ) : (
+      <CardContent className='h-full flex flex-col justify-center items-center p-3 overflow-hidden'>
+        {dailyData && dailyData.categories && dailyData.categories.length > 0 ? (
+          <StatisticsPieChart data={dailyData} />
+        ) : (
+          <div className='flex justify-center items-center w-full h-full'>
             <StateDisplay
               type="empty"
               title='No Activity Data'
@@ -112,7 +82,8 @@ export default function StatisticsChart({
               showBorder={false}
               size='large'
             />
-          )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
