@@ -196,27 +196,23 @@ const AppUsageToggle: React.FC<{
     <div className={`flex rounded-lg p-1 mb-4 ${getThemeClass('componentSecondary')}`}>
       <button
         onClick={() => onTabChange('work')}
-        className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+        className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] ${
           activeTab === 'work'
-            ? `${isDarkMode ? 'bg-green-800 text-green-100' : 'bg-green-100 text-green-800'}`
-            : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
+            ? `${isDarkMode ? 'bg-green-800 text-green-100 shadow-lg' : 'bg-green-100 text-green-800 shadow-lg'}`
+            : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-opacity-50 hover:shadow-md`
         }`}
       >
-        <span className="flex items-center justify-center gap-2">
-          ✅ Work
-        </span>
+        Work
       </button>
       <button
         onClick={() => onTabChange('distractions')}
-        className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+        className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] ${
           activeTab === 'distractions'
-            ? `${isDarkMode ? 'bg-red-800 text-red-100' : 'bg-red-100 text-red-800'}`
-            : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')}`
+            ? `${isDarkMode ? 'bg-red-800 text-red-100 shadow-lg' : 'bg-red-100 text-red-800 shadow-lg'}`
+            : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-opacity-50 hover:shadow-md`
         }`}
       >
-        <span className="flex items-center justify-center gap-2">
-          🚫 Distractions
-        </span>
+        Distractions
       </button>
     </div>
   );
@@ -251,7 +247,6 @@ const AppUsageList: React.FC<{
     return (
       <div className="space-y-3 mb-4">
         <div className={`text-sm font-medium ${getThemeTextColor('primary')} flex items-center gap-2`}>
-          <span>{isWork ? '✅' : '🚫'}</span>
           {isWork ? 'Work Apps' : 'Distractions'}
         </div>
         <div className={`py-4 px-3 rounded-lg border ${borderColor} text-center`}>
@@ -266,7 +261,6 @@ const AppUsageList: React.FC<{
   return (
     <div className="space-y-3 mb-4">
       <div className={`text-sm font-medium ${getThemeTextColor('primary')} flex items-center gap-2`}>
-        <span>{isWork ? '✅' : '🚫'}</span>
         {isWork ? 'Work Apps' : 'Distractions'}
       </div>
       <div className="space-y-2">
