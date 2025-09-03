@@ -10,7 +10,7 @@ import React from 'react';
 interface SessionDetailProps {
   selectedSession: SessionData | null;
   sessionData: Session.SessionApiResponse[] | undefined;
-  sessionDetailData: Session.SessionDetailApiResponse[] | undefined;
+  sessionDetailData: Session.SessionDetailApiResponse | undefined;
 }
 
 // Sub-components
@@ -186,7 +186,7 @@ const ProgressBar: React.FC<{
 };
 
 const DistractionsList: React.FC<{
-  distractions: Session.SessionDetailApiResponse[];
+  distractions: Session.AppUsageDetail[];
   isDarkMode: boolean;
   getThemeTextColor: (type: string) => string;
 }> = ({ distractions, isDarkMode, getThemeTextColor }) => {
@@ -218,7 +218,7 @@ const DistractionsList: React.FC<{
             <div key={index} className={`py-2 px-3 rounded-lg border ${isDarkMode ? 'border-red-400 bg-red-900/20' : 'border-red-300 bg-red-50'}`}>
               <div className="flex items-center justify-between mb-1">
                 <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
-                  {detail.distractedApp}
+                  {detail.app}
                 </span>
               </div>
               <div className={`flex gap-4 text-xs ${getThemeTextColor('secondary')}`}>
@@ -293,9 +293,9 @@ export default function SessionDetail({
       )}
 
       {/* Distractions */}
-      {sessionDetailData && sessionDetailData.length > 0 && (
+      {sessionDetailData && sessionDetailData.distractedAppUsage && sessionDetailData.distractedAppUsage.length > 0 && (
         <DistractionsList 
-          distractions={sessionDetailData}
+          distractions={sessionDetailData.distractedAppUsage}
           isDarkMode={isDarkMode}
           getThemeTextColor={getThemeTextColor as (type: string) => string}
         />
