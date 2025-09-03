@@ -7,10 +7,11 @@ import { sessionTimelineColors } from '@/styles/colors';
 import { Target } from 'lucide-react';
 import React, { useState } from 'react';
 
+
 interface SessionDetailProps {
   selectedSession: SessionData | null;
   sessionData: Session.SessionApiResponse[] | undefined;
-  sessionDetailData: Session.SessionDetailApiResponse | undefined;
+  sessionDetailData: any; // 임시로 any 사용
 }
 
 // Sub-components
@@ -218,8 +219,19 @@ const AppUsageToggle: React.FC<{
   );
 };
 
+interface AppUsageDetail {
+  app: string;
+  duration: number;
+  count: number;
+}
+
+interface SessionDetailApiResponse {
+  distractedAppUsage: AppUsageDetail[];
+  workAppUsage: AppUsageDetail[];
+}
+
 const AppUsageList: React.FC<{
-  apps: Session.AppUsageDetail[];
+  apps: AppUsageDetail[];
   type: 'work' | 'distractions';
   isDarkMode: boolean;
   getThemeTextColor: (type: string) => string;
@@ -347,7 +359,7 @@ export default function SessionDetail({
       )}
 
       {/* App Usage Toggle and List */}
-      {sessionDetailData && (sessionDetailData.workAppUsage?.length > 0 || sessionDetailData.distractedAppUsage?.length > 0) && (
+      {sessionDetailData && (sessionDetailData.workAppUsage.length > 0 || sessionDetailData.distractedAppUsage.length > 0) && (
         <>
           <AppUsageToggle
             activeTab={activeTab}
@@ -358,7 +370,7 @@ export default function SessionDetail({
           />
           
           <AppUsageList
-            apps={activeTab === 'work' ? sessionDetailData.workAppUsage || [] : sessionDetailData.distractedAppUsage || []}
+            apps={activeTab === 'work' ? sessionDetailData.workAppUsage : sessionDetailData.distractedAppUsage}
             type={activeTab}
             isDarkMode={isDarkMode}
             getThemeTextColor={getThemeTextColor as (type: string) => string}
