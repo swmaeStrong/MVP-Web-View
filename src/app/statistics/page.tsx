@@ -15,6 +15,7 @@ import WeeklyStreak from '@/components/statistics/WeeklyStreak';
 import StateDisplay from '../../components/common/StateDisplay';
 import TotalTimeCard from '../../components/statistics/DateNavigationCard';
 import MonthlyStreak from '../../components/statistics/MonthlyStreak';
+import StatisticsSummaryCards from '../../components/statistics/StatisticsSummaryCards';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<Statistics.PeriodType>('daily');
@@ -116,6 +117,20 @@ export default function StatisticsPage() {
                 canGoPrevious={canGoPrevious}
                 canGoNext={canGoNext}
               />
+        
+        {/* 통계 요약 카드들 */}
+        <StatisticsSummaryCards
+          totalWorkHours={(dailyData?.totalTime || 0) / 3600}
+          topCategories={
+            dailyData?.categories?.slice(0, 3).map(cat => ({
+              name: cat.name,
+              hours: cat.time / 3600
+            })) || []
+          }
+          avgFocusScore={75.5}
+          distractionCount={12}
+        />
+        
         <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
           {/* 왼쪽: 날짜 네비게이션, 목표 설정, 카테고리 분석 */}
           
