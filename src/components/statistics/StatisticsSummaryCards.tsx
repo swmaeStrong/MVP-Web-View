@@ -28,10 +28,9 @@ export default function StatisticsSummaryCards({
     return minutes > 0 ? `${wholeHours}h ${minutes}m` : `${wholeHours}h`;
   };
 
-  // 전체 시간 대비 퍼센트 계산
-  const getCategoryColor = (categoryName: string) => {
-    const colors = categoryColors as any;
-    return colors[categoryName]?.bg || 'bg-gray-400';
+  // 메인 컬러 사용
+  const getMainColor = () => {
+    return 'bg-[#3F72AF]'; // 메인 브랜드 컬러 사용
   };
 
   const cards = [
@@ -53,7 +52,7 @@ export default function StatisticsSummaryCards({
                   </span>
                   <div className="flex-1 max-w-[60px] sm:max-w-[80px] lg:max-w-[100px] xl:max-w-[120px] mx-1 sm:mx-2 bg-gray-200 dark:bg-gray-700 rounded-full h-1 overflow-hidden">
                     <div
-                      className={`h-full ${getCategoryColor(cat.name)} transition-all duration-500 ease-out rounded-full`}
+                      className={`h-full ${getMainColor()} transition-all duration-500 ease-out rounded-full`}
                       style={{ width: `${Math.min(percentage, 100)}%` }}
                     />
                   </div>
