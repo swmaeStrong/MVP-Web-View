@@ -35,7 +35,11 @@ export default function StatisticsSummaryCards({
   const cards = [
     {
       title: 'Work Hours',
-      value: formatHours(totalWorkHours),
+      value: (
+        <div className="text-2xl font-bold">
+          {formatHours(totalWorkHours)}
+        </div>
+      ),
     },
     {
       title: 'Focus Score',
@@ -109,7 +113,7 @@ export default function StatisticsSummaryCards({
               {card.title}
             </p>
             
-            <div className={`${index === 1 ? 'min-h-[60px] flex flex-col justify-center' : 'text-2xl font-bold'} ${getThemeTextColor('primary')}`}>
+            <div className={`min-h-[60px] flex flex-col justify-center ${getThemeTextColor('primary')}`}>
               {card.value}
             </div>
           </div>
