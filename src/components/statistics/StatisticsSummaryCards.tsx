@@ -38,6 +38,24 @@ export default function StatisticsSummaryCards({
       value: formatHours(totalWorkHours),
     },
     {
+      title: 'Focus Score',
+      value: (
+        <div className="flex items-baseline gap-1">
+          <span className="text-2xl font-bold">{avgFocusScore.toFixed(0)}</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">%</span>
+        </div>
+      ),
+    },
+    {
+      title: 'Distractions',
+      value: (
+        <div className="flex items-baseline gap-1">
+          <span className="text-2xl font-bold">{distractionCount}</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">times</span>
+        </div>
+      ),
+    },
+    {
       title: 'Top Categories',
       value: topCategories.length > 0 ? (
         <div className="space-y-1.5">
@@ -65,24 +83,7 @@ export default function StatisticsSummaryCards({
         <span className="text-sm text-gray-400">No data</span>
       ),
     },
-    {
-      title: 'Focus Score',
-      value: (
-        <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold">{avgFocusScore.toFixed(0)}</span>
-          <span className="text-sm text-gray-500 dark:text-gray-400">%</span>
-        </div>
-      ),
-    },
-    {
-      title: 'Distractions',
-      value: (
-        <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold">{distractionCount}</span>
-          <span className="text-sm text-gray-500 dark:text-gray-400">times</span>
-        </div>
-      ),
-    },
+
   ];
 
   return (
