@@ -63,7 +63,10 @@ export default function StatisticsSummaryCards({
             const percentage = totalWorkHours > 0 ? (cat.hours / totalWorkHours) * 100 : 0;
             return (
               <div key={idx} className="flex items-center gap-1.5">
-                <span className={`${getThemeTextColor('secondary')} text-xs font-medium w-20 lg:w-24 flex-shrink-0 text-left overflow-hidden text-ellipsis whitespace-nowrap`}>
+                <span 
+                  className={`${getThemeTextColor('secondary')} text-xs font-medium w-20 lg:w-24 flex-shrink-0 text-left overflow-hidden text-ellipsis whitespace-nowrap`}
+                  title={cat.name}
+                >
                   {cat.name}
                 </span>
                 <div className="flex-1 mx-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 lg:h-3 overflow-hidden min-w-[30px]">
@@ -72,7 +75,7 @@ export default function StatisticsSummaryCards({
                     style={{ width: `${Math.min(percentage, 100)}%` }}
                   />
                 </div>
-                <span className={`${getThemeTextColor('primary')} text-xs font-semibold flex-shrink-0 w-10 lg:w-12 text-right`}>
+                <span className={`${getThemeTextColor('primary')} text-xs font-semibold flex-shrink-0 w-14 lg:w-16 text-right whitespace-nowrap`}>
                   {formatHours(cat.hours)}
                 </span>
               </div>
