@@ -9,12 +9,9 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 // 컴포넌트 임포트
 import SessionTimelineView from '@/components/statistics/SessionTimelineView';
-import StatisticsChart from '@/components/statistics/StatisticsChart';
-import WeeklyStreak from '@/components/statistics/WeeklyStreak';
 // generateMockCycles import 제거 - API 사용으로 대체됨
 import StateDisplay from '../../components/common/StateDisplay';
 import TotalTimeCard from '../../components/statistics/DateNavigationCard';
-import MonthlyStreak from '../../components/statistics/MonthlyStreak';
 import StatisticsSummaryCards from '../../components/statistics/StatisticsSummaryCards';
 
 export default function StatisticsPage() {
@@ -131,17 +128,6 @@ export default function StatisticsPage() {
           distractionCount={12}
         />
         
-        <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
-          {/* 왼쪽: 날짜 네비게이션, 목표 설정, 카테고리 분석 */}
-          
-              <StatisticsChart
-                currentDate={selectedDate}
-              />
-          {/* 오른쪽: 주별 스트릭 컴포넌트 (기존 ActivityList 위치) */}
-
-          {selectedStreak === 'weekly' && <WeeklyStreak initialMonth={currentMonth} onMonthChange={setCurrentMonth} changeStreak={setSelectedStreak}/>}
-          {selectedStreak === 'monthly' && <MonthlyStreak initialMonth={currentMonth} onMonthChange={setCurrentMonth} changeStreak={setSelectedStreak}/>}
-        </div>
 
         {/* 세션 타임라인 뷰 */}
         <SessionTimelineView selectedDate={selectedDate} />
