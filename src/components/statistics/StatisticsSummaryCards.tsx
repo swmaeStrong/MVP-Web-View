@@ -1,7 +1,6 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
-import { categoryColors } from '@/styles/colors';
 
 interface StatisticsSummaryCardsProps {
   totalWorkHours?: number;
@@ -45,19 +44,17 @@ export default function StatisticsSummaryCards({
           {topCategories.slice(0, 3).map((cat, idx) => {
             const percentage = totalWorkHours > 0 ? (cat.hours / totalWorkHours) * 100 : 0;
             return (
-              <div key={idx} className="flex items-center justify-between">
-                <div className="flex items-center flex-1 min-w-0 mr-2">
-                  <span className={`${getThemeTextColor('secondary')} text-xs font-medium w-16 sm:w-20 lg:w-24 xl:w-32 flex-shrink-0 text-left truncate`}>
-                    {cat.name}
-                  </span>
-                  <div className="flex-1 max-w-[60px] sm:max-w-[80px] lg:max-w-[100px] xl:max-w-[120px] mx-1 sm:mx-2 bg-gray-200 dark:bg-gray-700 rounded-full h-1 overflow-hidden">
-                    <div
-                      className={`h-full ${getMainColor()} transition-all duration-500 ease-out rounded-full`}
-                      style={{ width: `${Math.min(percentage, 100)}%` }}
-                    />
-                  </div>
+              <div key={idx} className="flex items-center gap-1.5">
+                <span className={`${getThemeTextColor('secondary')} text-xs font-medium w-20 lg:w-24 flex-shrink-0 text-left overflow-hidden text-ellipsis whitespace-nowrap`}>
+                  {cat.name}
+                </span>
+                <div className="flex-1 mx-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 lg:h-3 overflow-hidden min-w-[30px]">
+                  <div
+                    className={`h-full ${getMainColor()} transition-all duration-500 ease-out rounded-full`}
+                    style={{ width: `${Math.min(percentage, 100)}%` }}
+                  />
                 </div>
-                <span className={`${getThemeTextColor('primary')} text-xs font-semibold flex-shrink-0`}>
+                <span className={`${getThemeTextColor('primary')} text-xs font-semibold flex-shrink-0 w-10 lg:w-12 text-right`}>
                   {formatHours(cat.hours)}
                 </span>
               </div>
