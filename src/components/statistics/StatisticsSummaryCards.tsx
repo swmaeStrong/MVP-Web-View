@@ -79,19 +79,19 @@ export default function StatisticsSummaryCards({
       ),
     },
     {
-      title: 'Focus Score',
-      value: (
-        <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold">{calculateAverageFocusScore()}</span>
-          <span className="text-sm text-gray-500 dark:text-gray-400">%</span>
-        </div>
-      ),
-    },
-    {
       title: 'Distraction Hours',
       value: (
         <div className="text-2xl font-bold">
           {formatHours(calculateTotalDistractionHours())}
+        </div>
+      ),
+    },
+    {
+      title: 'Average Focus Score',
+      value: (
+        <div className="flex items-baseline gap-1">
+          <span className="text-2xl font-bold">{calculateAverageFocusScore()}</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">Points</span>
         </div>
       ),
     },
