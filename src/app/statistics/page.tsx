@@ -124,8 +124,7 @@ export default function StatisticsPage() {
               hours: cat.time / 3600
             })) || []
           }
-          avgFocusScore={75.5}
-          distractionCount={12}
+          selectedDate={selectedDate}
         />
         
 

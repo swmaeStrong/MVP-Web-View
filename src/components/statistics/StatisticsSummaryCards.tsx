@@ -1,21 +1,23 @@
 'use client';
 
+import { useSessions } from '@/hooks/data/useSession';
 import { useTheme } from '@/hooks/ui/useTheme';
 
 interface StatisticsSummaryCardsProps {
   totalWorkHours?: number;
   topCategories?: { name: string; hours: number }[];
-  avgFocusScore?: number;
-  distractionCount?: number;
+  selectedDate: string; // 선택된 날짜 추가
 }
 
 export default function StatisticsSummaryCards({
   totalWorkHours = 0,
   topCategories = [],
-  avgFocusScore = 0,
-  distractionCount = 0,
+  selectedDate,
 }: StatisticsSummaryCardsProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
+  
+  // React Query로 세션 데이터 가져오기
+  const { data: sessionData } = useSessions(selectedDate);
 
   const formatHours = (hours: number): string => {
     if (hours < 1) {
@@ -32,6 +34,41 @@ export default function StatisticsSummaryCards({
     return 'bg-[#3F72AF]'; // 메인 브랜드 컬러 사용
   };
 
+  // 세션 스코어 평균 계산
+  const calculateAverageFocusScore = (): number => {
+    if (!sessionData || sessionData.length === 0) return 0;
+    
+    const validSessions = sessionData.filter((session: any) => 
+      session.score !== null && session.score !== undefined && !isNaN(session.score)
+    );
+    
+    if (validSessions.length === 0) return 0;
+    
+    const totalScore = validSessions.reduce((sum: number, session: any) => sum + session.score, 0);
+    return Math.round(totalScore / validSessions.length);
+  };
+
+  // 전체 방해요소 시간 계산 (각 세션의 details에서 distraction 카테고리 시간 합계)
+  const calculateTotalDistractionHours = (): number => {
+    if (!sessionData || sessionData.length === 0) return 0;
+    
+    let totalDistractionMinutes = 0;
+    
+    // 각 세션의 details 배열을 순회
+    sessionData.forEach((session: Session.SessionApiResponse) => {
+      if (session.details && Array.isArray(session.details)) {
+        session.details.forEach((detail: Session.SessionDetail) => {
+          // category가 'distraction'인 경우 duration 합산
+          if (detail.category === 'distraction' || detail.category === 'Distraction') {
+            totalDistractionMinutes += detail.duration || 0;
+          }
+        });
+      }
+    });
+    
+    return totalDistractionMinutes / 3600; // 시간 단위로 변환
+  };
+
   const cards = [
     {
       title: 'Work Hours',
@@ -45,17 +82,16 @@ export default function StatisticsSummaryCards({
       title: 'Focus Score',
       value: (
         <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold">{avgFocusScore.toFixed(0)}</span>
+          <span className="text-2xl font-bold">{calculateAverageFocusScore()}</span>
           <span className="text-sm text-gray-500 dark:text-gray-400">%</span>
         </div>
       ),
     },
     {
-      title: 'Distractions',
+      title: 'Distraction Hours',
       value: (
-        <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold">{distractionCount}</span>
-          <span className="text-sm text-gray-500 dark:text-gray-400">times</span>
+        <div className="text-2xl font-bold">
+          {formatHours(calculateTotalDistractionHours())}
         </div>
       ),
     },
