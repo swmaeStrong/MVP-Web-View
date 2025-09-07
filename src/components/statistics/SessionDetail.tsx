@@ -2,8 +2,8 @@
 
 import { useSessionTimeline } from '@/hooks/ui/useSessionTimeline';
 import { useTheme } from '@/hooks/ui/useTheme';
-import type { SessionData } from '@/types/domains/usage/session';
 import { sessionTimelineColors } from '@/styles/colors';
+import type { SessionData } from '@/types/domains/usage/session';
 import { Target } from 'lucide-react';
 import React, { useState } from 'react';
 
@@ -282,7 +282,7 @@ const AppUsageList: React.FC<{
           .map((detail, index) => (
             <div key={index} className={`py-2 px-3 rounded-lg border ${borderColor}`}>
               <div className="flex items-center justify-between mb-1">
-                <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
+                <span className={`text-xs font-medium truncate ${getThemeTextColor('primary')}`}>
                   {detail.app}
                 </span>
               </div>
@@ -358,23 +358,42 @@ export default function SessionDetail({
         />
       )}
 
-      {/* App Usage Toggle and List */}
+      {/* App Usage - Side by side on desktop, toggle on mobile */}
       {sessionDetailData && (sessionDetailData.workAppUsage.length > 0 || sessionDetailData.distractedAppUsage.length > 0) && (
         <>
-          <AppUsageToggle
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            isDarkMode={isDarkMode}
-            getThemeClass={getThemeClass as (type: string) => string}
-            getThemeTextColor={getThemeTextColor as (type: string) => string}
-          />
+          {/* Mobile Toggle (hidden on lg) */}
+          {/* <div className="lg:hidden">
+            <AppUsageToggle
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              isDarkMode={isDarkMode}
+              getThemeClass={getThemeClass as (type: string) => string}
+              getThemeTextColor={getThemeTextColor as (type: string) => string}
+            />
+            
+            <AppUsageList
+              apps={activeTab === 'work' ? sessionDetailData.workAppUsage : sessionDetailData.distractedAppUsage}
+              type={activeTab}
+              isDarkMode={isDarkMode}
+              getThemeTextColor={getThemeTextColor as (type: string) => string}
+            />
+          </div> */}
           
-          <AppUsageList
-            apps={activeTab === 'work' ? sessionDetailData.workAppUsage : sessionDetailData.distractedAppUsage}
-            type={activeTab}
-            isDarkMode={isDarkMode}
-            getThemeTextColor={getThemeTextColor as (type: string) => string}
-          />
+          {/* Desktop Side by Side (hidden on mobile) */}
+          <div className="grid grid-cols-2 gap-4">
+            <AppUsageList
+              apps={sessionDetailData.workAppUsage}
+              type="work"
+              isDarkMode={isDarkMode}
+              getThemeTextColor={getThemeTextColor as (type: string) => string}
+            />
+            <AppUsageList
+              apps={sessionDetailData.distractedAppUsage}
+              type="distractions"
+              isDarkMode={isDarkMode}
+              getThemeTextColor={getThemeTextColor as (type: string) => string}
+            />
+          </div>
         </>
       )}
     </div>
