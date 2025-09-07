@@ -6,7 +6,7 @@ import { brandColors } from '@/styles/colors';
 import { Plus, Search, Settings, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
 interface NavItem {
   name: string;
@@ -82,7 +82,7 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
 
   return (
     <aside
-      className={`fixed top-0 left-0 h-full w-40 ${getThemeClass('component')} ${getThemeClass('border')} border-r z-40`}
+      className={`fixed top-0 left-0 h-full w-40 ${getThemeClass('background')} ${getThemeClass('border')} border-r z-40`}
     >
       <div className="p-4 h-full flex flex-col">
         {/* Groups Section */}

@@ -28,27 +28,27 @@ export const themeColors = {
   },
   light: {
     // 배경색
-    background: '#ECECEC',           // Bg-[#ECECEC] 233,233,233
-    component: 'rgb(255, 255, 255)', // 컴포넌트 bg- 255, 255, 255
-    componentSecondary: 'rgb(249, 250, 251)', // 보조 컴포넌트 bg-gray-50
+    background: '#f5fafc',           // 연한 파란빛 회색 배경
+    component: 'rgb(255, 255, 255)', // 순백색 컴포넌트
+    componentSecondary: 'rgb(251, 252, 253)', // 매우 연한 파란빛 회색
     // 테두리 색상
-    border: 'rgb(229, 231, 235)',    // 테두리 색상 gray-200
-    borderLight: 'rgb(209, 213, 219)', // 밝은 테두리 색상 gray-300
+    border: 'rgb(226, 232, 240)',    // 파란빛 회색 테두리 (slate-200)
+    borderLight: 'rgb(203, 213, 225)', // 연한 파란빛 회색 테두리 (slate-300)
     // 텍스트 색상
     text: {
-      primary: 'rgb(43, 43, 43)',    // 텍스트 43, 43, 43
-      secondary: 'rgb(142, 142, 142)', // 회색 텍스트 142,142,142
-      accent: '#3F72AF',    // 네이비 액센트 텍스트 blue-700
+      primary: 'rgb(30, 41, 59)',    // 진한 슬레이트 색상 (slate-800)
+      secondary: 'rgb(100, 116, 139)', // 중간 슬레이트 색상 (slate-500)
+      accent: '#3F72AF',    // 네이비 액센트 텍스트
     },
     // Tailwind 클래스명
     classes: {
-      background: 'bg-[#ECECEC]',
+      background: 'bg-[#f5fafc]',
       component: 'bg-white',
-      componentSecondary: 'bg-gray-50',
-      border: 'border-gray-200',
-      borderLight: 'border-gray-300',
-      textPrimary: 'text-[rgb(43,43,43)]',
-      textSecondary: 'text-[rgb(142,142,142)]',
+      componentSecondary: 'bg-[#fbfcfd]',
+      border: 'border-slate-200',
+      borderLight: 'border-slate-300',
+      textPrimary: 'text-slate-800',
+      textSecondary: 'text-slate-500',
       textAccent: 'text-[#3F72AF]',
     }
   },

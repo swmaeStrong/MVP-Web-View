@@ -9,12 +9,10 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 // 컴포넌트 임포트
 import SessionTimelineView from '@/components/statistics/SessionTimelineView';
-import StatisticsChart from '@/components/statistics/StatisticsChart';
-import WeeklyStreak from '@/components/statistics/WeeklyStreak';
 // generateMockCycles import 제거 - API 사용으로 대체됨
 import StateDisplay from '../../components/common/StateDisplay';
 import TotalTimeCard from '../../components/statistics/DateNavigationCard';
-import MonthlyStreak from '../../components/statistics/MonthlyStreak';
+import StatisticsSummaryCards from '../../components/statistics/StatisticsSummaryCards';
 
 export default function StatisticsPage() {
   const [selectedPeriod] = useState<Statistics.PeriodType>('daily');
@@ -107,7 +105,7 @@ export default function StatisticsPage() {
 
   return (
     <div className={`min-h-screen p-3 sm:p-4 lg:p-6 ${getThemeClass('background')}`}>
-      <div className='mx-auto max-w-6xl space-y-4 sm:space-y-6'>
+      <div className='mx-auto space-y-4 sm:space-y-6'>
         {/* 메인 콘텐츠 */}
         <TotalTimeCard
                 currentDate={selectedDate}
@@ -116,17 +114,19 @@ export default function StatisticsPage() {
                 canGoPrevious={canGoPrevious}
                 canGoNext={canGoNext}
               />
-        <div className='grid gap-4 sm:gap-6 lg:grid-cols-2'>
-          {/* 왼쪽: 날짜 네비게이션, 목표 설정, 카테고리 분석 */}
-          
-              <StatisticsChart
-                currentDate={selectedDate}
-              />
-          {/* 오른쪽: 주별 스트릭 컴포넌트 (기존 ActivityList 위치) */}
-
-          {selectedStreak === 'weekly' && <WeeklyStreak initialMonth={currentMonth} onMonthChange={setCurrentMonth} changeStreak={setSelectedStreak}/>}
-          {selectedStreak === 'monthly' && <MonthlyStreak initialMonth={currentMonth} onMonthChange={setCurrentMonth} changeStreak={setSelectedStreak}/>}
-        </div>
+        
+        {/* 통계 요약 카드들 */}
+        <StatisticsSummaryCards
+          totalWorkHours={(dailyData?.totalTime || 0) / 3600}
+          topCategories={
+            dailyData?.categories?.slice(0, 3).map(cat => ({
+              name: cat.name,
+              hours: cat.time / 3600
+            })) || []
+          }
+          selectedDate={selectedDate}
+        />
+        
 
         {/* 세션 타임라인 뷰 */}
         <SessionTimelineView selectedDate={selectedDate} />

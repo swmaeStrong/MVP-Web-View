@@ -2,8 +2,8 @@
 
 import { useSessionTimeline } from '@/hooks/ui/useSessionTimeline';
 import { useTheme } from '@/hooks/ui/useTheme';
-import type { SessionData } from '@/types/domains/usage/session';
 import { sessionTimelineColors } from '@/styles/colors';
+import type { SessionData } from '@/types/domains/usage/session';
 import { Target } from 'lucide-react';
 import React, { useState } from 'react';
 
@@ -252,8 +252,8 @@ const AppUsageList: React.FC<{
 
   const isWork = type === 'work';
   const borderColor = isDarkMode 
-    ? (isWork ? 'border-green-400 bg-green-900/20' : 'border-red-400 bg-red-900/20')
-    : (isWork ? 'border-green-300 bg-green-50' : 'border-red-300 bg-red-50');
+    ? (isWork ? 'border-green-400/50 bg-green-900/10' : 'border-red-400/50 bg-red-900/10')
+    : (isWork ? 'border-green-200 bg-green-50/50' : 'border-red-200 bg-red-50/50');
 
   if (!apps || apps.length === 0) {
     return (
@@ -282,7 +282,7 @@ const AppUsageList: React.FC<{
           .map((detail, index) => (
             <div key={index} className={`py-2 px-3 rounded-lg border ${borderColor}`}>
               <div className="flex items-center justify-between mb-1">
-                <span className={`text-xs font-medium ${getThemeTextColor('primary')}`}>
+                <span className={`text-xs font-medium truncate ${getThemeTextColor('primary')}`}>
                   {detail.app}
                 </span>
               </div>
@@ -301,8 +301,8 @@ const EmptyState: React.FC<{
   getThemeClass: (type: string) => string;
   getThemeTextColor: (type: string) => string;
 }> = ({ getThemeClass, getThemeTextColor }) => (
-  <div className={`p-4 rounded-lg border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} text-center`}>
-    <Target className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+  <div className={`p-4 rounded-lg border ${getThemeClass('border')} ${getThemeClass('component')} text-center`}>
+    <Target className="h-8 w-8 mx-auto text-gray-400 dark:text-gray-500 mb-2" />
     <p className={`text-sm ${getThemeTextColor('secondary')}`}>
       Click on a bar to view session details
     </p>
@@ -333,7 +333,7 @@ export default function SessionDetail({
   const sessionApiResponse = sessionData?.find(session => session.session === selectedSession.id);
 
   return (
-    <div className={`p-4 rounded-lg ${getThemeClass('componentSecondary')}`}>
+    <div className={`p-4 rounded-lg ${getThemeClass('component')} border ${getThemeClass('border')}`}>
       {/* Session Header */}
       <SessionHeader 
         session={selectedSession}
@@ -344,7 +344,7 @@ export default function SessionDetail({
       {/* Progress Bar */}
       {segments.length === 0 ? (
         <div className="mb-4">
-          <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')} text-center`}>
+          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800/50' : 'bg-gray-50/50'} text-center`}>
             <p className={`text-sm ${getThemeTextColor('secondary')}`}>
               Unable to load session data.
             </p>
@@ -358,23 +358,42 @@ export default function SessionDetail({
         />
       )}
 
-      {/* App Usage Toggle and List */}
+      {/* App Usage - Side by side on desktop, toggle on mobile */}
       {sessionDetailData && (sessionDetailData.workAppUsage.length > 0 || sessionDetailData.distractedAppUsage.length > 0) && (
         <>
-          <AppUsageToggle
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            isDarkMode={isDarkMode}
-            getThemeClass={getThemeClass as (type: string) => string}
-            getThemeTextColor={getThemeTextColor as (type: string) => string}
-          />
+          {/* Mobile Toggle (hidden on lg) */}
+          {/* <div className="lg:hidden">
+            <AppUsageToggle
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              isDarkMode={isDarkMode}
+              getThemeClass={getThemeClass as (type: string) => string}
+              getThemeTextColor={getThemeTextColor as (type: string) => string}
+            />
+            
+            <AppUsageList
+              apps={activeTab === 'work' ? sessionDetailData.workAppUsage : sessionDetailData.distractedAppUsage}
+              type={activeTab}
+              isDarkMode={isDarkMode}
+              getThemeTextColor={getThemeTextColor as (type: string) => string}
+            />
+          </div> */}
           
-          <AppUsageList
-            apps={activeTab === 'work' ? sessionDetailData.workAppUsage : sessionDetailData.distractedAppUsage}
-            type={activeTab}
-            isDarkMode={isDarkMode}
-            getThemeTextColor={getThemeTextColor as (type: string) => string}
-          />
+          {/* Desktop Side by Side (hidden on mobile) */}
+          <div className="grid grid-cols-2 gap-4">
+            <AppUsageList
+              apps={sessionDetailData.workAppUsage}
+              type="work"
+              isDarkMode={isDarkMode}
+              getThemeTextColor={getThemeTextColor as (type: string) => string}
+            />
+            <AppUsageList
+              apps={sessionDetailData.distractedAppUsage}
+              type="distractions"
+              isDarkMode={isDarkMode}
+              getThemeTextColor={getThemeTextColor as (type: string) => string}
+            />
+          </div>
         </>
       )}
     </div>

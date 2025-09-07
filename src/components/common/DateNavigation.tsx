@@ -23,6 +23,8 @@ export default function DateNavigation({
 }: DateNavigationProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
 
+  const dateText = formatDate(currentDate);
+  
   return (
     <div className="flex items-center justify-center gap-2">
       {/* Previous button */}
@@ -35,10 +37,12 @@ export default function DateNavigation({
         <ChevronLeft className='h-4 w-4' />
       </Button>
       
-      {/* Date display */}
-      <div className={`text-lg font-bold px-4 ${getThemeTextColor('primary')}`}>
-        {formatDate(currentDate)}
-      </div>
+      {/* Date display - 빈 문자열이 아닌 경우에만 표시 */}
+      {dateText && (
+        <div className={`text-lg font-bold px-4 ${getThemeTextColor('primary')}`}>
+          {dateText}
+        </div>
+      )}
       
       {/* Next button */}
       <Button
