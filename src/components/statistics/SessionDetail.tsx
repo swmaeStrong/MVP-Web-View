@@ -252,8 +252,8 @@ const AppUsageList: React.FC<{
 
   const isWork = type === 'work';
   const borderColor = isDarkMode 
-    ? (isWork ? 'border-green-400 bg-green-900/20' : 'border-red-400 bg-red-900/20')
-    : (isWork ? 'border-green-300 bg-green-50' : 'border-red-300 bg-red-50');
+    ? (isWork ? 'border-green-400/50 bg-green-900/10' : 'border-red-400/50 bg-red-900/10')
+    : (isWork ? 'border-green-200 bg-green-50/50' : 'border-red-200 bg-red-50/50');
 
   if (!apps || apps.length === 0) {
     return (
@@ -301,8 +301,8 @@ const EmptyState: React.FC<{
   getThemeClass: (type: string) => string;
   getThemeTextColor: (type: string) => string;
 }> = ({ getThemeClass, getThemeTextColor }) => (
-  <div className={`p-4 rounded-lg border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} text-center`}>
-    <Target className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+  <div className={`p-4 rounded-lg border ${getThemeClass('border')} ${getThemeClass('component')} text-center`}>
+    <Target className="h-8 w-8 mx-auto text-gray-400 dark:text-gray-500 mb-2" />
     <p className={`text-sm ${getThemeTextColor('secondary')}`}>
       Click on a bar to view session details
     </p>
@@ -333,7 +333,7 @@ export default function SessionDetail({
   const sessionApiResponse = sessionData?.find(session => session.session === selectedSession.id);
 
   return (
-    <div className={`p-4 rounded-lg ${getThemeClass('componentSecondary')}`}>
+    <div className={`p-4 rounded-lg ${getThemeClass('component')} border ${getThemeClass('border')}`}>
       {/* Session Header */}
       <SessionHeader 
         session={selectedSession}
@@ -344,7 +344,7 @@ export default function SessionDetail({
       {/* Progress Bar */}
       {segments.length === 0 ? (
         <div className="mb-4">
-          <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')} text-center`}>
+          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-800/50' : 'bg-gray-50/50'} text-center`}>
             <p className={`text-sm ${getThemeTextColor('secondary')}`}>
               Unable to load session data.
             </p>
