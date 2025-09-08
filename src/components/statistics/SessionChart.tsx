@@ -3,7 +3,6 @@
 import { useSessionChart } from '@/hooks/ui/useSessionChart';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { ChartConfig, ChartContainer } from '@/shadcn/ui/chart';
-import { ScrollArea, ScrollBar } from '@/shadcn/ui/scroll-area';
 import type { SessionData } from '@/types/domains/usage/session';
 import React from 'react';
 import { Bar, BarChart, XAxis, YAxis } from 'recharts';
@@ -106,23 +105,21 @@ export default function SessionChart({
       
       {/* Chart */}
       <div className={`relative flex-1 rounded-lg ${getThemeClass('component')} p-2`}>
-        <ScrollArea className="w-full h-full">
-          <div className="w-max pr-4">
-            <ChartContainer 
-              config={chartConfig} 
-              className="h-[220px]" 
-              style={{ 
-                width: Math.max(320, allChartData.length * 40),
-                minWidth: '100%'
-              }}
-              ref={chartContainerRef}
+        <div className="w-full h-full">
+          <ChartContainer 
+            config={chartConfig} 
+            className="h-[220px] w-full" 
+            style={{ 
+              width: '100%'
+            }}
+            ref={chartContainerRef}
+          >
+            <BarChart
+              data={allChartData}
+              margin={{ top: 25, right: 15, left: 30, bottom: 25 }}
+              width={100}
+              barCategoryGap="5%"
             >
-              <BarChart
-                data={allChartData}
-                margin={{ top: 25, right: 15, left: 30, bottom: 25 }}
-                width={Math.max(320, allChartData.length * 40)}
-                barCategoryGap="5%"
-              >
                 <XAxis
                   dataKey="session"
                   axisLine={true}
@@ -148,16 +145,6 @@ export default function SessionChart({
                 />
               </BarChart>
             </ChartContainer>
-          </div>
-          <ScrollBar orientation="horizontal" className="h-2 [&>div]:bg-gray-300" />
-        </ScrollArea>
-        
-        {/* Scroll indicators */}
-        <div className="absolute top-1/2 left-0 transform -translate-y-1/2 pointer-events-none">
-          <div className={`w-6 h-12 bg-gradient-to-r from-${isDarkMode ? 'gray-900' : 'white'} to-transparent opacity-50`}></div>
-        </div>
-        <div className="absolute top-1/2 right-0 transform -translate-y-1/2 pointer-events-none">
-          <div className={`w-6 h-12 bg-gradient-to-l from-${isDarkMode ? 'gray-900' : 'white'} to-transparent opacity-50`}></div>
         </div>
       </div>
     </div>
