@@ -56,7 +56,7 @@ const CategoryItem: React.FC<{
   isDarkMode: boolean;
 }> = ({ category, getThemeClass, getThemeTextColor, isDarkMode }) => {
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1">
       <span 
         className={`${getThemeTextColor('secondary')} text-xs font-medium w-20 lg:w-24 flex-shrink-0 text-left overflow-hidden text-ellipsis whitespace-nowrap`}
         title={category.name}
@@ -78,9 +78,9 @@ const CategoryItem: React.FC<{
 
 // Loading skeleton - Top Categories format
 const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = ({ getThemeClass }) => (
-  <div className="space-y-1.5">
+  <div className="space-y-2.5">
     {[...Array(8)].map((_, index) => (
-      <div key={index} className="flex items-center gap-1.5">
+      <div key={index} className="flex items-center gap-1.5 py-1.5">
         <div className={`h-3 w-20 lg:w-24 rounded animate-pulse ${getThemeClass('borderLight')}`}></div>
         <div className={`flex-1 h-2 lg:h-3 rounded-full animate-pulse ${getThemeClass('borderLight')}`}></div>
         <div className={`h-3 w-14 lg:w-16 rounded animate-pulse ${getThemeClass('borderLight')}`}></div>
@@ -110,7 +110,7 @@ export default function CategoriesList({ categories = mockCategories, selectedDa
               <LoadingSkeleton getThemeClass={getThemeClass as (type: string) => string} />
             ) : (
               <ScrollArea className="h-full">
-                <div className="space-y-1.5">
+                <div className="space-y-2.5">
                   {categories.slice(0, 10).map((category, index) => (
                     <CategoryItem
                       key={index}
