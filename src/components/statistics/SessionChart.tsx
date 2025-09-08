@@ -108,7 +108,7 @@ export default function SessionChart({
         <div className="w-full h-full">
           <ChartContainer 
             config={chartConfig} 
-            className="h-[220px] w-full" 
+            className="h-[200px] lg:h-[260px] w-full" 
             style={{ 
               width: '100%'
             }}

@@ -138,10 +138,10 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
 
   return (
     <Card className={`h-auto lg:h-[300px] rounded-lg border-2 transition-all duration-300 p-0 ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <CardContent className="h-auto lg:h-full p-3">
-        <div className="h-auto lg:h-full grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <CardContent className="h-auto lg:h-full p-3 overflow-hidden">
+        <div className="h-auto lg:h-full grid grid-cols-1 lg:grid-cols-2 gap-4 max-h-full">
           {/* Left: Chart */}
-          <div className="h-[250px] lg:h-full overflow-hidden">
+          <div className="h-[240px] lg:h-[270px] overflow-hidden">
             <SessionChart
               sessionData={sessionData}
               selectedSession={selectedSession}

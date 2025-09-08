@@ -300,7 +300,7 @@ const EmptyState: React.FC<{
   getThemeClass: (type: string) => string;
   getThemeTextColor: (type: string) => string;
 }> = ({ getThemeClass, getThemeTextColor }) => (
-  <div className={`p-4 rounded-lg border ${getThemeClass('border')} ${getThemeClass('component')} text-center`}>
+  <div className="h-full flex flex-col items-center justify-center text-center">
     <Target className="h-8 w-8 mx-auto text-gray-400 dark:text-gray-500 mb-2" />
     <p className={`text-sm ${getThemeTextColor('secondary')}`}>
       Click on a bar to view session details
@@ -332,7 +332,7 @@ export default function SessionDetail({
   const sessionApiResponse = sessionData?.find(session => session.session === selectedSession.id);
 
   return (
-    <div className={`h-full flex flex-col p-3 rounded-lg ${getThemeClass('component')} border ${getThemeClass('border')}`}>
+    <div className="h-full flex flex-col">
       {/* Session Header */}
       <SessionHeader 
         session={selectedSession}
