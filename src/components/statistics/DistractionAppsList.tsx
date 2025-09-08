@@ -78,19 +78,11 @@ const DistractionAppItem: React.FC<{
   getThemeTextColor: (type: string) => string;
   isDarkMode: boolean;
 }> = ({ app, rank, getThemeClass, getThemeTextColor, isDarkMode }) => {
-  const borderColor = isDarkMode 
-    ? 'border-red-400/30 bg-red-900/5' 
-    : 'border-red-200 bg-red-50/30';
-
-  const impactColor = app.impact >= 70 ? 'text-red-600 dark:text-red-400' : 
-                      app.impact >= 40 ? 'text-orange-600 dark:text-orange-400' : 
-                      'text-yellow-600 dark:text-yellow-400';
-
   return (
-    <div className={`py-1.5 px-2 rounded-md border ${borderColor} hover:bg-red-50/50 dark:hover:bg-red-900/10 transition-colors`}>
+    <div className={`py-1.5 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} hover:${getThemeClass('componentHover')} transition-colors`}>
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <span className={`text-[10px] font-medium ${rank <= 3 ? 'text-red-600 dark:text-red-400' : getThemeTextColor('secondary')} flex-shrink-0`}>
+          <span className={`text-[10px] font-medium ${getThemeTextColor('secondary')} flex-shrink-0`}>
             #{rank}
           </span>
           <span className={`text-xs font-medium truncate ${getThemeTextColor('primary')}`}>

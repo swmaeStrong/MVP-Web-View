@@ -70,15 +70,11 @@ const WorkAppItem: React.FC<{
   getThemeTextColor: (type: string) => string;
   isDarkMode: boolean;
 }> = ({ app, rank, getThemeClass, getThemeTextColor, isDarkMode }) => {
-  const borderColor = isDarkMode 
-    ? 'border-green-400/30 bg-green-900/5' 
-    : 'border-green-200 bg-green-50/30';
-
   return (
-    <div className={`py-1.5 px-2 rounded-md border ${borderColor} hover:bg-green-50/50 dark:hover:bg-green-900/10 transition-colors`}>
+    <div className={`py-1.5 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} hover:${getThemeClass('componentHover')} transition-colors`}>
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <span className={`text-[10px] font-medium ${rank <= 3 ? 'text-green-600 dark:text-green-400' : getThemeTextColor('secondary')} flex-shrink-0`}>
+          <span className={`text-[10px] font-medium ${getThemeTextColor('secondary')} flex-shrink-0`}>
             #{rank}
           </span>
           <span className={`text-xs font-medium truncate ${getThemeTextColor('primary')}`}>
