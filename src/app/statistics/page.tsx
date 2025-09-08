@@ -12,13 +12,19 @@ import SessionTimelineView from '@/components/statistics/SessionTimelineView';
 import CategoriesList from '@/components/statistics/CategoriesList';
 import WorkAppsList from '@/components/statistics/WorkAppsList';
 import DistractionAppsList from '@/components/statistics/DistractionAppsList';
+// Weekly 컴포넌트 임포트
+import WeeklyTimelineView from '@/components/statistics/weekly/WeeklyTimelineView';
+import WeeklyCategoriesList from '@/components/statistics/weekly/WeeklyCategoriesList';
+import WeeklyWorkAppsList from '@/components/statistics/weekly/WeeklyWorkAppsList';
+import WeeklyDistractionAppsList from '@/components/statistics/weekly/WeeklyDistractionAppsList';
+import WeeklySummaryCards from '@/components/statistics/weekly/WeeklySummaryCards';
 // generateMockCycles import 제거 - API 사용으로 대체됨
 import StateDisplay from '../../components/common/StateDisplay';
 import TotalTimeCard from '../../components/statistics/DateNavigationCard';
 import StatisticsSummaryCards from '../../components/statistics/StatisticsSummaryCards';
 
 export default function StatisticsPage() {
-  const [selectedPeriod] = useState<Statistics.PeriodType>('daily');
+  const [selectedPeriod, setSelectedPeriod] = useState<'day' | 'week'>('day');
   // 현재 선택된 월 상태 추가
   const [currentMonth, setCurrentMonth] = useState(new Date(getKSTDateString()));
   // 날짜 제한 로직으로 변경 - 배열 생성 대신 상수 기반 체크
@@ -116,30 +122,47 @@ export default function StatisticsPage() {
                 onNext={handleNextDate}
                 canGoPrevious={canGoPrevious}
                 canGoNext={canGoNext}
+                selectedPeriod={selectedPeriod}
+                setSelectedPeriod={setSelectedPeriod}
               />
         
-        {/* 통계 요약 카드들 */}
-        <StatisticsSummaryCards
-          totalWorkHours={(dailyData?.totalTime || 0) / 3600}
-          topCategories={
-            dailyData?.categories?.slice(0, 3).map(cat => ({
-              name: cat.name,
-              hours: cat.time / 3600
-            })) || []
-          }
-          selectedDate={selectedDate}
-        />
+        {/* 통계 요약 카드들 - period에 따라 다른 컴포넌트 */}
+        {selectedPeriod === 'day' ? (
+          <StatisticsSummaryCards
+            totalWorkHours={(dailyData?.totalTime || 0) / 3600}
+            topCategories={
+              dailyData?.categories?.slice(0, 3).map(cat => ({
+                name: cat.name,
+                hours: cat.time / 3600
+              })) || []
+            }
+            selectedDate={selectedDate}
+          />
+        ) : (
+          <WeeklySummaryCards selectedDate={selectedDate} />
+        )}
         
-
-        {/* 세션 타임라인 뷰 */}
-        <SessionTimelineView selectedDate={selectedDate} />
-
-        {/* 하단: 3개 컴포넌트 그리드 */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-          <CategoriesList selectedDate={selectedDate} />
-          <WorkAppsList selectedDate={selectedDate} />
-          <DistractionAppsList selectedDate={selectedDate} />
-        </div>
+        {selectedPeriod === 'day' ? (
+          <>
+            {/* Daily 컴포넌트들 */}
+            <SessionTimelineView selectedDate={selectedDate} />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+              <CategoriesList selectedDate={selectedDate} />
+              <WorkAppsList selectedDate={selectedDate} />
+              <DistractionAppsList selectedDate={selectedDate} />
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Weekly 컴포넌트들 */}
+            <WeeklyTimelineView selectedDate={selectedDate} />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+              <WeeklyCategoriesList selectedDate={selectedDate} />
+              <WeeklyWorkAppsList selectedDate={selectedDate} />
+              <WeeklyDistractionAppsList selectedDate={selectedDate} />
+            </div>
+          </>
+        )}
       </div>
 
     </div>

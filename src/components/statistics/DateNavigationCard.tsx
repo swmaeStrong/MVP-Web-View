@@ -9,6 +9,8 @@ interface TotalTimeCardProps {
   onNext: () => void;
   canGoPrevious: boolean;
   canGoNext: boolean;
+  selectedPeriod?: 'day' | 'week';
+  setSelectedPeriod?: (period: 'day' | 'week') => void;
 }
 
 export default function TotalTimeCard({
@@ -17,8 +19,15 @@ export default function TotalTimeCard({
   onNext,
   canGoPrevious,
   canGoNext,
+  selectedPeriod: externalSelectedPeriod,
+  setSelectedPeriod: externalSetSelectedPeriod,
 }: TotalTimeCardProps) {
-  const [selectedPeriod, setSelectedPeriod] = useState<'day' | 'week'>('day');
+  // 내부 상태를 외부 props와 연결
+  const [internalSelectedPeriod, internalSetSelectedPeriod] = useState<'day' | 'week'>('day');
+  
+  // props가 없으면 내부 상태 사용, 있으면 외부 상태 사용
+  const selectedPeriod = externalSelectedPeriod ?? internalSelectedPeriod;
+  const setSelectedPeriod = externalSetSelectedPeriod ?? internalSetSelectedPeriod;
 
   return (
     <div className="flex items-center justify-end w-full mb-6">
