@@ -3,6 +3,8 @@
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
+import { getPomodoroDetails } from '@/shared/api/get';
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 // Types
@@ -103,9 +105,28 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
   </div>
 );
 
-export default function WorkAppsList({ workApps = mockWorkApps, selectedDate }: WorkAppsListProps) {
+export default function WorkAppsList({ selectedDate }: WorkAppsListProps) {
   const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
-  const isLoading = false; // Replace with actual loading state
+  
+  // API 데이터 가져오기
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['pomodoroDetails', selectedDate],
+    queryFn: () => getPomodoroDetails(selectedDate),
+    enabled: Boolean(selectedDate),
+  });
+
+  // API 데이터를 WorkApp 형태로 변환
+  const workApps: WorkApp[] = React.useMemo(() => {
+    if (!data?.workAppUsage) return [];
+    
+    return data.workAppUsage.map((app: Session.AppUsageDetail) => ({
+      name: app.app,
+      duration: app.duration,
+      accessCount: app.count,
+      productivity: 90, // API에서 제공하지 않으므로 기본값
+      category: 'Work', // API에서 제공하지 않으므로 기본값
+    }));
+  }, [data]);
 
   // Sort by duration (most used first)
   const sortedApps = [...workApps].sort((a, b) => b.duration - a.duration);
@@ -125,6 +146,14 @@ export default function WorkAppsList({ workApps = mockWorkApps, selectedDate }: 
           <div className="flex-1 min-h-0">
             {isLoading ? (
               <LoadingSkeleton getThemeClass={getThemeClass as (type: string) => string} />
+            ) : isError ? (
+              <div className={`flex items-center justify-center h-full ${getThemeTextColor('secondary')}`}>
+                <p className="text-xs">Failed to load work apps</p>
+              </div>
+            ) : sortedApps.length === 0 ? (
+              <div className={`flex items-center justify-center h-full ${getThemeTextColor('secondary')}`}>
+                <p className="text-xs">No work apps data</p>
+              </div>
             ) : (
               <ScrollArea className="h-full">
                 <div className="space-y-1">

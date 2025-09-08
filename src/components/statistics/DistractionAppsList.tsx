@@ -3,6 +3,8 @@
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
+import { getPomodoroDetails } from '@/shared/api/get';
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 // Types
@@ -111,9 +113,29 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
   </div>
 );
 
-export default function DistractionAppsList({ distractionApps = mockDistractionApps, selectedDate }: DistractionAppsListProps) {
+export default function DistractionAppsList({ selectedDate }: DistractionAppsListProps) {
   const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
-  const isLoading = false; // Replace with actual loading state
+  
+  // API 데이터 가져오기
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['pomodoroDetails', selectedDate],
+    queryFn: () => getPomodoroDetails(selectedDate),
+    enabled: Boolean(selectedDate),
+  });
+
+  // API 데이터를 DistractionApp 형태로 변환
+  const distractionApps: DistractionApp[] = React.useMemo(() => {
+    if (!data?.distractedAppUsage) return [];
+    
+    return data.distractedAppUsage.map((app: Session.AppUsageDetail) => ({
+      name: app.app,
+      duration: app.duration,
+      accessCount: app.count,
+      impact: 75, // API에서 제공하지 않으므로 기본값
+      category: 'Distraction', // API에서 제공하지 않으므로 기본값
+      timeBlocks: Math.ceil(app.count / 3), // 대략적인 계산
+    }));
+  }, [data]);
 
   // Sort by duration (most distracting first)
   const sortedApps = [...distractionApps].sort((a, b) => b.duration - a.duration);
@@ -138,6 +160,14 @@ export default function DistractionAppsList({ distractionApps = mockDistractionA
           <div className="flex-1 min-h-0">
             {isLoading ? (
               <LoadingSkeleton getThemeClass={getThemeClass as (type: string) => string} />
+            ) : isError ? (
+              <div className={`flex items-center justify-center h-full ${getThemeTextColor('secondary')}`}>
+                <p className="text-xs">Failed to load distraction apps</p>
+              </div>
+            ) : sortedApps.length === 0 ? (
+              <div className={`flex items-center justify-center h-full ${getThemeTextColor('secondary')}`}>
+                <p className="text-xs">No distraction apps data</p>
+              </div>
             ) : (
               <ScrollArea className="h-full">
                 <div className="space-y-1">

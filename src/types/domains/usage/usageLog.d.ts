@@ -34,4 +34,16 @@ declare namespace UsageLog {
     message: string;
     data: TimelineItem[];
   }
+
+  interface AppUsageItem {
+    app: string;
+    duration: number;
+    count: number;
+  }
+
+  interface PomodoroDetailsApiResponse {
+    totalSeconds: number;
+    distractedAppUsage: AppUsageItem[];
+    workAppUsage: AppUsageItem[];
+  }
 }
