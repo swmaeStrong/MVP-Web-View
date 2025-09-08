@@ -1,10 +1,9 @@
 'use client';
 
-import React from 'react';
-import { Card, CardContent } from '@/shadcn/ui/card';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
-import { Activity, Code, FileText, Globe, Music, Video, Gamepad2, MessageSquare } from 'lucide-react';
+import React from 'react';
 
 // Types
 interface CategoryItem {
@@ -12,7 +11,6 @@ interface CategoryItem {
   duration: number;
   percentage: number;
   color: string;
-  icon: React.ComponentType<{ className?: string }>;
 }
 
 interface CategoriesListProps {
@@ -22,13 +20,13 @@ interface CategoriesListProps {
 
 // Mock data for development
 const mockCategories: CategoryItem[] = [
-  { name: 'Development', duration: 14400, percentage: 45, color: 'bg-purple-500', icon: Code },
-  { name: 'Documentation', duration: 7200, percentage: 25, color: 'bg-indigo-500', icon: FileText },
-  { name: 'Communication', duration: 3600, percentage: 12, color: 'bg-blue-500', icon: MessageSquare },
-  { name: 'Research', duration: 2880, percentage: 10, color: 'bg-green-500', icon: Globe },
-  { name: 'Entertainment', duration: 1440, percentage: 5, color: 'bg-red-500', icon: Video },
-  { name: 'Music', duration: 720, percentage: 2, color: 'bg-yellow-500', icon: Music },
-  { name: 'Gaming', duration: 360, percentage: 1, color: 'bg-orange-500', icon: Gamepad2 }
+  { name: 'Development', duration: 14400, percentage: 45, color: 'bg-purple-500' },
+  { name: 'Documentation', duration: 7200, percentage: 25, color: 'bg-indigo-500' },
+  { name: 'Communication', duration: 3600, percentage: 12, color: 'bg-blue-500' },
+  { name: 'Research', duration: 2880, percentage: 10, color: 'bg-green-500' },
+  { name: 'Entertainment', duration: 1440, percentage: 5, color: 'bg-red-500' },
+  { name: 'Music', duration: 720, percentage: 2, color: 'bg-yellow-500' },
+  { name: 'Gaming', duration: 360, percentage: 1, color: 'bg-orange-500' }
 ];
 
 // Format time helper
@@ -96,20 +94,14 @@ export default function CategoriesList({ categories = mockCategories, selectedDa
   const isLoading = false; // Replace with actual loading state
 
   return (
-    <Card className={`h-auto lg:h-[280px] rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <CardContent className="h-auto lg:h-full p-4">
+    <Card className={`h-auto pt-0 lg:h-[280px] rounded-lg border transition-all duration-200 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <CardContent className="h-auto lg:h-full p-3">
         <div className="h-auto lg:h-full flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Activity className={`w-5 h-5 ${getThemeTextColor('primary')}`} />
-              <h3 className={`font-semibold text-lg ${getThemeTextColor('primary')}`}>
-                Categories
-              </h3>
-            </div>
-            <span className={`text-sm ${getThemeTextColor('secondary')}`}>
-              Today's breakdown
-            </span>
+          <div className="mb-4">
+            <p className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
+              Categories
+            </p>
           </div>
 
           {/* Content */}

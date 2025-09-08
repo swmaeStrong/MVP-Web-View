@@ -1,10 +1,9 @@
 'use client';
 
-import React from 'react';
-import { Card, CardContent } from '@/shadcn/ui/card';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
-import { Zap, AlertTriangle, Clock, TrendingDown } from 'lucide-react';
+import React from 'react';
 
 // Types
 interface DistractionApp {
@@ -74,21 +73,31 @@ const getImpactLabel = (impact: number): string => {
 // Distraction app item component
 const DistractionAppItem: React.FC<{
   app: DistractionApp;
+  rank: number;
   getThemeClass: (type: string) => string;
   getThemeTextColor: (type: string) => string;
   isDarkMode: boolean;
-}> = ({ app, getThemeClass, getThemeTextColor, isDarkMode }) => {
+}> = ({ app, rank, getThemeClass, getThemeTextColor, isDarkMode }) => {
   const borderColor = isDarkMode 
-    ? 'border-red-400/50 bg-red-900/10' 
-    : 'border-red-200 bg-red-50/50';
+    ? 'border-red-400/30 bg-red-900/5' 
+    : 'border-red-200 bg-red-50/30';
+
+  const impactColor = app.impact >= 70 ? 'text-red-600 dark:text-red-400' : 
+                      app.impact >= 40 ? 'text-orange-600 dark:text-orange-400' : 
+                      'text-yellow-600 dark:text-yellow-400';
 
   return (
-    <div className={`py-1 px-2 rounded-md border ${borderColor}`}>
-      <div className="flex items-center justify-between">
-        <span className={`text-xs font-medium truncate ${getThemeTextColor('primary')}`}>
-          {app.name}
-        </span>
-        <span className={`text-[10px] ${getThemeTextColor('secondary')}`}>
+    <div className={`py-1.5 px-2 rounded-md border ${borderColor} hover:bg-red-50/50 dark:hover:bg-red-900/10 transition-colors`}>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className={`text-[10px] font-medium ${rank <= 3 ? 'text-red-600 dark:text-red-400' : getThemeTextColor('secondary')} flex-shrink-0`}>
+            #{rank}
+          </span>
+          <span className={`text-xs font-medium truncate ${getThemeTextColor('primary')}`}>
+            {app.name}
+          </span>
+        </div>
+        <span className={`text-[10px] ${getThemeTextColor('secondary')} flex-shrink-0`}>
           {formatTime(app.duration)} / {app.accessCount} times
         </span>
       </div>
@@ -121,25 +130,15 @@ export default function DistractionAppsList({ distractionApps = mockDistractionA
   const totalDistractionTime = sortedApps.reduce((total, app) => total + app.duration, 0);
 
   return (
-    <Card className={`h-auto lg:h-[280px] rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <CardContent className="h-auto lg:h-full p-4">
+    <Card className={`h-auto pt-0 lg:h-[280px] rounded-lg border transition-all duration-200 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <CardContent className="h-auto lg:h-full p-3">
         <div className="h-auto lg:h-full flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className={`w-5 h-5 text-red-500`} />
-              <h3 className={`font-semibold text-lg ${getThemeTextColor('primary')}`}>
-                Distraction Apps
-              </h3>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className={`text-sm ${getThemeTextColor('secondary')}`}>
-                {formatTime(totalDistractionTime)} total
-              </span>
-              <div className="flex items-center gap-1">
-                <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                <span className={`text-xs ${getThemeTextColor('secondary')}`}>Impact</span>
-              </div>
+          <div className="mb-4">
+            <p className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
+              Distraction Apps
+            </p>
+            <div className="flex items-center justify-between">
             </div>
           </div>
 
@@ -154,6 +153,7 @@ export default function DistractionAppsList({ distractionApps = mockDistractionA
                     <DistractionAppItem
                       key={index}
                       app={app}
+                      rank={index + 1}
                       getThemeClass={getThemeClass as (type: string) => string}
                       getThemeTextColor={getThemeTextColor as (type: string) => string}
                       isDarkMode={isDarkMode}

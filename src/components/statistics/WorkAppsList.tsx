@@ -1,10 +1,9 @@
 'use client';
 
-import React from 'react';
-import { Card, CardContent } from '@/shadcn/ui/card';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
-import { Code2, Trophy, Clock } from 'lucide-react';
+import React from 'react';
 
 // Types
 interface WorkApp {
@@ -66,21 +65,27 @@ const getProductivityBgColor = (productivity: number): string => {
 // Work app item component
 const WorkAppItem: React.FC<{
   app: WorkApp;
+  rank: number;
   getThemeClass: (type: string) => string;
   getThemeTextColor: (type: string) => string;
   isDarkMode: boolean;
-}> = ({ app, getThemeClass, getThemeTextColor, isDarkMode }) => {
+}> = ({ app, rank, getThemeClass, getThemeTextColor, isDarkMode }) => {
   const borderColor = isDarkMode 
-    ? 'border-green-400/50 bg-green-900/10' 
-    : 'border-green-200 bg-green-50/50';
+    ? 'border-green-400/30 bg-green-900/5' 
+    : 'border-green-200 bg-green-50/30';
 
   return (
-    <div className={`py-1 px-2 rounded-md border ${borderColor}`}>
-      <div className="flex items-center justify-between">
-        <span className={`text-xs font-medium truncate ${getThemeTextColor('primary')}`}>
-          {app.name}
-        </span>
-        <span className={`text-[10px] ${getThemeTextColor('secondary')}`}>
+    <div className={`py-1.5 px-2 rounded-md border ${borderColor} hover:bg-green-50/50 dark:hover:bg-green-900/10 transition-colors`}>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className={`text-[10px] font-medium ${rank <= 3 ? 'text-green-600 dark:text-green-400' : getThemeTextColor('secondary')} flex-shrink-0`}>
+            #{rank}
+          </span>
+          <span className={`text-xs font-medium truncate ${getThemeTextColor('primary')}`}>
+            {app.name}
+          </span>
+        </div>
+        <span className={`text-[10px] ${getThemeTextColor('secondary')} flex-shrink-0`}>
           {formatTime(app.duration)} / {app.accessCount} times
         </span>
       </div>
@@ -110,26 +115,14 @@ export default function WorkAppsList({ workApps = mockWorkApps, selectedDate }: 
   const sortedApps = [...workApps].sort((a, b) => b.duration - a.duration);
 
   return (
-    <Card className={`h-auto lg:h-[280px] rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
-      <CardContent className="h-auto lg:h-full p-4">
+    <Card className={`h-auto pt-0 lg:h-[280px] rounded-lg border transition-all duration-200 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <CardContent className="h-auto lg:h-full p-3">
         <div className="h-auto lg:h-full flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Code2 className={`w-5 h-5 text-green-500`} />
-              <h3 className={`font-semibold text-lg ${getThemeTextColor('primary')}`}>
-                Work Apps
-              </h3>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className={`text-sm ${getThemeTextColor('secondary')}`}>
-                {sortedApps.length} apps
-              </span>
-              <div className="flex items-center gap-1">
-                <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                <span className={`text-xs ${getThemeTextColor('secondary')}`}>Productive</span>
-              </div>
-            </div>
+          <div className="mb-4">
+            <p className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
+              Work Apps
+            </p>
           </div>
 
           {/* Content */}
@@ -143,6 +136,7 @@ export default function WorkAppsList({ workApps = mockWorkApps, selectedDate }: 
                     <WorkAppItem
                       key={index}
                       app={app}
+                      rank={index + 1}
                       getThemeClass={getThemeClass as (type: string) => string}
                       getThemeTextColor={getThemeTextColor as (type: string) => string}
                       isDarkMode={isDarkMode}
