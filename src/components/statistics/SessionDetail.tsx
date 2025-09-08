@@ -278,17 +278,16 @@ const AppUsageList: React.FC<{
       <div className="space-y-1">
         {apps
           .sort((a, b) => b.duration - a.duration)
-          .slice(0, 2)
+          .slice(0, 4)
           .map((detail, index) => (
-            <div key={index} className={`py-1.5 px-2 rounded-md border ${borderColor}`}>
-              <div className="flex items-center justify-between mb-1">
+            <div key={index} className={`py-1 px-2 rounded-md border ${borderColor}`}>
+              <div className="flex items-center justify-between">
                 <span className={`text-xs font-medium truncate ${getThemeTextColor('primary')}`}>
                   {detail.app}
                 </span>
-              </div>
-              <div className={`flex gap-3 text-[10px] ${getThemeTextColor('secondary')}`}>
-                <span>Duration: {formatTime(Math.round(detail.duration))}</span>
-                <span>Count: {detail.count}x</span>
+                <span className={`text-[10px] ${getThemeTextColor('secondary')}`}>
+                  {formatTime(Math.round(detail.duration))} / {detail.count} times
+                </span>
               </div>
             </div>
           ))}
