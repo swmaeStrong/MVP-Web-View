@@ -9,6 +9,9 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 // 컴포넌트 임포트
 import SessionTimelineView from '@/components/statistics/SessionTimelineView';
+import CategoriesList from '@/components/statistics/CategoriesList';
+import WorkAppsList from '@/components/statistics/WorkAppsList';
+import DistractionAppsList from '@/components/statistics/DistractionAppsList';
 // generateMockCycles import 제거 - API 사용으로 대체됨
 import StateDisplay from '../../components/common/StateDisplay';
 import TotalTimeCard from '../../components/statistics/DateNavigationCard';
@@ -131,8 +134,11 @@ export default function StatisticsPage() {
         {/* 세션 타임라인 뷰 */}
         <SessionTimelineView selectedDate={selectedDate} />
 
-        {/* 하단: 세션 캐러셀 (전체 너비 사용) */}
-        <div className="w-full">
+        {/* 하단: 3개 컴포넌트 그리드 */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <CategoriesList selectedDate={selectedDate} />
+          <WorkAppsList selectedDate={selectedDate} />
+          <DistractionAppsList selectedDate={selectedDate} />
         </div>
       </div>
 
