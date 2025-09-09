@@ -1,6 +1,8 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useUsageStatistics } from '@/hooks/data/useStatistics';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
 import React from 'react';
@@ -14,20 +16,8 @@ interface CategoryItem {
 }
 
 interface CategoriesListProps {
-  categories?: CategoryItem[];
-  selectedDate?: string;
+  selectedDate: string;
 }
-
-// Mock data for development
-const mockCategories: CategoryItem[] = [
-  { name: 'Development', duration: 14400, percentage: 45, color: 'bg-purple-500' },
-  { name: 'Documentation', duration: 7200, percentage: 25, color: 'bg-indigo-500' },
-  { name: 'Communication', duration: 3600, percentage: 12, color: 'bg-blue-500' },
-  { name: 'Research', duration: 2880, percentage: 10, color: 'bg-green-500' },
-  { name: 'Entertainment', duration: 1440, percentage: 5, color: 'bg-red-500' },
-  { name: 'Music', duration: 720, percentage: 2, color: 'bg-yellow-500' },
-  { name: 'Gaming', duration: 360, percentage: 1, color: 'bg-orange-500' }
-];
 
 // Format time helper
 const formatTime = (seconds: number): string => {
@@ -89,9 +79,24 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
   </div>
 );
 
-export default function CategoriesList({ categories = mockCategories, selectedDate }: CategoriesListProps) {
+export default function CategoriesList({ selectedDate }: CategoriesListProps) {
   const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
-  const isLoading = false; // Replace with actual loading state
+  const currentUser = useCurrentUserData();
+  
+  // API에서 실제 데이터 조회
+  const { data: dailyData, isLoading, isError } = useUsageStatistics(selectedDate, currentUser?.id || '');
+  
+  // API 데이터를 CategoryItem 형태로 변환
+  const categories: CategoryItem[] = React.useMemo(() => {
+    if (!dailyData?.categories) return [];
+    
+    return dailyData.categories.map(category => ({
+      name: category.name,
+      duration: category.time,
+      percentage: category.percentage,
+      color: category.color,
+    }));
+  }, [dailyData?.categories]);
 
   return (
     <Card className={`h-auto pt-0 lg:h-[280px] rounded-lg border transition-all duration-200 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
@@ -108,12 +113,18 @@ export default function CategoriesList({ categories = mockCategories, selectedDa
           <div className="flex-1 min-h-0">
             {isLoading ? (
               <LoadingSkeleton getThemeClass={getThemeClass as (type: string) => string} />
+            ) : isError || categories.length === 0 ? (
+              <div className="flex items-center justify-center h-full">
+                <p className={`text-sm ${getThemeTextColor('secondary')}`}>
+                  {isError ? 'Failed to load data' : 'No data available'}
+                </p>
+              </div>
             ) : (
               <ScrollArea className="h-full">
                 <div className="space-y-2.5">
                   {categories.slice(0, 10).map((category, index) => (
                     <CategoryItem
-                      key={index}
+                      key={`${category.name}-${index}`}
                       category={category}
                       getThemeClass={getThemeClass as (type: string) => string}
                       getThemeTextColor={getThemeTextColor as (type: string) => string}
