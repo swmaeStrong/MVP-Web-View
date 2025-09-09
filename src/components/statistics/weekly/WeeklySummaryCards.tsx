@@ -14,13 +14,9 @@ export default function WeeklySummaryCards({
   // Weekly 통계 데이터 (모의)
   const weeklyStats = {
     totalHours: 47.6,
-    averageDaily: 6.8,
-    productiveDays: 5,
+    totalDistractions: 134,
     totalSessions: 69,
     averageFocusScore: 78,
-    weeklyGoalProgress: 85,
-    mostProductiveDay: 'Wednesday',
-    leastProductiveDay: 'Sunday',
   };
 
   const formatHours = (hours: number): string => {
@@ -37,34 +33,34 @@ export default function WeeklySummaryCards({
           {formatHours(weeklyStats.totalHours)}
         </div>
       ),
-      subtitle: `Avg ${formatHours(weeklyStats.averageDaily)}/day`,
+      subtitle: `Avg ${formatHours(weeklyStats.totalHours / 7)}/day`,
     },
     {
-      title: 'Productive Days',
+      title: 'Weekly Distractions',
       value: (
         <div className="text-2xl font-bold">
-          {weeklyStats.productiveDays}/7
+          {weeklyStats.totalDistractions}
         </div>
       ),
-      subtitle: `${Math.round((weeklyStats.productiveDays / 7) * 100)}% of week`,
+      subtitle: `Avg ${Math.round(weeklyStats.totalDistractions / 7)}/day`,
     },
     {
-      title: 'Weekly Goal',
+      title: 'Weekly Sessions',
+      value: (
+        <div className="text-2xl font-bold">
+          {weeklyStats.totalSessions}
+        </div>
+      ),
+      subtitle: `Avg ${Math.round(weeklyStats.totalSessions / 7)}/day`,
+    },
+    {
+      title: 'Average Focus Score',
       value: (
         <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold">{weeklyStats.weeklyGoalProgress}%</span>
+          <span className="text-2xl font-bold">{weeklyStats.averageFocusScore}%</span>
         </div>
       ),
-      subtitle: 'Target: 40 hours',
-    },
-    {
-      title: 'Best Day',
-      value: (
-        <div className="text-2xl font-bold">
-          {weeklyStats.mostProductiveDay}
-        </div>
-      ),
-      subtitle: '9.1h worked',
+      subtitle: 'Weekly average',
     },
   ];
 
