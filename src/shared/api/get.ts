@@ -46,6 +46,12 @@ export const getMyRank = (
     )
   );
 
+// Streak 조회
+export const getWeeklyStreak = (date: string = getKSTDateString()) =>
+  parseApi<Streak.WeeklyStreakApiResponse[]>(
+    API.get(`/streak/weekly?date=${date}`)
+  );
+
 // 사용 기록 조회
 export const getUsageLog = (
   userId: string,

@@ -29,12 +29,35 @@ export default function TotalTimeCard({
   const selectedPeriod = externalSelectedPeriod ?? internalSelectedPeriod;
   const setSelectedPeriod = externalSetSelectedPeriod ?? internalSetSelectedPeriod;
 
+  // 주간 날짜 범위 계산
+  const getWeekRange = (date: string) => {
+    const [year, month, day] = date.split('-').map(Number);
+    const currentDate = new Date(year, month - 1, day);
+    
+    // 해당 주의 월요일 찾기
+    const dayOfWeek = currentDate.getDay();
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(currentDate.getTime() + diff * 24 * 60 * 60 * 1000);
+    
+    // 해당 주의 일요일 찾기
+    const sunday = new Date(monday.getTime() + 6 * 24 * 60 * 60 * 1000);
+    
+    const formatDate = (d: Date) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${y}.${m}.${dd}`;
+    };
+    
+    return `${formatDate(monday)} - ${formatDate(sunday)}`;
+  };
+
   return (
     <div className="flex items-center justify-end w-full mb-6">
       <div className="flex items-center gap-4">
         {/* 날짜 표시 */}
         <h1 className="text-lg font-bold text-gray-900 dark:text-white">
-          {currentDate}
+          {selectedPeriod === 'week' ? getWeekRange(currentDate) : currentDate}
         </h1>
         
         {/* Day/Week 선택자 */}
