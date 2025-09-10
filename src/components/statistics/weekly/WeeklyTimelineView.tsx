@@ -1,12 +1,12 @@
 'use client';
 
+import { useDailyPomodoroDetails } from '@/hooks/data/useDailyPomodoroDetails';
+import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/shadcn/ui/chart';
-import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
-import { useDailyPomodoroDetails } from '@/hooks/data/useDailyPomodoroDetails';
 import React from 'react';
-import { Bar, BarChart, XAxis, YAxis, Cell, PieChart, Pie, ResponsiveContainer, Legend } from 'recharts';
+import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 interface WeeklyTimelineViewProps {
   selectedDate: string;
@@ -165,14 +165,11 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
       </Card>
 
       {/* 오른쪽 선택된 날짜 상세 정보 패널 (1/3) */}
-      <Card className={`w-1/3 h-[300px] rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <Card className={`w-1/3 h-[300px] py-0 rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardContent className="h-full p-3 flex flex-col">
-          <div className="mb-3">
-            <h3 className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
-              {selectedDayDate ? `${selectedDayDate} Details` : 'Select a Day'}
-            </h3>
-            <p className={`text-xs ${getThemeTextColor('secondary')}`}>
-              {selectedDayDate ? 'Daily pomodoro breakdown' : 'Click on a bar to see details'}
+          <div className="mb-2">
+            <p className={`text-lg font-semibold ${getThemeTextColor('secondary')} uppercase tracking-wider`}>
+              {selectedDayDate || 'Select a Day'}
             </p>
           </div>
 
