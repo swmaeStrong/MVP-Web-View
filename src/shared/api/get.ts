@@ -46,6 +46,12 @@ export const getMyRank = (
     )
   );
 
+// Streak 조회
+export const getWeeklyStreak = (date: string = getKSTDateString()) =>
+  parseApi<Streak.WeeklyStreakApiResponse[]>(
+    API.get(`/streak/weekly?date=${date}`)
+  );
+
 // 사용 기록 조회
 export const getUsageLog = (
   userId: string,
@@ -57,11 +63,10 @@ export const getUsageLog = (
 
 // 포모도로 사용 기록 조회
 export const getPomodoroUsageLog = (
-  userId: string,
   date: string = getKSTDateString()
 ) =>
   parseApi<UsageLog.UsageLogApiResponse[]>(
-    API.get(`/usage-log/pomodoro?userId=${userId}&date=${date}`)
+    API.get(`/usage-log/pomodoro?date=${date}`)
   );
 
 export const getHourlyUsageLog = (
@@ -116,6 +121,12 @@ export const getSessionDetail = (session: number, date: string = getKSTDateStrin
     API.get(`/usage-log/pomodoro/details?session=${session}&date=${date}`)
   );
 
+// 일별 전체 세션 상세 데이터 조회
+export const getPomodoroDetails = (date: string = getKSTDateString()) =>
+  parseApi<UsageLog.PomodoroDetailsApiResponse>(
+    API.get(`/usage-log/pomodoro/details?date=${date}`)
+  );
+
 
 // 그룹 조회
 export const getMyGroups = () =>
@@ -161,4 +172,16 @@ export const getGroupLeaderboard = (
 ) =>
   parseApi<Group.GroupLeaderboardApiResponse>(
     API.get(`/group/${groupId}/leaderboard?period=${period}&date=${date}`)
+  );
+
+// 주간 포모도로 상세 데이터 조회
+export const getWeeklyPomodoroDetails = (date: string = getKSTDateString()) =>
+  parseApi<UsageLog.WeeklyPomodoroDetailsApiResponse>(
+    API.get(`/usage-log/pomodoro/details/weekly?date=${date}`)
+  );
+
+// 주간 세션 평균 점수 조회
+export const getWeeklySessionScore = (date: string = getKSTDateString()) =>
+  parseApi<{ avgScore: number }>(
+    API.get(`/session/weekly?date=${date}`)
   );

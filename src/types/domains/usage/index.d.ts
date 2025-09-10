@@ -2,5 +2,6 @@
 export * from './cycle';
 export * from './statistics';
 export * from './usageLog';
+export * from './streak';
 
 /// <reference path="./session.d.ts" />

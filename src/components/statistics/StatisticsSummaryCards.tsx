@@ -17,16 +17,31 @@ export default function StatisticsSummaryCards({
   const { getThemeClass, getThemeTextColor } = useTheme();
   
   // React Query로 세션 데이터 가져오기
-  const { data: sessionData } = useSessions(selectedDate);
+  const { data: sessionData, isLoading } = useSessions(selectedDate);
 
   const formatHours = (hours: number): string => {
-    if (hours < 1) {
-      const minutes = Math.round(hours * 60);
-      return `${minutes}m`;
+    // NaN 또는 유효하지 않은 숫자 체크
+    if (isNaN(hours) || !isFinite(hours) || hours < 0) {
+      return '0m';
     }
+    
     const wholeHours = Math.floor(hours);
     const minutes = Math.round((hours - wholeHours) * 60);
-    return minutes > 0 ? `${wholeHours}h ${minutes}m` : `${wholeHours}h`;
+    
+    // NaN 방지를 위한 추가 체크
+    const safeHours = isNaN(wholeHours) ? 0 : wholeHours;
+    const safeMinutes = isNaN(minutes) ? 0 : minutes;
+    
+    if (safeHours === 0 && safeMinutes === 0) {
+      return '0m';
+    }
+    if (safeHours === 0) {
+      return `${safeMinutes}m`;
+    }
+    if (safeMinutes === 0) {
+      return `${safeHours}h`;
+    }
+    return `${safeHours}h ${safeMinutes}m`;
   };
 
   // 메인 컬러 사용
@@ -71,62 +86,49 @@ export default function StatisticsSummaryCards({
 
   const cards = [
     {
-      title: 'Work Hours',
-      value: (
+      title: 'Daily Total',
+      value: isLoading ? (
+        <div className="text-2xl font-bold animate-pulse">--h --m</div>
+      ) : (
         <div className="text-2xl font-bold">
           {formatHours(totalWorkHours)}
         </div>
       ),
+      subtitle: isLoading ? 'Loading...' : 'Total work time',
     },
     {
-      title: 'Distraction Hours',
-      value: (
+      title: 'Daily Distractions',
+      value: isLoading ? (
+        <div className="text-2xl font-bold animate-pulse">--h --m</div>
+      ) : (
         <div className="text-2xl font-bold">
           {formatHours(calculateTotalDistractionHours())}
         </div>
       ),
+      subtitle: isLoading ? 'Loading...' : 'Total distraction time',
+    },
+    {
+      title: 'Daily Sessions',
+      value: isLoading ? (
+        <div className="text-2xl font-bold animate-pulse">--</div>
+      ) : (
+        <div className="text-2xl font-bold">
+          {sessionData?.length || 0}
+        </div>
+      ),
+      subtitle: isLoading ? 'Loading...' : 'Completed sessions',
     },
     {
       title: 'Average Focus Score',
-      value: (
-        <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold">{calculateAverageFocusScore()}</span>
-          <span className="text-sm text-gray-500 dark:text-gray-400">Points</span>
-        </div>
-      ),
-    },
-    {
-      title: 'Top Categories',
-      value: topCategories.length > 0 ? (
-        <div className="space-y-1.5">
-          {topCategories.slice(0, 3).map((cat, idx) => {
-            const percentage = totalWorkHours > 0 ? (cat.hours / totalWorkHours) * 100 : 0;
-            return (
-              <div key={idx} className="flex items-center gap-1.5">
-                <span 
-                  className={`${getThemeTextColor('secondary')} text-xs font-medium w-20 lg:w-24 flex-shrink-0 text-left overflow-hidden text-ellipsis whitespace-nowrap`}
-                  title={cat.name}
-                >
-                  {cat.name}
-                </span>
-                <div className="flex-1 mx-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 lg:h-3 overflow-hidden min-w-[30px]">
-                  <div
-                    className={`h-full ${getMainColor()} transition-all duration-500 ease-out rounded-full`}
-                    style={{ width: `${Math.min(percentage, 100)}%` }}
-                  />
-                </div>
-                <span className={`${getThemeTextColor('primary')} text-xs font-semibold flex-shrink-0 w-14 lg:w-16 text-right whitespace-nowrap`}>
-                  {formatHours(cat.hours)}
-                </span>
-              </div>
-            );
-          })}
-        </div>
+      value: isLoading ? (
+        <div className="text-2xl font-bold animate-pulse">-- points</div>
       ) : (
-        <span className="text-sm text-gray-400">No data</span>
+        <div className="flex items-baseline gap-1">
+          <span className="text-2xl font-bold">{calculateAverageFocusScore()} points</span>
+        </div>
       ),
+      subtitle: isLoading ? 'Loading...' : 'Daily average score',
     },
-
   ];
 
   return (
@@ -151,6 +153,11 @@ export default function StatisticsSummaryCards({
             
             <div className={`min-h-[60px] flex flex-col justify-center ${getThemeTextColor('primary')}`}>
               {card.value}
+              {card.subtitle && (
+                <p className={`text-xs ${getThemeTextColor('secondary')} mt-1`}>
+                  {card.subtitle}
+                </p>
+              )}
             </div>
           </div>
         );

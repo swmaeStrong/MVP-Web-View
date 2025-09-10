@@ -19,10 +19,15 @@ declare global {
       details: SessionDetail[];
     }
 
-    interface SessionDetailApiResponse {
-      distractedApp: string;
+    interface AppUsageDetail {
+      app: string;
       duration: number;
       count: number;
+    }
+
+    interface SessionDetailApiResponse {
+      distractedAppUsage: AppUsageDetail[];
+      workAppUsage: AppUsageDetail[];
     }
   }
 }

@@ -1,19 +1,18 @@
 'use client';
 
-import { getUsageLog, getPomodoroUsageLog } from '@/shared/api/get';
+import { multiDateStatisticsQueryKey, usageStatisticsQueryKey } from '@/config/constants/query-keys';
+import { getPomodoroUsageLog } from '@/shared/api/get';
 import {
-  getDateString,
-  transformUsageLogToDaily,
+  transformUsageLogToDaily
 } from '@/utils/statisticsUtils';
 import { useQuery } from '@tanstack/react-query';
-import { usageStatisticsQueryKey, multiDateStatisticsQueryKey } from '@/config/constants/query-keys';
 
 // 특정 날짜의 사용 기록 조회 (userId 파라미터 추가)
-export const useUsageStatistics = (selectedDate: string, userId: string) => {
+export const useUsageStatistics = (selectedDate: string, userId: string) => { 
   return useQuery({
     queryKey: usageStatisticsQueryKey(selectedDate, userId),
     queryFn: async () => {
-      const usageData = await getPomodoroUsageLog(userId, selectedDate);
+      const usageData = await getPomodoroUsageLog(selectedDate);
 
       // API에서 받은 데이터를 DailyStatistics로 변환
       return transformUsageLogToDaily(usageData, selectedDate);
@@ -41,7 +40,7 @@ export const useMultiDateStatistics = (dates: string[], userId: string) => {
     queryFn: async () => {
       // 현재는 단일 API만 있어서 같은 데이터를 반환
       // 향후 날짜별 API가 추가되면 수정 필요
-      const usageData = await getPomodoroUsageLog(userId, dates[0] || '');
+      const usageData = await getPomodoroUsageLog(dates[0] || '');
 
       // 각 날짜별로 데이터 생성 (현재는 동일한 데이터)
       return dates.map(date => transformUsageLogToDaily(usageData, date));
@@ -52,8 +51,8 @@ export const useMultiDateStatistics = (dates: string[], userId: string) => {
   });
 };
 
-import { getKSTDateString, getKSTDateStringDaysAgo } from '@/utils/timezone';
 import { DATE_LIMITS } from '@/config/constants/date-limits';
+import { getKSTDateString } from '@/utils/timezone';
 
 // 날짜 네비게이션 유틸리티 함수들 (한국 시간대 기준)
 export const isDateBeforeLimit = (dateString: string): boolean => {

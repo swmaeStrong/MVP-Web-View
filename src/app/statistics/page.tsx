@@ -9,13 +9,22 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 // 컴포넌트 임포트
 import SessionTimelineView from '@/components/statistics/SessionTimelineView';
+import CategoriesList from '@/components/statistics/CategoriesList';
+import WorkAppsList from '@/components/statistics/WorkAppsList';
+import DistractionAppsList from '@/components/statistics/DistractionAppsList';
+// Weekly 컴포넌트 임포트
+import WeeklyTimelineView from '@/components/statistics/weekly/WeeklyTimelineView';
+import WeeklyCategoriesList from '@/components/statistics/weekly/WeeklyCategoriesList';
+import WeeklyWorkAppsList from '@/components/statistics/weekly/WeeklyWorkAppsList';
+import WeeklyDistractionAppsList from '@/components/statistics/weekly/WeeklyDistractionAppsList';
+import WeeklySummaryCards from '@/components/statistics/weekly/WeeklySummaryCards';
 // generateMockCycles import 제거 - API 사용으로 대체됨
 import StateDisplay from '../../components/common/StateDisplay';
 import TotalTimeCard from '../../components/statistics/DateNavigationCard';
 import StatisticsSummaryCards from '../../components/statistics/StatisticsSummaryCards';
 
 export default function StatisticsPage() {
-  const [selectedPeriod] = useState<Statistics.PeriodType>('daily');
+  const [selectedPeriod, setSelectedPeriod] = useState<'day' | 'week'>('day');
   // 현재 선택된 월 상태 추가
   const [currentMonth, setCurrentMonth] = useState(new Date(getKSTDateString()));
   // 날짜 제한 로직으로 변경 - 배열 생성 대신 상수 기반 체크
@@ -47,36 +56,102 @@ export default function StatisticsPage() {
 
 
   const handlePreviousDate = useCallback(() => {
-    const previousDate = getPreviousDate(selectedDate);
-    if (previousDate) {
-      console.log('이전 날짜로 변경:', previousDate);
-      setSelectedDate(previousDate);
+    if (selectedPeriod === 'week') {
+      // 주 단위로 이동 (7일 전)
+      const [year, month, day] = selectedDate.split('-').map(Number);
+      const currentDate = new Date(year, month - 1, day);
+      const previousWeek = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+      
+      const previousYear = previousWeek.getFullYear();
+      const previousMonth = String(previousWeek.getMonth() + 1).padStart(2, '0');
+      const previousDay = String(previousWeek.getDate()).padStart(2, '0');
+      const previousDateString = `${previousYear}-${previousMonth}-${previousDay}`;
+      
+      if (previousDateString >= '2025-01-01') { // 최소 날짜 체크
+        console.log('이전 주로 변경:', previousDateString);
+        setSelectedDate(previousDateString);
+      }
     } else {
-      console.log('이전 날짜로 갈 수 없음 - 제한 날짜에 도달');
+      // 일 단위로 이동
+      const previousDate = getPreviousDate(selectedDate);
+      if (previousDate) {
+        console.log('이전 날짜로 변경:', previousDate);
+        setSelectedDate(previousDate);
+      } else {
+        console.log('이전 날짜로 갈 수 없음 - 제한 날짜에 도달');
+      }
     }
-  }, [selectedDate]);
+  }, [selectedDate, selectedPeriod]);
 
   const handleNextDate = useCallback(() => {
-    const nextDate = getNextDate(selectedDate);
-    if (nextDate) {
-      console.log('다음 날짜로 변경:', nextDate);
-      setSelectedDate(nextDate);
+    if (selectedPeriod === 'week') {
+      // 주 단위로 이동 (7일 후)
+      const [year, month, day] = selectedDate.split('-').map(Number);
+      const currentDate = new Date(year, month - 1, day);
+      const nextWeek = new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+      
+      const nextYear = nextWeek.getFullYear();
+      const nextMonth = String(nextWeek.getMonth() + 1).padStart(2, '0');
+      const nextDay = String(nextWeek.getDate()).padStart(2, '0');
+      const nextDateString = `${nextYear}-${nextMonth}-${nextDay}`;
+      
+      const today = getKSTDateString();
+      if (nextDateString <= today) {
+        console.log('다음 주로 변경:', nextDateString);
+        setSelectedDate(nextDateString);
+      }
     } else {
-      console.log('다음 날짜로 갈 수 없음 - 오늘 날짜에 도달');
+      // 일 단위로 이동
+      const nextDate = getNextDate(selectedDate);
+      if (nextDate) {
+        console.log('다음 날짜로 변경:', nextDate);
+        setSelectedDate(nextDate);
+      } else {
+        console.log('다음 날짜로 갈 수 없음 - 오늘 날짜에 도달');
+      }
     }
-  }, [selectedDate]);
+  }, [selectedDate, selectedPeriod]);
 
   const canGoPrevious = useMemo(() => {
+    if (selectedPeriod === 'week') {
+      // 주 단위 체크
+      const [year, month, day] = selectedDate.split('-').map(Number);
+      const currentDate = new Date(year, month - 1, day);
+      const previousWeek = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+      
+      const previousYear = previousWeek.getFullYear();
+      const previousMonth = String(previousWeek.getMonth() + 1).padStart(2, '0');
+      const previousDay = String(previousWeek.getDate()).padStart(2, '0');
+      const previousDateString = `${previousYear}-${previousMonth}-${previousDay}`;
+      
+      return previousDateString >= '2025-01-01';
+    }
+    
     const canGo = canNavigateToPrevious(selectedDate);
     console.log('canGoPrevious 체크 - 날짜:', selectedDate, '가능여부:', canGo);
     return canGo;
-  }, [selectedDate]);
+  }, [selectedDate, selectedPeriod]);
 
   const canGoNext = useMemo(() => {
+    if (selectedPeriod === 'week') {
+      // 주 단위 체크
+      const [year, month, day] = selectedDate.split('-').map(Number);
+      const currentDate = new Date(year, month - 1, day);
+      const nextWeek = new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+      
+      const nextYear = nextWeek.getFullYear();
+      const nextMonth = String(nextWeek.getMonth() + 1).padStart(2, '0');
+      const nextDay = String(nextWeek.getDate()).padStart(2, '0');
+      const nextDateString = `${nextYear}-${nextMonth}-${nextDay}`;
+      
+      const today = getKSTDateString();
+      return nextDateString <= today;
+    }
+    
     const canGo = canNavigateToNext(selectedDate);
     console.log('canGoNext 체크 - 날짜:', selectedDate, '가능여부:', canGo);
     return canGo;
-  }, [selectedDate]);
+  }, [selectedDate, selectedPeriod]);
 
 
 
@@ -113,27 +188,47 @@ export default function StatisticsPage() {
                 onNext={handleNextDate}
                 canGoPrevious={canGoPrevious}
                 canGoNext={canGoNext}
+                selectedPeriod={selectedPeriod}
+                setSelectedPeriod={setSelectedPeriod}
               />
         
-        {/* 통계 요약 카드들 */}
-        <StatisticsSummaryCards
-          totalWorkHours={(dailyData?.totalTime || 0) / 3600}
-          topCategories={
-            dailyData?.categories?.slice(0, 3).map(cat => ({
-              name: cat.name,
-              hours: cat.time / 3600
-            })) || []
-          }
-          selectedDate={selectedDate}
-        />
+        {/* 통계 요약 카드들 - period에 따라 다른 컴포넌트 */}
+        {selectedPeriod === 'day' ? (
+          <StatisticsSummaryCards
+            totalWorkHours={(dailyData?.totalTime || 0) / 3600}
+            topCategories={
+              dailyData?.categories?.slice(0, 3).map(cat => ({
+                name: cat.name,
+                hours: cat.time / 3600
+              })) || []
+            }
+            selectedDate={selectedDate}
+          />
+        ) : (
+          <WeeklySummaryCards selectedDate={selectedDate} />
+        )}
         
-
-        {/* 세션 타임라인 뷰 */}
-        <SessionTimelineView selectedDate={selectedDate} />
-
-        {/* 하단: 세션 캐러셀 (전체 너비 사용) */}
-        <div className="w-full">
-        </div>
+        {selectedPeriod === 'day' ? (
+          <>
+            {/* Daily 컴포넌트들 */}
+            <SessionTimelineView selectedDate={selectedDate} />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+              <CategoriesList selectedDate={selectedDate} />
+              <WorkAppsList selectedDate={selectedDate} />
+              <DistractionAppsList selectedDate={selectedDate} />
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Weekly 컴포넌트들 */}
+            <WeeklyTimelineView selectedDate={selectedDate} />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+              <WeeklyCategoriesList selectedDate={selectedDate} />
+              <WeeklyWorkAppsList selectedDate={selectedDate} />
+              <WeeklyDistractionAppsList selectedDate={selectedDate} />
+            </div>
+          </>
+        )}
       </div>
 
     </div>
