@@ -25,10 +25,17 @@ export default function WeeklyWorkAppsList({ selectedDate }: WeeklyWorkAppsListP
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    if (hours > 0) {
-      return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+    
+    if (hours === 0 && minutes === 0) {
+      return '0m';
     }
-    return `${minutes}m`;
+    if (hours === 0) {
+      return `${minutes}m`;
+    }
+    if (minutes === 0) {
+      return `${hours}h`;
+    }
+    return `${hours}h ${minutes}m`;
   };
 
   // API 데이터에서 work apps 추출
@@ -49,7 +56,17 @@ export default function WeeklyWorkAppsList({ selectedDate }: WeeklyWorkAppsListP
   const formatHours = (hours: number): string => {
     const wholeHours = Math.floor(hours);
     const minutes = Math.round((hours - wholeHours) * 60);
-    return minutes > 0 ? `${wholeHours}h ${minutes}m` : `${wholeHours}h`;
+    
+    if (wholeHours === 0 && minutes === 0) {
+      return '0m';
+    }
+    if (wholeHours === 0) {
+      return `${minutes}m`;
+    }
+    if (minutes === 0) {
+      return `${wholeHours}h`;
+    }
+    return `${wholeHours}h ${minutes}m`;
   };
 
   return (

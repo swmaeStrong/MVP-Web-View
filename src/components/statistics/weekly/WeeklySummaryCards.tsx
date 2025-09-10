@@ -1,6 +1,9 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { getWeeklyPomodoroDetails } from '@/shared/api/get';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 
 interface WeeklySummaryCardsProps {
   selectedDate: string;
@@ -11,56 +14,107 @@ export default function WeeklySummaryCards({
 }: WeeklySummaryCardsProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
 
-  // Weekly 통계 데이터 (모의)
-  const weeklyStats = {
-    totalHours: 47.6,
-    totalDistractions: 134,
-    totalSessions: 69,
-    averageFocusScore: 78,
-  };
+  // API 호출 - 다른 weekly 컴포넌트들과 같은 쿼리 사용
+  const { data: weeklyPomodoroData, isLoading } = useQuery({
+    queryKey: ['weeklyPomodoroDetails', selectedDate],
+    queryFn: () => getWeeklyPomodoroDetails(selectedDate),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+  });
+
+  // API 데이터에서 통계 계산
+  const weeklyStats = React.useMemo(() => {
+    if (!weeklyPomodoroData) {
+      return {
+        totalWorkHours: 0,
+        totalDistractionHours: 0,
+        totalSessions: 0,
+        averageFocusScore: 0,
+      };
+    }
+
+    // work apps 총 시간 계산
+    const totalWorkSeconds = weeklyPomodoroData.workAppUsage?.reduce(
+      (sum, app) => sum + app.duration, 
+      0
+    ) || 0;
+
+    // distraction apps 총 시간 계산
+    const totalDistractionSeconds = weeklyPomodoroData.distractedAppUsage?.reduce(
+      (sum, app) => sum + app.duration, 
+      0
+    ) || 0;
+
+    return {
+      totalWorkHours: totalWorkSeconds / 3600, // convert to hours
+      totalDistractionHours: totalDistractionSeconds / 3600, // convert to hours
+      totalSessions: weeklyPomodoroData.dailyResults?.length || 0,
+      averageFocusScore: totalWorkSeconds > 0 
+        ? Math.round((totalWorkSeconds / (totalWorkSeconds + totalDistractionSeconds)) * 100)
+        : 0,
+    };
+  }, [weeklyPomodoroData]);
 
   const formatHours = (hours: number): string => {
     const wholeHours = Math.floor(hours);
     const minutes = Math.round((hours - wholeHours) * 60);
-    return minutes > 0 ? `${wholeHours}h ${minutes}m` : `${wholeHours}h`;
+    
+    if (wholeHours === 0 && minutes === 0) {
+      return '0m';
+    }
+    if (wholeHours === 0) {
+      return `${minutes}m`;
+    }
+    if (minutes === 0) {
+      return `${wholeHours}h`;
+    }
+    return `${wholeHours}h ${minutes}m`;
   };
 
   const cards = [
     {
       title: 'Weekly Total',
-      value: (
+      value: isLoading ? (
+        <div className="text-2xl font-bold animate-pulse">--h --m</div>
+      ) : (
         <div className="text-2xl font-bold">
-          {formatHours(weeklyStats.totalHours)}
+          {formatHours(weeklyStats.totalWorkHours)}
         </div>
       ),
-      subtitle: `Avg ${formatHours(weeklyStats.totalHours / 7)}/day`,
+      subtitle: isLoading ? 'Loading...' : `Avg ${formatHours(weeklyStats.totalWorkHours / 7)}/day`,
     },
     {
       title: 'Weekly Distractions',
-      value: (
+      value: isLoading ? (
+        <div className="text-2xl font-bold animate-pulse">--h --m</div>
+      ) : (
         <div className="text-2xl font-bold">
-          {weeklyStats.totalDistractions}
+          {formatHours(weeklyStats.totalDistractionHours)}
         </div>
       ),
-      subtitle: `Avg ${Math.round(weeklyStats.totalDistractions / 7)}/day`,
+      subtitle: isLoading ? 'Loading...' : `Avg ${formatHours(weeklyStats.totalDistractionHours / 7)}/day`,
     },
     {
       title: 'Weekly Sessions',
-      value: (
+      value: isLoading ? (
+        <div className="text-2xl font-bold animate-pulse">--</div>
+      ) : (
         <div className="text-2xl font-bold">
           {weeklyStats.totalSessions}
         </div>
       ),
-      subtitle: `Avg ${Math.round(weeklyStats.totalSessions / 7)}/day`,
+      subtitle: isLoading ? 'Loading...' : `Avg ${Math.round(weeklyStats.totalSessions / 7)}/day`,
     },
     {
       title: 'Average Focus Score',
-      value: (
+      value: isLoading ? (
+        <div className="text-2xl font-bold animate-pulse">--%</div>
+      ) : (
         <div className="flex items-baseline gap-1">
           <span className="text-2xl font-bold">{weeklyStats.averageFocusScore}%</span>
         </div>
       ),
-      subtitle: 'Weekly average',
+      subtitle: isLoading ? 'Loading...' : 'Work vs distraction ratio',
     },
   ];
 
