@@ -174,3 +174,9 @@ export const getGroupLeaderboard = (
   parseApi<Group.GroupLeaderboardApiResponse>(
     API.get(`/group/${groupId}/leaderboard?period=${period}&date=${date}`)
   );
+
+// 주간 포모도로 상세 데이터 조회
+export const getWeeklyPomodoroDetails = (date: string = getKSTDateString()) =>
+  parseApi<UsageLog.WeeklyPomodoroDetailsApiResponse>(
+    API.get(`/usage-log/pomodoro/details/weekly?date=${date}`)
+  );

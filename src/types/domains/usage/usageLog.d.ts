@@ -46,4 +46,17 @@ declare namespace UsageLog {
     distractedAppUsage: AppUsageItem[];
     workAppUsage: AppUsageItem[];
   }
+
+  interface DailyResult {
+    date: string;
+    workSeconds: number;
+    distractedSeconds: number;
+  }
+
+  interface WeeklyPomodoroDetailsApiResponse {
+    totalSeconds: number;
+    dailyResults: DailyResult[];
+    distractedAppUsage: AppUsageItem[];
+    workAppUsage: AppUsageItem[];
+  }
 }
