@@ -20,7 +20,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewProps) {
-  const { getThemeClass, getThemeTextColor } = useTheme();
+  const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
   
   // 선택된 일별 날짜 상태
   const [selectedDayDate, setSelectedDayDate] = React.useState<string | null>(null);
@@ -51,6 +51,7 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
         dateLabel: `${monthNum}/${dayNum}`,
         workSeconds: 0, // 기본값 0
         workMinutes: 0, // 분 단위로도 저장
+        workHours: 0, // 시간 단위로도 저장
       };
     });
     
@@ -69,6 +70,8 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
           const workSeconds = dataMap.get(dayData.date) || 0;
           dayData.workSeconds = workSeconds;
           dayData.workMinutes = Math.round(workSeconds / 60);
+          // 최소 0.2시간(12분) 보장하여 바가 보이도록 함
+          dayData.workHours = workSeconds > 0 ? Math.max(workSeconds / 3600, 0.2) : 0;
         }
       });
     }
@@ -76,7 +79,7 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
     return weekDates;
   }, [weeklyPomodoroData, selectedDate]);
 
-  const maxWorkMinutes = 8 * 60; // 8시간 = 480분을 최댓값으로 고정
+  const maxWorkHours = 6; // 6시간을 최댓값으로 고정
   
   // 바 클릭 핸들러
   const handleBarClick = React.useCallback((data: any) => {
@@ -96,7 +99,7 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
   };
   
   console.log('WeeklyTimelineView - Processed weekData:', weekData); // 디버깅용
-  console.log('WeeklyTimelineView - Max work minutes:', maxWorkMinutes); // 디버깅용
+  console.log('WeeklyTimelineView - Max work hours:', maxWorkHours); // 디버깅용
 
   return (
     <div className="w-full flex flex-col lg:flex-row gap-4">
@@ -114,52 +117,61 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
               <BarChart
                 data={weekData}
                 margin={{
-                  top: 20,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
+                  top: 25,
+                  right: 25,
+                  left: 25,
+                  bottom: 25,
                 }}
                 onClick={(data) => {
                   if (data && data.activePayload && data.activePayload[0]) {
                     handleBarClick(data.activePayload[0].payload);
                   }
                 }}
+                style={{ cursor: 'pointer' }}
               >
                 <XAxis 
                   dataKey="dateLabel" 
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 10 }}
+                  tick={{ fontSize: 12, fontWeight: 500 }}
+                  className="text-gray-600 dark:text-gray-400"
                 />
                 <YAxis 
-                  domain={[0, maxWorkMinutes]}
+                  domain={[0, maxWorkHours]}
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 10 }}
-                  tickFormatter={(value) => `${value}m`}
+                  tick={{ fontSize: 11, fontWeight: 500 }}
+                  tickFormatter={(value) => `${value}h`}
+                  className="text-gray-600 dark:text-gray-400"
+                  width={40}
                 />
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
-                      formatter={(value, name) => [
-                        `${value} minutes`,
-                        "Work Time"
-                      ]}
-                      labelFormatter={(label) => `Date: ${label}`}
+                      formatter={(value, name) => {
+                        const hours = Math.floor(value as number);
+                        const minutes = Math.round((value as number - hours) * 60);
+                        const timeString = hours > 0 
+                          ? (minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`)
+                          : `${minutes}m`;
+                        return [timeString, "Work Time"];
+                      }}
+                      labelFormatter={(label) => `${label}`}
+                      className="bg-white/95 dark:bg-gray-800/95 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg"
                     />
                   }
                 />
                 <Bar
-                  dataKey="workMinutes"
+                  dataKey="workHours"
                   fill="var(--color-workMinutes)"
-                  radius={[2, 2, 0, 0]}
+                  radius={[4, 4, 0, 0]}
                   onClick={handleBarClick}
                   style={{ cursor: 'pointer' }}
                 >
                   {weekData.map((entry, index) => (
                     <Cell 
                       key={`cell-${index}`} 
-                      fill={selectedDayDate === entry.date ? "#2563eb" : "var(--color-workMinutes)"}
+                      fill={selectedDayDate === entry.date ? "#3F72AF" : "rgba(63, 114, 175, 0.5)"}
                     />
                   ))}
                 </Bar>
