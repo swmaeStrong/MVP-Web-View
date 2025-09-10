@@ -121,7 +121,7 @@ export default function StatisticsSummaryCards({
     {
       title: 'Average Focus Score',
       value: isLoading ? (
-        <div className="text-2xl font-bold animate-pulse">--pt</div>
+        <div className="text-2xl font-bold animate-pulse">-- points</div>
       ) : (
         <div className="flex items-baseline gap-1">
           <span className="text-2xl font-bold">{calculateAverageFocusScore()} points</span>
