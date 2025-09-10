@@ -3,26 +3,48 @@
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
+import { getWeeklyPomodoroDetails } from '@/shared/api/get';
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 interface WeeklyWorkAppsListProps {
-  selectedDate?: string;
+  selectedDate: string;
 }
-
-// Weekly work apps 데이터
-const weeklyWorkApps = [
-  { name: 'Visual Studio Code', hours: 42.5, days: 7, avgPerDay: '6h 4m' },
-  { name: 'IntelliJ IDEA', hours: 18.3, days: 5, avgPerDay: '3h 40m' },
-  { name: 'Terminal', hours: 12.8, days: 7, avgPerDay: '1h 50m' },
-  { name: 'Figma', hours: 8.2, days: 3, avgPerDay: '2h 44m' },
-  { name: 'Notion', hours: 6.5, days: 6, avgPerDay: '1h 5m' },
-  { name: 'Slack', hours: 5.8, days: 5, avgPerDay: '1h 10m' },
-  { name: 'Postman', hours: 3.2, days: 4, avgPerDay: '48m' },
-  { name: 'Docker Desktop', hours: 2.1, days: 3, avgPerDay: '42m' },
-];
 
 export default function WeeklyWorkAppsList({ selectedDate }: WeeklyWorkAppsListProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
+
+  // API 호출 - WeeklyTimelineView와 같은 쿼리 사용
+  const { data: weeklyPomodoroData, isLoading, isError } = useQuery({
+    queryKey: ['weeklyPomodoroDetails', selectedDate],
+    queryFn: () => getWeeklyPomodoroDetails(selectedDate),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+  });
+
+  const formatDuration = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    if (hours > 0) {
+      return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+    }
+    return `${minutes}m`;
+  };
+
+  // API 데이터에서 work apps 추출
+  const weeklyWorkApps = React.useMemo(() => {
+    if (!weeklyPomodoroData?.workAppUsage) return [];
+    
+    return weeklyPomodoroData.workAppUsage
+      .map(app => ({
+        name: app.app,
+        duration: app.duration, // seconds
+        count: app.count,
+        hours: app.duration / 3600, // convert to hours
+        avgPerDay: formatDuration(app.duration / 7), // average per day
+      }))
+      .sort((a, b) => b.duration - a.duration); // sort by duration desc
+  }, [weeklyPomodoroData, formatDuration]);
 
   const formatHours = (hours: number): string => {
     const wholeHours = Math.floor(hours);
@@ -46,37 +68,55 @@ export default function WeeklyWorkAppsList({ selectedDate }: WeeklyWorkAppsListP
 
           {/* Content */}
           <div className="flex-1 min-h-0">
-            <ScrollArea className="h-full">
-              <div className="space-y-1">
-                {weeklyWorkApps.map((app, index) => (
-                  <div key={index} className={`py-1.5 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} hover:${getThemeClass('componentHover')} transition-colors`}>
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className={`text-[10px] font-medium ${getThemeTextColor('secondary')} flex-shrink-0`}>
-                          #{index + 1}
-                        </span>
-                        <span className={`text-xs font-medium truncate ${getThemeTextColor('primary')}`}>
-                          {app.name}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className={`text-[10px] ${getThemeTextColor('secondary')} flex-shrink-0`}>
-                          {app.days}d
-                        </span>
-                        <span className={`text-[10px] font-semibold ${getThemeTextColor('primary')} flex-shrink-0 w-12 text-right`}>
-                          {formatHours(app.hours)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="mt-1 flex justify-between">
-                      <span className={`text-[9px] ${getThemeTextColor('secondary')}`}>
-                        Avg/day: {app.avgPerDay}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+            {isLoading ? (
+              <div className="h-full flex items-center justify-center">
+                <div className="animate-pulse space-y-2 w-full">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
+                  ))}
+                </div>
               </div>
-            </ScrollArea>
+            ) : isError ? (
+              <div className="h-full flex items-center justify-center">
+                <p className={`text-sm ${getThemeTextColor('secondary')}`}>Failed to load work apps</p>
+              </div>
+            ) : weeklyWorkApps.length === 0 ? (
+              <div className="h-full flex items-center justify-center">
+                <p className={`text-sm ${getThemeTextColor('secondary')}`}>No work apps data</p>
+              </div>
+            ) : (
+              <ScrollArea className="h-full">
+                <div className="space-y-1">
+                  {weeklyWorkApps.map((app, index) => (
+                    <div key={index} className={`py-1.5 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} transition-colors`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className={`text-[10px] font-medium ${getThemeTextColor('secondary')} flex-shrink-0`}>
+                            #{index + 1}
+                          </span>
+                          <span className={`text-xs font-medium truncate ${getThemeTextColor('primary')}`}>
+                            {app.name}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className={`text-[10px] ${getThemeTextColor('secondary')} flex-shrink-0`}>
+                            {app.count} times
+                          </span>
+                          <span className={`text-[10px] font-semibold ${getThemeTextColor('primary')} flex-shrink-0 w-12 text-right`}>
+                            {formatHours(app.hours)}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="mt-1 flex justify-between">
+                        <span className={`text-[9px] ${getThemeTextColor('secondary')}`}>
+                          Avg/day: {app.avgPerDay}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            )}
           </div>
         </div>
       </CardContent>
