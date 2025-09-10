@@ -63,11 +63,10 @@ export const getUsageLog = (
 
 // 포모도로 사용 기록 조회
 export const getPomodoroUsageLog = (
-  userId: string,
   date: string = getKSTDateString()
 ) =>
   parseApi<UsageLog.UsageLogApiResponse[]>(
-    API.get(`/usage-log/pomodoro?userId=${userId}&date=${date}`)
+    API.get(`/usage-log/pomodoro?date=${date}`)
   );
 
 export const getHourlyUsageLog = (

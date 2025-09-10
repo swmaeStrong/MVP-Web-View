@@ -1,12 +1,12 @@
 'use client';
 
-import { getPomodoroDetails } from '@/shared/api/get';
+import { getPomodoroUsageLog } from '@/shared/api/get';
 import { useQuery } from '@tanstack/react-query';
 
 export const useDailyPomodoroDetails = (selectedDate: string) => {
   return useQuery({
     queryKey: ['dailyPomodoroDetails', selectedDate],
-    queryFn: () => getPomodoroDetails(selectedDate),
+    queryFn: () => getPomodoroUsageLog(selectedDate),
     enabled: !!selectedDate,
     staleTime: 1000 * 60 * 5, // 5분간 fresh
     refetchOnWindowFocus: false,
