@@ -101,7 +101,7 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
   return (
     <div className="w-full flex gap-4">
       {/* 왼쪽 차트 영역 (2/3) */}
-      <Card className={`w-2/3 h-[300px] rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      <Card className={`w-2/3 h-[300px] p-0 rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardContent className="h-full p-3">
           {isLoading ? (
             <div className="h-full bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
