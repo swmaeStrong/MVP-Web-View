@@ -173,7 +173,7 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
       <Card className={`w-1/3 h-[300px] py-0 rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardContent className="h-full p-3 flex flex-col">
           <div className="mb-2">
-            <p className={`text-lg font-semibold ${getThemeTextColor('secondary')} uppercase tracking-wider`}>
+            <p className={`text-md font-semibold ${getThemeTextColor('secondary')} uppercase tracking-wider`}>
               {selectedDayDate || 'Select a Day'}
             </p>
           </div>
@@ -187,71 +187,73 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
                   <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
                 </div>
               ) : dailyPomodoroData && Array.isArray(dailyPomodoroData) && dailyPomodoroData.length > 0 ? (
-                <div className="h-full flex">
-                  {/* 왼쪽 파이차트 */}
-                  <div className="w-1/2 h-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={dailyPomodoroData
-                            .sort((a, b) => (b.duration || 0) - (a.duration || 0))
-                            .slice(0, 5)
-                          }
-                          dataKey="duration"
-                          nameKey="category"
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={80}
-                          innerRadius={25}
-                          fill="#8884d8"
-                        >
-                          {dailyPomodoroData
-                            .sort((a, b) => (b.duration || 0) - (a.duration || 0))
-                            .slice(0, 5)
-                            .map((entry, index) => {
-                              // 메인 컬러에서 점점 연하게 만드는 방식
-                              const baseOpacity = 1.0;
-                              const opacityStep = 0.15;
-                              const opacity = Math.max(baseOpacity - (index * opacityStep), 0.3);
-                              const color = `rgba(63, 114, 175, ${opacity})`; // #3F72AF를 rgba로 변환
-                              return <Cell key={`cell-${index}`} fill={color} />;
-                            })
-                          }
-                        </Pie>
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
+                <div className="h-full flex items-center">
+                  <div className="w-full flex">
+                    {/* 파이차트 */}
+                    <div className="w-1/2 h-48">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={dailyPomodoroData
+                              .sort((a, b) => (b.duration || 0) - (a.duration || 0))
+                              .slice(0, 5)
+                            }
+                            dataKey="duration"
+                            nameKey="category"
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={70}
+                            innerRadius={20}
+                            fill="#8884d8"
+                          >
+                            {dailyPomodoroData
+                              .sort((a, b) => (b.duration || 0) - (a.duration || 0))
+                              .slice(0, 5)
+                              .map((entry, index) => {
+                                // 메인 컬러에서 점점 연하게 만드는 방식
+                                const baseOpacity = 1.0;
+                                const opacityStep = 0.15;
+                                const opacity = Math.max(baseOpacity - (index * opacityStep), 0.3);
+                                const color = `rgba(63, 114, 175, ${opacity})`; // #3F72AF를 rgba로 변환
+                                return <Cell key={`cell-${index}`} fill={color} />;
+                              })
+                            }
+                          </Pie>
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
 
-                  {/* 오른쪽 범례/설명 */}
-                  <div className="w-1/2 h-full flex flex-col justify-center pl-2">
-                    <div className="space-y-2">
-                      {dailyPomodoroData
-                        .sort((a, b) => (b.duration || 0) - (a.duration || 0))
-                        .slice(0, 5)
-                        .map((item, index) => {
-                          const baseOpacity = 1.0;
-                          const opacityStep = 0.15;
-                          const opacity = Math.max(baseOpacity - (index * opacityStep), 0.3);
-                          const color = `rgba(63, 114, 175, ${opacity})`;
-                          
-                          return (
-                            <div key={index} className="flex items-center gap-2">
-                              <div 
-                                className="w-3 h-3 rounded-full flex-shrink-0" 
-                                style={{ backgroundColor: color }}
-                              />
-                              <div className="flex-1 min-w-0">
-                                <p className={`text-xs ${getThemeTextColor('primary')} truncate`}>
-                                  {item.category}
-                                </p>
-                                <p className={`text-[10px] ${getThemeTextColor('secondary')}`}>
-                                  {formatTime(item.duration || 0)}
-                                </p>
+                    {/* 범례/설명 */}
+                    <div className="w-1/2 h-48 flex flex-col justify-center pl-2">
+                      <div className="space-y-2">
+                        {dailyPomodoroData
+                          .sort((a, b) => (b.duration || 0) - (a.duration || 0))
+                          .slice(0, 5)
+                          .map((item, index) => {
+                            const baseOpacity = 1.0;
+                            const opacityStep = 0.15;
+                            const opacity = Math.max(baseOpacity - (index * opacityStep), 0.3);
+                            const color = `rgba(63, 114, 175, ${opacity})`;
+                            
+                            return (
+                              <div key={index} className="flex items-center gap-2">
+                                <div 
+                                  className="w-3 h-3 rounded-full flex-shrink-0" 
+                                  style={{ backgroundColor: color }}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <p className={`text-xs ${getThemeTextColor('primary')} truncate`}>
+                                    {item.category}
+                                  </p>
+                                  <p className={`text-[10px] ${getThemeTextColor('secondary')}`}>
+                                    {formatTime(item.duration || 0)}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                          );
-                        })
-                      }
+                            );
+                          })
+                        }
+                      </div>
                     </div>
                   </div>
                 </div>
