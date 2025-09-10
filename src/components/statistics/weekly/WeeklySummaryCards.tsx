@@ -1,7 +1,9 @@
 'use client';
 
-import { useTheme } from '@/hooks/ui/useTheme';
 import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
+import { useWeeklySessionScore } from '@/hooks/data/useWeeklySessionScore';
+import { useWeeklyStreak } from '@/hooks/data/useWeeklyStreak';
+import { useTheme } from '@/hooks/ui/useTheme';
 import React from 'react';
 
 interface WeeklySummaryCardsProps {
@@ -13,41 +15,43 @@ export default function WeeklySummaryCards({
 }: WeeklySummaryCardsProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
 
-  // API 호출 - 다른 weekly 컴포넌트들과 같은 쿼리 사용
-  const { data: weeklyPomodoroData, isLoading } = useWeeklyPomodoroDetails(selectedDate);
+  // API 호출들
+  const { data: weeklyPomodoroData, isLoading: isPomodoroLoading } = useWeeklyPomodoroDetails(selectedDate);
+  const { data: weeklySessionScore, isLoading: isSessionScoreLoading } = useWeeklySessionScore(selectedDate);
+  const { data: weeklyStreakData, isLoading: isStreakLoading } = useWeeklyStreak(selectedDate);
+
+  const isLoading = isPomodoroLoading || isSessionScoreLoading || isStreakLoading;
 
   // API 데이터에서 통계 계산
   const weeklyStats = React.useMemo(() => {
-    if (!weeklyPomodoroData) {
-      return {
-        totalWorkHours: 0,
-        totalDistractionHours: 0,
-        totalSessions: 0,
-        averageFocusScore: 0,
-      };
-    }
-
     // work apps 총 시간 계산
-    const totalWorkSeconds = weeklyPomodoroData.workAppUsage?.reduce(
+    const totalWorkSeconds = weeklyPomodoroData?.workAppUsage?.reduce(
       (sum, app) => sum + app.duration, 
       0
     ) || 0;
 
     // distraction apps 총 시간 계산
-    const totalDistractionSeconds = weeklyPomodoroData.distractedAppUsage?.reduce(
+    const totalDistractionSeconds = weeklyPomodoroData?.distractedAppUsage?.reduce(
       (sum, app) => sum + app.duration, 
       0
     ) || 0;
 
+    // 주간 세션 개수 계산 (activityCount 합계)
+    const totalSessions = weeklyStreakData?.reduce(
+      (sum, day) => sum + (day.activityCount || 0),
+      0
+    ) || 0;
+
+    // 평균 점수는 API에서 직접 가져옴
+    const averageFocusScore = weeklySessionScore?.avgScore || 0;
+
     return {
       totalWorkHours: totalWorkSeconds / 3600, // convert to hours
       totalDistractionHours: totalDistractionSeconds / 3600, // convert to hours
-      totalSessions: weeklyPomodoroData.dailyResults?.length || 0,
-      averageFocusScore: totalWorkSeconds > 0 
-        ? Math.round((totalWorkSeconds / (totalWorkSeconds + totalDistractionSeconds)) * 100)
-        : 0,
+      totalSessions,
+      averageFocusScore: Math.round(averageFocusScore), // API에서 이미 0-100 범위로 제공됨
     };
-  }, [weeklyPomodoroData]);
+  }, [weeklyPomodoroData, weeklyStreakData, weeklySessionScore]);
 
   const formatHours = (hours: number): string => {
     const wholeHours = Math.floor(hours);
@@ -102,13 +106,13 @@ export default function WeeklySummaryCards({
     {
       title: 'Average Focus Score',
       value: isLoading ? (
-        <div className="text-2xl font-bold animate-pulse">--%</div>
+        <div className="text-2xl font-bold animate-pulse">--pt</div>
       ) : (
         <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold">{weeklyStats.averageFocusScore}%</span>
+          <span className="text-2xl font-bold">{weeklyStats.averageFocusScore} points</span>
         </div>
       ),
-      subtitle: isLoading ? 'Loading...' : 'Work vs distraction ratio',
+      subtitle: isLoading ? 'Loading...' : 'Weekly average score',
     },
   ];
 

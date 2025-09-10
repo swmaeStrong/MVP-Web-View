@@ -180,3 +180,9 @@ export const getWeeklyPomodoroDetails = (date: string = getKSTDateString()) =>
   parseApi<UsageLog.WeeklyPomodoroDetailsApiResponse>(
     API.get(`/usage-log/pomodoro/details/weekly?date=${date}`)
   );
+
+// 주간 세션 평균 점수 조회
+export const getWeeklySessionScore = (date: string = getKSTDateString()) =>
+  parseApi<{ avgScore: number }>(
+    API.get(`/session/weekly?date=${date}`)
+  );
