@@ -24,49 +24,72 @@ export default function WeeklySummaryCards({
 
   // API 데이터에서 통계 계산
   const weeklyStats = React.useMemo(() => {
-    // work apps 총 시간 계산
+    // work apps 총 시간 계산 - NaN 방지
     const totalWorkSeconds = weeklyPomodoroData?.workAppUsage?.reduce(
-      (sum, app) => sum + app.duration, 
+      (sum, app) => {
+        const duration = Number(app.duration) || 0;
+        return sum + duration;
+      }, 
       0
     ) || 0;
 
-    // distraction apps 총 시간 계산
+    // distraction apps 총 시간 계산 - NaN 방지
     const totalDistractionSeconds = weeklyPomodoroData?.distractedAppUsage?.reduce(
-      (sum, app) => sum + app.duration, 
+      (sum, app) => {
+        const duration = Number(app.duration) || 0;
+        return sum + duration;
+      }, 
       0
     ) || 0;
 
-    // 주간 세션 개수 계산 (activityCount 합계)
+    // 주간 세션 개수 계산 (activityCount 합계) - NaN 방지
     const totalSessions = weeklyStreakData?.reduce(
-      (sum, day) => sum + (day.activityCount || 0),
+      (sum, day) => {
+        const activityCount = Number(day.activityCount) || 0;
+        return sum + activityCount;
+      },
       0
     ) || 0;
 
-    // 평균 점수는 API에서 직접 가져옴
-    const averageFocusScore = weeklySessionScore?.avgScore || 0;
+    // 평균 점수는 API에서 직접 가져옴 - NaN 방지
+    const rawScore = Number(weeklySessionScore?.avgScore) || 0;
+    const averageFocusScore = isNaN(rawScore) ? 0 : rawScore;
+
+    // 시간 계산 시 NaN 방지
+    const safeWorkHours = totalWorkSeconds > 0 ? totalWorkSeconds / 3600 : 0;
+    const safeDistractionHours = totalDistractionSeconds > 0 ? totalDistractionSeconds / 3600 : 0;
 
     return {
-      totalWorkHours: totalWorkSeconds / 3600, // convert to hours
-      totalDistractionHours: totalDistractionSeconds / 3600, // convert to hours
-      totalSessions,
-      averageFocusScore: Math.round(averageFocusScore), // API에서 이미 0-100 범위로 제공됨
+      totalWorkHours: isNaN(safeWorkHours) ? 0 : safeWorkHours,
+      totalDistractionHours: isNaN(safeDistractionHours) ? 0 : safeDistractionHours,
+      totalSessions: isNaN(totalSessions) ? 0 : totalSessions,
+      averageFocusScore: isNaN(averageFocusScore) ? 0 : Math.round(averageFocusScore),
     };
   }, [weeklyPomodoroData, weeklyStreakData, weeklySessionScore]);
 
   const formatHours = (hours: number): string => {
+    // NaN 또는 유효하지 않은 숫자 체크
+    if (isNaN(hours) || !isFinite(hours) || hours < 0) {
+      return '0m';
+    }
+    
     const wholeHours = Math.floor(hours);
     const minutes = Math.round((hours - wholeHours) * 60);
     
-    if (wholeHours === 0 && minutes === 0) {
+    // NaN 방지를 위한 추가 체크
+    const safeHours = isNaN(wholeHours) ? 0 : wholeHours;
+    const safeMinutes = isNaN(minutes) ? 0 : minutes;
+    
+    if (safeHours === 0 && safeMinutes === 0) {
       return '0m';
     }
-    if (wholeHours === 0) {
-      return `${minutes}m`;
+    if (safeHours === 0) {
+      return `${safeMinutes}m`;
     }
-    if (minutes === 0) {
-      return `${wholeHours}h`;
+    if (safeMinutes === 0) {
+      return `${safeHours}h`;
     }
-    return `${wholeHours}h ${minutes}m`;
+    return `${safeHours}h ${safeMinutes}m`;
   };
 
   const cards = [
@@ -79,7 +102,7 @@ export default function WeeklySummaryCards({
           {formatHours(weeklyStats.totalWorkHours)}
         </div>
       ),
-      subtitle: isLoading ? 'Loading...' : `Avg ${formatHours(weeklyStats.totalWorkHours / 7)}/day`,
+      subtitle: isLoading ? 'Loading...' : `Avg ${formatHours(weeklyStats.totalWorkHours / 7 || 0)}/day`,
     },
     {
       title: 'Weekly Distractions',
@@ -90,7 +113,7 @@ export default function WeeklySummaryCards({
           {formatHours(weeklyStats.totalDistractionHours)}
         </div>
       ),
-      subtitle: isLoading ? 'Loading...' : `Avg ${formatHours(weeklyStats.totalDistractionHours / 7)}/day`,
+      subtitle: isLoading ? 'Loading...' : `Avg ${formatHours(weeklyStats.totalDistractionHours / 7 || 0)}/day`,
     },
     {
       title: 'Weekly Sessions',
@@ -101,7 +124,7 @@ export default function WeeklySummaryCards({
           {weeklyStats.totalSessions}
         </div>
       ),
-      subtitle: isLoading ? 'Loading...' : `Avg ${Math.round(weeklyStats.totalSessions / 7)}/day`,
+      subtitle: isLoading ? 'Loading...' : `Avg ${Math.round(weeklyStats.totalSessions / 7 || 0)}/day`,
     },
     {
       title: 'Average Focus Score',
