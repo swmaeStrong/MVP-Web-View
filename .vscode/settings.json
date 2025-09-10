@@ -7,8 +7,11 @@
   },
   "typescript.preferences.importModuleSpecifier": "relative",
   "files.associations": {
-    "*.css": "tailwindcss"
-  },
+    "*.css": "css",
+    "global.css": "css",
+    "*.scss": "scss",
+    "*.sass": "sass"
+    },
   "emmet.includeLanguages": {
     "javascript": "javascriptreact",
     "typescript": "typescriptreact"
@@ -16,5 +19,6 @@
   "tailwindCSS.experimental.classRegex": [
     ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
     ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
-  ]
+  ],
+  
 } 

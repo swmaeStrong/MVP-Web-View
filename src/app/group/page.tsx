@@ -1,8 +1,9 @@
 'use client';
 
+import { getLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { getLastGroupTab } from '@/hooks/group/useLastGroupTab';
+import PageLoader from '../../components/common/PageLoader';
 
 export default function GroupPage() {
   const router = useRouter();
@@ -66,16 +67,7 @@ export default function GroupPage() {
   // 로딩 화면
   if (!isMounted || !isRouterReady) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-900">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
-          <p className="text-lg font-medium text-gray-900 dark:text-white">
-            Redirecting to your last group...
-          </p>
-        </div>
-      </div>
+      <PageLoader message="Redirecting to your last group..." />
     );
   }
-
-  return null;
 }

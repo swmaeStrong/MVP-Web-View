@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+/* ================================
+   CSS Variables - Light Mode
+   ================================ */
 :root {
   --foreground: #171717;
 
@@ -31,18 +34,15 @@
   --chart-5: 340 75% 55%;
 
   /* 폰트 변수 */
-  --font-sans:
-    var(--font-noto-sans-kr), var(--font-inter), -apple-system,
-    BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-display:
-    var(--font-poppins), var(--font-inter), var(--font-noto-sans-kr), sans-serif;
-  --font-rounded:
-    'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
-  --font-mono:
-    'JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata',
-    'Roboto Mono', monospace;
+  --font-sans: var(--font-noto-sans-kr), var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: var(--font-poppins), var(--font-inter), var(--font-noto-sans-kr), sans-serif;
+  --font-rounded: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
 }
 
+/* ================================
+   Tailwind Theme Configuration
+   ================================ */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -73,6 +73,9 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* ================================
+   Dark Mode Variables
+   ================================ */
 .dark {
   --background: #0a0a0a;
   --foreground: #ededed;
@@ -100,7 +103,9 @@
   --chart-5: 340 65% 70%;
 }
 
-/* 기본 body 스타일 */
+/* ================================
+   Base Typography Styles
+   ================================ */
 body {
   background: var(--background);
   color: var(--foreground);
@@ -113,13 +118,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 헤딩 폰트 스타일 */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-rounded);
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -127,230 +126,21 @@ h6 {
   text-wrap: balance;
 }
 
-/* 디스플레이 폰트 클래스 */
-.font-display {
-  font-family: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-  text-wrap: balance;
-}
-
-/* 코드 폰트 */
-code,
-pre,
-kbd,
-samp {
+code, pre, kbd, samp {
   font-family: var(--font-mono);
   font-size: 0.9em;
 }
 
-/* 본문 텍스트 최적화 */
 p {
   text-wrap: pretty;
   orphans: 2;
   widows: 2;
 }
 
-/* 한글 폰트 최적화 */
-.font-korean {
-  font-family: 'SF Pro Rounded', var(--font-noto-sans-kr), -apple-system, BlinkMacSystemFont, sans-serif;
-  word-break: keep-all;
-  overflow-wrap: break-word;
-}
 
-/* 영문 폰트 최적화 */
-.font-english {
-  font-family: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
-  letter-spacing: -0.01em;
-}
-
-/* 폰트 크기 유틸리티 */
-.text-display-2xl {
-  font-size: 4.5rem;
-  font-family: var(--font-display);
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  line-height: 1;
-}
-
-.text-display-xl {
-  font-size: 3.75rem;
-  font-family: var(--font-display);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-}
-
-.text-display-lg {
-  font-size: 3rem;
-  font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-}
-
-/* 카드 뒤집기 애니메이션 */
-.flip-card {
-  perspective: 1000px;
-}
-
-.flip-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
-}
-
-.flip-card:hover .flip-card-inner {
-  transform: rotateY(180deg);
-}
-
-.flip-card-front,
-.flip-card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  border-radius: 1rem;
-}
-
-.flip-card-back {
-  transform: rotateY(180deg);
-}
-
-/* 스크롤 애니메이션 */
-@keyframes slideInFromLeft {
-  0% {
-    transform: translateX(-100px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideInFromRight {
-  0% {
-    transform: translateX(100px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes fadeInUp {
-  0% {
-    transform: translateY(30px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.animate-slide-in-left {
-  animation: slideInFromLeft 0.8s ease-out forwards;
-}
-
-.animate-slide-in-right {
-  animation: slideInFromRight 0.8s ease-out forwards;
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.6s ease-out forwards;
-}
-
-.scroll-animate {
-  opacity: 0;
-  transform: translateX(-100px);
-}
-
-.scroll-animate.animate-left {
-  transform: translateX(-100px);
-}
-
-.scroll-animate.animate-right {
-  transform: translateX(100px);
-}
-
-.scroll-animate.in-view {
-  opacity: 1;
-  transform: translateX(0);
-  transition: all 0.8s ease-out;
-}
-
-/* 텍스트 그라디언트 효과 */
-.text-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.text-gradient-purple {
-  background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.text-gradient-green {
-  background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* 향상된 버튼 스타일 */
-.btn-primary {
-  font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  transition: all 0.2s ease-in-out;
-}
-
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow:
-    0 10px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-/* 반응형 폰트 크기 */
-@media (max-width: 640px) {
-  .text-display-2xl {
-    font-size: 3rem;
-  }
-
-  .text-display-xl {
-    font-size: 2.5rem;
-  }
-
-  .text-display-lg {
-    font-size: 2rem;
-  }
-}
-
-/* shadcn/ui 기본 설정 */
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
-/* 드래그 및 선택 비활성화 */
+/* ================================
+   User Selection & Interaction
+   ================================ */
 * {
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -363,7 +153,6 @@ p {
   user-drag: none;
 }
 
-/* 텍스트 입력 필드는 선택 가능하도록 예외 처리 */
 input,
 textarea,
 [contenteditable="true"],
@@ -374,7 +163,6 @@ textarea,
   user-select: text;
 }
 
-/* 이미지 드래그 비활성화 */
 img {
   -webkit-user-drag: none;
   -khtml-user-drag: none;
@@ -384,7 +172,6 @@ img {
   pointer-events: none;
 }
 
-/* 버튼과 링크는 클릭 가능하도록 예외 처리 */
 button,
 a,
 [role="button"],
@@ -392,13 +179,11 @@ a,
   pointer-events: auto;
 }
 
-/* 스크롤 가능한 요소들은 상호작용 가능하도록 예외 처리 */
 [data-scrollable="true"],
 .scrollable {
   pointer-events: auto;
 }
 
-/* 선택 스타일 개선 - 프로젝트 테마 색상 사용 */
 ::selection {
   background-color: #3F72AF;
   color: white;
@@ -409,7 +194,9 @@ a,
   color: white;
 }
 
-/* 스크롤바 스타일 - 라이트모드 기본값 */
+/* ================================
+   Scrollbar Styles
+   ================================ */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -430,7 +217,6 @@ a,
   background: #a1a1a1;
 }
 
-/* 스크롤바 스타일 - 다크모드 (강제 적용) */
 .dark ::-webkit-scrollbar-track {
   background: #1f1f1f;
   border-radius: 4px;
@@ -446,7 +232,6 @@ a,
   background: #5a5a5a;
 }
 
-/* 웹뷰를 위한 추가 스크롤바 스타일 (Firefox) */
 * {
   scrollbar-width: thin;
   scrollbar-color: #c1c1c1 #f1f1f1;
@@ -456,95 +241,26 @@ a,
   scrollbar-color: #4a4a4a #1f1f1f;
 }
 
-/* 웹뷰에서 더 강력한 스크롤바 스타일 적용 */
-/* 라이트 모드 */
-html ::-webkit-scrollbar-track,
-body ::-webkit-scrollbar-track,
-div ::-webkit-scrollbar-track {
-  background: #f1f1f1 !important;
-}
-
-html ::-webkit-scrollbar-thumb,
-body ::-webkit-scrollbar-thumb,
-div ::-webkit-scrollbar-thumb {
-  background: #c1c1c1 !important;
-  border: 1px solid #f1f1f1 !important;
-}
-
-html ::-webkit-scrollbar-thumb:hover,
-body ::-webkit-scrollbar-thumb:hover,
-div ::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1 !important;
-}
-
-/* 다크 모드 */
-html.dark ::-webkit-scrollbar-track,
-body.dark ::-webkit-scrollbar-track,
-.dark div ::-webkit-scrollbar-track {
-  background: #1f1f1f !important;
-}
-
-html.dark ::-webkit-scrollbar-thumb,
-body.dark ::-webkit-scrollbar-thumb,
-.dark div ::-webkit-scrollbar-thumb {
-  background: #4a4a4a !important;
-  border: 1px solid #1f1f1f !important;
-}
-
-html.dark ::-webkit-scrollbar-thumb:hover,
-body.dark ::-webkit-scrollbar-thumb:hover,
-.dark div ::-webkit-scrollbar-thumb:hover {
-  background: #5a5a5a !important;
-}
-
-/* 커스텀 스크롤바 클래스 */
 .scrollbar-thin::-webkit-scrollbar {
   width: 6px !important;
   height: 6px !important;
 }
 
-.scrollbar-thumb-gray-400::-webkit-scrollbar-thumb {
-  background: #9ca3af !important;
-  border-radius: 4px !important;
+.scrollbar-hide {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }
 
-.scrollbar-thumb-gray-600::-webkit-scrollbar-thumb {
-  background: #4b5563 !important;
-  border-radius: 4px !important;
+.scrollbar-hide::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
 }
 
-.scrollbar-track-gray-200::-webkit-scrollbar-track {
-  background: #e5e7eb !important;
-  border-radius: 4px !important;
-}
-
-.scrollbar-track-gray-800::-webkit-scrollbar-track {
-  background: #1f2937 !important;
-  border-radius: 4px !important;
-}
-
-.hover\:scrollbar-thumb-gray-500:hover::-webkit-scrollbar-thumb {
-  background: #6b7280 !important;
-}
-
-/* 웹뷰에서 Timeline 컴포넌트의 스크롤바 강제 적용 */
-.scrollbar-thin.scrollbar-track-gray-200::-webkit-scrollbar-track {
-  background: #e5e7eb !important;
-}
-
-.scrollbar-thin.scrollbar-track-gray-800::-webkit-scrollbar-track {
-  background: #1f2937 !important;
-}
-
-.scrollbar-thin.scrollbar-thumb-gray-400::-webkit-scrollbar-thumb {
-  background: #9ca3af !important;
-}
-
-.scrollbar-thin.scrollbar-thumb-gray-600::-webkit-scrollbar-thumb {
-  background: #4b5563 !important;
-}
-
-/* Chart tooltip z-index fix */
+/* ================================
+   Recharts Specific
+   ================================ */
 .recharts-tooltip-wrapper {
   z-index: 99999 !important;
 }
@@ -557,101 +273,6 @@ body.dark ::-webkit-scrollbar-thumb:hover,
   z-index: 99999 !important;
 }
 
-/* 웹뷰에서 스크롤바 숨기기 - 강제 적용 */
-.scrollbar-hide {
-  -ms-overflow-style: none !important;  /* IE and Edge */
-  scrollbar-width: none !important;  /* Firefox */
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none !important;  /* Chrome, Safari, Opera */
-  width: 0px !important;
-  height: 0px !important;
-  background: transparent !important;
-}
-
-/* 웹뷰 환경에서 스크롤바 완전 숨기기 */
-html .scrollbar-hide::-webkit-scrollbar,
-body .scrollbar-hide::-webkit-scrollbar,
-div.scrollbar-hide::-webkit-scrollbar {
-  display: none !important;
-  width: 0px !important;
-  height: 0px !important;
-  background: transparent !important;
-}
-
-/* 타임라인과 활동 목록에서 스크롤바 숨기기 */
-.timeline-scroll-hide::-webkit-scrollbar,
-.activity-scroll-hide::-webkit-scrollbar {
-  display: none !important;
-  width: 0px !important;
-  height: 0px !important;
-}
-
-.timeline-scroll-hide {
-  -ms-overflow-style: none !important;
-  scrollbar-width: none !important;
-}
-
-.activity-scroll-hide {
-  -ms-overflow-style: none !important;
-  scrollbar-width: none !important;
-}
-
-/* 티어별 글로우 애니메이션 */
-@keyframes challenger-glow {
-  0% {
-    box-shadow:
-      0 0 5px rgba(250, 204, 21, 0.3),
-      0 0 10px rgba(59, 130, 246, 0.2);
-  }
-  100% {
-    box-shadow:
-      0 0 8px rgba(250, 204, 21, 0.4),
-      0 0 15px rgba(59, 130, 246, 0.3);
-  }
-}
-
-@keyframes grandmaster-glow {
-  0% {
-    box-shadow:
-      0 0 5px rgba(239, 68, 68, 0.3),
-      0 0 10px rgba(244, 63, 94, 0.2);
-  }
-  100% {
-    box-shadow:
-      0 0 8px rgba(239, 68, 68, 0.4),
-      0 0 15px rgba(244, 63, 94, 0.3);
-  }
-}
-
-@keyframes master-glow {
-  0% {
-    box-shadow:
-      0 0 5px rgba(147, 51, 234, 0.3),
-      0 0 10px rgba(99, 102, 241, 0.2);
-  }
-  100% {
-    box-shadow:
-      0 0 8px rgba(147, 51, 234, 0.4),
-      0 0 15px rgba(99, 102, 241, 0.3);
-  }
-}
-
-@keyframes diamond-glow {
-  0% {
-    box-shadow:
-      0 0 5px rgba(59, 130, 246, 0.3),
-      0 0 10px rgba(6, 182, 212, 0.2);
-  }
-  100% {
-    box-shadow:
-      0 0 8px rgba(59, 130, 246, 0.4),
-      0 0 15px rgba(6, 182, 212, 0.3);
-  }
-}
-
-/* Recharts hover 효과 개선 */
 .recharts-active-bar {
   filter: brightness(1.1) !important;
 }
@@ -664,62 +285,24 @@ div.scrollbar-hide::-webkit-scrollbar {
   fill: rgba(156, 163, 175, 0.1) !important;
 }
 
-/* 공사중 컴포넌트 애니메이션 */
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
+/* ================================
+   Responsive Adjustments
+   ================================ */
+@media (max-width: 640px) {
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
 }
 
-@keyframes glow {
-  0%,
-  100% {
-    opacity: 0.3;
-    filter: brightness(1);
+/* ================================
+   shadcn/ui Base Layer
+   ================================ */
+@layer base {
+  * {
+    @apply border-border;
   }
-  50% {
-    opacity: 0.8;
-    filter: brightness(1.4);
+
+  body {
+    @apply bg-background text-foreground;
   }
-}
-
-@keyframes soft-glow {
-  0%,
-  100% {
-    opacity: 0.4;
-    box-shadow: 0 0 5px currentColor;
-  }
-  50% {
-    opacity: 0.9;
-    box-shadow: 0 0 15px currentColor;
-  }
-}
-
-@keyframes main-glow {
-  0%,
-  100% {
-    filter: brightness(1) drop-shadow(0 0 2px rgba(147, 51, 234, 0.3));
-  }
-  50% {
-    filter: brightness(1.2) drop-shadow(0 0 8px rgba(147, 51, 234, 0.6));
-  }
-}
-
-.animate-shimmer {
-  animation: shimmer 2s infinite;
-}
-
-.animate-glow {
-  animation: glow 2.5s ease-in-out infinite;
-}
-
-.animate-soft-glow {
-  animation: soft-glow 3s ease-in-out infinite;
-}
-
-.animate-main-glow {
-  animation: main-glow 2s ease-in-out infinite;
 }

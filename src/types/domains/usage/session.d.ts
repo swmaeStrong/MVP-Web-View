@@ -27,6 +27,10 @@ declare namespace Session {
     distractedAppUsage: AppUsageDetail[];
     workAppUsage: AppUsageDetail[];
   }
+
+  interface WeeklySessionScoreApiResponse {
+    avgScore: number;
+  }
 }
 
 // 컴포넌트에서 사용하는 처리된 세션 데이터
