@@ -53,10 +53,16 @@ declare namespace UsageLog {
     distractedSeconds: number;
   }
 
+  interface CategoryUsageItem {
+    category: string;
+    duration: number;
+  }
+
   interface WeeklyPomodoroDetailsApiResponse {
     totalSeconds: number;
     dailyResults: DailyResult[];
     distractedAppUsage: AppUsageItem[];
     workAppUsage: AppUsageItem[];
+    categoryUsages: CategoryUsageItem[];
   }
 }
