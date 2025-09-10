@@ -41,10 +41,7 @@ export default function WeeklyCategoriesList({ selectedDate }: WeeklyCategoriesL
           {/* Header */}
           <div className="mb-4">
             <p className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
-              Weekly Categories
-            </p>
-            <p className={`text-xs ${getThemeTextColor('secondary')}`}>
-              Total: {formatHours(weeklyCategories.reduce((sum, cat) => sum + cat.hours, 0))}
+              Categories
             </p>
           </div>
 
@@ -52,9 +49,12 @@ export default function WeeklyCategoriesList({ selectedDate }: WeeklyCategoriesL
           <div className="flex-1 min-h-0">
             <ScrollArea className="h-full">
               <div className="space-y-2.5">
-                {weeklyCategories.slice(0, 6).map((category, index) => (
-                  <div key={index} className="flex items-center gap-2 py-1.5">
-                    <span className={`${getThemeTextColor('secondary')} text-xs font-medium w-24 flex-shrink-0 text-left`}>
+                {weeklyCategories.slice(0, 10).map((category, index) => (
+                  <div key={index} className="flex items-center gap-1">
+                    <span 
+                      className={`${getThemeTextColor('secondary')} text-xs font-medium w-20 lg:w-24 flex-shrink-0 text-left overflow-hidden text-ellipsis whitespace-nowrap`}
+                      title={category.name}
+                    >
                       {category.name}
                     </span>
                     <div className="flex-1 mx-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 lg:h-3 overflow-hidden min-w-[30px]">
@@ -63,11 +63,8 @@ export default function WeeklyCategoriesList({ selectedDate }: WeeklyCategoriesL
                         style={{ width: `${Math.min(category.percentage, 100)}%` }}
                       />
                     </div>
-                    <span className={`${getThemeTextColor('primary')} text-xs font-semibold flex-shrink-0 w-16 text-right`}>
+                    <span className={`${getThemeTextColor('primary')} text-xs font-semibold flex-shrink-0 w-14 lg:w-16 text-right whitespace-nowrap`}>
                       {formatHours(category.hours)}
-                    </span>
-                    <span className={`text-xs font-medium flex-shrink-0 w-10 text-right ${getTrendColor(category.trend)}`}>
-                      {category.trend}
                     </span>
                   </div>
                 ))}
