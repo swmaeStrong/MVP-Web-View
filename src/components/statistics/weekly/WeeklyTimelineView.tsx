@@ -3,8 +3,7 @@
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/shadcn/ui/chart';
-import { getWeeklyPomodoroDetails } from '@/shared/api/get';
-import { useQuery } from '@tanstack/react-query';
+import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
 import React from 'react';
 import { Bar, BarChart, XAxis, YAxis } from 'recharts';
 
@@ -23,12 +22,7 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
   const { getThemeClass, getThemeTextColor } = useTheme();
 
   // API 호출
-  const { data: weeklyPomodoroData, isLoading, isError } = useQuery({
-    queryKey: ['weeklyPomodoroDetails', selectedDate],
-    queryFn: () => getWeeklyPomodoroDetails(selectedDate),
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-  });
+  const { data: weeklyPomodoroData, isLoading, isError } = useWeeklyPomodoroDetails(selectedDate);
 
   // API 데이터를 차트용 데이터로 변환
   const weekData = React.useMemo(() => {

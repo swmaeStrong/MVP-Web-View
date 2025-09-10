@@ -1,8 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
-import { getWeeklyPomodoroDetails } from '@/shared/api/get';
-import { useQuery } from '@tanstack/react-query';
+import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
 import React from 'react';
 
 interface WeeklySummaryCardsProps {
@@ -15,12 +14,7 @@ export default function WeeklySummaryCards({
   const { getThemeClass, getThemeTextColor } = useTheme();
 
   // API 호출 - 다른 weekly 컴포넌트들과 같은 쿼리 사용
-  const { data: weeklyPomodoroData, isLoading } = useQuery({
-    queryKey: ['weeklyPomodoroDetails', selectedDate],
-    queryFn: () => getWeeklyPomodoroDetails(selectedDate),
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-  });
+  const { data: weeklyPomodoroData, isLoading } = useWeeklyPomodoroDetails(selectedDate);
 
   // API 데이터에서 통계 계산
   const weeklyStats = React.useMemo(() => {

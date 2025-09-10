@@ -3,8 +3,7 @@
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
-import { getWeeklyPomodoroDetails } from '@/shared/api/get';
-import { useQuery } from '@tanstack/react-query';
+import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
 import React from 'react';
 
 interface WeeklyDistractionAppsListProps {
@@ -15,12 +14,7 @@ export default function WeeklyDistractionAppsList({ selectedDate }: WeeklyDistra
   const { getThemeClass, getThemeTextColor } = useTheme();
 
   // API 호출 - WeeklyTimelineView와 같은 쿼리 사용
-  const { data: weeklyPomodoroData, isLoading, isError } = useQuery({
-    queryKey: ['weeklyPomodoroDetails', selectedDate],
-    queryFn: () => getWeeklyPomodoroDetails(selectedDate),
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-  });
+  const { data: weeklyPomodoroData, isLoading, isError } = useWeeklyPomodoroDetails(selectedDate);
 
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
