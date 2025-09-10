@@ -102,25 +102,15 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
     <div className="w-full flex gap-4">
       {/* 왼쪽 차트 영역 (2/3) */}
       <Card className={`w-2/3 h-[300px] rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
-        <CardContent className="h-full p-3 overflow-y-auto">
-          <div className="mb-3">
-            <h3 className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
-              Weekly Work Time
-            </h3>
-            <p className={`text-xs ${getThemeTextColor('secondary')}`}>
-              Work minutes distribution across the week
-            </p>
-          </div>
-
-          {/* 주간 바차트 */}
+        <CardContent className="h-full p-3">
           {isLoading ? (
-            <div className="h-48 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
+            <div className="h-full bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
           ) : isError ? (
-            <div className="flex items-center justify-center h-48">
+            <div className="flex items-center justify-center h-full">
               <p className={`text-sm ${getThemeTextColor('secondary')}`}>Failed to load data</p>
             </div>
           ) : (
-            <ChartContainer config={chartConfig} className="h-48 w-full">
+            <ChartContainer config={chartConfig} className="h-full w-full">
               <BarChart
                 data={weekData}
                 margin={{
@@ -171,32 +161,6 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
               </BarChart>
             </ChartContainer>
           )}
-
-        {/* 주간 통계 요약 */}
-        {!isLoading && !isError && (
-          <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
-            <div className="grid grid-cols-3 gap-2">
-              <div>
-                <p className={`text-[10px] ${getThemeTextColor('secondary')}`}>Total Work Time</p>
-                <p className={`text-sm font-bold ${getThemeTextColor('primary')}`}>
-                  {weekData.reduce((sum, d) => sum + d.workMinutes, 0)}m
-                </p>
-              </div>
-              <div>
-                <p className={`text-[10px] ${getThemeTextColor('secondary')}`}>Daily Average</p>
-                <p className={`text-sm font-bold ${getThemeTextColor('primary')}`}>
-                  {Math.round(weekData.reduce((sum, d) => sum + d.workMinutes, 0) / 7)}m
-                </p>
-              </div>
-              <div>
-                <p className={`text-[10px] ${getThemeTextColor('secondary')}`}>Most Productive Day</p>
-                <p className={`text-sm font-bold ${getThemeTextColor('primary')}`}>
-                  {weekData.reduce((max, d) => d.workMinutes > max.workMinutes ? d : max).dateLabel}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
         </CardContent>
       </Card>
 
