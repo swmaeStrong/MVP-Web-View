@@ -119,6 +119,11 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
                   left: 20,
                   bottom: 5,
                 }}
+                onClick={(data) => {
+                  if (data && data.activePayload && data.activePayload[0]) {
+                    handleBarClick(data.activePayload[0].payload);
+                  }
+                }}
               >
                 <XAxis 
                   dataKey="dateLabel" 
