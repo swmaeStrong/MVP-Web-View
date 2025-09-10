@@ -99,9 +99,9 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
   console.log('WeeklyTimelineView - Max work minutes:', maxWorkMinutes); // 디버깅용
 
   return (
-    <div className="w-full flex gap-4">
-      {/* 왼쪽 차트 영역 (2/3) */}
-      <Card className={`w-2/3 h-[300px] p-0 rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
+    <div className="w-full flex flex-col lg:flex-row gap-4">
+      {/* 바차트 영역 */}
+      <Card className={`w-full lg:w-2/3 h-[300px] p-0 rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardContent className="h-full p-3">
           {isLoading ? (
             <div className="h-full bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
@@ -169,8 +169,8 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
         </CardContent>
       </Card>
 
-      {/* 오른쪽 선택된 날짜 상세 정보 패널 (1/3) */}
-      <Card className={`w-1/3 h-[300px] py-0 rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      {/* 파이차트 패널 */}
+      <Card className={`w-full lg:w-1/3 h-[300px] py-0 rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardContent className="h-full p-3 flex flex-col">
           <div className="mb-2">
             <p className={`text-md font-semibold ${getThemeTextColor('secondary')} uppercase tracking-wider`}>
