@@ -5,6 +5,7 @@ import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails'
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/shadcn/ui/chart';
+import { getKSTDateString } from '@/utils/timezone';
 import React from 'react';
 import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
@@ -22,8 +23,30 @@ const chartConfig = {
 export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
   
-  // 선택된 일별 날짜 상태
+  // 선택된 일별 날짜 상태 - 초기값으로 오늘 날짜 설정
   const [selectedDayDate, setSelectedDayDate] = React.useState<string | null>(null);
+  
+  // 컴포넌트 마운트 시 오늘 날짜로 초기화
+  React.useEffect(() => {
+    const today = getKSTDateString();
+    // 현재 주에 오늘이 포함되어 있는지 확인
+    const [year, month, day] = selectedDate.split('-').map(Number);
+    const currentDate = new Date(year, month - 1, day);
+    const dayOfWeek = currentDate.getDay();
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(currentDate.getTime() + diff * 24 * 60 * 60 * 1000);
+    
+    // 이번 주의 모든 날짜 생성
+    const weekDates = Array(7).fill(null).map((_, index) => {
+      const date = new Date(monday.getTime() + index * 24 * 60 * 60 * 1000);
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    });
+    
+    // 오늘이 이번 주에 포함되어 있으면 오늘을 선택
+    if (weekDates.includes(today)) {
+      setSelectedDayDate(today);
+    }
+  }, [selectedDate]);
 
   // API 호출
   const { data: weeklyPomodoroData, isLoading, isError } = useWeeklyPomodoroDetails(selectedDate);
