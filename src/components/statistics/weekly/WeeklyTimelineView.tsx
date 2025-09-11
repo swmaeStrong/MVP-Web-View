@@ -209,17 +209,61 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
         <CardContent className="h-full p-3 flex flex-col">
           <div className="mb-2">
             <p className={`text-md font-semibold ${getThemeTextColor('secondary')} uppercase tracking-wider`}>
-              {selectedDayDate || 'Select a Day'}
+              {isLoading ? (
+                <span className="h-5 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse inline-block"></span>
+              ) : (
+                selectedDayDate || 'Select a Day'
+              )}
             </p>
           </div>
 
-          {selectedDayDate ? (
+          {isLoading ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="w-full flex">
+                {/* 파이차트 스켈레톤 */}
+                <div className="w-1/2 h-48 flex items-center justify-center">
+                  <div className="w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+                </div>
+                {/* 범례 스켈레톤 */}
+                <div className="w-1/2 h-48 flex flex-col justify-center pl-2">
+                  <div className="space-y-2">
+                    {[...Array(5)].map((_, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse flex-shrink-0" />
+                        <div className="flex-1">
+                          <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-1" />
+                          <div className="h-2 w-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : selectedDayDate ? (
             <>
               {isDailyLoading ? (
-                <div className="space-y-3">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="w-full flex">
+                    {/* 파이차트 스켈레톤 */}
+                    <div className="w-1/2 h-48 flex items-center justify-center">
+                      <div className="w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+                    </div>
+                    {/* 범례 스켈레톤 */}
+                    <div className="w-1/2 h-48 flex flex-col justify-center pl-2">
+                      <div className="space-y-2">
+                        {[...Array(5)].map((_, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse flex-shrink-0" />
+                            <div className="flex-1">
+                              <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-1" />
+                              <div className="h-2 w-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ) : dailyPomodoroData && Array.isArray(dailyPomodoroData) && dailyPomodoroData.length > 0 ? (
                 <div className="h-full flex items-center">
