@@ -99,7 +99,7 @@ export default function WeeklyWorkAppsList({ selectedDate }: WeeklyWorkAppsListP
               <ScrollArea className="h-full">
                 <div className="space-y-1">
                   {weeklyWorkApps.slice(0, 8).map((app, index) => (
-                    <div key={index} className={`py-1.5 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} hover:${getThemeClass('componentHover')} transition-colors`}>
+                    <div key={index} className={`py-1.5 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} hover:${getThemeClass('component')} transition-colors`}>
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 min-w-0">
                           <span className={`text-[10px] font-medium ${getThemeTextColor('secondary')} flex-shrink-0`}>
