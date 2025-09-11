@@ -1,9 +1,9 @@
 'use client';
 
+import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
-import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
 import React from 'react';
 
 interface WeeklyDistractionAppsListProps {
@@ -72,27 +72,22 @@ export default function WeeklyDistractionAppsList({ selectedDate }: WeeklyDistra
           {/* Header */}
           <div className="mb-4">
             <p className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
-              Weekly Distraction Apps
+              Distraction Apps
             </p>
-            <div className="flex items-center justify-between">
-              <p className={`text-xs ${getThemeTextColor('secondary')}`}>
-                Total: {formatHours(totalHours)}
-              </p>
-              <p className={`text-xs font-medium ${totalHours < 40 ? 'text-green-500' : 'text-red-500'}`}>
-                {totalHours < 40 ? '✓ Under control' : '⚠ High usage'}
-              </p>
-            </div>
           </div>
 
           {/* Content */}
           <div className="flex-1 min-h-0">
             {isLoading ? (
-              <div className="h-full flex items-center justify-center">
-                <div className="animate-pulse space-y-2 w-full">
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
-                  ))}
-                </div>
+              <div className="space-y-1">
+                {[...Array(8)].map((_, index) => (
+                  <div key={index} className={`py-1 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
+                    <div className="flex items-center justify-between">
+                      <div className={`h-3 w-20 rounded animate-pulse ${getThemeClass('borderLight')}`}></div>
+                      <div className={`h-3 w-16 rounded animate-pulse ${getThemeClass('borderLight')}`}></div>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : isError ? (
               <div className="h-full flex items-center justify-center">
@@ -105,8 +100,8 @@ export default function WeeklyDistractionAppsList({ selectedDate }: WeeklyDistra
             ) : (
               <ScrollArea className="h-full">
                 <div className="space-y-1">
-                  {weeklyDistractionApps.map((app, index) => (
-                    <div key={index} className={`py-1.5 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} transition-colors`}>
+                  {weeklyDistractionApps.slice(0, 8).map((app, index) => (
+                    <div key={index} className={`py-1.5 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} hover:${getThemeClass('component')} transition-colors`}>
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 min-w-0">
                           <span className={`text-[10px] font-medium ${getThemeTextColor('secondary')} flex-shrink-0`}>
@@ -116,18 +111,8 @@ export default function WeeklyDistractionAppsList({ selectedDate }: WeeklyDistra
                             {app.name}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className={`text-[10px] ${getThemeTextColor('secondary')} flex-shrink-0`}>
-                            {app.count} times
-                          </span>
-                          <span className={`text-[10px] font-semibold ${getThemeTextColor('primary')} flex-shrink-0 w-12 text-right`}>
-                            {formatHours(app.hours)}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="mt-1">
-                        <span className={`text-[9px] ${getThemeTextColor('secondary')}`}>
-                          Avg/day: {app.avgPerDay}
+                        <span className={`text-[10px] ${getThemeTextColor('secondary')} flex-shrink-0`}>
+                          {formatHours(app.hours)} / {app.count} times
                         </span>
                       </div>
                     </div>

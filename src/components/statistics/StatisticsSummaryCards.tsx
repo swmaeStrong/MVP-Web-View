@@ -88,46 +88,62 @@ export default function StatisticsSummaryCards({
     {
       title: 'Daily Total',
       value: isLoading ? (
-        <div className="text-2xl font-bold animate-pulse">--h --m</div>
+        <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       ) : (
         <div className="text-2xl font-bold">
           {formatHours(totalWorkHours)}
         </div>
       ),
-      subtitle: isLoading ? 'Loading...' : 'Total work time',
+      subtitle: isLoading ? (
+        <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
+      ) : (
+        'Total work time'
+      ),
     },
     {
       title: 'Daily Distractions',
       value: isLoading ? (
-        <div className="text-2xl font-bold animate-pulse">--h --m</div>
+        <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       ) : (
         <div className="text-2xl font-bold">
           {formatHours(calculateTotalDistractionHours())}
         </div>
       ),
-      subtitle: isLoading ? 'Loading...' : 'Total distraction time',
+      subtitle: isLoading ? (
+        <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
+      ) : (
+        'Total distraction time'
+      ),
     },
     {
       title: 'Daily Sessions',
       value: isLoading ? (
-        <div className="text-2xl font-bold animate-pulse">--</div>
+        <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       ) : (
         <div className="text-2xl font-bold">
           {sessionData?.length || 0}
         </div>
       ),
-      subtitle: isLoading ? 'Loading...' : 'Completed sessions',
+      subtitle: isLoading ? (
+        <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
+      ) : (
+        'Completed sessions'
+      ),
     },
     {
       title: 'Average Focus Score',
       value: isLoading ? (
-        <div className="text-2xl font-bold animate-pulse">-- points</div>
+        <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       ) : (
         <div className="flex items-baseline gap-1">
           <span className="text-2xl font-bold">{calculateAverageFocusScore()} points</span>
         </div>
       ),
-      subtitle: isLoading ? 'Loading...' : 'Daily average score',
+      subtitle: isLoading ? (
+        <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
+      ) : (
+        'Daily average score'
+      ),
     },
   ];
 

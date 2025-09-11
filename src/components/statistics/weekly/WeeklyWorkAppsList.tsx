@@ -70,22 +70,22 @@ export default function WeeklyWorkAppsList({ selectedDate }: WeeklyWorkAppsListP
           {/* Header */}
           <div className="mb-4">
             <p className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
-              Weekly Work Apps
-            </p>
-            <p className={`text-xs ${getThemeTextColor('secondary')}`}>
-              Active Days & Daily Average
+              Work Apps
             </p>
           </div>
 
           {/* Content */}
           <div className="flex-1 min-h-0">
             {isLoading ? (
-              <div className="h-full flex items-center justify-center">
-                <div className="animate-pulse space-y-2 w-full">
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
-                  ))}
-                </div>
+              <div className="space-y-1">
+                {[...Array(8)].map((_, index) => (
+                  <div key={index} className={`py-1 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
+                    <div className="flex items-center justify-between">
+                      <div className={`h-3 w-24 rounded animate-pulse ${getThemeClass('borderLight')}`}></div>
+                      <div className={`h-3 w-16 rounded animate-pulse ${getThemeClass('borderLight')}`}></div>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : isError ? (
               <div className="h-full flex items-center justify-center">
@@ -98,8 +98,8 @@ export default function WeeklyWorkAppsList({ selectedDate }: WeeklyWorkAppsListP
             ) : (
               <ScrollArea className="h-full">
                 <div className="space-y-1">
-                  {weeklyWorkApps.map((app, index) => (
-                    <div key={index} className={`py-1.5 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} transition-colors`}>
+                  {weeklyWorkApps.slice(0, 8).map((app, index) => (
+                    <div key={index} className={`py-1.5 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} hover:${getThemeClass('componentHover')} transition-colors`}>
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 min-w-0">
                           <span className={`text-[10px] font-medium ${getThemeTextColor('secondary')} flex-shrink-0`}>
@@ -109,18 +109,8 @@ export default function WeeklyWorkAppsList({ selectedDate }: WeeklyWorkAppsListP
                             {app.name}
                           </span>
                         </div>
-                        <div className="flex items-center gap-3">
-                          <span className={`text-[10px] ${getThemeTextColor('secondary')} flex-shrink-0`}>
-                            {app.count} times
-                          </span>
-                          <span className={`text-[10px] font-semibold ${getThemeTextColor('primary')} flex-shrink-0 w-12 text-right`}>
-                            {formatHours(app.hours)}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="mt-1 flex justify-between">
-                        <span className={`text-[9px] ${getThemeTextColor('secondary')}`}>
-                          Avg/day: {app.avgPerDay}
+                        <span className={`text-[10px] ${getThemeTextColor('secondary')} flex-shrink-0`}>
+                          {formatHours(app.hours)} / {app.count} times
                         </span>
                       </div>
                     </div>

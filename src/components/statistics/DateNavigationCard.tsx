@@ -73,11 +73,11 @@ export default function TotalTimeCard({
             Day
           </button>
           <button
-            disabled
-            className={`px-3 py-1 text-sm font-medium rounded-md transition-colors cursor-not-allowed opacity-50 ${
+            onClick={() => setSelectedPeriod('week')}
+            className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
               selectedPeriod === 'week'
                 ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-400 dark:text-gray-500'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             Week

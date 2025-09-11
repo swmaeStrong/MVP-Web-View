@@ -20,6 +20,7 @@ interface GroupBasicSettingsProps {
   onError: (errors: any) => void;
   isSubmitting: boolean;
   excludeFromValidation?: string;
+  initialValues?: UpdateGroupFormData; // 초기값 추가
 }
 
 export default function GroupBasicSettings({ 
@@ -27,10 +28,27 @@ export default function GroupBasicSettings({
   onSubmit, 
   onError, 
   isSubmitting,
-  excludeFromValidation 
+  excludeFromValidation,
+  initialValues
 }: GroupBasicSettingsProps) {
   const { getThemeTextColor, getCommonCardClass } = useTheme();
-  const { getValues, setValue } = form;
+  const { getValues, setValue, watch } = form;
+  
+  // 현재 폼 값들을 watch로 추적
+  const currentValues = watch();
+  
+  // 실제로 값이 변경되었는지 확인하는 함수
+  const hasActualChanges = React.useMemo(() => {
+    if (!initialValues) return false;
+    
+    const current = currentValues;
+    return (
+      current.name !== initialValues.name ||
+      current.description !== initialValues.description ||
+      current.isPublic !== initialValues.isPublic ||
+      JSON.stringify(current.tags?.sort()) !== JSON.stringify(initialValues.tags?.sort())
+    );
+  }, [currentValues, initialValues]);
 
   // Add tag handler
   const handleAddTag = (newTag: string) => {
@@ -38,14 +56,14 @@ export default function GroupBasicSettings({
     const trimmedTag = newTag.trim();
     // 12글자 제한, 중복 체크, 5개 제한
     if (trimmedTag && trimmedTag.length <= 12 && !currentTags.includes(trimmedTag) && currentTags.length < 5) {
-      setValue('tags', [...currentTags, trimmedTag]);
+      setValue('tags', [...currentTags, trimmedTag], { shouldDirty: true });
     }
   };
 
   // Remove tag handler
   const handleRemoveTag = (tagToRemove: string) => {
     const currentTags = getValues('tags');
-    setValue('tags', currentTags.filter(tag => tag !== tagToRemove));
+    setValue('tags', currentTags.filter(tag => tag !== tagToRemove), { shouldDirty: true });
   };
 
   return (
@@ -175,9 +193,8 @@ export default function GroupBasicSettings({
             className={`gap-2 ${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90 transition-colors`}
             disabled={
               isSubmitting || 
-              !form.formState.isValid ||
-              !form.formState.isDirty ||
-              !form.getValues('name')?.trim()
+              !form.getValues('name')?.trim() ||
+              !hasActualChanges
             }
           >
             <Save className="h-4 w-4" />

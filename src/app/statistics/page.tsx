@@ -29,8 +29,12 @@ export default function StatisticsPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date(getKSTDateString()));
   // 날짜 제한 로직으로 변경 - 배열 생성 대신 상수 기반 체크
 
-  // 초기 날짜 설정 (한국 시간대 기준)
-  const [selectedDate, setSelectedDate] = useState(getKSTDateString());
+  // 날짜 상태를 day와 week별로 독립적으로 관리
+  const [dayDate, setDayDate] = useState(getKSTDateString());
+  const [weekDate, setWeekDate] = useState(getKSTDateString());
+  
+  // 현재 선택된 모드에 따른 날짜
+  const selectedDate = selectedPeriod === 'day' ? dayDate : weekDate;
   // Hook 순서를 항상 동일하게 유지
   const currentUser = useCurrentUserData();
   const { getThemeClass } = useTheme();
@@ -58,7 +62,7 @@ export default function StatisticsPage() {
   const handlePreviousDate = useCallback(() => {
     if (selectedPeriod === 'week') {
       // 주 단위로 이동 (7일 전)
-      const [year, month, day] = selectedDate.split('-').map(Number);
+      const [year, month, day] = weekDate.split('-').map(Number);
       const currentDate = new Date(year, month - 1, day);
       const previousWeek = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000);
       
@@ -69,24 +73,24 @@ export default function StatisticsPage() {
       
       if (previousDateString >= '2025-01-01') { // 최소 날짜 체크
         console.log('이전 주로 변경:', previousDateString);
-        setSelectedDate(previousDateString);
+        setWeekDate(previousDateString);
       }
     } else {
       // 일 단위로 이동
-      const previousDate = getPreviousDate(selectedDate);
+      const previousDate = getPreviousDate(dayDate);
       if (previousDate) {
         console.log('이전 날짜로 변경:', previousDate);
-        setSelectedDate(previousDate);
+        setDayDate(previousDate);
       } else {
         console.log('이전 날짜로 갈 수 없음 - 제한 날짜에 도달');
       }
     }
-  }, [selectedDate, selectedPeriod]);
+  }, [dayDate, weekDate, selectedPeriod]);
 
   const handleNextDate = useCallback(() => {
     if (selectedPeriod === 'week') {
       // 주 단위로 이동 (7일 후)
-      const [year, month, day] = selectedDate.split('-').map(Number);
+      const [year, month, day] = weekDate.split('-').map(Number);
       const currentDate = new Date(year, month - 1, day);
       const nextWeek = new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000);
       
@@ -98,24 +102,24 @@ export default function StatisticsPage() {
       const today = getKSTDateString();
       if (nextDateString <= today) {
         console.log('다음 주로 변경:', nextDateString);
-        setSelectedDate(nextDateString);
+        setWeekDate(nextDateString);
       }
     } else {
       // 일 단위로 이동
-      const nextDate = getNextDate(selectedDate);
+      const nextDate = getNextDate(dayDate);
       if (nextDate) {
         console.log('다음 날짜로 변경:', nextDate);
-        setSelectedDate(nextDate);
+        setDayDate(nextDate);
       } else {
         console.log('다음 날짜로 갈 수 없음 - 오늘 날짜에 도달');
       }
     }
-  }, [selectedDate, selectedPeriod]);
+  }, [dayDate, weekDate, selectedPeriod]);
 
   const canGoPrevious = useMemo(() => {
     if (selectedPeriod === 'week') {
       // 주 단위 체크
-      const [year, month, day] = selectedDate.split('-').map(Number);
+      const [year, month, day] = weekDate.split('-').map(Number);
       const currentDate = new Date(year, month - 1, day);
       const previousWeek = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000);
       
@@ -127,15 +131,15 @@ export default function StatisticsPage() {
       return previousDateString >= '2025-01-01';
     }
     
-    const canGo = canNavigateToPrevious(selectedDate);
-    console.log('canGoPrevious 체크 - 날짜:', selectedDate, '가능여부:', canGo);
+    const canGo = canNavigateToPrevious(dayDate);
+    console.log('canGoPrevious 체크 - 날짜:', dayDate, '가능여부:', canGo);
     return canGo;
-  }, [selectedDate, selectedPeriod]);
+  }, [dayDate, weekDate, selectedPeriod]);
 
   const canGoNext = useMemo(() => {
     if (selectedPeriod === 'week') {
       // 주 단위 체크
-      const [year, month, day] = selectedDate.split('-').map(Number);
+      const [year, month, day] = weekDate.split('-').map(Number);
       const currentDate = new Date(year, month - 1, day);
       const nextWeek = new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000);
       
@@ -148,10 +152,10 @@ export default function StatisticsPage() {
       return nextDateString <= today;
     }
     
-    const canGo = canNavigateToNext(selectedDate);
-    console.log('canGoNext 체크 - 날짜:', selectedDate, '가능여부:', canGo);
+    const canGo = canNavigateToNext(dayDate);
+    console.log('canGoNext 체크 - 날짜:', dayDate, '가능여부:', canGo);
     return canGo;
-  }, [selectedDate, selectedPeriod]);
+  }, [dayDate, weekDate, selectedPeriod]);
 
 
 
