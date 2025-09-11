@@ -96,46 +96,62 @@ export default function WeeklySummaryCards({
     {
       title: 'Weekly Total',
       value: isLoading ? (
-        <div className="text-2xl font-bold animate-pulse">--h --m</div>
+        <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       ) : (
         <div className="text-2xl font-bold">
           {formatHours(weeklyStats.totalWorkHours)}
         </div>
       ),
-      subtitle: isLoading ? 'Loading...' : `Avg ${formatHours(weeklyStats.totalWorkHours / 7 || 0)}/day`,
+      subtitle: isLoading ? (
+        <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
+      ) : (
+        `Avg ${formatHours(weeklyStats.totalWorkHours / 7 || 0)}/day`
+      ),
     },
     {
       title: 'Weekly Distractions',
       value: isLoading ? (
-        <div className="text-2xl font-bold animate-pulse">--h --m</div>
+        <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       ) : (
         <div className="text-2xl font-bold">
           {formatHours(weeklyStats.totalDistractionHours)}
         </div>
       ),
-      subtitle: isLoading ? 'Loading...' : `Avg ${formatHours(weeklyStats.totalDistractionHours / 7 || 0)}/day`,
+      subtitle: isLoading ? (
+        <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
+      ) : (
+        `Avg ${formatHours(weeklyStats.totalDistractionHours / 7 || 0)}/day`
+      ),
     },
     {
       title: 'Weekly Sessions',
       value: isLoading ? (
-        <div className="text-2xl font-bold animate-pulse">--</div>
+        <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       ) : (
         <div className="text-2xl font-bold">
           {weeklyStats.totalSessions}
         </div>
       ),
-      subtitle: isLoading ? 'Loading...' : `Avg ${Math.round(weeklyStats.totalSessions / 7 || 0)}/day`,
+      subtitle: isLoading ? (
+        <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
+      ) : (
+        `Avg ${Math.round(weeklyStats.totalSessions / 7 || 0)}/day`
+      ),
     },
     {
       title: 'Average Focus Score',
       value: isLoading ? (
-        <div className="text-2xl font-bold animate-pulse">--pt</div>
+        <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       ) : (
         <div className="flex items-baseline gap-1">
           <span className="text-2xl font-bold">{weeklyStats.averageFocusScore} points</span>
         </div>
       ),
-      subtitle: isLoading ? 'Loading...' : 'Weekly average score',
+      subtitle: isLoading ? (
+        <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
+      ) : (
+        'Weekly average score'
+      ),
     },
   ];
 
