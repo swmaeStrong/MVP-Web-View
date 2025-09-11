@@ -1,12 +1,13 @@
 'use client';
 
+import { useDailyPomodoroDetails } from '@/hooks/data/useDailyPomodoroDetails';
+import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/shadcn/ui/chart';
-import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
-import { useDailyPomodoroDetails } from '@/hooks/data/useDailyPomodoroDetails';
+import { getKSTDateString } from '@/utils/timezone';
 import React from 'react';
-import { Bar, BarChart, XAxis, YAxis, Cell, PieChart, Pie, ResponsiveContainer, Legend } from 'recharts';
+import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 interface WeeklyTimelineViewProps {
   selectedDate: string;
@@ -20,10 +21,32 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewProps) {
-  const { getThemeClass, getThemeTextColor } = useTheme();
+  const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
   
-  // 선택된 일별 날짜 상태
+  // 선택된 일별 날짜 상태 - 초기값으로 오늘 날짜 설정
   const [selectedDayDate, setSelectedDayDate] = React.useState<string | null>(null);
+  
+  // 컴포넌트 마운트 시 오늘 날짜로 초기화
+  React.useEffect(() => {
+    const today = getKSTDateString();
+    // 현재 주에 오늘이 포함되어 있는지 확인
+    const [year, month, day] = selectedDate.split('-').map(Number);
+    const currentDate = new Date(year, month - 1, day);
+    const dayOfWeek = currentDate.getDay();
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(currentDate.getTime() + diff * 24 * 60 * 60 * 1000);
+    
+    // 이번 주의 모든 날짜 생성
+    const weekDates = Array(7).fill(null).map((_, index) => {
+      const date = new Date(monday.getTime() + index * 24 * 60 * 60 * 1000);
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    });
+    
+    // 오늘이 이번 주에 포함되어 있으면 오늘을 선택
+    if (weekDates.includes(today)) {
+      setSelectedDayDate(today);
+    }
+  }, [selectedDate]);
 
   // API 호출
   const { data: weeklyPomodoroData, isLoading, isError } = useWeeklyPomodoroDetails(selectedDate);
@@ -51,6 +74,7 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
         dateLabel: `${monthNum}/${dayNum}`,
         workSeconds: 0, // 기본값 0
         workMinutes: 0, // 분 단위로도 저장
+        workHours: 0, // 시간 단위로도 저장
       };
     });
     
@@ -69,6 +93,8 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
           const workSeconds = dataMap.get(dayData.date) || 0;
           dayData.workSeconds = workSeconds;
           dayData.workMinutes = Math.round(workSeconds / 60);
+          // 최소 0.2시간(12분) 보장하여 바가 보이도록 함
+          dayData.workHours = workSeconds > 0 ? Math.max(workSeconds / 3600, 0.2) : 0;
         }
       });
     }
@@ -76,7 +102,7 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
     return weekDates;
   }, [weeklyPomodoroData, selectedDate]);
 
-  const maxWorkMinutes = 8 * 60; // 8시간 = 480분을 최댓값으로 고정
+  const maxWorkHours = 6; // 6시간을 최댓값으로 고정
   
   // 바 클릭 핸들러
   const handleBarClick = React.useCallback((data: any) => {
@@ -96,12 +122,12 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
   };
   
   console.log('WeeklyTimelineView - Processed weekData:', weekData); // 디버깅용
-  console.log('WeeklyTimelineView - Max work minutes:', maxWorkMinutes); // 디버깅용
+  console.log('WeeklyTimelineView - Max work hours:', maxWorkHours); // 디버깅용
 
   return (
-    <div className="w-full flex gap-4">
-      {/* 왼쪽 차트 영역 (2/3) */}
-      <Card className={`w-2/3 h-[300px] rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
+    <div className="w-full flex flex-col lg:flex-row gap-4">
+      {/* 바차트 영역 */}
+      <Card className={`w-full lg:w-2/3 h-[300px] p-0 rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardContent className="h-full p-3">
           {isLoading ? (
             <div className="h-full bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
@@ -114,47 +140,61 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
               <BarChart
                 data={weekData}
                 margin={{
-                  top: 20,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
+                  top: 25,
+                  right: 25,
+                  left: 25,
+                  bottom: 25,
                 }}
+                onClick={(data) => {
+                  if (data && data.activePayload && data.activePayload[0]) {
+                    handleBarClick(data.activePayload[0].payload);
+                  }
+                }}
+                style={{ cursor: 'pointer' }}
               >
                 <XAxis 
                   dataKey="dateLabel" 
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 10 }}
+                  tick={{ fontSize: 12, fontWeight: 500 }}
+                  className="text-gray-600 dark:text-gray-400"
                 />
                 <YAxis 
-                  domain={[0, maxWorkMinutes]}
+                  domain={[0, maxWorkHours]}
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 10 }}
-                  tickFormatter={(value) => `${value}m`}
+                  tick={{ fontSize: 11, fontWeight: 500 }}
+                  tickFormatter={(value) => `${value}h`}
+                  className="text-gray-600 dark:text-gray-400"
+                  width={40}
                 />
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
-                      formatter={(value, name) => [
-                        `${value} minutes`,
-                        "Work Time"
-                      ]}
-                      labelFormatter={(label) => `Date: ${label}`}
+                      formatter={(value, name) => {
+                        const hours = Math.floor(value as number);
+                        const minutes = Math.round((value as number - hours) * 60);
+                        const timeString = hours > 0 
+                          ? (minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`)
+                          : `${minutes}m`;
+                        return [timeString, "Work Time"];
+                      }}
+                      labelFormatter={(label) => `${label}`}
+                      className="bg-white/95 dark:bg-gray-800/95 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg"
                     />
                   }
                 />
                 <Bar
-                  dataKey="workMinutes"
+                  dataKey="workHours"
                   fill="var(--color-workMinutes)"
-                  radius={[2, 2, 0, 0]}
+                  radius={[4, 4, 0, 0]}
                   onClick={handleBarClick}
                   style={{ cursor: 'pointer' }}
                 >
                   {weekData.map((entry, index) => (
                     <Cell 
                       key={`cell-${index}`} 
-                      fill={selectedDayDate === entry.date ? "#2563eb" : "var(--color-workMinutes)"}
+                      fill={selectedDayDate === entry.date ? "#3F72AF" : "rgba(63, 114, 175, 0.5)"}
                     />
                   ))}
                 </Bar>
@@ -164,92 +204,135 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
         </CardContent>
       </Card>
 
-      {/* 오른쪽 선택된 날짜 상세 정보 패널 (1/3) */}
-      <Card className={`w-1/3 h-[300px] rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
+      {/* 파이차트 패널 */}
+      <Card className={`w-full lg:w-1/3 h-[300px] py-0 rounded-lg border-2 transition-all duration-300 ${getThemeClass('border')} ${getThemeClass('component')}`}>
         <CardContent className="h-full p-3 flex flex-col">
-          <div className="mb-3">
-            <h3 className={`text-sm font-semibold ${getThemeTextColor('primary')}`}>
-              {selectedDayDate ? `${selectedDayDate} Details` : 'Select a Day'}
-            </h3>
-            <p className={`text-xs ${getThemeTextColor('secondary')}`}>
-              {selectedDayDate ? 'Daily pomodoro breakdown' : 'Click on a bar to see details'}
+          <div className="mb-2">
+            <p className={`text-md font-semibold ${getThemeTextColor('secondary')} uppercase tracking-wider`}>
+              {isLoading ? (
+                <span className="h-5 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse inline-block"></span>
+              ) : (
+                selectedDayDate || 'Select a Day'
+              )}
             </p>
           </div>
 
-          {selectedDayDate ? (
+          {isLoading ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="w-full flex">
+                {/* 파이차트 스켈레톤 */}
+                <div className="w-1/2 h-48 flex items-center justify-center">
+                  <div className="w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+                </div>
+                {/* 범례 스켈레톤 */}
+                <div className="w-1/2 h-48 flex flex-col justify-center pl-2">
+                  <div className="space-y-2">
+                    {[...Array(5)].map((_, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse flex-shrink-0" />
+                        <div className="flex-1">
+                          <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-1" />
+                          <div className="h-2 w-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : selectedDayDate ? (
             <>
               {isDailyLoading ? (
-                <div className="space-y-3">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="w-full flex">
+                    {/* 파이차트 스켈레톤 */}
+                    <div className="w-1/2 h-48 flex items-center justify-center">
+                      <div className="w-32 h-32 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+                    </div>
+                    {/* 범례 스켈레톤 */}
+                    <div className="w-1/2 h-48 flex flex-col justify-center pl-2">
+                      <div className="space-y-2">
+                        {[...Array(5)].map((_, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse flex-shrink-0" />
+                            <div className="flex-1">
+                              <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-1" />
+                              <div className="h-2 w-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ) : dailyPomodoroData && Array.isArray(dailyPomodoroData) && dailyPomodoroData.length > 0 ? (
-                <div className="h-full flex">
-                  {/* 왼쪽 파이차트 */}
-                  <div className="w-1/2 h-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={dailyPomodoroData
-                            .sort((a, b) => (b.duration || 0) - (a.duration || 0))
-                            .slice(0, 5)
-                          }
-                          dataKey="duration"
-                          nameKey="category"
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={80}
-                          innerRadius={25}
-                          fill="#8884d8"
-                        >
-                          {dailyPomodoroData
-                            .sort((a, b) => (b.duration || 0) - (a.duration || 0))
-                            .slice(0, 5)
-                            .map((entry, index) => {
-                              // 메인 컬러에서 점점 연하게 만드는 방식
-                              const baseOpacity = 1.0;
-                              const opacityStep = 0.15;
-                              const opacity = Math.max(baseOpacity - (index * opacityStep), 0.3);
-                              const color = `rgba(63, 114, 175, ${opacity})`; // #3F72AF를 rgba로 변환
-                              return <Cell key={`cell-${index}`} fill={color} />;
-                            })
-                          }
-                        </Pie>
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
+                <div className="h-full flex items-center">
+                  <div className="w-full flex">
+                    {/* 파이차트 */}
+                    <div className="w-1/2 h-48">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={dailyPomodoroData
+                              .sort((a, b) => (b.duration || 0) - (a.duration || 0))
+                              .slice(0, 5)
+                            }
+                            dataKey="duration"
+                            nameKey="category"
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={70}
+                            innerRadius={20}
+                            fill="#8884d8"
+                          >
+                            {dailyPomodoroData
+                              .sort((a, b) => (b.duration || 0) - (a.duration || 0))
+                              .slice(0, 5)
+                              .map((entry, index) => {
+                                // 메인 컬러에서 점점 연하게 만드는 방식
+                                const baseOpacity = 1.0;
+                                const opacityStep = 0.15;
+                                const opacity = Math.max(baseOpacity - (index * opacityStep), 0.3);
+                                const color = `rgba(63, 114, 175, ${opacity})`; // #3F72AF를 rgba로 변환
+                                return <Cell key={`cell-${index}`} fill={color} />;
+                              })
+                            }
+                          </Pie>
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
 
-                  {/* 오른쪽 범례/설명 */}
-                  <div className="w-1/2 h-full flex flex-col justify-center pl-2">
-                    <div className="space-y-2">
-                      {dailyPomodoroData
-                        .sort((a, b) => (b.duration || 0) - (a.duration || 0))
-                        .slice(0, 5)
-                        .map((item, index) => {
-                          const baseOpacity = 1.0;
-                          const opacityStep = 0.15;
-                          const opacity = Math.max(baseOpacity - (index * opacityStep), 0.3);
-                          const color = `rgba(63, 114, 175, ${opacity})`;
-                          
-                          return (
-                            <div key={index} className="flex items-center gap-2">
-                              <div 
-                                className="w-3 h-3 rounded-full flex-shrink-0" 
-                                style={{ backgroundColor: color }}
-                              />
-                              <div className="flex-1 min-w-0">
-                                <p className={`text-xs ${getThemeTextColor('primary')} truncate`}>
-                                  {item.category}
-                                </p>
-                                <p className={`text-[10px] ${getThemeTextColor('secondary')}`}>
-                                  {formatTime(item.duration || 0)}
-                                </p>
+                    {/* 범례/설명 */}
+                    <div className="w-1/2 h-48 flex flex-col justify-center pl-2">
+                      <div className="space-y-2">
+                        {dailyPomodoroData
+                          .sort((a, b) => (b.duration || 0) - (a.duration || 0))
+                          .slice(0, 5)
+                          .map((item, index) => {
+                            const baseOpacity = 1.0;
+                            const opacityStep = 0.15;
+                            const opacity = Math.max(baseOpacity - (index * opacityStep), 0.3);
+                            const color = `rgba(63, 114, 175, ${opacity})`;
+                            
+                            return (
+                              <div key={index} className="flex items-center gap-2">
+                                <div 
+                                  className="w-3 h-3 rounded-full flex-shrink-0" 
+                                  style={{ backgroundColor: color }}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <p className={`text-xs ${getThemeTextColor('primary')} truncate`}>
+                                    {item.category}
+                                  </p>
+                                  <p className={`text-[10px] ${getThemeTextColor('secondary')}`}>
+                                    {formatTime(item.duration || 0)}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                          );
-                        })
-                      }
+                            );
+                          })
+                        }
+                      </div>
                     </div>
                   </div>
                 </div>

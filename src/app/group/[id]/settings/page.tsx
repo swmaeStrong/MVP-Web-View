@@ -66,6 +66,7 @@ export default function GroupSettingsPage() {
   const form = useForm<UpdateGroupFormData>({
     resolver: zodResolver(updateGroupSchema),
     mode: 'onChange', // 실시간 유효성 검사 활성화
+    reValidateMode: 'onChange', // 재검증 모드 추가
     defaultValues: {
       name: '',
       description: '',
@@ -85,8 +86,13 @@ export default function GroupSettingsPage() {
         isPublic: groupDetail.isPublic,
         tags: groupDetail.tags,
       });
+      
+      // 폼 리셋 후 validation 트리거
+      setTimeout(() => {
+        form.trigger();
+      }, 0);
     }
-  }, [groupDetail, reset]);
+  }, [groupDetail, reset, form]);
 
   // Validation error handler
   const onError = (errors: any) => {
@@ -288,6 +294,12 @@ export default function GroupSettingsPage() {
             onError={onError}
             isSubmitting={form.formState.isSubmitting || updateGroupMutation.isPending}
             excludeFromValidation={groupDetail?.name}
+            initialValues={groupDetail ? {
+              name: groupDetail.name,
+              description: groupDetail.description,
+              isPublic: groupDetail.isPublic,
+              tags: groupDetail.tags,
+            } : undefined}
           />
         </div>
 
