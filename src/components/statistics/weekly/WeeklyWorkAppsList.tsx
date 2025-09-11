@@ -77,12 +77,15 @@ export default function WeeklyWorkAppsList({ selectedDate }: WeeklyWorkAppsListP
           {/* Content */}
           <div className="flex-1 min-h-0">
             {isLoading ? (
-              <div className="h-full flex items-center justify-center">
-                <div className="animate-pulse space-y-2 w-full">
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
-                  ))}
-                </div>
+              <div className="space-y-1">
+                {[...Array(8)].map((_, index) => (
+                  <div key={index} className={`py-1 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
+                    <div className="flex items-center justify-between">
+                      <div className={`h-3 w-24 rounded animate-pulse ${getThemeClass('borderLight')}`}></div>
+                      <div className={`h-3 w-16 rounded animate-pulse ${getThemeClass('borderLight')}`}></div>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : isError ? (
               <div className="h-full flex items-center justify-center">

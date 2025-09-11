@@ -1,9 +1,9 @@
 'use client';
 
+import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
-import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
 import React from 'react';
 
 interface WeeklyDistractionAppsListProps {
@@ -79,12 +79,15 @@ export default function WeeklyDistractionAppsList({ selectedDate }: WeeklyDistra
           {/* Content */}
           <div className="flex-1 min-h-0">
             {isLoading ? (
-              <div className="h-full flex items-center justify-center">
-                <div className="animate-pulse space-y-2 w-full">
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="h-12 bg-gray-200 dark:bg-gray-700 rounded" />
-                  ))}
-                </div>
+              <div className="space-y-1">
+                {[...Array(8)].map((_, index) => (
+                  <div key={index} className={`py-1 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
+                    <div className="flex items-center justify-between">
+                      <div className={`h-3 w-20 rounded animate-pulse ${getThemeClass('borderLight')}`}></div>
+                      <div className={`h-3 w-16 rounded animate-pulse ${getThemeClass('borderLight')}`}></div>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : isError ? (
               <div className="h-full flex items-center justify-center">
@@ -98,7 +101,7 @@ export default function WeeklyDistractionAppsList({ selectedDate }: WeeklyDistra
               <ScrollArea className="h-full">
                 <div className="space-y-1">
                   {weeklyDistractionApps.slice(0, 8).map((app, index) => (
-                    <div key={index} className={`py-1.5 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} hover:${getThemeClass('componentHover')} transition-colors`}>
+                    <div key={index} className={`py-1.5 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} hover:${getThemeClass('component')} transition-colors`}>
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 min-w-0">
                           <span className={`text-[10px] font-medium ${getThemeTextColor('secondary')} flex-shrink-0`}>
