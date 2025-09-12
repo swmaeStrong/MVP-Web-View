@@ -26,6 +26,9 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
   // 선택된 일별 날짜 상태 - 초기값으로 오늘 날짜 설정
   const [selectedDayDate, setSelectedDayDate] = React.useState<string | null>(null);
   
+  // 선택된 카테고리 상태 추가
+  const [selectedCategory, setSelectedCategory] = React.useState<string | null>(null);
+  
   // 컴포넌트 마운트 시 오늘 날짜로 초기화
   React.useEffect(() => {
     const today = getKSTDateString();
@@ -108,6 +111,14 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
   const handleBarClick = React.useCallback((data: any) => {
     if (data && data.date) {
       setSelectedDayDate(data.date);
+      setSelectedCategory(null); // 날짜 변경시 카테고리 선택 초기화
+    }
+  }, []);
+
+  // 파이차트 세그먼트 클릭 핸들러
+  const handlePieClick = React.useCallback((entry: any) => {
+    if (entry && entry.category) {
+      setSelectedCategory(prev => prev === entry.category ? null : entry.category);
     }
   }, []);
 
@@ -119,6 +130,51 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
       return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
     }
     return `${minutes}m`;
+  };
+
+  // 카테고리 색상 매핑 함수 (SwiftUI 색상 시스템 사용)
+  const getCategoryColor = (category: string): string => {
+    const normalizedCategory = category.toLowerCase().replace(/[^a-z0-9]/g, '');
+    
+    // 카테고리별 SwiftUI 색상 매핑
+    const colorMap: Record<string, string> = {
+      work: '#007AFF',
+      development: '#007AFF',
+      productivity: '#4B008299',
+      documentation: '#007AF2',
+      meetings: '#4B0082',
+      marketing: '#00A8C7',
+      llm: '#00A8C7CC',
+      education: '#007AFA80',
+      afk: '#8E8E93',
+      uncategorized: '#8E8E93',
+      unknown: '#8E8E93',
+      entertainment: '#FF3B30',
+      sns: '#FF9500',
+      game: '#FFCC00',
+      'videoediting': '#FF2D55',
+      design: '#00C7AF',
+      'systemutilities': '#AF52DE',
+      'filemanagement': '#34C759',
+      'ecommerceshopping': '#00C7AFCC',
+      finance: '#A2845E',
+    };
+
+    // 정확한 매칭 시도
+    let color = colorMap[normalizedCategory];
+    
+    // 부분 매칭 시도
+    if (!color) {
+      for (const [key, value] of Object.entries(colorMap)) {
+        if (normalizedCategory.includes(key) || key.includes(normalizedCategory)) {
+          color = value;
+          break;
+        }
+      }
+    }
+    
+    // 기본 SwiftUI 강조 색상
+    return color || '#007AFF';
   };
   
   console.log('WeeklyTimelineView - Processed weekData:', weekData); // 디버깅용
@@ -269,7 +325,16 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
                 <div className="h-full flex items-center">
                   <div className="w-full flex">
                     {/* 파이차트 */}
-                    <div className="w-1/2 h-48">
+                    <div 
+                      className="w-1/2 h-48 select-none"
+                      style={{
+                        userSelect: 'none',
+                        WebkitUserSelect: 'none',
+                        MozUserSelect: 'none',
+                        msUserSelect: 'none',
+                        WebkitTapHighlightColor: 'transparent'
+                      }}
+                    >
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                           <Pie
@@ -284,17 +349,65 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
                             outerRadius={70}
                             innerRadius={20}
                             fill="#8884d8"
+                            onClick={(entry) => handlePieClick(entry)}
+                            style={{ 
+                              cursor: 'pointer',
+                              outline: 'none',
+                              userSelect: 'none',
+                              WebkitTapHighlightColor: 'transparent'
+                            }}
                           >
                             {dailyPomodoroData
                               .sort((a, b) => (b.duration || 0) - (a.duration || 0))
                               .slice(0, 5)
                               .map((entry, index) => {
-                                // 메인 컬러에서 점점 연하게 만드는 방식
-                                const baseOpacity = 1.0;
-                                const opacityStep = 0.15;
-                                const opacity = Math.max(baseOpacity - (index * opacityStep), 0.3);
-                                const color = `rgba(63, 114, 175, ${opacity})`; // #3F72AF를 rgba로 변환
-                                return <Cell key={`cell-${index}`} fill={color} />;
+                                // SwiftUI 색상 시스템 사용
+                                const baseColor = getCategoryColor(entry.category || 'default');
+                                const isSelected = selectedCategory === entry.category;
+                                
+                                // 선택된 카테고리는 밝게, 선택되지 않은 카테고리는 어둡게
+                                let color = baseColor;
+                                
+                                if (selectedCategory && !isSelected) {
+                                  // 다른 카테고리가 선택된 경우 현재 카테고리를 어둡게
+                                  const hex = baseColor.replace('#', '');
+                                  if (hex.length === 6) {
+                                    const r = parseInt(hex.slice(0, 2), 16);
+                                    const g = parseInt(hex.slice(2, 4), 16);
+                                    const b = parseInt(hex.slice(4, 6), 16);
+                                    color = `rgba(${r}, ${g}, ${b}, 0.3)`;
+                                  }
+                                } else if (isSelected) {
+                                  // 선택된 카테고리는 더 밝게
+                                  color = baseColor;
+                                } else if (index > 0) {
+                                  // 기본 투명도 조정 (선택된 카테고리가 없을 때)
+                                  const hex = baseColor.replace('#', '');
+                                  let opacity = 1 - (index * 0.15);
+                                  opacity = Math.max(opacity, 0.4);
+                                  
+                                  if (hex.length === 6) {
+                                    const r = parseInt(hex.slice(0, 2), 16);
+                                    const g = parseInt(hex.slice(2, 4), 16);
+                                    const b = parseInt(hex.slice(4, 6), 16);
+                                    color = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+                                  }
+                                }
+                                
+                                return (
+                                  <Cell 
+                                    key={`cell-${index}`} 
+                                    fill={color}
+                                    stroke={isSelected ? baseColor : 'none'}
+                                    strokeWidth={isSelected ? 3 : 0}
+                                    style={{ 
+                                      cursor: 'pointer',
+                                      outline: 'none',
+                                      userSelect: 'none',
+                                      WebkitTapHighlightColor: 'transparent'
+                                    }}
+                                  />
+                                );
                               })
                             }
                           </Pie>
@@ -309,22 +422,68 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
                           .sort((a, b) => (b.duration || 0) - (a.duration || 0))
                           .slice(0, 5)
                           .map((item, index) => {
-                            const baseOpacity = 1.0;
-                            const opacityStep = 0.15;
-                            const opacity = Math.max(baseOpacity - (index * opacityStep), 0.3);
-                            const color = `rgba(63, 114, 175, ${opacity})`;
+                            // SwiftUI 색상 시스템 사용
+                            const baseColor = getCategoryColor(item.category || 'default');
+                            const isSelected = selectedCategory === item.category;
+                            
+                            // 선택된 카테고리와 동일한 색상 로직 적용
+                            let color = baseColor;
+                            
+                            if (selectedCategory && !isSelected) {
+                              // 다른 카테고리가 선택된 경우 현재 카테고리를 어둡게
+                              const hex = baseColor.replace('#', '');
+                              if (hex.length === 6) {
+                                const r = parseInt(hex.slice(0, 2), 16);
+                                const g = parseInt(hex.slice(2, 4), 16);
+                                const b = parseInt(hex.slice(4, 6), 16);
+                                color = `rgba(${r}, ${g}, ${b}, 0.3)`;
+                              }
+                            } else if (isSelected) {
+                              // 선택된 카테고리는 더 밝게
+                              color = baseColor;
+                            } else if (index > 0) {
+                              // 기본 투명도 조정 (선택된 카테고리가 없을 때)
+                              const hex = baseColor.replace('#', '');
+                              let opacity = 1 - (index * 0.15);
+                              opacity = Math.max(opacity, 0.4);
+                              
+                              if (hex.length === 6) {
+                                const r = parseInt(hex.slice(0, 2), 16);
+                                const g = parseInt(hex.slice(2, 4), 16);
+                                const b = parseInt(hex.slice(4, 6), 16);
+                                color = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+                              }
+                            }
                             
                             return (
-                              <div key={index} className="flex items-center gap-2">
+                              <div 
+                                key={index} 
+                                className={`flex items-center gap-2 cursor-pointer p-1 rounded transition-all duration-200 select-none ${
+                                  isSelected ? 'bg-gray-100 dark:bg-gray-800' : 'hover:bg-gray-50 dark:hover:bg-gray-900'
+                                }`}
+                                onClick={() => handlePieClick(item)}
+                                style={{
+                                  outline: 'none',
+                                  userSelect: 'none',
+                                  WebkitTapHighlightColor: 'transparent',
+                                  WebkitUserSelect: 'none',
+                                  MozUserSelect: 'none',
+                                  msUserSelect: 'none'
+                                }}
+                              >
                                 <div 
-                                  className="w-3 h-3 rounded-full flex-shrink-0" 
+                                  className={`w-3 h-3 rounded-full flex-shrink-0 ${
+                                    isSelected ? 'ring-2 ring-offset-1 ring-gray-400' : ''
+                                  }`}
                                   style={{ backgroundColor: color }}
                                 />
                                 <div className="flex-1 min-w-0">
-                                  <p className={`text-xs ${getThemeTextColor('primary')} truncate`}>
+                                  <p className={`text-sm truncate ${
+                                    isSelected ? getThemeTextColor('primary') + ' font-semibold' : getThemeTextColor('primary')
+                                  }`}>
                                     {item.category}
                                   </p>
-                                  <p className={`text-[10px] ${getThemeTextColor('secondary')}`}>
+                                  <p className={`text-xs ${getThemeTextColor('secondary')}`}>
                                     {formatTime(item.duration || 0)}
                                   </p>
                                 </div>
