@@ -6,6 +6,7 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/shadcn/ui/chart';
 import { getKSTDateString } from '@/utils/timezone';
+import { categoryColors } from '@/styles/colors';
 import React from 'react';
 import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
@@ -119,6 +120,51 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
       return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
     }
     return `${minutes}m`;
+  };
+
+  // 카테고리 색상 매핑 함수 (SwiftUI 색상 시스템 사용)
+  const getCategoryColor = (category: string): string => {
+    const normalizedCategory = category.toLowerCase().replace(/[^a-z0-9]/g, '');
+    
+    // 카테고리별 SwiftUI 색상 매핑
+    const colorMap: Record<string, string> = {
+      work: '#007AFF',
+      development: '#007AFF',
+      productivity: '#4B008299',
+      documentation: '#007AF2',
+      meetings: '#4B0082',
+      marketing: '#00A8C7',
+      llm: '#00A8C7CC',
+      education: '#007AFA80',
+      afk: '#8E8E93',
+      uncategorized: '#8E8E93',
+      unknown: '#8E8E93',
+      entertainment: '#FF3B30',
+      sns: '#FF9500',
+      game: '#FFCC00',
+      'videoediting': '#FF2D55',
+      design: '#00C7AF',
+      'systemutilities': '#AF52DE',
+      'filemanagement': '#34C759',
+      'ecommerceshopping': '#00C7AFCC',
+      finance: '#A2845E',
+    };
+
+    // 정확한 매칭 시도
+    let color = colorMap[normalizedCategory];
+    
+    // 부분 매칭 시도
+    if (!color) {
+      for (const [key, value] of Object.entries(colorMap)) {
+        if (normalizedCategory.includes(key) || key.includes(normalizedCategory)) {
+          color = value;
+          break;
+        }
+      }
+    }
+    
+    // 기본 SwiftUI 강조 색상
+    return color || '#007AFF';
   };
   
   console.log('WeeklyTimelineView - Processed weekData:', weekData); // 디버깅용
@@ -289,11 +335,28 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
                               .sort((a, b) => (b.duration || 0) - (a.duration || 0))
                               .slice(0, 5)
                               .map((entry, index) => {
-                                // 메인 컬러에서 점점 연하게 만드는 방식
-                                const baseOpacity = 1.0;
-                                const opacityStep = 0.15;
-                                const opacity = Math.max(baseOpacity - (index * opacityStep), 0.3);
-                                const color = `rgba(63, 114, 175, ${opacity})`; // #3F72AF를 rgba로 변환
+                                // SwiftUI 색상 시스템 사용
+                                const baseColor = getCategoryColor(entry.category || 'default');
+                                
+                                // 투명도 조정 (첫 번째는 불투명, 나머지는 점진적으로 투명)
+                                let color = baseColor;
+                                if (index > 0) {
+                                  // hex 색상을 rgba로 변환하고 투명도 적용
+                                  const hex = baseColor.replace('#', '');
+                                  let opacity = 1 - (index * 0.15);
+                                  opacity = Math.max(opacity, 0.4); // 최소 40% 투명도 보장
+                                  
+                                  if (hex.length === 6) {
+                                    const r = parseInt(hex.slice(0, 2), 16);
+                                    const g = parseInt(hex.slice(2, 4), 16);
+                                    const b = parseInt(hex.slice(4, 6), 16);
+                                    color = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+                                  } else {
+                                    // 이미 alpha 채널이 있는 색상의 경우
+                                    color = baseColor;
+                                  }
+                                }
+                                
                                 return <Cell key={`cell-${index}`} fill={color} />;
                               })
                             }
@@ -309,10 +372,23 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
                           .sort((a, b) => (b.duration || 0) - (a.duration || 0))
                           .slice(0, 5)
                           .map((item, index) => {
-                            const baseOpacity = 1.0;
-                            const opacityStep = 0.15;
-                            const opacity = Math.max(baseOpacity - (index * opacityStep), 0.3);
-                            const color = `rgba(63, 114, 175, ${opacity})`;
+                            // SwiftUI 색상 시스템 사용
+                            const baseColor = getCategoryColor(item.category || 'default');
+                            
+                            // 투명도 조정 (범례에서도 동일한 색상 사용)
+                            let color = baseColor;
+                            if (index > 0) {
+                              const hex = baseColor.replace('#', '');
+                              let opacity = 1 - (index * 0.15);
+                              opacity = Math.max(opacity, 0.4);
+                              
+                              if (hex.length === 6) {
+                                const r = parseInt(hex.slice(0, 2), 16);
+                                const g = parseInt(hex.slice(2, 4), 16);
+                                const b = parseInt(hex.slice(4, 6), 16);
+                                color = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+                              }
+                            }
                             
                             return (
                               <div key={index} className="flex items-center gap-2">

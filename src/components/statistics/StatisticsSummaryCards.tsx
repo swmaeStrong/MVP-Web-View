@@ -46,7 +46,7 @@ export default function StatisticsSummaryCards({
 
   // 메인 컬러 사용
   const getMainColor = () => {
-    return 'bg-[#3F72AF]'; // 메인 브랜드 컬러 사용
+    return 'bg-[#007AFF]'; // SwiftUI blue
   };
 
   // 세션 스코어 평균 계산
