@@ -6,7 +6,6 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/shadcn/ui/chart';
 import { getKSTDateString } from '@/utils/timezone';
-import { categoryColors } from '@/styles/colors';
 import React from 'react';
 import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
@@ -479,12 +478,12 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
                                   style={{ backgroundColor: color }}
                                 />
                                 <div className="flex-1 min-w-0">
-                                  <p className={`text-xs truncate ${
+                                  <p className={`text-sm truncate ${
                                     isSelected ? getThemeTextColor('primary') + ' font-semibold' : getThemeTextColor('primary')
                                   }`}>
                                     {item.category}
                                   </p>
-                                  <p className={`text-[10px] ${getThemeTextColor('secondary')}`}>
+                                  <p className={`text-xs ${getThemeTextColor('secondary')}`}>
                                     {formatTime(item.duration || 0)}
                                   </p>
                                 </div>
