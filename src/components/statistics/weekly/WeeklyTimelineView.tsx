@@ -96,8 +96,8 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
           const workSeconds = dataMap.get(dayData.date) || 0;
           dayData.workSeconds = workSeconds;
           dayData.workMinutes = Math.round(workSeconds / 60);
-          // 최소 0.2시간(12분) 보장하여 바가 보이도록 함
-          dayData.workHours = workSeconds > 0 ? Math.max(workSeconds / 3600, 0.2) : 0;
+          // 실제 시간으로 설정 (최소값 보장 제거)
+          dayData.workHours = workSeconds / 3600;
         }
       });
     }
@@ -105,7 +105,19 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
     return weekDates;
   }, [weeklyPomodoroData, selectedDate]);
 
-  const maxWorkHours = 6; // 6시간을 최댓값으로 고정
+  // 동적 Y축 최댓값 계산
+  const maxWorkHours = React.useMemo(() => {
+    if (!weekData || weekData.length === 0) return 6;
+    
+    // 실제 데이터에서 최댓값 찾기
+    const maxActualHours = Math.max(...weekData.map(day => day.workSeconds / 3600));
+    
+    // 최소 6시간, 실제 최댓값보다 20% 여유를 둠
+    const dynamicMax = Math.max(6, Math.ceil(maxActualHours * 1.2));
+    
+    // 깔끔한 단위로 올림 (2시간 단위)
+    return Math.ceil(dynamicMax / 2) * 2;
+  }, [weekData]);
   
   // 바 클릭 핸들러
   const handleBarClick = React.useCallback((data: any) => {
