@@ -1,7 +1,7 @@
 'use client';
 
-import { GroundRulesInput } from '@/components/forms/GroundRulesInput';
-import { GroupNameInput } from '@/components/forms/GroupNameInput';
+import { GroundRulesInput } from '@/components/group/form/GroundRulesInput';
+import { GroupNameInput } from '@/components/group/form/GroupNameInput';
 import GroupPreview from '@/components/group/create/GroupPreview';
 import TagInput from '@/components/group/create/TagInput';
 import { GROUP_VALIDATION_MESSAGES } from '@/config/constants';

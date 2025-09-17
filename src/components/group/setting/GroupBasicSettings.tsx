@@ -1,6 +1,6 @@
 'use client';
 
-import { GroupNameInput } from '@/components/forms/GroupNameInput';
+import { GroupNameInput } from '@/components/group/form/GroupNameInput';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { UpdateGroupFormData } from '@/schemas/groupSchema';
 import { Button } from '@/shadcn/ui/button';
