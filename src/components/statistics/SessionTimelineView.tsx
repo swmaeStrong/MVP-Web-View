@@ -29,7 +29,7 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
                 <div key={index} className="flex-1 flex flex-col items-center gap-1">
                   <div 
                     className={`w-full animate-pulse rounded ${getThemeClass('componentSecondary')}`} 
-                    style={{ height: `${Math.random() * 100 + 30}px` }}
+                    style={{ height: `200px` }}
                   ></div>
                   <div className={`h-2 w-6 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
                 </div>
