@@ -171,16 +171,16 @@ export default function WeeklySummaryCards({
               min-h-0
             `}
           >
-            <p className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
+            <div className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
               {card.title}
-            </p>
-            
+            </div>
+
             <div className={`min-h-[60px] flex flex-col justify-center ${getThemeTextColor('primary')}`}>
               {card.value}
               {card.subtitle && (
-                <p className={`text-xs ${getThemeTextColor('secondary')} mt-1`}>
+                <div className={`text-xs ${getThemeTextColor('secondary')} mt-1`}>
                   {card.subtitle}
-                </p>
+                </div>
               )}
             </div>
           </div>
