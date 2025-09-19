@@ -3,10 +3,10 @@
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { useTranslation } from '@/providers/LanguageProvider';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { brandColors } from '@/styles/colors';
 import { Plus, Search, Settings, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 
 interface NavItem {
@@ -25,12 +25,12 @@ interface GroupSidebarProps {
 export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
   const { t } = useTranslation();
-  const pathname = usePathname();
+  const { pathname, getQuery } = useNavigation();
 
-  const navItems: NavItem[] = [
-    { name: t('group.search'), href: '/group/search', icon: Search },
-    { name: t('group.create'), href: '/group/create', icon: Plus },
-  ];
+  const navItems: NavItem[] = useMemo(() => [
+    { name: t('group.search'), href: `/group/search?${new URLSearchParams(getQuery()).toString()}`, icon: Search },
+    { name: t('group.create'), href: `/group/create?${new URLSearchParams(getQuery()).toString()}`, icon: Plus },
+  ], [t, getQuery]);
   const currentUser = useCurrentUserData();
 
   // Get selected group ID from URL - 메모이제이션
@@ -72,16 +72,17 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
   // Group submenu items 메모이제이션
   const groupSubMenuItems = useMemo(() => {
     if (!selectedGroupId) return [];
-    
+
+    const queryString = new URLSearchParams(getQuery()).toString();
     const baseItems = [
-      { name: 'Main', href: `/group/${selectedGroupId}/detail`, icon: TrendingUp },
+      { name: 'Main', href: `/group/${selectedGroupId}/detail?${queryString}`, icon: TrendingUp },
     ];
-    
+
     // 모든 멤버가 Settings 페이지에 접근 가능
-    baseItems.push({ name: 'Settings', href: `/group/${selectedGroupId}/settings`, icon: Settings });
-    
+    baseItems.push({ name: 'Settings', href: `/group/${selectedGroupId}/settings?${queryString}`, icon: Settings });
+
     return baseItems;
-  }, [selectedGroupId, groupInfo.isGroupOwner]);
+  }, [selectedGroupId, groupInfo.isGroupOwner, getQuery]);
 
   return (
     <aside
@@ -114,7 +115,8 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
             
             {!error && groups.map((group) => {
               const isGroupSelected = selectedGroupId === group.groupId.toString();
-              const groupHref = `/group/${group.groupId}/detail`;
+              const queryString = new URLSearchParams(getQuery()).toString();
+              const groupHref = `/group/${group.groupId}/detail?${queryString}`;
               
               return (
                 <div key={group.groupId}>

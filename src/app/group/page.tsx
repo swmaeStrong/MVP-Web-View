@@ -2,12 +2,12 @@
 
 import { getLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useTranslation } from '@/providers/LanguageProvider';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useEffect, useRef, useState } from 'react';
 import PageLoader from '../../components/common/PageLoader';
 
 export default function GroupPage() {
-  const router = useRouter();
+  const { getQuery } = useNavigation();
   const { t } = useTranslation();
   const [isMounted, setIsMounted] = useState(false);
   const [isRouterReady, setIsRouterReady] = useState(false);
@@ -33,38 +33,41 @@ export default function GroupPage() {
         await new Promise(resolve => setTimeout(resolve, 50));
         
         const lastTab = getLastGroupTab();
+        const currentQuery = getQuery();
+        const queryString = new URLSearchParams(currentQuery).toString();
 
         if (lastTab && lastTab.startsWith('/group/')) {
           const validGroupPaths = ['/group/search', '/group/create'];
           const isGroupIdPath = /^\/group\/\d+(?:\/(?:detail|settings))?$/.test(lastTab);
-          
+
           if (validGroupPaths.includes(lastTab) || isGroupIdPath) {
-            router.replace(lastTab);
+            const urlWithQuery = queryString ? `${lastTab}?${queryString}` : lastTab;
+            window.location.replace(urlWithQuery);
           } else {
-            router.replace('/group/search');
+            const urlWithQuery = queryString ? `/group/search?${queryString}` : '/group/search';
+            window.location.replace(urlWithQuery);
           }
         } else {
-          router.replace('/group/search');
+          const urlWithQuery = queryString ? `/group/search?${queryString}` : '/group/search';
+          window.location.replace(urlWithQuery);
         }
         
         hasRedirected.current = true;
       } catch (error) {
         console.error('Redirect error:', error);
-        try {
-          router.replace('/group/search');
-        } catch (routerError) {
-          console.error('Router replace failed:', routerError);
-          // 폴백: window.location 사용
-          if (typeof window !== 'undefined') {
-            window.location.href = '/group/search';
-          }
+        const currentQuery = getQuery();
+        const queryString = new URLSearchParams(currentQuery).toString();
+        const urlWithQuery = queryString ? `/group/search?${queryString}` : '/group/search';
+
+        if (typeof window !== 'undefined') {
+          window.location.href = urlWithQuery;
         }
         hasRedirected.current = true;
       }
     };
 
     performRedirect();
-  }, [isMounted, isRouterReady, router]);
+  }, [isMounted, isRouterReady, getQuery]);
 
   // 로딩 화면
   if (!isMounted || !isRouterReady) {
