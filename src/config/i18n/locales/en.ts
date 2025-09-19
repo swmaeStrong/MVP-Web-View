@@ -85,7 +85,7 @@ export const en = {
 
   group: {
     title: 'Group',
-    create: 'Create Group',
+    create: 'Create',
     join: 'Join Group',
     leave: 'Leave Group',
     members: 'Members',

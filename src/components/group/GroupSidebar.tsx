@@ -60,8 +60,8 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
       }
     }
     
-    // 기타 경로는 기존 로직 유지
-    return pathname === href || pathname.startsWith(href + '/');
+    // 기타 경로 (search, create 등)
+    return pathname === cleanHref;
   }, [pathname, selectedGroupId]);
 
   // 선택된 그룹과 권한 정보 메모이제이션
