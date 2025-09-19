@@ -202,6 +202,10 @@ export const en = {
     weeklyGoals: 'Weekly Goals',
     completionRate: 'Completion Rate',
 
+    // Group search hover text
+    alreadyJoinedGroup: 'Already Joined Group',
+    viewDetailInfo: 'View Detail Info',
+
     // Group creation
     basicInformation: 'Basic Information',
     privacySettings: 'Visibility Settings',

@@ -202,6 +202,10 @@ export const ko = {
     weeklyGoals: '주간 목표',
     completionRate: '달성률',
 
+    // 그룹 검색 호버 텍스트
+    alreadyJoinedGroup: '이미 가입된 그룹',
+    viewDetailInfo: '상세 정보 보기',
+
     // 그룹 생성
     basicInformation: '기본 정보',
     privacySettings: '공개 여부 설정',

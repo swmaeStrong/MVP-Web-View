@@ -315,7 +315,7 @@ export default function FindTeamPage() {
                         className="bg-green-600 text-white hover:bg-green-700 shadow-lg transition-colors"
                         size="default"
                       >
-                        {t('group.myGroups')}
+                        {t('group.alreadyJoinedGroup')}
                       </Button>
                     </div>
                   ) : (
@@ -324,7 +324,7 @@ export default function FindTeamPage() {
                         className={`${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90 transition-colors cursor-pointer shadow-lg`}
                         size="default"
                       >
-                        {t('group.groupDetails')}
+                        {t('group.viewDetailInfo')}
                       </Button>
                     </div>
                   )}
