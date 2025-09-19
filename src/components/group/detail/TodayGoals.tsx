@@ -325,7 +325,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
       <Card className={`${getCommonCardClass()} col-span-2 row-span-1 h-[400px] lg:h-[500px] flex flex-col`}>
         <CardHeader className="text-center relative flex-shrink-0">
           <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
-            {selectedPeriod === 'daily' ? "Daily Goal" : "Weekly Goal"}
+            {selectedPeriod === 'daily' ? t('group.daily') : t('group.weekly')} {t('group.goals')}
           </div>
         </CardHeader>
         <CardContent className={`${spacing.inner.normal} flex-1 flex flex-col overflow-hidden`}>
@@ -371,9 +371,11 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
         <Separator className="mb-4 flex-shrink-0" />
         <div className="flex-1 flex flex-col min-h-0">
           {groupGoals.length === 0 ? (
-            <div className="space-y-4">
-              <div className={`text-center py-8 ${getThemeTextColor('secondary')}`}>
-                {t('group.noGoalsSet')}
+            <div className="space-y-4 flex-1 flex flex-col">
+              <div className={`flex-1 flex items-center justify-center ${getThemeTextColor('secondary')}`}>
+                <div className="text-center">
+                  {t('group.noGoalsSet')}
+                </div>
               </div>
               
               {/* 편집 모드에서 목표 추가 버튼 (목표가 없을 때) */}

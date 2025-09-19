@@ -1,12 +1,14 @@
 'use client';
 
 import { getLastGroupTab } from '@/hooks/group/useLastGroupTab';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import PageLoader from '../../components/common/PageLoader';
 
 export default function GroupPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [isMounted, setIsMounted] = useState(false);
   const [isRouterReady, setIsRouterReady] = useState(false);
   const hasRedirected = useRef(false);
@@ -67,7 +69,7 @@ export default function GroupPage() {
   // 로딩 화면
   if (!isMounted || !isRouterReady) {
     return (
-      <PageLoader message="Redirecting to your last group..." />
+      <PageLoader message={t('common.loading')} />
     );
   }
 }

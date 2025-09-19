@@ -2,6 +2,7 @@
 
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { brandColors } from '@/styles/colors';
 import { Plus, Search, Settings, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
@@ -20,14 +21,16 @@ interface GroupSidebarProps {
   isLoading?: boolean;
 }
 
-const navItems: NavItem[] = [
-  { name: 'Search', href: '/group/search', icon: Search },
-  { name: 'Create', href: '/group/create', icon: Plus },
-];
 
 export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
+  const { t } = useTranslation();
   const pathname = usePathname();
+
+  const navItems: NavItem[] = [
+    { name: t('group.search'), href: '/group/search', icon: Search },
+    { name: t('group.create'), href: '/group/create', icon: Plus },
+  ];
   const currentUser = useCurrentUserData();
 
   // Get selected group ID from URL - 메모이제이션
@@ -95,7 +98,7 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
             {error && (
               <div className="px-4 py-2">
                 <span className={`text-xs ${getThemeTextColor('secondary')}`}>
-                  Failed to load groups
+                  {t('common.failedToLoad')}
                 </span>
               </div>
             )}

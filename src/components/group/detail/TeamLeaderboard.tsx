@@ -8,8 +8,8 @@ import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Separator } from '@/shadcn/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
-import { spacing } from '@/styles/design-system';
 import { brandColors } from '@/styles/colors';
+import { spacing } from '@/styles/design-system';
 import { Clock, Info, RadioIcon } from 'lucide-react';
 
 interface TeamLeaderboardProps {
@@ -81,8 +81,10 @@ export default function TeamLeaderboard({ membersLeaderboard, groupMembers, isLo
     return (
       <Card className={`${getCommonCardClass()} col-span-3 row-span-1`}>
         <CardHeader>
-          <div className={`text-lg font-bold ${getThemeTextColor('primary')} text-center`}>
-            {t('leaderboard.title')}
+          <div className="flex items-center justify-center gap-2">
+            <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
+              {t('group.teamLeaderboard')}
+            </div>
           </div>
           <Separator />
         </CardHeader>
@@ -144,8 +146,10 @@ export default function TeamLeaderboard({ membersLeaderboard, groupMembers, isLo
       </div>
 
       <CardHeader className="flex-shrink-0">
-        <div className={`text-lg font-bold ${getThemeTextColor('primary')} text-center`}>
-          {t('group.teamLeaderboard')}
+        <div className="flex items-center justify-center gap-2">
+          <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
+            {t('group.teamLeaderboard')}
+          </div>
         </div>
         <Separator />
       </CardHeader>

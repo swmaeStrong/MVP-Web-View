@@ -72,7 +72,7 @@ export default function GroupDetailModal({
                 </div>
                 
                 <div className={`text-sm ${getThemeTextColor('secondary')}`}>
-                  Created by @{group.groupOwner.nickname}
+                  {t('group.createdBy')} @{group.groupOwner.nickname}
                 </div>
               </div>
 

@@ -1,5 +1,9 @@
+'use client';
+
 import PageLoader from '@/components/common/PageLoader';
+import { useTranslation } from '@/providers/LanguageProvider';
 
 export default function Loading() {
-  return <PageLoader message="Loading team settings..." />;
+  const { t } = useTranslation();
+  return <PageLoader message={t('common.loading')} />;
 }
