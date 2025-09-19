@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Card, CardContent } from '@/shadcn/ui/card';
@@ -14,21 +15,22 @@ interface GroupPreviewProps {
   tags: string[];
 }
 
-export default function GroupPreview({ 
-  groupName, 
-  description, 
-  isPublic, 
-  groundRules, 
-  tags 
+export default function GroupPreview({
+  groupName,
+  description,
+  isPublic,
+  groundRules,
+  tags
 }: GroupPreviewProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <div className="lg:col-span-1 space-y-6">
       <Card className={getCommonCardClass()}>
         <CardContent className="p-6">
           <div className={`text-lg font-semibold ${getThemeTextColor('primary')} mb-4`}>
-            Preview
+            {t('group.preview')}
           </div>
           
           <div className="space-y-4">
@@ -43,7 +45,7 @@ export default function GroupPreview({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-1">
                   <div className={`text-sm font-bold ${getThemeTextColor('primary')} truncate`}>
-                    {groupName || 'Group Name'}
+                    {groupName || t('group.groupName')}
                   </div>
                   <Badge variant={isPublic === 'public' ? "default" : "secondary"} className={`gap-1 flex-shrink-0 text-xs ${
                     isPublic === 'public'
@@ -53,12 +55,12 @@ export default function GroupPreview({
                     {isPublic === 'public' ? (
                       <>
                         <Globe className="h-2 w-2" />
-                        Public
+                        {t('group.public')}
                       </>
                     ) : (
                       <>
                         <Lock className="h-2 w-2" />
-                        Private
+                        {t('group.private')}
                       </>
                     )}
                   </Badge>
@@ -69,14 +71,14 @@ export default function GroupPreview({
             
             {/* Description */}
             <p className={`text-xs ${getThemeTextColor('secondary')} leading-relaxed whitespace-pre-wrap`}>
-              {description || 'Group description will appear here...'}
+              {description || t('group.groupDescriptionPlaceholder')}
             </p>
             
             {/* Ground Rule */}
             {groundRules && groundRules.some(rule => rule.trim().length > 0) && (
               <div>
                 <div className={`text-xs font-semibold ${getThemeTextColor('primary')} mb-2`}>
-                  Ground Rules
+                  {t('group.groundRules')}
                 </div>
                 <div className="space-y-2">
                   {groundRules
@@ -116,7 +118,7 @@ export default function GroupPreview({
       <Card className={getCommonCardClass()}>
         <CardContent className="p-6">
           <div className={`text-lg font-semibold ${getThemeTextColor('primary')} mb-4`}>
-            Group Benefits
+            {t('group.groupBenefits')}
           </div>
           
           <div className="space-y-4">
@@ -124,10 +126,10 @@ export default function GroupPreview({
               <Users className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')}`} />
               <div>
                 <div className={`font-medium ${getThemeTextColor('primary')}`}>
-                  Collaborate
+                  {t('group.collaborate')}
                 </div>
                 <div className={`text-sm ${getThemeTextColor('secondary')}`}>
-                  Work together on projects and share progress
+                  {t('group.collaborateDesc')}
                 </div>
               </div>
             </div>
@@ -136,10 +138,10 @@ export default function GroupPreview({
               <Target className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')}`} />
               <div>
                 <div className={`font-medium ${getThemeTextColor('primary')}`}>
-                  Set Common Goals
+                  {t('group.setCommonGoals')}
                 </div>
                 <div className={`text-sm ${getThemeTextColor('secondary')}`}>
-                  Create shared objectives and track achievement progress
+                  {t('group.setCommonGoalsDesc')}
                 </div>
               </div>
             </div>
@@ -148,10 +150,10 @@ export default function GroupPreview({
               <TrendingUp className={`h-5 w-5 mt-0.5 ${getThemeTextColor('primary')}`} />
               <div>
                 <div className={`font-medium ${getThemeTextColor('primary')}`}>
-                  Monitor Progress
+                  {t('group.trackProgress')}
                 </div>
                 <div className={`text-sm ${getThemeTextColor('secondary')}`}>
-                  View group productivity and goal completion rates
+                  {t('group.trackProgressDesc')}
                 </div>
               </div>
             </div>

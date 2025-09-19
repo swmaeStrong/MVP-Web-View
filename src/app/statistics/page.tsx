@@ -8,7 +8,6 @@ import { getKSTDateString } from '@/utils/timezone';
 import React, { useCallback, useMemo, useState } from 'react';
 
 // 컴포넌트 임포트
-import LanguageSwitcher from '@/components/common/LanguageSwitcher';
 import SessionTimelineView from '@/components/statistics/SessionTimelineView';
 import CategoriesList from '@/components/statistics/CategoriesList';
 import WorkAppsList from '@/components/statistics/WorkAppsList';
@@ -186,10 +185,6 @@ export default function StatisticsPage() {
   return (
     <div className={`min-h-screen p-3 sm:p-4 lg:p-6 ${getThemeClass('background')}`}>
       <div className='mx-auto space-y-4 sm:space-y-6'>
-        {/* 언어 스위처 */}
-        <div className="flex justify-end">
-          <LanguageSwitcher variant="compact" />
-        </div>
 
         {/* 메인 콘텐츠 */}
         <TotalTimeCard

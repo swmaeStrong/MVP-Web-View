@@ -16,6 +16,7 @@ export const en = {
     today: 'Today',
     yesterday: 'Yesterday',
     tomorrow: 'Tomorrow',
+    all: 'All',
     noData: 'No data',
     noDataAvailable: 'No data available',
     failedToLoad: 'Failed to load data',
@@ -100,6 +101,104 @@ export const en = {
     basicSettings: 'Basic Settings',
     memberList: 'Member List',
     actions: 'Actions',
+    preview: 'Preview',
+    public: 'Public',
+    private: 'Private',
+    groupDescriptionPlaceholder: 'Group description will appear here...',
+    groupBenefits: 'Group Benefits',
+    setCommonGoals: 'Set Common Goals',
+    setCommonGoalsDesc: 'Create shared objectives and track achievement progress',
+    trackProgress: 'Track Progress',
+    trackProgressDesc: 'Monitor and improve team performance together',
+    teamCompetition: 'Team Competition',
+    teamCompetitionDesc: 'Boost productivity through healthy competition',
+    addTag: 'Add a tag (e.g., React, Python)...',
+    tagLengthWarning: 'Tags must be 12 characters or less',
+    owner: 'Group Leader',
+    member: 'Member',
+    password: 'Password',
+    joinGroup: 'Join Group',
+    passwordRequired: 'Password is required',
+    incorrectPassword: 'Incorrect password',
+    collaborate: 'Collaborate',
+    collaborateDesc: 'Work together on projects and share progress',
+
+    // Group detail page
+    groupDetails: 'Group Details',
+    memberCount: 'Member Count',
+    createdBy: 'Created By',
+    noMembersYet: 'No members yet',
+    membersWillAppear: 'Members will appear here once they start tracking time',
+    joinDate: 'Join Date',
+    leaveGroup: 'Leave Group',
+    groupCode: 'Group Code',
+
+    // Today's goals
+    setGoal: 'Set Goal',
+    addGoal: 'Add Goal',
+    editGoal: 'Edit Goal',
+    deleteGoal: 'Delete Goal',
+    goalCategory: 'Goal Category',
+    goalDuration: 'Goal Duration',
+    hours: 'Hours',
+    minutes: 'Minutes',
+    daily: 'Daily',
+    weekly: 'Weekly',
+    goalCompleted: 'Goal Completed',
+    goalInProgress: 'In Progress',
+    noGoalsSet: 'No goals set',
+
+    // Team leaderboard
+    teamRanking: 'Team Ranking',
+    rank: 'Rank',
+    totalTime: 'Total Time',
+    thisWeek: 'This Week',
+    lastWeek: 'Last Week',
+
+    // Group settings
+    groupSettings: 'Group Settings',
+    generalSettings: 'General Settings',
+    memberManagement: 'Member Management',
+    dangerZone: 'Danger Zone',
+    deleteGroup: 'Delete Group',
+    deleteGroupConfirm: 'Are you sure you want to delete this group?',
+    deleteGroupWarning: 'This action cannot be undone.',
+    kickMember: 'Kick Member',
+    promoteMember: 'Promote to Admin',
+    demoteMember: 'Demote from Admin',
+
+    // Group search
+    searchGroups: 'Search Groups',
+    joinableGroups: 'Joinable Groups',
+    myGroups: 'My Groups',
+    popularGroups: 'Popular Groups',
+    recentGroups: 'Recent Groups',
+    searchPlaceholder: 'Search by group name or tags...',
+    noGroupsFound: 'No groups found',
+
+    // Group invite
+    inviteMembers: 'Invite Members',
+    inviteCode: 'Invite Code',
+    copyInviteCode: 'Copy Invite Code',
+    inviteLink: 'Invite Link',
+    shareGroup: 'Share Group',
+
+    // Group status
+    active: 'Active',
+    inactive: 'Inactive',
+    archived: 'Archived',
+
+    // Group roles
+    admin: 'Admin',
+    moderator: 'Moderator',
+
+    // Group stats
+    groupStats: 'Group Stats',
+    totalMembers: 'Total Members',
+    activeMembers: 'Active Members',
+    avgDailyTime: 'Avg Daily Time',
+    weeklyGoals: 'Weekly Goals',
+    completionRate: 'Completion Rate',
   },
 
   subscription: {

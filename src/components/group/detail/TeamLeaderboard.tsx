@@ -4,6 +4,7 @@ import { UserAvatar } from '@/components/common';
 import UserProfileTooltip from '@/components/common/UserProfileTooltip';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Separator } from '@/shadcn/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
@@ -19,6 +20,7 @@ interface TeamLeaderboardProps {
 
 export default function TeamLeaderboard({ membersLeaderboard, groupMembers, isLoading = false }: TeamLeaderboardProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass, isDarkMode } = useTheme();
+  const { t } = useTranslation();
   const currentUser = useCurrentUserData();
 
   const formatScore = (score: number) => {
@@ -49,7 +51,7 @@ export default function TeamLeaderboard({ membersLeaderboard, groupMembers, isLo
     if (sessionEndTime > now && (sessionMinutes ?? 0) > 0) {
       return {
         type: 'active',
-        text: `Working ${sessionMinutes}m session`,
+        text: `${sessionMinutes}${t('statistics.minutes')}`,
         color: 'text-green-500'
       };
     }
@@ -59,13 +61,13 @@ export default function TeamLeaderboard({ membersLeaderboard, groupMembers, isLo
     let timeText = '';
     
     if (timeDiff < 60) {
-      timeText = 'Just now';
+      timeText = t('time.now');
     } else if (timeDiff < 3600) {
-      timeText = `${Math.floor(timeDiff / 60)}m ago`;
+      timeText = `${Math.floor(timeDiff / 60)}${t('statistics.minutes')} ${t('time.ago')}`;
     } else if (timeDiff < 86400) {
-      timeText = `${Math.floor(timeDiff / 3600)}h ago`;
+      timeText = `${Math.floor(timeDiff / 3600)}${t('statistics.hours')} ${t('time.ago')}`;
     } else {
-      timeText = `${Math.floor(timeDiff / 86400)}d ago`;
+      timeText = `${Math.floor(timeDiff / 86400)}${t('time.days')} ${t('time.ago')}`;
     }
     
     return {
@@ -80,7 +82,7 @@ export default function TeamLeaderboard({ membersLeaderboard, groupMembers, isLo
       <Card className={`${getCommonCardClass()} col-span-3 row-span-1`}>
         <CardHeader>
           <div className={`text-lg font-bold ${getThemeTextColor('primary')} text-center`}>
-            Leaderboard
+            {t('leaderboard.title')}
           </div>
           <Separator />
         </CardHeader>
@@ -143,7 +145,7 @@ export default function TeamLeaderboard({ membersLeaderboard, groupMembers, isLo
 
       <CardHeader className="flex-shrink-0">
         <div className={`text-lg font-bold ${getThemeTextColor('primary')} text-center`}>
-          Leaderboard
+          {t('group.teamLeaderboard')}
         </div>
         <Separator />
       </CardHeader>
@@ -152,8 +154,8 @@ export default function TeamLeaderboard({ membersLeaderboard, groupMembers, isLo
           {membersLeaderboard.length === 0 ? (
             <div className="h-full flex items-center justify-center">
               <div className={`text-center ${getThemeTextColor('secondary')}`}>
-                <div className="text-lg mb-2">No members yet</div>
-                <div className="text-sm">Members will appear here once they start tracking time</div>
+                <div className="text-lg mb-2">{t('group.noMembersYet')}</div>
+                <div className="text-sm">{t('group.membersWillAppear')}</div>
               </div>
             </div>
           ) : (
@@ -161,7 +163,7 @@ export default function TeamLeaderboard({ membersLeaderboard, groupMembers, isLo
               {/* Member count indicator */}
               {membersLeaderboard.length > 6 && (
                 <div className={`text-xs ${getThemeTextColor('secondary')} mb-3 text-center`}>
-                  Showing {membersLeaderboard.length} member{membersLeaderboard.length !== 1 ? 's' : ''}
+                  {membersLeaderboard.length} {t('group.members')}
                 </div>
               )}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pr-2">
