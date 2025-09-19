@@ -9,14 +9,13 @@ import GroupHeader from '@/components/group/setting/GroupHeader';
 import GroupInfo from '@/components/group/setting/GroupInfo';
 import GroupMemberList from '@/components/group/setting/GroupMemberList';
 import GroupMemberManagement from '@/components/group/setting/GroupMemberManagement';
-import { GROUP_VALIDATION_MESSAGES } from '@/config/constants';
 import { useBanMember, useDeleteGroup, useLeaveGroup, useTransferOwnership, useUpdateGroup } from '@/hooks/group/useGroupSettings';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { useTranslation } from '@/providers/LanguageProvider';
-import { UpdateGroupFormData, updateGroupSchema } from '@/schemas/groupSchema';
+import { UpdateGroupFormData, createValidationSchema } from '@/utils/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Crown, Trash2, UserMinus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -65,8 +64,11 @@ export default function GroupSettingsPage() {
   const leaveGroupMutation = useLeaveGroup(groupId);
   const transferOwnershipMutation = useTransferOwnership(groupId);
 
+  // 번역된 validation 스키마 생성
+  const validationSchema = createValidationSchema(t);
+
   const form = useForm<UpdateGroupFormData>({
-    resolver: zodResolver(updateGroupSchema),
+    resolver: zodResolver(validationSchema.updateGroupSchema),
     mode: 'onChange', // 실시간 유효성 검사 활성화
     reValidateMode: 'onChange', // 재검증 모드 추가
     defaultValues: {
@@ -100,19 +102,19 @@ export default function GroupSettingsPage() {
   const onError = (errors: any) => {
     // Show validation error toast with specific messages
     if (errors.name) {
-      toast.error(`Group Name: ${errors.name.message}`);
+      toast.error(`${t('group.validation.groupName')}: ${errors.name.message}`);
       return;
     }
     if (errors.description) {
-      toast.error(`Description: ${errors.description.message}`);
+      toast.error(`${t('group.validation.description')}: ${errors.description.message}`);
       return;
     }
     if (errors.groundRules) {
-      toast.error(`Ground Rules: ${errors.groundRules.message || GROUP_VALIDATION_MESSAGES.GROUND_RULES.EMPTY}`);
+      toast.error(`${t('group.validation.groundRules')}: ${errors.groundRules.message || t('group.validation.groundRulesEmpty')}`);
       return;
     }
     if (errors.tags) {
-      toast.error(`Tags: ${errors.tags.message}`);
+      toast.error(`${t('group.validation.tags')}: ${errors.tags.message}`);
       return;
     }
   };

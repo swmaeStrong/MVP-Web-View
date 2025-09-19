@@ -2,7 +2,8 @@
 
 import { GroupNameInput } from '@/components/group/form/GroupNameInput';
 import { useTheme } from '@/hooks/ui/useTheme';
-import { UpdateGroupFormData } from '@/schemas/groupSchema';
+import { UpdateGroupFormData } from '@/utils/validation';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
@@ -32,6 +33,7 @@ export default function GroupBasicSettings({
   initialValues
 }: GroupBasicSettingsProps) {
   const { getThemeTextColor, getCommonCardClass } = useTheme();
+  const { t } = useTranslation();
   const { getValues, setValue, watch } = form;
   
   // 현재 폼 값들을 watch로 추적
@@ -73,7 +75,7 @@ export default function GroupBasicSettings({
         <Card className={getCommonCardClass()}>
           <CardHeader>
             <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-              Basic Settings
+              {t('group.basicInformation')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -81,8 +83,8 @@ export default function GroupBasicSettings({
             <GroupNameInput
               form={form}
               name="name"
-              label="Group Name"
-              placeholder="Enter group name"
+              label={t('group.groupName')}
+              placeholder={t('group.groupNamePlaceholder')}
               excludeFromValidation={excludeFromValidation}
             />
 
@@ -93,7 +95,7 @@ export default function GroupBasicSettings({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className={`text-sm font-medium ${getThemeTextColor('secondary')}`}>
-                    Privacy Setting
+                    {t('group.privacySettings')}
                   </FormLabel>
                   <FormControl>
                     <ToggleGroup 
@@ -113,8 +115,8 @@ export default function GroupBasicSettings({
                       >
                         <Globe className="h-4 w-4" />
                         <div className="text-left">
-                          <div className="font-medium">Public</div>
-                          <div className="text-xs opacity-75">Anyone can join</div>
+                          <div className="font-medium">{t('group.publicGroup')}</div>
+                          <div className="text-xs opacity-75">{t('group.anyoneCanJoin')}</div>
                         </div>
                       </ToggleGroupItem>
                       <ToggleGroupItem 
@@ -123,14 +125,14 @@ export default function GroupBasicSettings({
                       >
                         <Lock className="h-4 w-4" />
                         <div className="text-left">
-                          <div className="font-medium">Private</div>
-                          <div className="text-xs opacity-75">Invite code required</div>
+                          <div className="font-medium">{t('group.privateGroup')}</div>
+                          <div className="text-xs opacity-75">{t('group.inviteCodeRequired')}</div>
                         </div>
                       </ToggleGroupItem>
                     </ToggleGroup>
                   </FormControl>
                   <FormDescription className={`text-xs ${getThemeTextColor('secondary')} mt-2`}>
-                    Public groups can be discovered and joined by other users
+                    {t('group.anyoneCanJoin')}
                   </FormDescription>
                 </FormItem>
               )}
@@ -143,7 +145,7 @@ export default function GroupBasicSettings({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className={`text-sm font-medium ${getThemeTextColor('secondary')}`}>
-                    Tags
+                    {t('group.tags')}
                   </FormLabel>
                   <div className="mt-2 space-y-3">
                     {field.value.length > 0 && (
@@ -176,7 +178,7 @@ export default function GroupBasicSettings({
                     />
                     
                     <FormDescription className={`text-xs ${getThemeTextColor('secondary')}`}>
-                      You can add up to 5 tags
+                      {t('group.addUpToTags')}
                     </FormDescription>
                   </div>
                   <FormMessage />
@@ -198,7 +200,7 @@ export default function GroupBasicSettings({
             }
           >
             <Save className="h-4 w-4" />
-            {isSubmitting ? 'Saving...' : 'Save Changes'}
+            {isSubmitting ? t('group.actionMessages.updating') : t('common.save')}
           </Button>
         </div>
       </form>
@@ -209,6 +211,7 @@ export default function GroupBasicSettings({
 // Tag Input Component
 function TagInput({ onAddTag, disabled }: { onAddTag: (tag: string) => void, disabled: boolean }) {
   const { getThemeTextColor } = useTheme();
+  const { t } = useTranslation();
   const [newTag, setNewTag] = React.useState('');
 
   const handleAddTag = () => {
@@ -231,7 +234,7 @@ function TagInput({ onAddTag, disabled }: { onAddTag: (tag: string) => void, dis
       <div className="flex gap-2">
         <Input
           type="text"
-          placeholder="Add tag (e.g., React, Python)..."
+          placeholder={t('group.addTag')}
           value={newTag}
           onChange={(e) => {
             // 12글자 제한

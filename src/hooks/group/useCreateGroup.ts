@@ -1,7 +1,8 @@
 'use client';
 
-import { GROUP_ACTION_MESSAGES, groupNameCheckQueryKey, groupSearchQueryKey, myGroupsQueryKey } from '@/config/constants';
+import { groupNameCheckQueryKey, groupSearchQueryKey, myGroupsQueryKey } from '@/config/constants';
 import { useDebounce } from '@/hooks/ui/useDebounce';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { validateGroupName } from '@/shared/api/get';
 import { createGroup } from '@/shared/api/post';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -45,14 +46,15 @@ export function useCreateGroup() {
 
 export function useCreateGroupWithToast() {
   const createGroupMutation = useCreateGroup();
+  const { t } = useTranslation();
 
   const createGroupWithToast = async (request: Group.CreateGroupApiRequest) => {
     // mutation을 직접 사용하여 토스트와 쿼리 무효화를 모두 처리
     return toast.promise(
       createGroupMutation.mutateAsync(request),
       {
-        loading: GROUP_ACTION_MESSAGES.CREATE.LOADING,
-        success: GROUP_ACTION_MESSAGES.CREATE.SUCCESS,
+        loading: t('group.actionMessages.groupCreating'),
+        success: t('group.actionMessages.createSuccess'),
         error: (err: any) => {
           console.error('Failed to create group:', err);
           
@@ -65,7 +67,7 @@ export function useCreateGroupWithToast() {
             return err;
           }
           
-          return GROUP_ACTION_MESSAGES.CREATE.ERROR;
+          return t('group.actionMessages.createError');
         },
       },
       {
