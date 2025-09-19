@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
 import { getPomodoroDetails } from '@/shared/api/get';
@@ -116,6 +117,7 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
 
 export default function DistractionAppsList({ selectedDate }: DistractionAppsListProps) {
   const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
+  const { t } = useTranslation();
   
   // API 데이터 가져오기
   const { data, isLoading, isError } = useQuery({
@@ -151,7 +153,7 @@ export default function DistractionAppsList({ selectedDate }: DistractionAppsLis
           {/* Header */}
           <div className="mb-4">
             <p className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
-              Distraction Apps
+              {t('statistics.distractionApps')}
             </p>
             <div className="flex items-center justify-between">
             </div>
@@ -163,11 +165,11 @@ export default function DistractionAppsList({ selectedDate }: DistractionAppsLis
               <LoadingSkeleton getThemeClass={getThemeClass as (type: string) => string} />
             ) : isError ? (
               <div className={`flex items-center justify-center h-full ${getThemeTextColor('secondary')}`}>
-                <p className="text-xs">Failed to load distraction apps</p>
+                <p className="text-xs">{t('common.failedToLoad')}</p>
               </div>
             ) : sortedApps.length === 0 ? (
               <div className={`flex items-center justify-center h-full ${getThemeTextColor('secondary')}`}>
-                <p className="text-xs">No distraction apps data</p>
+                <p className="text-xs">{t('common.noData')}</p>
               </div>
             ) : (
               <ScrollArea className="h-full">

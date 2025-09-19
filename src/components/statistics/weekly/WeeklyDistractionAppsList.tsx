@@ -2,6 +2,7 @@
 
 import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
 import React from 'react';
@@ -12,6 +13,7 @@ interface WeeklyDistractionAppsListProps {
 
 export default function WeeklyDistractionAppsList({ selectedDate }: WeeklyDistractionAppsListProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
+  const { t } = useTranslation();
 
   // API 호출 - WeeklyTimelineView와 같은 쿼리 사용
   const { data: weeklyPomodoroData, isLoading, isError } = useWeeklyPomodoroDetails(selectedDate);
@@ -72,7 +74,7 @@ export default function WeeklyDistractionAppsList({ selectedDate }: WeeklyDistra
           {/* Header */}
           <div className="mb-4">
             <p className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
-              Distraction Apps
+              {t('statistics.distractionApps')}
             </p>
           </div>
 
@@ -91,11 +93,11 @@ export default function WeeklyDistractionAppsList({ selectedDate }: WeeklyDistra
               </div>
             ) : isError ? (
               <div className="h-full flex items-center justify-center">
-                <p className={`text-sm ${getThemeTextColor('secondary')}`}>Failed to load distraction apps</p>
+                <p className={`text-sm ${getThemeTextColor('secondary')}`}>{t('common.failedToLoad')}</p>
               </div>
             ) : weeklyDistractionApps.length === 0 ? (
               <div className="h-full flex items-center justify-center">
-                <p className={`text-sm ${getThemeTextColor('secondary')}`}>No distraction apps data</p>
+                <p className={`text-sm ${getThemeTextColor('secondary')}`}>{t('common.noData')}</p>
               </div>
             ) : (
               <ScrollArea className="h-full">

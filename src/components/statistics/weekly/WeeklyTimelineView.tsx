@@ -3,6 +3,7 @@
 import { useDailyPomodoroDetails } from '@/hooks/data/useDailyPomodoroDetails';
 import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/shadcn/ui/chart';
 import { getKSTDateString } from '@/utils/timezone';
@@ -22,6 +23,7 @@ const chartConfig = {
 
 export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
+  const { t } = useTranslation();
   
   // 선택된 일별 날짜 상태 - 초기값으로 오늘 날짜 설정
   const [selectedDayDate, setSelectedDayDate] = React.useState<string | null>(null);
@@ -201,7 +203,7 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
             <div className="h-full bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
           ) : isError ? (
             <div className="flex items-center justify-center h-full">
-              <p className={`text-sm ${getThemeTextColor('secondary')}`}>Failed to load data</p>
+              <p className={`text-sm ${getThemeTextColor('secondary')}`}>{t('common.failedToLoad')}</p>
             </div>
           ) : (
             <ChartContainer config={chartConfig} className="h-full w-full">
@@ -509,7 +511,7 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
                 </div>
               ) : (
                 <div className="flex items-center justify-center h-32">
-                  <p className={`text-sm ${getThemeTextColor('secondary')}`}>No data available</p>
+                  <p className={`text-sm ${getThemeTextColor('secondary')}`}>{t('common.noDataAvailable')}</p>
                 </div>
               )}
             </>

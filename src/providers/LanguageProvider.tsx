@@ -1,10 +1,12 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { SupportedLocale, DEFAULT_LOCALE, detectBrowserLocale } from '@/config/i18n';
 import { translations } from '@/config/i18n/locales';
 import { getLocaleFromQuery, createNavigationUrl } from '@/utils/navigation';
+import dynamic from 'next/dynamic';
+import PageLoader from '@/components/common/PageLoader';
 
 interface LanguageContextType {
   locale: SupportedLocale;
@@ -16,46 +18,55 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<SupportedLocale>(DEFAULT_LOCALE);
-  const [isClient, setIsClient] = useState(false);
-  const [isLoadingLocale, setIsLoadingLocale] = useState(true);
 
+function LanguageProviderInner({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
-  // 클라이언트 사이드 초기화 및 URL 기반 언어 설정
+  // Initialize with default locale for consistent server/client rendering
+  const [locale, setLocaleState] = useState<SupportedLocale>(DEFAULT_LOCALE);
+  const [isClient, setIsClient] = useState(false);
+  const [isLoadingLocale, setIsLoadingLocale] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // 클라이언트 마운트 후 언어 설정
   useEffect(() => {
+    setIsMounted(true);
     setIsClient(true);
+    setIsLoadingLocale(true);
 
-    // URL에서 언어 설정 확인
-    const queryObj: Record<string, string> = {};
-    searchParams.forEach((value, key) => {
-      queryObj[key] = value;
-    });
+    // 1. Check URL parameters first
+    const urlParams = new URLSearchParams(window.location.search);
+    const hlParam = urlParams.get('hl');
 
-    const urlLocale = getLocaleFromQuery(queryObj);
+    let targetLocale: SupportedLocale;
 
-    if (urlLocale) {
-      // URL에 언어 파라미터가 있으면 사용
-      setLocaleState(urlLocale);
-      localStorage.setItem('locale', urlLocale);
+    if (hlParam === 'ko' || hlParam === 'en') {
+      targetLocale = hlParam as SupportedLocale;
     } else {
-      // URL에 언어 파라미터가 없으면 localStorage 또는 브라우저 언어 감지
+      // 2. Check localStorage
       const savedLocale = localStorage.getItem('locale') as SupportedLocale;
-      let targetLocale: SupportedLocale;
-
       if (savedLocale && translations[savedLocale]) {
         targetLocale = savedLocale;
       } else {
+        // 3. Detect browser locale
         targetLocale = detectBrowserLocale();
-        localStorage.setItem('locale', targetLocale);
       }
+    }
 
-      setLocaleState(targetLocale);
+    // Update state if different
+    setLocaleState(targetLocale);
 
-      // URL에 언어 파라미터 추가 (replace를 사용해 히스토리에 남기지 않음)
+    // Save to localStorage
+    localStorage.setItem('locale', targetLocale);
+
+    // Add locale to URL if not present
+    if (!hlParam) {
+      const queryObj: Record<string, string> = {};
+      urlParams.forEach((value, key) => {
+        queryObj[key] = value;
+      });
+
       const newUrl = createNavigationUrl(pathname, queryObj, {
         preserveQuery: true,
         locale: targetLocale,
@@ -64,7 +75,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
 
     setIsLoadingLocale(false);
-  }, [searchParams, pathname, router]);
+  }, []);
 
   const setLocale = (newLocale: SupportedLocale) => {
     setLocaleState(newLocale);
@@ -73,8 +84,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('locale', newLocale);
 
       // URL 업데이트
+      const urlParams = new URLSearchParams(window.location.search);
       const queryObj: Record<string, string> = {};
-      searchParams.forEach((value, key) => {
+      urlParams.forEach((value, key) => {
         queryObj[key] = value;
       });
 
@@ -133,12 +145,30 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     isLoadingLocale,
   };
 
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!isMounted) {
+    return (
+      <LanguageContext.Provider value={value}>
+        {children}
+      </LanguageContext.Provider>
+    );
+  }
+
   return (
     <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );
 }
+
+// Use dynamic import to prevent SSR for this component
+export const LanguageProvider = dynamic(
+  () => Promise.resolve(LanguageProviderInner),
+  {
+    ssr: false,
+    loading: () => <PageLoader message="Initializing..." />,
+  }
+);
 
 export function useLanguage() {
   const context = useContext(LanguageContext);

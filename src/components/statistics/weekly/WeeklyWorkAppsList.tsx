@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
 import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
@@ -12,6 +13,7 @@ interface WeeklyWorkAppsListProps {
 
 export default function WeeklyWorkAppsList({ selectedDate }: WeeklyWorkAppsListProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
+  const { t } = useTranslation();
 
   // API 호출 - WeeklyTimelineView와 같은 쿼리 사용
   const { data: weeklyPomodoroData, isLoading, isError } = useWeeklyPomodoroDetails(selectedDate);
@@ -70,7 +72,7 @@ export default function WeeklyWorkAppsList({ selectedDate }: WeeklyWorkAppsListP
           {/* Header */}
           <div className="mb-4">
             <p className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
-              Work Apps
+              {t('statistics.workApps')}
             </p>
           </div>
 
@@ -89,11 +91,11 @@ export default function WeeklyWorkAppsList({ selectedDate }: WeeklyWorkAppsListP
               </div>
             ) : isError ? (
               <div className="h-full flex items-center justify-center">
-                <p className={`text-sm ${getThemeTextColor('secondary')}`}>Failed to load work apps</p>
+                <p className={`text-sm ${getThemeTextColor('secondary')}`}>{t('common.failedToLoad')}</p>
               </div>
             ) : weeklyWorkApps.length === 0 ? (
               <div className="h-full flex items-center justify-center">
-                <p className={`text-sm ${getThemeTextColor('secondary')}`}>No work apps data</p>
+                <p className={`text-sm ${getThemeTextColor('secondary')}`}>{t('common.noData')}</p>
               </div>
             ) : (
               <ScrollArea className="h-full">
