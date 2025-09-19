@@ -41,19 +41,22 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
 
   // isActive 함수 최적화 - useCallback으로 메모이제이션
   const isActive = useCallback((href: string) => {
-    if (href === '/group') {
-      return pathname === href;
+    // href에서 쿼리 파라미터 제거하여 순수 경로만 비교
+    const cleanHref = href.split('?')[0];
+
+    if (cleanHref === '/group') {
+      return pathname === cleanHref;
     }
-    
+
     // 그룹 서브메뉴의 경우 정확한 매칭 필요
-    if (href.includes('/group/') && selectedGroupId) {
+    if (cleanHref.includes('/group/') && selectedGroupId) {
       // Detail 페이지: /group/[id]/detail 매칭
-      if (href.endsWith(`/group/${selectedGroupId}/detail`)) {
-        return pathname === href;
+      if (cleanHref.endsWith(`/group/${selectedGroupId}/detail`)) {
+        return pathname === cleanHref;
       }
       // Settings 페이지: /group/[id]/settings 매칭
-      if (href.endsWith('/settings')) {
-        return pathname === href;
+      if (cleanHref.endsWith('/settings')) {
+        return pathname === cleanHref;
       }
     }
     
