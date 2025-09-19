@@ -119,7 +119,7 @@ export default function GroupMemberManagement({
                           className="text-red-600 focus:text-red-700 cursor-pointer"
                           onClick={() => onBanMember(member)}
                         >
-                          {t('group.removeMember')}
+                          {t('group.kickMember')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
