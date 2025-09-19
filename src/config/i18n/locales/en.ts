@@ -132,7 +132,6 @@ export const en = {
     noMembersYet: 'No members yet',
     membersWillAppear: 'Members will appear here once they start tracking time',
     joinDate: 'Join Date',
-    leaveGroup: 'Leave Group',
     groupCode: 'Group Code',
 
     // Today's goals
@@ -162,10 +161,6 @@ export const en = {
     generalSettings: 'General Settings',
     memberManagement: 'Member Management',
     dangerZone: 'Danger Zone',
-    deleteGroup: 'Delete Group',
-    deleteGroupConfirm: 'Are you sure you want to delete this group?',
-    deleteGroupWarning: 'This action cannot be undone.',
-    kickMember: 'Kick Member',
     promoteMember: 'Promote to Admin',
     demoteMember: 'Demote from Admin',
 
@@ -205,6 +200,29 @@ export const en = {
     // Group search hover text
     alreadyJoinedGroup: 'Already Joined Group',
     viewDetailInfo: 'View Detail Info',
+
+    // Group settings related
+    noPasswordRequired: 'No password required',
+    copyInviteLink: 'Copy Invite Link',
+    inviteLinkCopied: 'Invite link copied to clipboard!',
+    failedToCopyInviteLink: 'Failed to copy invite link. Please try again.',
+    copying: 'Copying...',
+    deleteGroup: 'Disband Group',
+    deleteGroupConfirmWithName: '?',
+    deleteGroupWarningText: 'Disbanding this group will permanently delete all data and cannot be recovered.',
+    leaveGroup: 'Leave Group',
+    leaveGroupConfirmWithName: '?',
+    leaveGroupConfirmText: 'If you leave this group, you will no longer be able to participate in group activities. If the group is public, you can rejoin later.',
+    groupInformation: 'Group Information',
+    transferOwnership: 'Transfer Ownership',
+    transferOwnershipToMember: 'will become the new group owner.',
+    kickMember: 'Remove Member',
+    kickMemberConfirmWithName: 'from the group?',
+    kickMemberReason: 'Please enter the reason for removal',
+    kickMemberReasonPlaceholder: 'Please enter the reason for removal...',
+    created: 'Created',
+    activeDays: 'Active Days',
+    days: 'days',
 
     // Group creation
     basicInformation: 'Basic Information',
@@ -248,8 +266,8 @@ export const en = {
       updateSuccess: 'Group information updated successfully.',
       updateError: 'Failed to update group information.',
       deleting: 'Deleting group...',
-      deleteSuccess: 'Group deleted successfully.',
-      deleteError: 'Failed to delete group.',
+      deleteSuccess: 'Group has been successfully disbanded',
+      deleteError: 'Failed to disband group',
       memberBanSuccess: 'Member has been removed from the group',
       memberBanError: 'Failed to remove member',
       leaveSuccess: 'Successfully left the group',

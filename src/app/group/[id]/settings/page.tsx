@@ -52,7 +52,7 @@ export default function GroupSettingsPage() {
 
   // 초대 코드 복사 함수
   const copyInviteCode = () => {
-    const textToCopy = groupDetail?.password || 'No password required';
+    const textToCopy = groupDetail?.password || t('group.noPasswordRequired');
     navigator.clipboard.writeText(textToCopy);
     toast.success(t('group.copyInviteCode'));
   };
@@ -263,9 +263,9 @@ export default function GroupSettingsPage() {
           title={t('group.leaveGroup')}
           description={
             <>
-              {t('group.leaveGroup')} <span className="font-semibold">"{groupDetail?.name}"</span>?
+              <span className="font-semibold">"{groupDetail?.name}"</span>{t('group.leaveGroupConfirmWithName')}
               <br className="mt-2" />
-              {t('group.public')}
+              {t('group.leaveGroupConfirmText')}
             </>
           }
           confirmText={t('group.leaveGroup')}
@@ -344,9 +344,9 @@ export default function GroupSettingsPage() {
         title={t('group.deleteGroup')}
         description={
           <>
-            {t('group.deleteGroupConfirm')} <span className="font-semibold">"{groupDetail?.name}"</span>?
+            <span className="font-semibold">"{groupDetail?.name}"</span>{t('group.deleteGroupConfirmWithName')}
             <br className="mt-2" />
-            {t('group.deleteGroupWarning')}
+            {t('group.deleteGroupWarningText')}
           </>
         }
         confirmText={t('group.deleteGroup')}
@@ -371,7 +371,7 @@ export default function GroupSettingsPage() {
         title={t('group.kickMember')}
         description={
           <>
-            {t('group.kickMember')} <span className="font-semibold">{selectedMember?.nickname}</span>?
+            <span className="font-semibold">{selectedMember?.nickname}</span>{t('group.kickMemberConfirmWithName')}
           </>
         }
         confirmText={t('group.kickMember')}
@@ -386,8 +386,8 @@ export default function GroupSettingsPage() {
         loadingText={`${t('group.kickMember')}...`}
         icon={UserMinus}
         showTextarea={true}
-        textareaLabel={t('group.kickMember')}
-        textareaPlaceholder={t('group.kickMember')}
+        textareaLabel={t('group.kickMemberReason')}
+        textareaPlaceholder={t('group.kickMemberReasonPlaceholder')}
         textareaRequired={true}
         textareaValue={banReason}
         onTextareaChange={setBanReason}
@@ -402,15 +402,15 @@ export default function GroupSettingsPage() {
             setSelectedMember(null);
           }
         }}
-        title={t('group.promoteMember')}
+        title={t('group.transferOwnership')}
         description={
           <>
-            {t('group.promoteMember')} <span className="font-semibold">"{groupDetail?.name}"</span> to <span className="font-semibold">{selectedMember?.nickname}</span>?
+            <span className="font-semibold">{selectedMember?.nickname}</span> {t('group.transferOwnershipToMember')}
             <br className="mt-2" />
             <span className="text-amber-600 font-medium">{t('group.deleteGroupWarning')}</span>
           </>
         }
-        confirmText={t('group.promoteMember')}
+        confirmText={t('group.transferOwnership')}
         cancelText={t('common.cancel')}
         onConfirm={handleTransferOwnership}
         onCancel={() => {
@@ -418,7 +418,7 @@ export default function GroupSettingsPage() {
         }}
         variant="default"
         isLoading={transferOwnershipMutation.isPending}
-        loadingText={`${t('group.promoteMember')}...`}
+        loadingText={`${t('group.transferOwnership')}...`}
         icon={Crown}
       />
     </div>

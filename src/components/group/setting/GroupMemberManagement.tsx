@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
@@ -25,12 +26,13 @@ export default function GroupMemberManagement({
   onBanMember
 }: GroupMemberManagementProps) {
   const { getThemeTextColor, getCommonCardClass, getThemeClass } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <Card className={getCommonCardClass()}>
       <CardHeader>
         <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-          Member Management
+          {t('group.memberManagement')}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -52,7 +54,7 @@ export default function GroupMemberManagement({
                   {owner.nickname}
                 </div>
                 <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                  Owner
+                  {t('group.owner')}
                 </div>
               </div>
             </div>
@@ -89,7 +91,7 @@ export default function GroupMemberManagement({
                       {member.nickname}
                     </div>
                     <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                      Member
+                      {t('group.member')}
                     </div>
                   </div>
                 </div>
@@ -111,13 +113,13 @@ export default function GroupMemberManagement({
                           className="cursor-pointer"
                           onClick={() => onTransferOwnership(member)}
                         >
-                          Transfer Ownership
+                          {t('group.transferOwnership')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-red-600 focus:text-red-700 cursor-pointer"
                           onClick={() => onBanMember(member)}
                         >
-                          Remove Member
+                          {t('group.removeMember')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
