@@ -3,6 +3,7 @@
 import { useTranslation } from '@/providers/LanguageProvider';
 import { SUPPORTED_LOCALES, LOCALE_NAMES, SupportedLocale } from '@/config/i18n';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { Button } from '@/shadcn/ui/button';
 import {
   DropdownMenu,
@@ -21,15 +22,21 @@ export default function LanguageSwitcher({
   variant = 'button',
   className = ''
 }: LanguageSwitcherProps) {
-  const { locale, setLocale, isClient } = useTranslation();
+  const { locale, isClient, isLoadingLocale } = useTranslation();
   const { getThemeClass, getThemeTextColor } = useTheme();
+  const { navigateWithLocale } = useNavigation();
 
-  // Don't render on server to avoid hydration issues
-  if (!isClient) {
+  // Don't render on server to avoid hydration issues or while loading locale
+  if (!isClient || isLoadingLocale) {
     return (
       <div className={`w-20 h-9 ${getThemeClass('componentSecondary')} rounded animate-pulse ${className}`} />
     );
   }
+
+  // Handle locale changes via URL navigation
+  const handleLocaleChange = (newLocale: SupportedLocale) => {
+    navigateWithLocale(newLocale);
+  };
 
   if (variant === 'compact') {
     return (
@@ -62,7 +69,7 @@ export default function LanguageSwitcher({
           {SUPPORTED_LOCALES.map((supportedLocale) => (
             <DropdownMenuItem
               key={supportedLocale}
-              onClick={() => setLocale(supportedLocale)}
+              onClick={() => handleLocaleChange(supportedLocale)}
               className={`
                 ${getThemeTextColor('primary')}
                 hover:${getThemeClass('componentSecondary')}
@@ -85,7 +92,7 @@ export default function LanguageSwitcher({
           key={supportedLocale}
           variant={locale === supportedLocale ? 'default' : 'ghost'}
           size="sm"
-          onClick={() => setLocale(supportedLocale)}
+          onClick={() => handleLocaleChange(supportedLocale)}
           className={`
             ${locale === supportedLocale
               ? `${getThemeClass('componentSecondary')} ${getThemeTextColor('primary')}`

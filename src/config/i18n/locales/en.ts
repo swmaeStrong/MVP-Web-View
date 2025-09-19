@@ -20,6 +20,7 @@ export const en = {
     noDataAvailable: 'No data available',
     failedToLoad: 'Failed to load data',
     serverError: 'A server error occurred. Please try again later.',
+    navigationExample: 'Navigation Example',
   },
 
   navigation: {

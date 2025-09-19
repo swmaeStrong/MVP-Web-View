@@ -20,6 +20,7 @@ export const ko = {
     noDataAvailable: '사용 가능한 데이터가 없습니다',
     failedToLoad: '데이터를 불러오지 못했습니다',
     serverError: '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+    navigationExample: '네비게이션 예시',
   },
 
   navigation: {
