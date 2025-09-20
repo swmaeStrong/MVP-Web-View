@@ -1,20 +1,20 @@
 'use client';
 
-import { GroundRulesInput } from '@/components/group/form/GroundRulesInput';
-import { GroupNameInput } from '@/components/group/form/GroupNameInput';
 import GroupPreview from '@/components/group/create/GroupPreview';
 import TagInput from '@/components/group/create/TagInput';
-import { GROUP_VALIDATION_MESSAGES } from '@/config/constants';
+import { GroundRulesInput } from '@/components/group/form/GroundRulesInput';
+import { GroupNameInput } from '@/components/group/form/GroupNameInput';
 import { useCreateGroupWithToast, useGroupNameValidation } from '@/hooks/group/useCreateGroup';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useTheme } from '@/hooks/ui/useTheme';
-import { CreateGroupFormData, createGroupSchema } from '@/schemas/groupSchema';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { brandColors } from '@/styles/colors';
+import { CreateGroupFormData, createValidationSchema } from '@/utils/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Globe, Hash, Lock, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -24,13 +24,17 @@ import { Textarea } from '../../../shadcn/ui/textarea';
 
 export default function CreateGroupPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
+  const { t } = useTranslation();
   const router = useRouter();
   
   // Save current tab as last visited
   useLastGroupTab();
   
+  // 번역된 validation 스키마 생성
+  const validationSchema = createValidationSchema(t);
+
   const form = useForm<CreateGroupFormData>({
-    resolver: zodResolver(createGroupSchema),
+    resolver: zodResolver(validationSchema.createGroupSchema),
     defaultValues: {
       groupName: '',
       description: '',
@@ -70,19 +74,19 @@ export default function CreateGroupPage() {
   const onError = (errors: any) => {
     // Show validation error toast with specific messages
     if (errors.groupName) {
-      toast.error(`Group Name: ${errors.groupName.message}`);
+      toast.error(`${errors.groupName.message}`);
       return;
     }
     if (errors.description) {
-      toast.error(`Description: ${errors.description.message}`);
+      toast.error(`${errors.description.message}`);
       return;
     }
     if (errors.groundRules) {
-      toast.error(`Ground Rules: ${errors.groundRules.message || GROUP_VALIDATION_MESSAGES.GROUND_RULES.EMPTY}`);
+      toast.error(`${errors.groundRules.message || t('group.validation.groundRulesEmpty')}`);
       return;
     }
     if (errors.tags) {
-      toast.error(`Tags: ${errors.tags.message}`);
+      toast.error(`${errors.tags.message}`);
       return;
     }
   };
@@ -91,7 +95,7 @@ export default function CreateGroupPage() {
   const onValidSubmit = async (values: CreateGroupFormData) => {
     // Check if name is available (only after basic validation passes)
     if (!isNameAvailable) {
-      toast.error(GROUP_VALIDATION_MESSAGES.GROUP_NAME.TAKEN);
+      toast.error(t('group.validation.groupNameTaken'));
       return;
     }
     
@@ -113,6 +117,7 @@ export default function CreateGroupPage() {
 
   return (
     <div className="space-y-6 px-6 py-6 max-w-4xl mx-auto">
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Form */}
           <div className="lg:col-span-2">
@@ -122,7 +127,7 @@ export default function CreateGroupPage() {
                 <Card className={getCommonCardClass()}>
                   <CardContent className="p-6">
                     <div className={`text-lg font-semibold ${getThemeTextColor('primary')} mb-4`}>
-                      Basic Information
+                      {t('group.basicInformation')}
                     </div>
                     
                     <div className="space-y-4">
@@ -130,8 +135,8 @@ export default function CreateGroupPage() {
                       <GroupNameInput
                         form={form}
                         name="groupName"
-                        label="Group Name"
-                        placeholder="Enter group name..."
+                        label={t('group.groupName')}
+                        placeholder={t('group.groupNamePlaceholder')}
                       />
 
                       {/* Description */}
@@ -141,11 +146,11 @@ export default function CreateGroupPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-                              Description
+                              {t('group.description')}
                             </FormLabel>
                             <FormControl>
                               <Textarea
-                                placeholder="Describe your group's purpose and goals..."
+                                placeholder={t('group.descriptionPlaceholder')}
                                 className="min-h-[100px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border}"
                                 {...field}
                               />
@@ -159,7 +164,7 @@ export default function CreateGroupPage() {
                       <GroundRulesInput
                         form={form}
                         name="groundRules"
-                        label="Ground Rules"
+                        label={t('group.groundRules')}
                         maxRules={10}
                       />
                     </div>
@@ -170,7 +175,7 @@ export default function CreateGroupPage() {
                 <Card className={getCommonCardClass()}>
                   <CardContent className="p-6">
                     <div className={`text-lg font-semibold ${getThemeTextColor('primary')} mb-4`}>
-                      Privacy Settings
+                      {t('group.privacySettings')}
                     </div>
                     
                     <FormField
@@ -196,8 +201,8 @@ export default function CreateGroupPage() {
                               >
                                 <Globe className="h-4 w-4" />
                                 <div className="text-left">
-                                  <div className="font-medium">Public</div>
-                                  <div className="text-xs opacity-75">Anyone can join</div>
+                                  <div className="font-medium">{t('group.publicGroup')}</div>
+                                  <div className="text-xs opacity-75">{t('group.anyoneCanJoin')}</div>
                                 </div>
                               </ToggleGroupItem>
                               <ToggleGroupItem 
@@ -206,8 +211,8 @@ export default function CreateGroupPage() {
                               >
                                 <Lock className="h-4 w-4" />
                                 <div className="text-left">
-                                  <div className="font-medium">Private</div>
-                                  <div className="text-xs opacity-75">Invite code required</div>
+                                  <div className="font-medium">{t('group.privateGroup')}</div>
+                                  <div className="text-xs opacity-75">{t('group.inviteCodeRequired')}</div>
                                 </div>
                               </ToggleGroupItem>
                             </ToggleGroup>
@@ -223,7 +228,7 @@ export default function CreateGroupPage() {
                 <Card className={getCommonCardClass()}>
                   <CardContent className="p-6">
                     <div className={`text-lg font-semibold ${getThemeTextColor('primary')} mb-4`}>
-                      Tags
+                      {t('group.tags')}
                     </div>
                     
                     <FormField
@@ -264,7 +269,7 @@ export default function CreateGroupPage() {
                             )}
 
                             <FormDescription className={`text-xs ${getThemeTextColor('secondary')}`}>
-                              Add up to 5 tags to help others find your group. Press Enter or click + to add.
+                              {t('group.addUpToTags')}
                             </FormDescription>
                           </div>
                           <FormMessage />
@@ -282,14 +287,14 @@ export default function CreateGroupPage() {
                     className="flex-1 bg-white border-gray-200 text-gray-900 hover:bg-gray-50"
                     onClick={() => router.back()}
                   >
-                    Cancel
+                    {t('group.cancel')}
                   </Button>
                   <Button
                     type="submit"
                     className={`flex-1 ${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90 transition-colors`}
                     disabled={form.formState.isSubmitting || isCreatingGroup || isNameAvailable === false || isCheckingName}
                   >
-                    {form.formState.isSubmitting || isCreatingGroup ? 'Creating...' : 'Create Group'}
+                    {form.formState.isSubmitting || isCreatingGroup ? t('group.creating') : t('group.createGroup')}
                   </Button>
                 </div>
               </form>

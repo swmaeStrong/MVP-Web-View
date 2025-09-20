@@ -3,6 +3,7 @@
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useUsageStatistics } from '@/hooks/data/useStatistics';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
 import React from 'react';
@@ -82,6 +83,7 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
 
 export default function CategoriesList({ selectedDate }: CategoriesListProps) {
   const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
+  const { t } = useTranslation();
   const currentUser = useCurrentUserData();
   
   // API에서 실제 데이터 조회
@@ -106,7 +108,7 @@ export default function CategoriesList({ selectedDate }: CategoriesListProps) {
           {/* Header */}
           <div className="mb-4">
             <p className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
-              Categories
+              {t('statistics.categories')}
             </p>
           </div>
 
@@ -117,7 +119,7 @@ export default function CategoriesList({ selectedDate }: CategoriesListProps) {
             ) : isError || categories.length === 0 ? (
               <div className="flex items-center justify-center h-full">
                 <p className={`text-sm ${getThemeTextColor('secondary')}`}>
-                  {isError ? 'Failed to load data' : 'No data available'}
+                  {isError ? t('common.failedToLoad') : t('common.noDataAvailable')}
                 </p>
               </div>
             ) : (

@@ -12,6 +12,7 @@ import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
 import { useGroupSearch } from '@/hooks/ui/useGroupSearch';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
@@ -21,12 +22,14 @@ import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { getGroupByInviteCode } from '@/shared/api/get';
 import { brandColors } from '@/styles/colors';
 import { Globe, Hash, Lock, Search, Users } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useState, useEffect } from 'react';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
-  const router = useRouter();
+  const { t } = useTranslation();
+  const { navigateWithParams } = useNavigation();
   const searchParams = useSearchParams();
   const currentUser = useCurrentUserData();
   const [searchQuery, setSearchQuery] = useState('');
@@ -56,7 +59,7 @@ export default function FindTeamPage() {
       setIsInviteModalOpen(true);
     } catch (error) {
       console.error('Failed to fetch invite group info:', error);
-      setInviteError('Failed to load group information. The invite code may be invalid or expired.');
+      setInviteError(t('group.incorrectPassword'));
       setIsInviteModalOpen(true); // Show modal even on error to display error message
     } finally {
       setIsLoadingInvite(false);
@@ -77,10 +80,10 @@ export default function FindTeamPage() {
   const joinGroupMutation = useJoinGroup({
     onSuccess: (group) => {
       handleCloseModal();
-      router.push(`/group/${group.groupId}/detail`);
+      navigateWithParams(`/group/${group.groupId}/detail`);
     },
     onError: () => {
-      setJoinError('Failed to join the group. Please try again.');
+      setJoinError(t('common.serverError'));
     }
   });
 
@@ -88,11 +91,11 @@ export default function FindTeamPage() {
     onSuccess: () => {
       handleCloseInviteModal();
       if (inviteGroup) {
-        router.push(`/group/${inviteGroup.groupId}/detail`);
+        navigateWithParams(`/group/${inviteGroup.groupId}/detail`);
       }
     },
     onError: () => {
-      setInviteError('Failed to join the group. Please try again.');
+      setInviteError(t('common.serverError'));
     }
   });
 
@@ -133,7 +136,8 @@ export default function FindTeamPage() {
     // Remove inviteCode from URL
     const url = new URL(window.location.href);
     url.searchParams.delete('inviteCode');
-    router.replace(url.pathname + url.search, { scroll: false });
+    // URL에서 inviteCode 제거 (현재 쿼리 파라미터 유지)
+    window.history.replaceState({}, '', url.pathname + url.search);
   };
 
   const handleJoinInviteGroup = async (inviteCode: string) => {
@@ -162,7 +166,7 @@ export default function FindTeamPage() {
                 <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${getThemeTextColor('secondary')}`} />
                 <Input
                   type="text"
-                  placeholder="Search groups (by name, description, tags, or group leader's nickname)"
+                  placeholder={t('group.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 h-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border}"
@@ -173,15 +177,15 @@ export default function FindTeamPage() {
             {/* Filter Controls */}
             <ToggleGroup type="single" value={filterType} onValueChange={(value) => value && setFilterType(value as 'all' | 'public' | 'private')} className="h-10">
               <ToggleGroupItem value="all" className="px-4 h-10 text-sm bg-white border border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50 rounded-l-md">
-                All
+                {t('common.all')}
               </ToggleGroupItem>
               <ToggleGroupItem value="public" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50">
                 <Globe className="h-3.5 w-3.5" />
-                Public
+                {t('group.public')}
               </ToggleGroupItem>
               <ToggleGroupItem value="private" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50 rounded-r-md">
                 <Lock className="h-3.5 w-3.5" />
-                Private
+                {t('group.private')}
               </ToggleGroupItem>
             </ToggleGroup>
           </div>
@@ -228,7 +232,7 @@ export default function FindTeamPage() {
               className={`${getCommonCardClass()} h-52 hover:bg-gray-50 dark:hover:bg-gray-800 group relative cursor-pointer transition-all duration-200 hover:shadow-lg`}
               onClick={() => {
                 if (isGroupMember(group.groupId)) {
-                  router.push(`/group/${group.groupId}/detail`);
+                  navigateWithParams(`/group/${group.groupId}/detail`);
                 } else {
                   handleViewDetail(group);
                 }
@@ -253,7 +257,7 @@ export default function FindTeamPage() {
                             variant="outline" 
                             className="text-xs bg-green-50 border-green-200 text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400 whitespace-nowrap"
                           >
-                            Joined
+                            {t('group.member')}
                           </Badge>
                         )}
                       </div>
@@ -262,7 +266,7 @@ export default function FindTeamPage() {
                     {/* Owner Info and Member Count */}
                     <div className="flex items-center gap-3">
                       <div className={`text-sm ${getThemeTextColor('secondary')} truncate flex-1`}>
-                        Created by @{group.groupOwner.nickname}
+                        {t('group.owner')}: @{group.groupOwner.nickname}
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">
                         <Users className={`h-4 w-4 ${getThemeTextColor('secondary')}`} />
@@ -299,7 +303,7 @@ export default function FindTeamPage() {
                       </p>
                     ) : (
                       <p className={`text-sm ${getThemeTextColor('secondary')} italic`}>
-                        No description available
+                        {t('group.groupDescriptionPlaceholder')}
                       </p>
                     )}
                   </div>
@@ -313,7 +317,7 @@ export default function FindTeamPage() {
                         className="bg-green-600 text-white hover:bg-green-700 shadow-lg transition-colors"
                         size="default"
                       >
-                        Go to My Group
+                        {t('group.alreadyJoinedGroup')}
                       </Button>
                     </div>
                   ) : (
@@ -322,7 +326,7 @@ export default function FindTeamPage() {
                         className={`${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90 transition-colors cursor-pointer shadow-lg`}
                         size="default"
                       >
-                        See in Detail
+                        {t('group.viewDetailInfo')}
                       </Button>
                     </div>
                   )}
@@ -340,16 +344,16 @@ export default function FindTeamPage() {
                   <Search className={`h-10 w-10 ${getThemeTextColor('secondary')}`} />
                 </div>
                 <div className={`text-xl font-bold mb-3 ${getThemeTextColor('primary')}`}>
-                  No groups found
+                  {t('group.noGroupsFound')}
                 </div>
                 <p className={`text-base ${getThemeTextColor('secondary')} mb-6 max-w-md mx-auto`}>
-                  {searchQuery.trim() ? 'We couldn\'t find any groups matching your search criteria. Try adjusting your search terms.' : 'No groups available at the moment.'}
+                  {searchQuery.trim() ? t('group.noGroupsFound') : t('group.noDataAvailable')}
                 </p>
                 <Button 
                   className={`${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90`}
-                  onClick={() => router.push('/group/create')}
+                  onClick={() => navigateWithParams('/group/create')}
                 >
-                  Create New Group
+                  {t('group.create')}
                 </Button>
               </div>
             </div>

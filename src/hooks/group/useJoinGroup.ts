@@ -1,7 +1,7 @@
 import { myGroupsQueryKey } from '@/config/constants/query-keys';
 import { joinGroup } from '@/shared/api/post';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import toast from 'react-hot-toast';
 
 interface UseJoinGroupOptions {
@@ -11,7 +11,7 @@ interface UseJoinGroupOptions {
 
 export function useJoinGroup(options: UseJoinGroupOptions = {}) {
   const queryClient = useQueryClient();
-  const router = useRouter();
+  const { navigateWithParams } = useNavigation();
 
   return useMutation({
     mutationFn: async ({ 
@@ -42,7 +42,7 @@ export function useJoinGroup(options: UseJoinGroupOptions = {}) {
         options.onSuccess(group);
       } else {
         // 기본 동작: 그룹 상세 페이지로 이동
-        router.push(`/group/${group.groupId}/detail`);
+        navigateWithParams(`/group/${group.groupId}/detail`);
       }
     },
     onError: (error: Error) => {

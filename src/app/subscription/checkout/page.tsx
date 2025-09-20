@@ -3,7 +3,7 @@ import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { getKSTDate } from '@/utils/timezone';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/hooks/ui/useTheme';
 
@@ -19,7 +19,7 @@ interface PlanData {
 }
 
 export default function CheckoutPage() {
-  const router = useRouter();
+  const { navigateWithParams } = useNavigation();
   const { getThemeClass, getThemeTextColor } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -60,14 +60,14 @@ export default function CheckoutPage() {
     if (typeof window !== 'undefined') {
       const savedPaymentMethods = localStorage.getItem('paymentMethods');
       if (!savedPaymentMethods) {
-        router.push('/subscription/payment-method?from=subscription');
+        navigateWithParams('/subscription/payment-method?from=subscription');
         return;
       }
 
       const methods = JSON.parse(savedPaymentMethods);
       setPaymentMethod(methods[0]);
     }
-  }, [router]);
+  }, [navigateWithParams]);
 
   const handlePayment = async () => {
     setIsLoading(true);
@@ -148,7 +148,7 @@ export default function CheckoutPage() {
             <Button
               size='lg'
               className='w-full rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 py-6 text-xl font-bold text-white shadow-xl hover:from-purple-700 hover:to-blue-700'
-              onClick={() => router.push('/home')}
+              onClick={() => navigateWithParams('/home')}
             >
               메인으로 돌아가기
             </Button>
@@ -161,7 +161,7 @@ export default function CheckoutPage() {
                   localStorage.removeItem('subscription');
                   sessionStorage.removeItem('selectedPlan');
                 }
-                router.push('/subscription');
+                navigateWithParams('/subscription');
               }}
             >
               다른 플랜 선택하기
@@ -331,7 +331,7 @@ export default function CheckoutPage() {
 
           <div className='text-center'>
             <button
-              onClick={() => router.back()}
+              onClick={() => window.history.back()}
               className={`text-sm ${getThemeClass('textSecondary')} transition-colors hover:opacity-80`}
               disabled={isLoading}
             >

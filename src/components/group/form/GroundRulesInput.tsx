@@ -4,6 +4,7 @@ import { Button } from '@/shadcn/ui/button';
 import { FormControl, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
 import { Textarea } from '@/shadcn/ui/textarea';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { brandColors } from '@/styles/colors';
 import { Plus, Trash2 } from 'lucide-react';
 import { FieldPath, FieldValues, UseFormReturn } from 'react-hook-form';
@@ -31,6 +32,7 @@ export function GroundRulesInput<
   disabled = false,
 }: GroundRulesInputProps<TFieldValues, TName>) {
   const { getThemeClass, getThemeTextColor } = useTheme();
+  const { t } = useTranslation();
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
   const isAddingRule = useRef(false);
   
@@ -109,7 +111,7 @@ export function GroundRulesInput<
                   value={rule}
                   onChange={(e) => updateRule(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, index)}
-                  placeholder="Enter a ground rule... (Press Enter to add next rule)"
+                  placeholder={t('group.groundRulePlaceholder')}
                   className={`flex-1 min-h-[60px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border} resize-none ${
                     rule.length > 30 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : ''
                   }`}
@@ -150,7 +152,7 @@ export function GroundRulesInput<
                 className="gap-1"
               >
                 <Plus className="h-3 w-3" />
-                Add Ground Rule
+                {t('group.addGroundRule')}
               </Button>
             )}
             
@@ -160,10 +162,10 @@ export function GroundRulesInput<
                 fieldValue.length >= 8 ? 'text-yellow-600' : 
                 getThemeTextColor('secondary')
               }`}>
-                {fieldValue.length}/10 rules
+                {fieldValue.length}/10 {t('group.rulesCount')}
               </span>
               {fieldValue.length >= 10 && (
-                <span className="text-red-500">Maximum rules reached</span>
+                <span className="text-red-500">{t('group.maximumRulesReached')}</span>
               )}
             </div>
           </div>

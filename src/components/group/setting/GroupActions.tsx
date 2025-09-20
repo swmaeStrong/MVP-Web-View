@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 
@@ -18,19 +19,20 @@ export default function GroupActions({
   onLeaveGroup 
 }: GroupActionsProps) {
   const { getThemeTextColor, getCommonCardClass } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <Card className={`${getCommonCardClass()} border-red-200`}>
       <CardHeader>
         <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-          {isOwner ? 'Delete Group' : 'Leave Group'}
+          {isOwner ? t('group.deleteGroup') : t('group.leaveGroup')}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <p className={`text-sm ${getThemeTextColor('secondary')} mb-4`}>
-          {isOwner 
-            ? 'Deleting this group will permanently remove all data and cannot be undone.'
-            : `Are you sure you want to leave this group? You can rejoin later if the group is public.`
+          {isOwner
+            ? t('group.deleteGroupWarningText')
+            : t('group.leaveGroupConfirmText')
           }
         </p>
         <Button
@@ -39,7 +41,7 @@ export default function GroupActions({
           className="w-full"
           size="sm"
         >
-          {isOwner ? 'Delete Group' : 'Leave Group'}
+          {isOwner ? t('group.deleteGroup') : t('group.leaveGroup')}
         </Button>
       </CardContent>
     </Card>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
 import { getPomodoroDetails } from '@/shared/api/get';
@@ -108,6 +109,7 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
 
 export default function WorkAppsList({ selectedDate }: WorkAppsListProps) {
   const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
+  const { t } = useTranslation();
   
   // API 데이터 가져오기
   const { data, isLoading, isError } = useQuery({
@@ -139,7 +141,7 @@ export default function WorkAppsList({ selectedDate }: WorkAppsListProps) {
           {/* Header */}
           <div className="mb-4">
             <p className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
-              Work Apps
+              {t('statistics.workApps')}
             </p>
           </div>
 
@@ -149,11 +151,11 @@ export default function WorkAppsList({ selectedDate }: WorkAppsListProps) {
               <LoadingSkeleton getThemeClass={getThemeClass as (type: string) => string} />
             ) : isError ? (
               <div className={`flex items-center justify-center h-full ${getThemeTextColor('secondary')}`}>
-                <p className="text-xs">Failed to load work apps</p>
+                <p className="text-xs">{t('common.failedToLoad')}</p>
               </div>
             ) : sortedApps.length === 0 ? (
               <div className={`flex items-center justify-center h-full ${getThemeTextColor('secondary')}`}>
-                <p className="text-xs">No work apps data</p>
+                <p className="text-xs">{t('common.noData')}</p>
               </div>
             ) : (
               <ScrollArea className="h-full">

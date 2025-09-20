@@ -2,11 +2,11 @@
 
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useTheme } from '@/hooks/ui/useTheme';
 
 export default function HomePage() {
-  const router = useRouter();
+  const { navigateWithParams } = useNavigation();
   const { getThemeClass, getThemeTextColor } = useTheme();
 
   return (
@@ -29,7 +29,7 @@ export default function HomePage() {
           <div className='flex justify-center'>
             <Button
               size='lg'
-              onClick={() => router.push('/subscription')}
+              onClick={() => navigateWithParams('/subscription')}
               className='bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold px-8 py-3 text-lg rounded-lg'
             >
               프리미엄 구독하기
@@ -86,7 +86,7 @@ export default function HomePage() {
           </p>
           <Button
             size='lg'
-            onClick={() => router.push('/subscription')}
+            onClick={() => navigateWithParams('/subscription')}
             className='bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold px-8 py-3 text-lg rounded-lg'
           >
             구독 플랜 보기 →

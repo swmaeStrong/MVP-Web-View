@@ -2,10 +2,11 @@
 
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
+import { useTranslation } from '@/providers/LanguageProvider';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { brandColors } from '@/styles/colors';
 import { Plus, Search, Settings, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 
 interface NavItem {
@@ -20,14 +21,16 @@ interface GroupSidebarProps {
   isLoading?: boolean;
 }
 
-const navItems: NavItem[] = [
-  { name: 'Search', href: '/group/search', icon: Search },
-  { name: 'Create', href: '/group/create', icon: Plus },
-];
 
 export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
-  const pathname = usePathname();
+  const { t } = useTranslation();
+  const { pathname, getQuery } = useNavigation();
+
+  const navItems: NavItem[] = useMemo(() => [
+    { name: t('group.search'), href: `/group/search?${new URLSearchParams(getQuery()).toString()}`, icon: Search },
+    { name: t('group.create'), href: `/group/create?${new URLSearchParams(getQuery()).toString()}`, icon: Plus },
+  ], [t, getQuery]);
   const currentUser = useCurrentUserData();
 
   // Get selected group ID from URL - 메모이제이션
@@ -38,24 +41,27 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
 
   // isActive 함수 최적화 - useCallback으로 메모이제이션
   const isActive = useCallback((href: string) => {
-    if (href === '/group') {
-      return pathname === href;
+    // href에서 쿼리 파라미터 제거하여 순수 경로만 비교
+    const cleanHref = href.split('?')[0];
+
+    if (cleanHref === '/group') {
+      return pathname === cleanHref;
     }
-    
+
     // 그룹 서브메뉴의 경우 정확한 매칭 필요
-    if (href.includes('/group/') && selectedGroupId) {
+    if (cleanHref.includes('/group/') && selectedGroupId) {
       // Detail 페이지: /group/[id]/detail 매칭
-      if (href.endsWith(`/group/${selectedGroupId}/detail`)) {
-        return pathname === href;
+      if (cleanHref.endsWith(`/group/${selectedGroupId}/detail`)) {
+        return pathname === cleanHref;
       }
       // Settings 페이지: /group/[id]/settings 매칭
-      if (href.endsWith('/settings')) {
-        return pathname === href;
+      if (cleanHref.endsWith('/settings')) {
+        return pathname === cleanHref;
       }
     }
     
-    // 기타 경로는 기존 로직 유지
-    return pathname === href || pathname.startsWith(href + '/');
+    // 기타 경로 (search, create 등)
+    return pathname === cleanHref;
   }, [pathname, selectedGroupId]);
 
   // 선택된 그룹과 권한 정보 메모이제이션
@@ -69,16 +75,17 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
   // Group submenu items 메모이제이션
   const groupSubMenuItems = useMemo(() => {
     if (!selectedGroupId) return [];
-    
+
+    const queryString = new URLSearchParams(getQuery()).toString();
     const baseItems = [
-      { name: 'Main', href: `/group/${selectedGroupId}/detail`, icon: TrendingUp },
+      { name: 'Main', href: `/group/${selectedGroupId}/detail?${queryString}`, icon: TrendingUp },
     ];
-    
+
     // 모든 멤버가 Settings 페이지에 접근 가능
-    baseItems.push({ name: 'Settings', href: `/group/${selectedGroupId}/settings`, icon: Settings });
-    
+    baseItems.push({ name: 'Settings', href: `/group/${selectedGroupId}/settings?${queryString}`, icon: Settings });
+
     return baseItems;
-  }, [selectedGroupId, groupInfo.isGroupOwner]);
+  }, [selectedGroupId, groupInfo.isGroupOwner, getQuery]);
 
   return (
     <aside
@@ -95,7 +102,7 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
             {error && (
               <div className="px-4 py-2">
                 <span className={`text-xs ${getThemeTextColor('secondary')}`}>
-                  Failed to load groups
+                  {t('common.failedToLoad')}
                 </span>
               </div>
             )}
@@ -111,7 +118,8 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
             
             {!error && groups.map((group) => {
               const isGroupSelected = selectedGroupId === group.groupId.toString();
-              const groupHref = `/group/${group.groupId}/detail`;
+              const queryString = new URLSearchParams(getQuery()).toString();
+              const groupHref = `/group/${group.groupId}/detail?${queryString}`;
               
               return (
                 <div key={group.groupId}>

@@ -3,7 +3,8 @@ import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { getKSTDate } from '@/utils/timezone';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { Suspense, useState, useEffect } from 'react';
 import * as PortOne from '@portone/browser-sdk/v2';
 import {
@@ -38,7 +39,7 @@ interface ExistingPaymentMethod {
 
 // useSearchParams를 사용하는 컴포넌트를 분리
 function PaymentMethodContent() {
-  const router = useRouter();
+  const { navigateWithParams } = useNavigation();
   const searchParams = useSearchParams();
   const [selectedMethod, setSelectedMethod] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -193,7 +194,7 @@ function PaymentMethodContent() {
         
         // 구독 플로우에서 왔다면 바로 결제로 이동
         if (fromSubscription) {
-          router.push('/subscription/checkout');
+          navigateWithParams('/subscription/checkout');
         }
       }
     } catch (error) {
@@ -207,7 +208,7 @@ function PaymentMethodContent() {
   // 기존 결제 수단 선택
   const handleExistingMethodSelect = (methodId: string) => {
     if (fromSubscription) {
-      router.push('/subscription/checkout');
+      navigateWithParams('/subscription/checkout');
     }
   };
 
@@ -471,7 +472,7 @@ function PaymentMethodContent() {
             {fromSubscription && (
               <div className='text-center'>
                 <button
-                  onClick={() => router.back()}
+                  onClick={() => window.history.back()}
                   className={`text-sm transition-colors hover:text-purple-400 ${getThemeTextColor('secondary')}`}
                 >
                   ← 이전 단계로 돌아가기

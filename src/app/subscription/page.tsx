@@ -1,7 +1,7 @@
 'use client';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useEffect, useState } from 'react';
 import { useTheme } from '@/hooks/ui/useTheme';
 
@@ -16,7 +16,7 @@ const checkPaymentMethods = () => {
 };
 
 const SubscriptionPage = () => {
-  const router = useRouter();
+  const { navigateWithParams } = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const { getThemeClass, getThemeTextColor } = useTheme();
@@ -95,7 +95,7 @@ const SubscriptionPage = () => {
       }
       
       // 결제 수단 등록 페이지로 이동 (step 2)
-      router.push('/subscription/payment-method?from=subscription');
+      navigateWithParams('/subscription/payment-method?from=subscription');
     } catch (error) {
       console.error('구독 처리 중 오류:', error);
     } finally {

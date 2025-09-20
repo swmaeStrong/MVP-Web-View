@@ -9,13 +9,13 @@ import GroupHeader from '@/components/group/setting/GroupHeader';
 import GroupInfo from '@/components/group/setting/GroupInfo';
 import GroupMemberList from '@/components/group/setting/GroupMemberList';
 import GroupMemberManagement from '@/components/group/setting/GroupMemberManagement';
-import { GROUP_VALIDATION_MESSAGES } from '@/config/constants';
 import { useBanMember, useDeleteGroup, useLeaveGroup, useTransferOwnership, useUpdateGroup } from '@/hooks/group/useGroupSettings';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
 import { useTheme } from '@/hooks/ui/useTheme';
-import { UpdateGroupFormData, updateGroupSchema } from '@/schemas/groupSchema';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
+import { useTranslation } from '@/providers/LanguageProvider';
+import { UpdateGroupFormData, createValidationSchema } from '@/utils/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Crown, Trash2, UserMinus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -26,6 +26,7 @@ import toast from 'react-hot-toast';
 
 export default function GroupSettingsPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useParams();
   const currentUser = useCurrentUserData();
@@ -51,9 +52,9 @@ export default function GroupSettingsPage() {
 
   // 초대 코드 복사 함수
   const copyInviteCode = () => {
-    const textToCopy = groupDetail?.password || 'No password required';
+    const textToCopy = groupDetail?.password || t('group.noPasswordRequired');
     navigator.clipboard.writeText(textToCopy);
-    toast.success('Invite code copied to clipboard!');
+    toast.success(t('group.copyInviteCode'));
   };
 
   // Group mutations
@@ -63,8 +64,11 @@ export default function GroupSettingsPage() {
   const leaveGroupMutation = useLeaveGroup(groupId);
   const transferOwnershipMutation = useTransferOwnership(groupId);
 
+  // 번역된 validation 스키마 생성
+  const validationSchema = createValidationSchema(t);
+
   const form = useForm<UpdateGroupFormData>({
-    resolver: zodResolver(updateGroupSchema),
+    resolver: zodResolver(validationSchema.updateGroupSchema),
     mode: 'onChange', // 실시간 유효성 검사 활성화
     reValidateMode: 'onChange', // 재검증 모드 추가
     defaultValues: {
@@ -98,19 +102,19 @@ export default function GroupSettingsPage() {
   const onError = (errors: any) => {
     // Show validation error toast with specific messages
     if (errors.name) {
-      toast.error(`Group Name: ${errors.name.message}`);
+      toast.error(`${t('group.validation.groupName')}: ${errors.name.message}`);
       return;
     }
     if (errors.description) {
-      toast.error(`Description: ${errors.description.message}`);
+      toast.error(`${t('group.validation.description')}: ${errors.description.message}`);
       return;
     }
     if (errors.groundRules) {
-      toast.error(`Ground Rules: ${errors.groundRules.message || GROUP_VALIDATION_MESSAGES.GROUND_RULES.EMPTY}`);
+      toast.error(`${t('group.validation.groundRules')}: ${errors.groundRules.message || t('group.validation.groundRulesEmpty')}`);
       return;
     }
     if (errors.tags) {
-      toast.error(`Tags: ${errors.tags.message}`);
+      toast.error(`${t('group.validation.tags')}: ${errors.tags.message}`);
       return;
     }
   };
@@ -195,7 +199,7 @@ export default function GroupSettingsPage() {
   // Loading state
   if (isLoading) {
     return (
-      <PageLoader message="Loading group information..." />
+      <PageLoader message={t('group.groupDetails')} />
     );
   }
 
@@ -203,12 +207,12 @@ export default function GroupSettingsPage() {
   if (error || !groupDetail) {
     return (
       <div className="h-full flex items-center justify-center">
-        <StateDisplay 
-          type="error" 
-          title="Failed to load group information"
-          message="Please check your network connection or try again later."
+        <StateDisplay
+          type="error"
+          title={t('common.failedToLoad')}
+          message={t('common.serverError')}
           onRetry={() => refetch()}
-          retryText="Retry"
+          retryText={t('common.retry')}
         />
       </div>
     );
@@ -256,20 +260,20 @@ export default function GroupSettingsPage() {
         <ConfirmDialog
           open={showDeleteDialog}
           onOpenChange={setShowDeleteDialog}
-          title="Leave Group"
+          title={t('group.leaveGroup')}
           description={
             <>
-              Are you sure you want to leave <span className="font-semibold">"{groupDetail?.name}"</span>?
+              <span className="font-semibold">"{groupDetail?.name}"</span>{t('group.leaveGroupConfirmWithName')}
               <br className="mt-2" />
-              You can rejoin later if the group is public or if you receive another invitation.
+              {t('group.leaveGroupConfirmText')}
             </>
           }
-          confirmText="Leave Group"
-          cancelText="Cancel"
+          confirmText={t('group.leaveGroup')}
+          cancelText={t('common.cancel')}
           onConfirm={handleLeaveGroup}
           variant="destructive"
           isLoading={leaveGroupMutation.isPending}
-          loadingText="Leaving..."
+          loadingText={`${t('group.leaveGroup')}...`}
           icon={UserMinus}
         />
       </div>
@@ -337,20 +341,20 @@ export default function GroupSettingsPage() {
       <ConfirmDialog
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
-        title="Delete Group"
+        title={t('group.deleteGroup')}
         description={
           <>
-            Are you sure you want to delete <span className="font-semibold">"{groupDetail?.name}"</span>?
+            <span className="font-semibold">"{groupDetail?.name}"</span>{t('group.deleteGroupConfirmWithName')}
             <br className="mt-2" />
-            This action cannot be undone. All group data, including member information and history, will be permanently removed.
+            {t('group.deleteGroupWarningText')}
           </>
         }
-        confirmText="Delete Group"
-        cancelText="Cancel"
+        confirmText={t('group.deleteGroup')}
+        cancelText={t('common.cancel')}
         onConfirm={handleDeleteGroup}
         variant="destructive"
         isLoading={deleteGroupMutation.isPending}
-        loadingText="Deleting..."
+        loadingText={`${t('common.delete')}...`}
         icon={Trash2}
       />
 
@@ -364,14 +368,14 @@ export default function GroupSettingsPage() {
             setBanReason('');
           }
         }}
-        title="Remove Member"
+        title={t('group.kickMember')}
         description={
           <>
-            Remove <span className="font-semibold">{selectedMember?.nickname}</span> from the group?
+            <span className="font-semibold">{selectedMember?.nickname}</span>{t('group.kickMemberConfirmWithName')}
           </>
         }
-        confirmText="Remove Member"
-        cancelText="Cancel"
+        confirmText={t('group.kickMember')}
+        cancelText={t('common.cancel')}
         onConfirm={handleBanMember}
         onCancel={() => {
           setSelectedMember(null);
@@ -379,11 +383,11 @@ export default function GroupSettingsPage() {
         }}
         variant="destructive"
         isLoading={banMemberMutation.isPending}
-        loadingText="Removing..."
+        loadingText={`${t('group.kickMember')}...`}
         icon={UserMinus}
         showTextarea={true}
-        textareaLabel="Reason for removal"
-        textareaPlaceholder="Please provide a reason for removing this member..."
+        textareaLabel={t('group.kickMemberReason')}
+        textareaPlaceholder={t('group.kickMemberReasonPlaceholder')}
         textareaRequired={true}
         textareaValue={banReason}
         onTextareaChange={setBanReason}
@@ -398,23 +402,23 @@ export default function GroupSettingsPage() {
             setSelectedMember(null);
           }
         }}
-        title="Transfer Group Ownership"
+        title={t('group.transferOwnership')}
         description={
           <>
-            Are you sure you want to transfer ownership of <span className="font-semibold">"{groupDetail?.name}"</span> to <span className="font-semibold">{selectedMember?.nickname}</span>?
+            <span className="font-semibold">{selectedMember?.nickname}</span> {t('group.transferOwnershipToMember')}
             <br className="mt-2" />
-            <span className="text-amber-600 font-medium">Warning:</span> You will lose all administrative privileges and cannot undo this action. The new owner will have full control over the group.
+            <span className="text-amber-600 font-medium">{t('group.deleteGroupWarning')}</span>
           </>
         }
-        confirmText="Transfer Ownership"
-        cancelText="Cancel"
+        confirmText={t('group.transferOwnership')}
+        cancelText={t('common.cancel')}
         onConfirm={handleTransferOwnership}
         onCancel={() => {
           setSelectedMember(null);
         }}
         variant="default"
         isLoading={transferOwnershipMutation.isPending}
-        loadingText="Transferring..."
+        loadingText={`${t('group.transferOwnership')}...`}
         icon={Crown}
       />
     </div>

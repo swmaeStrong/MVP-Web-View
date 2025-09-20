@@ -1,14 +1,16 @@
 'use client';
 
-import { GROUP_ACTION_MESSAGES, groupDetailQueryKey, myGroupsQueryKey } from '@/config/constants';
+import { groupDetailQueryKey, myGroupsQueryKey } from '@/config/constants';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { banGroupMember, deleteGroup, leaveGroup } from '@/shared/api/delete';
 import { transferGroupOwnership, updateGroup } from '@/shared/api/patch';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import toast from 'react-hot-toast';
 
 export function useUpdateGroup(groupId: number) {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: (request: Group.UpdateGroupApiRequest) => updateGroup(groupId, request),
@@ -20,18 +22,19 @@ export function useUpdateGroup(groupId: number) {
       queryClient.invalidateQueries({
         queryKey: myGroupsQueryKey(),
       });
-      toast.success(GROUP_ACTION_MESSAGES.UPDATE.SUCCESS);
+      toast.success(t('group.actionMessages.updateSuccess'));
     },
     onError: (error) => {
       console.error('Failed to update group:', error);
-      toast.error(GROUP_ACTION_MESSAGES.UPDATE.ERROR);
+      toast.error(t('group.actionMessages.updateError'));
     },
   });
 }
 
 export function useDeleteGroup(groupId: number) {
   const queryClient = useQueryClient();
-  const router = useRouter();
+  const { navigateWithParams } = useNavigation();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: () => deleteGroup(groupId.toString()),
@@ -40,19 +43,20 @@ export function useDeleteGroup(groupId: number) {
       queryClient.invalidateQueries({
         queryKey: myGroupsQueryKey(),
       });
-      toast.success(GROUP_ACTION_MESSAGES.DELETE.SUCCESS);
+      toast.success(t('group.actionMessages.deleteSuccess'));
       // 그룹 찾기 페이지로 이동
-      router.push('/group/search');
+      navigateWithParams('/group/search');
     },
     onError: (error) => {
       console.error('Failed to delete group:', error);
-      toast.error("To delete this group, you must first transfer ownership to another member or remove all members.");
+      toast.error(t('group.actionMessages.deleteRequirement'));
     },
   });
 }
 
 export function useBanMember(groupId: number) {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: ({ userId, reason }: { userId: string; reason: string }) => 
@@ -62,18 +66,19 @@ export function useBanMember(groupId: number) {
       queryClient.invalidateQueries({
         queryKey: groupDetailQueryKey(groupId),
       });
-      toast.success('Member has been removed from the group');
+      toast.success(t('group.actionMessages.memberBanSuccess'));
     },
     onError: (error) => {
       console.error('Failed to ban member:', error);
-      toast.error('Failed to remove member');
+      toast.error(t('group.actionMessages.memberBanError'));
     },
   });
 }
 
 export function useLeaveGroup(groupId: number) {
   const queryClient = useQueryClient();
-  const router = useRouter();
+  const { navigateWithParams } = useNavigation();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: () => leaveGroup(groupId.toString()),
@@ -82,20 +87,21 @@ export function useLeaveGroup(groupId: number) {
       queryClient.invalidateQueries({
         queryKey: myGroupsQueryKey(),
       });
-      toast.success('Successfully left the group');
+      toast.success(t('group.actionMessages.leaveSuccess'));
       // 그룹 찾기 페이지로 이동
-      router.push('/group/search');
+      navigateWithParams('/group/search');
     },
     onError: (error) => {
       console.error('Failed to leave group:', error);
-      toast.error('Failed to leave the group');
+      toast.error(t('group.actionMessages.leaveError'));
     },
   });
 }
 
 export function useTransferOwnership(groupId: number) {
   const queryClient = useQueryClient();
-  const router = useRouter();
+  const { navigateWithParams } = useNavigation();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: (userId: string) => 
@@ -108,13 +114,13 @@ export function useTransferOwnership(groupId: number) {
       queryClient.invalidateQueries({
         queryKey: myGroupsQueryKey(),
       });
-      toast.success('Group ownership has been transferred successfully');
+      toast.success(t('group.actionMessages.ownershipTransferSuccess'));
       // 그룹 페이지로 리다이렉트 (더 이상 관리자가 아니므로)
-      router.push(`/group/${groupId}/detail`);
+      navigateWithParams(`/group/${groupId}/detail`);
     },
     onError: (error) => {
       console.error('Failed to transfer ownership:', error);
-      toast.error('Failed to transfer group ownership');
+      toast.error(t('group.actionMessages.ownershipTransferError'));
     },
   });
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
 import { sessionTimelineColors } from '@/styles/colors';
 import { getKSTDateString } from '@/utils/timezone';
@@ -21,13 +22,14 @@ interface SessionCarouselProps {
   onSessionSelect?: (sessionIndex: number) => void;
 }
 
-const SessionCarousel = memo(function SessionCarousel({ 
+const SessionCarousel = memo(function SessionCarousel({
   selectedDate = getKSTDateString(),
   currentSessionIndex,
   onSessionSelect
 }: SessionCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { getThemeClass, isDarkMode } = useTheme();
+  const { t } = useTranslation();
   const swiperRef = React.useRef<any>(null);
 
   // 세션 데이터 조회
@@ -335,7 +337,7 @@ const SessionCarousel = memo(function SessionCarousel({
   if (!cycles || cycles.length === 0) {
     return (
       <div className={`${getThemeClass('component')} rounded-lg p-8 h-[280px] flex items-center justify-center border ${getThemeClass('border')}`}>
-        <p className={getThemeClass('textPrimary')}>No session data available</p>
+        <p className={getThemeClass('textPrimary')}>{t('statistics.noSessionData')}</p>
       </div>
     );
   }
