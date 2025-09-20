@@ -5,7 +5,7 @@ import { useTranslation } from '@/providers/LanguageProvider';
 import { banGroupMember, deleteGroup, leaveGroup } from '@/shared/api/delete';
 import { transferGroupOwnership, updateGroup } from '@/shared/api/patch';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import toast from 'react-hot-toast';
 
 export function useUpdateGroup(groupId: number) {
@@ -33,7 +33,7 @@ export function useUpdateGroup(groupId: number) {
 
 export function useDeleteGroup(groupId: number) {
   const queryClient = useQueryClient();
-  const router = useRouter();
+  const { navigateWithParams } = useNavigation();
   const { t } = useTranslation();
 
   return useMutation({
@@ -45,7 +45,7 @@ export function useDeleteGroup(groupId: number) {
       });
       toast.success(t('group.actionMessages.deleteSuccess'));
       // 그룹 찾기 페이지로 이동
-      router.push('/group/search');
+      navigateWithParams('/group/search');
     },
     onError: (error) => {
       console.error('Failed to delete group:', error);
@@ -77,7 +77,7 @@ export function useBanMember(groupId: number) {
 
 export function useLeaveGroup(groupId: number) {
   const queryClient = useQueryClient();
-  const router = useRouter();
+  const { navigateWithParams } = useNavigation();
   const { t } = useTranslation();
 
   return useMutation({
@@ -89,7 +89,7 @@ export function useLeaveGroup(groupId: number) {
       });
       toast.success(t('group.actionMessages.leaveSuccess'));
       // 그룹 찾기 페이지로 이동
-      router.push('/group/search');
+      navigateWithParams('/group/search');
     },
     onError: (error) => {
       console.error('Failed to leave group:', error);
@@ -100,7 +100,7 @@ export function useLeaveGroup(groupId: number) {
 
 export function useTransferOwnership(groupId: number) {
   const queryClient = useQueryClient();
-  const router = useRouter();
+  const { navigateWithParams } = useNavigation();
   const { t } = useTranslation();
 
   return useMutation({
@@ -116,7 +116,7 @@ export function useTransferOwnership(groupId: number) {
       });
       toast.success(t('group.actionMessages.ownershipTransferSuccess'));
       // 그룹 페이지로 리다이렉트 (더 이상 관리자가 아니므로)
-      router.push(`/group/${groupId}/detail`);
+      navigateWithParams(`/group/${groupId}/detail`);
     },
     onError: (error) => {
       console.error('Failed to transfer ownership:', error);

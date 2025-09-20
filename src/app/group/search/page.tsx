@@ -22,13 +22,14 @@ import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { getGroupByInviteCode } from '@/shared/api/get';
 import { brandColors } from '@/styles/colors';
 import { Globe, Hash, Lock, Search, Users } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useState, useEffect } from 'react';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();
+  const { navigateWithParams } = useNavigation();
   const searchParams = useSearchParams();
   const currentUser = useCurrentUserData();
   const [searchQuery, setSearchQuery] = useState('');
@@ -79,7 +80,7 @@ export default function FindTeamPage() {
   const joinGroupMutation = useJoinGroup({
     onSuccess: (group) => {
       handleCloseModal();
-      router.push(`/group/${group.groupId}/detail`);
+      navigateWithParams(`/group/${group.groupId}/detail`);
     },
     onError: () => {
       setJoinError(t('common.serverError'));
@@ -90,7 +91,7 @@ export default function FindTeamPage() {
     onSuccess: () => {
       handleCloseInviteModal();
       if (inviteGroup) {
-        router.push(`/group/${inviteGroup.groupId}/detail`);
+        navigateWithParams(`/group/${inviteGroup.groupId}/detail`);
       }
     },
     onError: () => {
@@ -135,7 +136,8 @@ export default function FindTeamPage() {
     // Remove inviteCode from URL
     const url = new URL(window.location.href);
     url.searchParams.delete('inviteCode');
-    router.replace(url.pathname + url.search, { scroll: false });
+    // URL에서 inviteCode 제거 (현재 쿼리 파라미터 유지)
+    window.history.replaceState({}, '', url.pathname + url.search);
   };
 
   const handleJoinInviteGroup = async (inviteCode: string) => {
@@ -230,7 +232,7 @@ export default function FindTeamPage() {
               className={`${getCommonCardClass()} h-52 hover:bg-gray-50 dark:hover:bg-gray-800 group relative cursor-pointer transition-all duration-200 hover:shadow-lg`}
               onClick={() => {
                 if (isGroupMember(group.groupId)) {
-                  router.push(`/group/${group.groupId}/detail`);
+                  navigateWithParams(`/group/${group.groupId}/detail`);
                 } else {
                   handleViewDetail(group);
                 }
@@ -349,7 +351,7 @@ export default function FindTeamPage() {
                 </p>
                 <Button 
                   className={`${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90`}
-                  onClick={() => router.push('/group/create')}
+                  onClick={() => navigateWithParams('/group/create')}
                 >
                   {t('group.create')}
                 </Button>

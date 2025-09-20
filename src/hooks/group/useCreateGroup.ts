@@ -6,7 +6,7 @@ import { useTranslation } from '@/providers/LanguageProvider';
 import { validateGroupName } from '@/shared/api/get';
 import { createGroup } from '@/shared/api/post';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import toast from 'react-hot-toast';
 
 export function useGroupNameValidation(groupName: string) {
@@ -21,7 +21,7 @@ export function useGroupNameValidation(groupName: string) {
 
 export function useCreateGroup() {
   const queryClient = useQueryClient();
-  const router = useRouter();
+  const { navigateWithParams } = useNavigation();
 
   return useMutation({
     mutationFn: createGroup,
@@ -38,7 +38,7 @@ export function useCreateGroup() {
       
       // 성공 시 그룹 검색 페이지로 이동
       setTimeout(() => {
-        router.push('/group/search');
+        navigateWithParams('/group/search');
       }, 1000);
     },
   });
