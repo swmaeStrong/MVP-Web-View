@@ -1,13 +1,9 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { SupportedLocale, DEFAULT_LOCALE, detectBrowserLocale } from '@/config/i18n';
+import { SupportedLocale, DEFAULT_LOCALE } from '@/config/i18n';
 import { translations } from '@/config/i18n/locales';
-import { getLocaleFromQuery, createNavigationUrl } from '@/utils/navigation';
-import { getLocaleFromCookie, setLocaleCookie, getLocaleFromServerCookies } from '@/utils/cookies';
-import dynamic from 'next/dynamic';
-import PageLoader from '@/components/common/PageLoader';
+import { setLocaleCookie } from '@/utils/cookies';
 
 interface LanguageContextType {
   locale: SupportedLocale;
@@ -24,40 +20,14 @@ interface LanguageProviderProps {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 function LanguageProviderInner({ children, initialLocale }: LanguageProviderProps) {
-  const router = useRouter();
-  const pathname = usePathname();
 
   // 서버에서 전달받은 초기 언어로 시작
   const [locale, setLocaleState] = useState<SupportedLocale>(initialLocale);
   const [isClient, setIsClient] = useState(false);
 
-  // 클라이언트 마운트 후 URL 파라미터 체크
+  // 클라이언트 마운트 시 초기화
   useEffect(() => {
     setIsClient(true);
-
-    // URL 파라미터 체크
-    const urlParams = new URLSearchParams(window.location.search);
-    const hlParam = urlParams.get('hl');
-
-    if (hlParam === 'ko' || hlParam === 'en') {
-      // URL 파라미터가 있으면 그것을 우선시
-      if (hlParam !== locale) {
-        setLocaleState(hlParam as SupportedLocale);
-        setLocaleCookie(hlParam as SupportedLocale);
-      }
-    } else if (!hlParam) {
-      // URL에 언어 파라미터가 없으면 추가
-      const queryObj: Record<string, string> = {};
-      urlParams.forEach((value, key) => {
-        queryObj[key] = value;
-      });
-
-      const newUrl = createNavigationUrl(pathname, queryObj, {
-        preserveQuery: true,
-        locale,
-      });
-      router.replace(newUrl);
-    }
   }, []);
 
   const setLocale = (newLocale: SupportedLocale) => {
@@ -66,20 +36,6 @@ function LanguageProviderInner({ children, initialLocale }: LanguageProviderProp
     if (isClient) {
       // 쿠키에 저장
       setLocaleCookie(newLocale);
-
-      // URL 업데이트
-      const urlParams = new URLSearchParams(window.location.search);
-      const queryObj: Record<string, string> = {};
-      urlParams.forEach((value, key) => {
-        queryObj[key] = value;
-      });
-
-      const newUrl = createNavigationUrl(pathname, queryObj, {
-        preserveQuery: true,
-        locale: newLocale,
-      });
-
-      router.push(newUrl);
     }
   };
 
