@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { setThemeCookie } from '@/utils/cookies';
 
 interface ThemeContextType {
   isDarkMode: boolean;
@@ -9,37 +10,37 @@ interface ThemeContextType {
   isClient: boolean;
 }
 
+interface ThemeProviderProps {
+  children: ReactNode;
+  initialTheme: 'light' | 'dark';
+}
+
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+export function ThemeProvider({ children, initialTheme }: ThemeProviderProps) {
+  // 서버에서 전달받은 초기 테마로 시작
+  const [isDarkMode, setIsDarkMode] = useState(initialTheme === 'dark');
   const [isClient, setIsClient] = useState(false);
   const theme: 'light' | 'dark' = isDarkMode ? 'dark' : 'light';
 
   // 클라이언트 사이드 초기화
   useEffect(() => {
     setIsClient(true);
-    
-    // localStorage에서 테마 설정 불러오기
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      setIsDarkMode(true);
-    }
   }, []);
 
-  // HTML 클래스 업데이트
+  // HTML 클래스 업데이트 및 쿠키 저장
   useEffect(() => {
-    if (!isClient) return;
-    
     const html = document.documentElement;
     if (isDarkMode) {
       html.classList.add('dark');
     } else {
       html.classList.remove('dark');
     }
-    
-    // localStorage에 저장
-    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+
+    // 클라이언트에서만 쿠키 저장
+    if (isClient) {
+      setThemeCookie(isDarkMode ? 'dark' : 'light');
+    }
   }, [isDarkMode, isClient]);
 
   // 테마 토글 함수

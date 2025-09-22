@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { SupportedLocale, DEFAULT_LOCALE, detectBrowserLocale } from '@/config/i18n';
 import { translations } from '@/config/i18n/locales';
 import { getLocaleFromQuery, createNavigationUrl } from '@/utils/navigation';
+import { getLocaleFromCookie, setLocaleCookie, getLocaleFromServerCookies } from '@/utils/cookies';
 import dynamic from 'next/dynamic';
 import PageLoader from '@/components/common/PageLoader';
 
@@ -13,55 +14,39 @@ interface LanguageContextType {
   setLocale: (locale: SupportedLocale) => void;
   t: (key: string, params?: Record<string, string | number>) => string;
   isClient: boolean;
-  isLoadingLocale: boolean;
+}
+
+interface LanguageProviderProps {
+  children: ReactNode;
+  initialLocale: SupportedLocale;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-
-function LanguageProviderInner({ children }: { children: ReactNode }) {
+function LanguageProviderInner({ children, initialLocale }: LanguageProviderProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Initialize with default locale for consistent server/client rendering
-  const [locale, setLocaleState] = useState<SupportedLocale>(DEFAULT_LOCALE);
+  // 서버에서 전달받은 초기 언어로 시작
+  const [locale, setLocaleState] = useState<SupportedLocale>(initialLocale);
   const [isClient, setIsClient] = useState(false);
-  const [isLoadingLocale, setIsLoadingLocale] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
 
-  // 클라이언트 마운트 후 언어 설정
+  // 클라이언트 마운트 후 URL 파라미터 체크
   useEffect(() => {
-    setIsMounted(true);
     setIsClient(true);
-    setIsLoadingLocale(true);
 
-    // 1. Check URL parameters first
+    // URL 파라미터 체크
     const urlParams = new URLSearchParams(window.location.search);
     const hlParam = urlParams.get('hl');
 
-    let targetLocale: SupportedLocale;
-
     if (hlParam === 'ko' || hlParam === 'en') {
-      targetLocale = hlParam as SupportedLocale;
-    } else {
-      // 2. Check localStorage
-      const savedLocale = localStorage.getItem('locale') as SupportedLocale;
-      if (savedLocale && translations[savedLocale]) {
-        targetLocale = savedLocale;
-      } else {
-        // 3. Detect browser locale
-        targetLocale = detectBrowserLocale();
+      // URL 파라미터가 있으면 그것을 우선시
+      if (hlParam !== locale) {
+        setLocaleState(hlParam as SupportedLocale);
+        setLocaleCookie(hlParam as SupportedLocale);
       }
-    }
-
-    // Update state if different
-    setLocaleState(targetLocale);
-
-    // Save to localStorage
-    localStorage.setItem('locale', targetLocale);
-
-    // Add locale to URL if not present
-    if (!hlParam) {
+    } else if (!hlParam) {
+      // URL에 언어 파라미터가 없으면 추가
       const queryObj: Record<string, string> = {};
       urlParams.forEach((value, key) => {
         queryObj[key] = value;
@@ -69,19 +54,18 @@ function LanguageProviderInner({ children }: { children: ReactNode }) {
 
       const newUrl = createNavigationUrl(pathname, queryObj, {
         preserveQuery: true,
-        locale: targetLocale,
+        locale,
       });
       router.replace(newUrl);
     }
-
-    setIsLoadingLocale(false);
   }, []);
 
   const setLocale = (newLocale: SupportedLocale) => {
     setLocaleState(newLocale);
 
     if (isClient) {
-      localStorage.setItem('locale', newLocale);
+      // 쿠키에 저장
+      setLocaleCookie(newLocale);
 
       // URL 업데이트
       const urlParams = new URLSearchParams(window.location.search);
@@ -142,17 +126,7 @@ function LanguageProviderInner({ children }: { children: ReactNode }) {
     setLocale,
     t,
     isClient,
-    isLoadingLocale,
   };
-
-  // Prevent hydration mismatch by not rendering until mounted
-  if (!isMounted) {
-    return (
-      <LanguageContext.Provider value={value}>
-        {children}
-      </LanguageContext.Provider>
-    );
-  }
 
   return (
     <LanguageContext.Provider value={value}>
@@ -161,14 +135,8 @@ function LanguageProviderInner({ children }: { children: ReactNode }) {
   );
 }
 
-// Use dynamic import to prevent SSR for this component
-export const LanguageProvider = dynamic(
-  () => Promise.resolve(LanguageProviderInner),
-  {
-    ssr: false,
-    loading: () => <PageLoader message="Initializing..." />,
-  }
-);
+// Export directly without dynamic import (now supports SSR)
+export const LanguageProvider = LanguageProviderInner;
 
 export function useLanguage() {
   const context = useContext(LanguageContext);
@@ -180,13 +148,12 @@ export function useLanguage() {
 
 // Custom hook for easier translation usage
 export function useTranslation() {
-  const { t, locale, setLocale, isClient, isLoadingLocale } = useLanguage();
+  const { t, locale, setLocale, isClient } = useLanguage();
 
   return {
     t,
     locale,
     setLocale,
     isClient,
-    isLoadingLocale,
   };
 }

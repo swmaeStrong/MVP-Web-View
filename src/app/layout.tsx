@@ -3,6 +3,7 @@ import { QueryProvider } from '@/providers/QueryProvider';
 import { SentryProvider } from '@/providers/SentryProvider';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { ToastProvider } from '@/providers/ToastProvider';
+import { getServerSettings } from '@/utils/server-cookies';
 import type { Metadata } from 'next';
 import { Inter, Noto_Sans_KR, Poppins } from 'next/font/google';
 import './globals.css';
@@ -45,20 +46,24 @@ export const metadata: Metadata = {
   viewport: 'width=device-width, initial-scale=1',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // 서버에서 쿠키를 통해 테마와 언어 설정 가져오기
+  const { theme, locale } = await getServerSettings();
+
   return (
     <html
-      lang='en'
-      className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable}`}
+      lang={locale}
+      className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable} ${theme === 'dark' ? 'dark' : ''}`}
     >
+      <head />
       <body className='antialiased' style={{ fontFamily: "'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif" }}>
         <SentryProvider>
-          <ThemeProvider>
-            <LanguageProvider>
+          <ThemeProvider initialTheme={theme}>
+            <LanguageProvider initialLocale={locale}>
               <QueryProvider>
                 <ToastProvider>
                   <div className='min-h-screen bg-background text-foreground'>
