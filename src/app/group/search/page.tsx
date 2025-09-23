@@ -1,12 +1,11 @@
 'use client';
 
-import EventBanner from '@/components/group/search/EventBanner';
 import GroupDetailModal from '@/components/group/search/GroupDetailModal';
 import GroupInviteModal from '@/components/group/search/GroupInviteModal';
-import { myGroupsQueryKey } from '@/config/constants/query-keys';
 import { useJoinGroup } from '@/hooks/group/useJoinGroup';
 import { useJoinGroupByInvite } from '@/hooks/group/useJoinGroupByInvite';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useMyGroups } from '@/hooks/queries/useMyGroups';
 import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
 import { useGroupSearch } from '@/hooks/ui/useGroupSearch';
@@ -23,8 +22,7 @@ import { getGroupByInviteCode } from '@/shared/api/get';
 import { brandColors } from '@/styles/colors';
 import { Globe, Hash, Lock, Search, Users } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { useNavigation } from '@/hooks/navigation/useNavigation';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
@@ -153,8 +151,7 @@ export default function FindTeamPage() {
   return (
     <div className="space-y-6 px-6 py-6 max-w-7xl mx-auto">
       {/* Event Banner */}
-      <EventBanner />
-      {/* <EventBanner /> */}
+{/*      {/* <EventBanner /> */}
 
       {/* Search and Filter Section */}
       <Card className={`${getCommonCardClass()} py-0`}>
