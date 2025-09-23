@@ -26,7 +26,7 @@ import { useEffect, useState } from 'react';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { navigateWithParams } = useNavigation();
   const searchParams = useSearchParams();
   const currentUser = useCurrentUserData();
@@ -101,12 +101,13 @@ export default function FindTeamPage() {
   const { data: groups = [], isLoading } = useSearchGroups();
   const { data: myGroups = [] } = useMyGroups();
 
-  // Use the custom group search hook
+  // Use the custom group search hook with locale filtering
   const filteredGroups = useGroupSearch({
     groups,
     searchQuery,
     filterType,
     sortBy,
+    locale,
   });
 
   // Helper function to check if user is member of a group
