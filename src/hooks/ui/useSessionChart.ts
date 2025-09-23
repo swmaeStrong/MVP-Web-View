@@ -4,6 +4,8 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import type { SessionData } from '@/types/domains/usage/session';
 import { sessionTimelineColors } from '@/styles/colors';
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { getLocalizedSessionTitle } from '@/utils/session';
+import { useTranslation } from '@/providers/LanguageProvider';
 
 interface ChartData {
   session: string;
@@ -21,12 +23,13 @@ interface UseSessionChartProps {
   onSessionSelect: (session: SessionData) => void;
 }
 
-export const useSessionChart = ({ 
-  sessionData, 
+export const useSessionChart = ({
+  sessionData,
   selectedSession,
-  onSessionSelect 
+  onSessionSelect
 }: UseSessionChartProps) => {
   const { isDarkMode } = useTheme();
+  const { locale } = useTranslation();
   const [hoveredSessionId, setHoveredSessionId] = useState<number | null>(null);
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const hasInitialScrolled = useRef(false);
@@ -70,7 +73,7 @@ export const useSessionChart = ({
     const sessions = sessionData
       .map((session): SessionData => ({
         id: session.session,
-        title: session.title || `Session ${session.session}`,
+        title: getLocalizedSessionTitle(session, locale),
         startTime: formatTimestamp(session.timestamp),
         duration: session.duration,
         score: session.score,
@@ -92,7 +95,7 @@ export const useSessionChart = ({
     }));
 
     return { processedSessions: sessions, allChartData: chartData };
-  }, [sessionData, isDarkMode]);
+  }, [sessionData, isDarkMode, locale]);
 
   // Calculate summary stats
   const summaryStats = useMemo(() => {

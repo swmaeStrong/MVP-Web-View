@@ -4,6 +4,7 @@ import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useTheme } from '@/hooks/ui/useTheme';
+import CookieTestButtons from '@/components/test/CookieTestButtons';
 
 export default function HomePage() {
   const { navigateWithParams } = useNavigation();
@@ -112,6 +113,9 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* 쿠키 테스트 버튼 (개발용) */}
+      <CookieTestButtons />
     </div>
   );
 }
