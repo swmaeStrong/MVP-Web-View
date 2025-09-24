@@ -28,10 +28,21 @@
 
   /* 차트 색상 변수 */
   --chart-1: 220 14% 43%;
+
+  /* 커스텀 컬러 변수 */
+  --main-color: #3f72af;
+  --bg-color: #f5fafc;
+
+  /* 메인 컬러 기반 그라데이션 */
+  --gradient-main: linear-gradient(to right, var(--main-color), #2563eb);
   --chart-2: 260 52% 55%;
   --chart-3: 120 60% 45%;
   --chart-4: 30 80% 55%;
   --chart-5: 340 75% 55%;
+}
+
+body {
+  background-color: var(--bg-color);
 
   /* 폰트 변수 */
   --font-sans: var(--font-noto-sans-kr), var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -76,6 +87,14 @@
 /* ================================
    Dark Mode Variables
    ================================ */
+.dark {
+  /* 다크모드에서도 동일한 커스텀 컬러 변수 유지 */
+  --main-color: #3f72af;
+  --bg-color: #383838;
+
+  /* 다크모드에서도 메인 컬러 기반 그라데이션 */
+  --gradient-main: linear-gradient(to right, var(--main-color), #2563eb);
+}
 
 /* ================================
    Base Typography Styles
@@ -159,12 +178,12 @@ a,
 }
 
 ::selection {
-  background-color: #3F72AF;
+  background-color: var(--main-color);
   color: white;
 }
 
 ::-moz-selection {
-  background-color: #3F72AF;
+  background-color: var(--main-color);
   color: white;
 }
 

@@ -3,6 +3,9 @@
  * 테마와 언어 설정을 쿠키에 저장하고 불러오는 기능 제공
  */
 
+import type { CustomColors } from '@/config/colors';
+import { defaultColors } from '@/config/colors';
+
 // 쿠키 설정 옵션
 interface CookieOptions {
   expires?: number; // 만료일 (일 단위)
@@ -154,4 +157,43 @@ export function getLocaleFromServerCookies(cookieHeader?: string): 'ko' | 'en' |
     return locale;
   }
   return null;
+}
+
+// 커스텀 컬러 관련 쿠키 함수들
+export const COLORS_COOKIE_NAME = 'customColors';
+
+export function getColorsFromCookie(): CustomColors {
+  const colorsJson = getCookie(COLORS_COOKIE_NAME);
+  if (colorsJson) {
+    try {
+      const colors = JSON.parse(colorsJson);
+      // 유효성 검사
+      if (colors.mainColor && colors.backgroundColor) {
+        return colors;
+      }
+    } catch (e) {
+      console.error('Failed to parse colors from cookie:', e);
+    }
+  }
+  return defaultColors;
+}
+
+export function setColorsCookie(colors: CustomColors): void {
+  setCookie(COLORS_COOKIE_NAME, JSON.stringify(colors));
+}
+
+export function getColorsFromServerCookies(cookieHeader?: string): CustomColors {
+  const cookies = parseCookies(cookieHeader);
+  const colorsJson = cookies[COLORS_COOKIE_NAME];
+  if (colorsJson) {
+    try {
+      const colors = JSON.parse(colorsJson);
+      if (colors.mainColor && colors.backgroundColor) {
+        return colors;
+      }
+    } catch (e) {
+      console.error('Failed to parse colors from cookie:', e);
+    }
+  }
+  return defaultColors;
 }

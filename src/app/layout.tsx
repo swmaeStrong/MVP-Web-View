@@ -51,8 +51,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // 서버에서 쿠키를 통해 테마와 언어 설정 가져오기
-  const { theme, locale } = await getServerSettings();
+  // 서버에서 쿠키를 통해 테마, 언어, 컬러 설정 가져오기
+  const { theme, locale, colors } = await getServerSettings();
 
   return (
     <html
@@ -60,9 +60,9 @@ export default async function RootLayout({
       className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable} ${theme === 'dark' ? 'dark' : ''}`}
     >
       <head />
-      <body className='antialiased' style={{ fontFamily: "'SF Pro Rounded', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif" }}>
+      <body className='antialiased'>
         <SentryProvider>
-          <ThemeProvider initialTheme={theme}>
+          <ThemeProvider initialTheme={theme} initialColors={colors}>
             <LanguageProvider initialLocale={locale}>
               <QueryProvider>
                 <ToastProvider>

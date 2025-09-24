@@ -1,5 +1,7 @@
 import { cookies } from 'next/headers';
 import type { SupportedLocale } from '@/config/i18n';
+import type { CustomColors } from '@/config/colors';
+import { defaultColors } from '@/config/colors';
 
 /**
  * 서버 컴포넌트에서 테마 읽기
@@ -32,16 +34,39 @@ export async function getLocaleFromServerCookie(): Promise<SupportedLocale> {
 }
 
 /**
+ * 서버 컴포넌트에서 커스텀 컬러 읽기
+ */
+export async function getColorsFromServerCookie(): Promise<CustomColors> {
+  const cookieStore = await cookies();
+  const colorsJson = cookieStore.get('customColors');
+
+  if (colorsJson?.value) {
+    try {
+      const colors = JSON.parse(colorsJson.value);
+      if (colors.mainColor && colors.backgroundColor) {
+        return colors;
+      }
+    } catch (e) {
+      console.error('Failed to parse colors from cookie:', e);
+    }
+  }
+
+  return defaultColors;
+}
+
+/**
  * 서버에서 초기 설정 가져오기
  */
 export async function getServerSettings() {
-  const [theme, locale] = await Promise.all([
+  const [theme, locale, colors] = await Promise.all([
     getThemeFromServerCookie(),
     getLocaleFromServerCookie(),
+    getColorsFromServerCookie(),
   ]);
 
   return {
     theme,
     locale,
+    colors,
   };
 }

@@ -12,7 +12,7 @@ export const themeColors = {
     text: {
       primary: 'rgb(220, 220, 220)', // 밝은 텍스트 220,220,220
       secondary: 'rgb(153, 153, 153)', // 약간 어두운 153,153,153
-      accent: '#3F72AF',   // 블루 액센트 텍스트
+      accent: 'var(--main-color)',   // 메인 컬러 액센트 텍스트
     },
     // Tailwind 클래스명
     classes: {
@@ -23,7 +23,7 @@ export const themeColors = {
       borderLight: 'border-[rgb(120,120,120)]',
       textPrimary: 'text-[rgb(220,220,220)]',
       textSecondary: 'text-[rgb(153,153,153)]',
-      textAccent: 'text-[#3F72AF]',
+      textAccent: 'text-[var(--main-color)]',
     }
   },
   light: {
@@ -38,18 +38,18 @@ export const themeColors = {
     text: {
       primary: 'rgb(30, 41, 59)',    // 진한 슬레이트 색상 (slate-800)
       secondary: 'rgb(100, 116, 139)', // 중간 슬레이트 색상 (slate-500)
-      accent: '#3F72AF',    // 네이비 액센트 텍스트
+      accent: 'var(--main-color)',    // 메인 컬러 액센트 텍스트
     },
     // Tailwind 클래스명
     classes: {
-      background: 'bg-[#f5fafc]',
+      background: 'bg-[var(--bg-color)]',
       component: 'bg-white',
       componentSecondary: 'bg-[#fbfcfd]',
       border: 'border-slate-200',
       borderLight: 'border-slate-300',
       textPrimary: 'text-slate-800',
       textSecondary: 'text-slate-500',
-      textAccent: 'text-[#3F72AF]',
+      textAccent: 'text-[var(--main-color)]',
     }
   },
   // 공통 색상
@@ -78,14 +78,14 @@ export const brandColors = {
     text: 'pink-700',
   },
   accent: {
-    solid: '#3F72AF',
-    bg: 'bg-[#3F72AF]',
-    text: 'text-[#3F72AF]',
-    border: 'border-[#3F72AF]',
-    ring: 'ring-[#3F72AF]',
-    hover: 'hover:bg-[#3F72AF]',
-    light: 'bg-[#3F72AF]/10',
-    lightBorder: 'border-[#3F72AF]/30',
+    solid: 'var(--main-color)',
+    bg: 'bg-[var(--main-color)]',
+    text: 'text-[var(--main-color)]',
+    border: 'border-[var(--main-color)]',
+    ring: 'ring-[var(--main-color)]',
+    hover: 'hover:bg-[var(--main-color)]',
+    light: 'bg-[var(--main-color)]/10',
+    lightBorder: 'border-[var(--main-color)]/30',
   },
 };
 
