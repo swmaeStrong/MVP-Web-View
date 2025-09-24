@@ -31,7 +31,7 @@
 
   /* 커스텀 컬러 변수 */
   --main-color: #3f72af;
-  --bg-color: #f5fafc;
+  --bg-color: #171717;
 
   /* 메인 컬러 기반 그라데이션 */
   --gradient-main: linear-gradient(to right, var(--main-color), #2563eb);
@@ -40,6 +40,7 @@
   --chart-4: 30 80% 55%;
   --chart-5: 340 75% 55%;
 }
+
 
 body {
   background-color: var(--bg-color);
