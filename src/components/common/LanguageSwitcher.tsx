@@ -1,9 +1,9 @@
 'use client';
 
-import { useTranslation } from '@/providers/LanguageProvider';
-import { SUPPORTED_LOCALES, LOCALE_NAMES, SupportedLocale } from '@/config/i18n';
-import { useTheme } from '@/hooks/ui/useTheme';
+import { LOCALE_NAMES, SUPPORTED_LOCALES, SupportedLocale } from '@/config/i18n';
 import { useNavigation } from '@/hooks/navigation/useNavigation';
+import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Button } from '@/shadcn/ui/button';
 import {
   DropdownMenu,
@@ -22,12 +22,12 @@ export default function LanguageSwitcher({
   variant = 'button',
   className = ''
 }: LanguageSwitcherProps) {
-  const { locale, isClient, isLoadingLocale } = useTranslation();
+  const { locale, isClient } = useTranslation();
   const { getThemeClass, getThemeTextColor } = useTheme();
   const { navigateWithLocale } = useNavigation();
 
   // Don't render on server to avoid hydration issues or while loading locale
-  if (!isClient || isLoadingLocale) {
+  if (!isClient) {
     return (
       <div className={`w-20 h-9 ${getThemeClass('componentSecondary')} rounded animate-pulse ${className}`} />
     );
