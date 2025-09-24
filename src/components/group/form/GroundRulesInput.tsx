@@ -112,7 +112,7 @@ export function GroundRulesInput<
                   onChange={(e) => updateRule(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, index)}
                   placeholder={t('group.groundRulePlaceholder')}
-                  className={`flex-1 min-h-[60px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border} resize-none ${
+                  className={`flex-1 min-h-[60px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-gray-300 focus:border-gray-300 resize-none ${
                     rule.length > 30 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : ''
                   }`}
                   rows={2}

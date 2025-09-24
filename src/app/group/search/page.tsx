@@ -167,21 +167,21 @@ export default function FindTeamPage() {
                   placeholder={t('group.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border}"
+                  className="pl-10 h-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-gray-300 focus:border-gray-300"
                 />
               </div>
             </div>
 
             {/* Filter Controls */}
             <ToggleGroup type="single" value={filterType} onValueChange={(value) => value && setFilterType(value as 'all' | 'public' | 'private')} className="h-10">
-              <ToggleGroupItem value="all" className="px-4 h-10 text-sm bg-white border border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50 rounded-l-md">
+              <ToggleGroupItem value="all" className="px-4 h-10 text-sm bg-white border border-gray-200 text-gray-700 data-[state=on]:bg-[var(--main-color)] data-[state=on]:text-white data-[state=on]:border-[var(--main-color)] hover:bg-gray-50 rounded-l-md">
                 {t('common.all')}
               </ToggleGroupItem>
-              <ToggleGroupItem value="public" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50">
+              <ToggleGroupItem value="public" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[var(--main-color)] data-[state=on]:text-white data-[state=on]:border-[var(--main-color)] hover:bg-gray-50">
                 <Globe className="h-3.5 w-3.5" />
                 {t('group.public')}
               </ToggleGroupItem>
-              <ToggleGroupItem value="private" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50 rounded-r-md">
+              <ToggleGroupItem value="private" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[var(--main-color)] data-[state=on]:text-white data-[state=on]:border-[var(--main-color)] hover:bg-gray-50 rounded-r-md">
                 <Lock className="h-3.5 w-3.5" />
                 {t('group.private')}
               </ToggleGroupItem>

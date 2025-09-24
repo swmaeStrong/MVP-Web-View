@@ -146,7 +146,7 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
                 <Textarea
                   value={editedDescription}
                   onChange={(e) => setEditedDescription(e.target.value)}
-                  className={`h-20 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border} dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900`}
+                  className={`h-20 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-gray-300 focus:border-gray-300 dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900`}
                   placeholder={t('group.description')}
                 />
                 <div className="flex gap-2 justify-end">

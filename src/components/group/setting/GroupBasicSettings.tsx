@@ -109,9 +109,9 @@ export default function GroupBasicSettings({
                       }}
                       className="w-full bg-white border border-gray-200 rounded-md mt-2"
                     >
-                      <ToggleGroupItem 
-                        value="public" 
-                        className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white hover:bg-gray-50"
+                      <ToggleGroupItem
+                        value="public"
+                        className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:bg-[var(--main-color)] data-[state=on]:text-white hover:bg-gray-50"
                       >
                         <Globe className="h-4 w-4" />
                         <div className="text-left">
@@ -119,9 +119,9 @@ export default function GroupBasicSettings({
                           <div className="text-xs opacity-75">{t('group.anyoneCanJoin')}</div>
                         </div>
                       </ToggleGroupItem>
-                      <ToggleGroupItem 
-                        value="private" 
-                        className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white hover:bg-gray-50"
+                      <ToggleGroupItem
+                        value="private"
+                        className="flex-1 gap-3 px-6 py-4 bg-white text-gray-900 data-[state=on]:bg-[var(--main-color)] data-[state=on]:text-white hover:bg-gray-50"
                       >
                         <Lock className="h-4 w-4" />
                         <div className="text-left">
