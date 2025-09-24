@@ -58,9 +58,22 @@ export default async function RootLayout({
     <html
       lang={locale}
       className={`${inter.variable} ${notoSansKR.variable} ${poppins.variable} ${theme === 'dark' ? 'dark' : ''}`}
+      style={{
+        // 서버사이드에서 즉시 CSS 변수 설정
+        ['--main-color' as any]: colors.mainColor,
+        ['--bg-color' as any]: colors.backgroundColor,
+        ['--gradient-main' as any]: `linear-gradient(to right, ${colors.mainColor}, #2563eb)`,
+      }}
     >
       <head />
-      <body className='antialiased'>
+      <body
+        className='antialiased'
+        style={{
+          backgroundColor: theme === 'dark' && colors.backgroundColor === '#f5fafc'
+            ? '#383838'
+            : colors.backgroundColor
+        }}
+      >
         <SentryProvider>
           <ThemeProvider initialTheme={theme} initialColors={colors}>
             <LanguageProvider initialLocale={locale}>
