@@ -38,20 +38,13 @@ export async function getLocaleFromServerCookie(): Promise<SupportedLocale> {
  */
 export async function getColorsFromServerCookie(): Promise<CustomColors> {
   const cookieStore = await cookies();
-  const colorsJson = cookieStore.get('customColors');
+  const mainColor = cookieStore.get('mainColor');
+  const bgColor = cookieStore.get('bgColor');
 
-  if (colorsJson?.value) {
-    try {
-      const colors = JSON.parse(colorsJson.value);
-      if (colors.mainColor && colors.backgroundColor) {
-        return colors;
-      }
-    } catch (e) {
-      console.error('Failed to parse colors from cookie:', e);
-    }
-  }
-
-  return defaultColors;
+  return {
+    mainColor: mainColor?.value || defaultColors.mainColor,
+    backgroundColor: bgColor?.value || defaultColors.backgroundColor
+  };
 }
 
 /**

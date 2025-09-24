@@ -160,40 +160,35 @@ export function getLocaleFromServerCookies(cookieHeader?: string): 'ko' | 'en' |
 }
 
 // 커스텀 컬러 관련 쿠키 함수들
-export const COLORS_COOKIE_NAME = 'customColors';
+export const MAIN_COLOR_COOKIE = 'mainColor';
+export const BG_COLOR_COOKIE = 'bgColor';
 
 export function getColorsFromCookie(): CustomColors {
-  const colorsJson = getCookie(COLORS_COOKIE_NAME);
-  if (colorsJson) {
-    try {
-      const colors = JSON.parse(colorsJson);
-      // 유효성 검사
-      if (colors.mainColor && colors.backgroundColor) {
-        return colors;
-      }
-    } catch (e) {
-      console.error('Failed to parse colors from cookie:', e);
-    }
-  }
-  return defaultColors;
+  const mainColor = getCookie(MAIN_COLOR_COOKIE);
+  const backgroundColor = getCookie(BG_COLOR_COOKIE);
+
+  return {
+    mainColor: mainColor || defaultColors.mainColor,
+    backgroundColor: backgroundColor || defaultColors.backgroundColor
+  };
 }
 
 export function setColorsCookie(colors: CustomColors): void {
-  setCookie(COLORS_COOKIE_NAME, JSON.stringify(colors));
+  // 색상 값은 URL 인코딩하지 않고 직접 저장
+  if (typeof document !== 'undefined') {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + 365 * 24 * 60 * 60 * 1000); // 1년
+
+    document.cookie = `${MAIN_COLOR_COOKIE}=${colors.mainColor}; expires=${expires.toUTCString()}; path=/; samesite=lax`;
+    document.cookie = `${BG_COLOR_COOKIE}=${colors.backgroundColor}; expires=${expires.toUTCString()}; path=/; samesite=lax`;
+  }
 }
 
 export function getColorsFromServerCookies(cookieHeader?: string): CustomColors {
   const cookies = parseCookies(cookieHeader);
-  const colorsJson = cookies[COLORS_COOKIE_NAME];
-  if (colorsJson) {
-    try {
-      const colors = JSON.parse(colorsJson);
-      if (colors.mainColor && colors.backgroundColor) {
-        return colors;
-      }
-    } catch (e) {
-      console.error('Failed to parse colors from cookie:', e);
-    }
-  }
-  return defaultColors;
+
+  return {
+    mainColor: cookies[MAIN_COLOR_COOKIE] || defaultColors.mainColor,
+    backgroundColor: cookies[BG_COLOR_COOKIE] || defaultColors.backgroundColor
+  };
 }
