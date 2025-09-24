@@ -1,9 +1,9 @@
 'use client';
 
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { useTranslation } from '@/providers/LanguageProvider';
-import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { brandColors } from '@/styles/colors';
 import { Plus, Search, Settings, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
@@ -128,12 +128,12 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
                     prefetch={true}
                     className={`flex items-center justify-between px-4 py-2 rounded-md transition-colors duration-150 ${
                       isGroupSelected
-                        ? `text-white ${brandColors.accent.bg}`
+                        ? `${brandColors.accent.bg}`
                         : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:${brandColors.accent.bg}/10`
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <span className="text-sm truncate" title={group.name}>
+                      <span className={`text-sm truncate ${isGroupSelected ? 'text-white' : getThemeTextColor('secondary')}`} title={group.name}>
                         {group.name}
                       </span>
                     </div>
@@ -188,12 +188,12 @@ export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarP
                 prefetch={true}
                 className={`flex items-center gap-3 px-4 py-2 rounded-md transition-colors duration-150 ${
                   active
-                    ? `text-white ${brandColors.accent.bg}`
+                    ? `${brandColors.accent.bg}`
                     : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:${brandColors.accent.bg}/10`
                 }`}
               >
-                <Icon size={20} className="flex-shrink-0" />
-                <span className="text-sm">{item.name}</span>
+                <Icon size={20} className={`flex-shrink-0 ${active ? 'text-white' : getThemeTextColor('secondary')}`} />
+                <span className={`text-sm ${active ? 'text-white' : getThemeTextColor('secondary')}`}>{item.name}</span>
               </Link>
             );
           })}
