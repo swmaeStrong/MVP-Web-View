@@ -97,6 +97,27 @@ body {
 }
 
 /* ================================
+   Link Styles (Gray Color)
+   ================================ */
+a {
+  color: #6b7280; /* gray-500 */
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+  color: #4b5563; /* gray-600 */
+}
+
+.dark a {
+  color: #9ca3af; /* gray-400 */
+}
+
+.dark a:hover {
+  color: #d1d5db; /* gray-300 */
+}
+
+/* ================================
    Base Typography Styles
    ================================ */
 body {

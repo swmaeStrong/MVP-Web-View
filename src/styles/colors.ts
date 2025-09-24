@@ -93,15 +93,15 @@ export const brandColors = {
 export const categoryColors = {
   // 특별 카테고리
   all: {
-    bg: 'bg-slate-400',
-    hover: 'hover:bg-slate-500',
-    dot: 'bg-slate-400',
-    gradient: 'from-slate-600 via-purple-600 to-indigo-600',
-    buttonGradient: 'from-slate-600 to-purple-600',
-    badgeClass: 'bg-slate-100 text-slate-700 border-slate-200',
-    borderGradient: 'from-slate-400 to-purple-400',
-    bgOpacity: 'from-slate-600/5 to-purple-600/5',
-    solid: '#94a3b8', // slate-400
+    bg: 'bg-[var(--main-color)]',
+    hover: 'hover:bg-[var(--main-color)]/90',
+    dot: 'bg-[var(--main-color)]',
+    gradient: 'from-[var(--main-color)] via-blue-600 to-indigo-600',
+    buttonGradient: 'from-[var(--main-color)] to-blue-600',
+    badgeClass: 'bg-[var(--main-color)]/10 text-[var(--main-color)] border-[var(--main-color)]/30',
+    borderGradient: 'from-[var(--main-color)] to-blue-400',
+    bgOpacity: 'from-[var(--main-color)]/5 to-blue-600/5',
+    solid: 'var(--main-color)',
   },
   
   // Work / Productivity 계열 (블루 톤)

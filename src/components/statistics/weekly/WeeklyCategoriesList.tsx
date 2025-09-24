@@ -92,7 +92,7 @@ export default function WeeklyCategoriesList({ selectedDate }: WeeklyCategoriesL
                       </span>
                       <div className="flex-1 mx-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 lg:h-3 overflow-hidden min-w-[30px]">
                         <div
-                          className={`h-full bg-[#3F72AF] transition-all duration-500 ease-out rounded-full`}
+                          className={`h-full bg-[var(--main-color)] transition-all duration-500 ease-out rounded-full`}
                           style={{ width: `${Math.min(category.percentage, 100)}%` }}
                         />
                       </div>
