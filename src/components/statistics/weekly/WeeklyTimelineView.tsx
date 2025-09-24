@@ -17,7 +17,7 @@ interface WeeklyTimelineViewProps {
 const chartConfig = {
   workMinutes: {
     label: "Work Time",
-    color: "#3F72AF",
+    color: "var(--main-color)",
   },
 } satisfies ChartConfig;
 
@@ -261,12 +261,21 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
                   onClick={handleBarClick}
                   style={{ cursor: 'pointer' }}
                 >
-                  {weekData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={selectedDayDate === entry.date ? "#3F72AF" : "rgba(63, 114, 175, 0.5)"}
-                    />
-                  ))}
+                  {weekData.map((entry, index) => {
+                    // CSS 변수에서 색상 값 가져오기
+                    const mainColor = getComputedStyle(document.documentElement)
+                      .getPropertyValue('--main-color').trim() || '#3f72af';
+
+                    // 선택되지 않은 바의 색상 (메인 컬러의 50% 투명도)
+                    const unselectedColor = mainColor + '80'; // 50% opacity in hex
+
+                    return (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={selectedDayDate === entry.date ? mainColor : unselectedColor}
+                      />
+                    );
+                  })}
                 </Bar>
               </BarChart>
             </ChartContainer>

@@ -9,10 +9,10 @@ export default function Navigation() {
   return (
     <nav className="sticky top-0 z-50 flex items-center justify-between border-b border-gray-100 bg-white/80 p-6 backdrop-blur-md">
       <div className="flex items-center gap-4">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 transition-all duration-200 hover:scale-110">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--main-color)] transition-all duration-200 hover:scale-110">
           <span className='text-sm font-bold text-white'>📊</span>
         </div>
-        <span className="font-display font-korean text-lg font-semibold text-gray-900 transition-all duration-200 hover:text-purple-700">
+        <span className="font-display font-korean text-lg font-semibold text-gray-900 transition-all duration-200 hover:text-[var(--main-color)]">
           생산성 추적기
         </span>
       </div>
@@ -20,25 +20,25 @@ export default function Navigation() {
       <div className="hidden items-center gap-8 md:flex">
         <button
           onClick={() => navigateWithParams('/home')}
-          className="font-korean font-medium text-gray-700 transition-all duration-200 hover:text-purple-600"
+          className="font-korean font-medium text-gray-700 transition-all duration-200 hover:text-[var(--main-color)]"
         >
           대시보드
         </button>
         <button
           onClick={() => navigateWithParams('/leaderboard')}
-          className="font-korean font-medium text-gray-700 transition-all duration-200 hover:text-purple-600"
+          className="font-korean font-medium text-gray-700 transition-all duration-200 hover:text-[var(--main-color)]"
         >
           리더보드
         </button>
         <button
           onClick={() => navigateWithParams('/statistics')}
-          className="font-korean font-medium text-gray-700 transition-all duration-200 hover:text-purple-600"
+          className="font-korean font-medium text-gray-700 transition-all duration-200 hover:text-[var(--main-color)]"
         >
           통계
         </button>
         <button
           onClick={() => navigateWithParams('/subscription')}
-          className="font-korean font-medium text-purple-600 transition-all duration-200 hover:text-purple-800 font-semibold"
+          className="font-korean font-medium text-[var(--main-color)] transition-all duration-200 hover:text-[var(--main-color)]/80 font-semibold"
         >
           프리미엄
         </button>
@@ -54,7 +54,7 @@ export default function Navigation() {
         </Button>
         <Button
           onClick={() => navigateWithParams('/subscription')}
-          className="btn-primary font-display bg-gradient-to-r from-purple-600 to-blue-600 font-semibold text-white hover:from-purple-700 hover:to-blue-700 transition-all duration-200"
+          className="btn-primary font-display bg-gradient-to-r from-[var(--main-color)] to-blue-600 font-semibold text-white hover:from-purple-700 hover:to-blue-700 transition-all duration-200"
         >
           프리미엄 구독
         </Button>

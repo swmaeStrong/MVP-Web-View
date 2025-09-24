@@ -8,6 +8,7 @@ declare namespace Session {
 
   interface SessionApiResponse {
     title: string;
+    titleEng?: string;
     session: number;
     sessionDate: string; // YYYY-MM-DD format
     sessionMinutes: number;

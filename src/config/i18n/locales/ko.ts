@@ -52,6 +52,8 @@ export const ko = {
     workApps: '작업 앱',
     distractionApps: '방해요소 앱',
     noSessionData: '세션 데이터가 없습니다',
+    noSessionsRecorded: '기록된 세션이 없습니다',
+    noWorkSessions: '이 날짜에 기록된 작업 세션이 없습니다.',
     session: '세션',
     sessions: '세션',
     points: '점',

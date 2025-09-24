@@ -37,7 +37,7 @@ const formatTime = (seconds: number): string => {
 
 // Get main color - same as StatisticsSummaryCards
 const getMainColor = () => {
-  return 'bg-[#3F72AF]'; // 메인 브랜드 컬러 사용
+  return 'bg-[var(--main-color)]'; // 메인 브랜드 컬러 사용
 };
 
 // Category item component - using Top Categories format

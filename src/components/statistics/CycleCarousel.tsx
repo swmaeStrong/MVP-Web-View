@@ -5,6 +5,7 @@ import { useTranslation } from '@/providers/LanguageProvider';
 import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
 import { sessionTimelineColors } from '@/styles/colors';
 import { getKSTDateString } from '@/utils/timezone';
+import { getLocalizedSessionTitle } from '@/utils/session';
 import React, { memo, useEffect, useState } from 'react';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
@@ -29,7 +30,7 @@ const SessionCarousel = memo(function SessionCarousel({
 }: SessionCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { getThemeClass, isDarkMode } = useTheme();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const swiperRef = React.useRef<any>(null);
 
   // 세션 데이터 조회
@@ -133,7 +134,7 @@ const SessionCarousel = memo(function SessionCarousel({
         totalProductivity: session.score,
         breakTime: Math.round(totalDistractionTime / 60), // distraction을 break로 표시
         afkTime: Math.round(totalAfkTime / 60), // afk 시간
-        title: session.title
+        title: getLocalizedSessionTitle(session, locale)
       };
     });
   }, [sessionData]);

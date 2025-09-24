@@ -52,6 +52,8 @@ export const en = {
     workApps: 'Work Apps',
     distractionApps: 'Distraction Apps',
     noSessionData: 'No session data available',
+    noSessionsRecorded: 'No sessions recorded',
+    noWorkSessions: 'No work sessions were recorded for this date.',
     session: 'Session',
     sessions: 'Sessions',
     points: 'points',

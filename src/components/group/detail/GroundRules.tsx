@@ -159,7 +159,7 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
                       value={rule}
                       onChange={(e) => handleRuleChange(index, e.target.value)}
                       onKeyDown={(e) => handleKeyDown(e, index)}
-                      className={`flex-1 min-h-[60px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border} dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900 resize-none ${
+                      className={`flex-1 min-h-[60px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-gray-300 focus:border-gray-300 dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900 resize-none ${
                         rule.length > 30 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : ''
                       }`}
                       placeholder={t('group.groundRules')}

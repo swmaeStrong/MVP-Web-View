@@ -1,12 +1,11 @@
 'use client';
 
-import EventBanner from '@/components/group/search/EventBanner';
 import GroupDetailModal from '@/components/group/search/GroupDetailModal';
 import GroupInviteModal from '@/components/group/search/GroupInviteModal';
-import { myGroupsQueryKey } from '@/config/constants/query-keys';
 import { useJoinGroup } from '@/hooks/group/useJoinGroup';
 import { useJoinGroupByInvite } from '@/hooks/group/useJoinGroupByInvite';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useMyGroups } from '@/hooks/queries/useMyGroups';
 import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
 import { useGroupSearch } from '@/hooks/ui/useGroupSearch';
@@ -23,12 +22,11 @@ import { getGroupByInviteCode } from '@/shared/api/get';
 import { brandColors } from '@/styles/colors';
 import { Globe, Hash, Lock, Search, Users } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { useNavigation } from '@/hooks/navigation/useNavigation';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { navigateWithParams } = useNavigation();
   const searchParams = useSearchParams();
   const currentUser = useCurrentUserData();
@@ -103,12 +101,13 @@ export default function FindTeamPage() {
   const { data: groups = [], isLoading } = useSearchGroups();
   const { data: myGroups = [] } = useMyGroups();
 
-  // Use the custom group search hook
+  // Use the custom group search hook with locale filtering
   const filteredGroups = useGroupSearch({
     groups,
     searchQuery,
     filterType,
     sortBy,
+    locale,
   });
 
   // Helper function to check if user is member of a group
@@ -153,8 +152,7 @@ export default function FindTeamPage() {
   return (
     <div className="space-y-6 px-6 py-6 max-w-7xl mx-auto">
       {/* Event Banner */}
-      <EventBanner />
-      {/* <EventBanner /> */}
+{/*      {/* <EventBanner /> */}
 
       {/* Search and Filter Section */}
       <Card className={`${getCommonCardClass()} py-0`}>
@@ -169,21 +167,21 @@ export default function FindTeamPage() {
                   placeholder={t('group.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border}"
+                  className="pl-10 h-10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-gray-300 focus:border-gray-300"
                 />
               </div>
             </div>
 
             {/* Filter Controls */}
             <ToggleGroup type="single" value={filterType} onValueChange={(value) => value && setFilterType(value as 'all' | 'public' | 'private')} className="h-10">
-              <ToggleGroupItem value="all" className="px-4 h-10 text-sm bg-white border border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50 rounded-l-md">
+              <ToggleGroupItem value="all" className="px-4 h-10 text-sm bg-white border border-gray-200 text-gray-700 data-[state=on]:bg-[var(--main-color)] data-[state=on]:text-white data-[state=on]:border-[var(--main-color)] hover:bg-gray-50 rounded-l-md">
                 {t('common.all')}
               </ToggleGroupItem>
-              <ToggleGroupItem value="public" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50">
+              <ToggleGroupItem value="public" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[var(--main-color)] data-[state=on]:text-white data-[state=on]:border-[var(--main-color)] hover:bg-gray-50">
                 <Globe className="h-3.5 w-3.5" />
                 {t('group.public')}
               </ToggleGroupItem>
-              <ToggleGroupItem value="private" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[#3F72AF] data-[state=on]:text-white data-[state=on]:border-[#3F72AF] hover:bg-gray-50 rounded-r-md">
+              <ToggleGroupItem value="private" className="px-4 h-10 text-sm flex items-center gap-1.5 bg-white border-y border-r border-gray-200 text-gray-700 data-[state=on]:bg-[var(--main-color)] data-[state=on]:text-white data-[state=on]:border-[var(--main-color)] hover:bg-gray-50 rounded-r-md">
                 <Lock className="h-3.5 w-3.5" />
                 {t('group.private')}
               </ToggleGroupItem>
