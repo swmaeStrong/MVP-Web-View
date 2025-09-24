@@ -63,15 +63,14 @@ export default async function RootLayout({
         ['--main-color' as any]: colors.mainColor,
         ['--bg-color' as any]: colors.backgroundColor,
         ['--gradient-main' as any]: `linear-gradient(to right, ${colors.mainColor}, #2563eb)`,
+        backgroundColor: colors.backgroundColor,
       }}
     >
       <head />
       <body
         className='antialiased'
         style={{
-          backgroundColor: theme === 'dark' && colors.backgroundColor === '#f5fafc'
-            ? '#383838'
-            : colors.backgroundColor
+          backgroundColor: colors.backgroundColor
         }}
       >
         <SentryProvider>
