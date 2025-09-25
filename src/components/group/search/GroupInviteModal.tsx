@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/di
 import { Skeleton } from '@/shadcn/ui/skeleton';
 import { brandColors } from '@/styles/colors';
 import { Globe, Hash, Lock, Users } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 
 interface GroupInviteModalProps {
   isOpen: boolean;
@@ -34,7 +34,7 @@ export default function GroupInviteModal({
   inviteCode
 }: GroupInviteModalProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
-  const router = useRouter();
+  const { navigateWithParams } = useNavigation();
 
   const handleJoin = async () => {
     if (!inviteCode) return;
@@ -44,7 +44,7 @@ export default function GroupInviteModal({
   const handleGoToGroup = () => {
     if (!inviteGroup) return;
     onClose();
-    router.push(`/group/${inviteGroup.groupId}/detail`);
+    navigateWithParams(`/group/${inviteGroup.groupId}/detail`);
   };
 
   return (

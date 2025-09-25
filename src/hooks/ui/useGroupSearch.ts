@@ -6,6 +6,7 @@ interface UseGroupSearchOptions {
   searchQuery: string;
   filterType: 'all' | 'public' | 'private';
   sortBy: 'created' | 'name';
+  locale?: 'ko' | 'en';
 }
 
 const SEARCH_KEYS = [
@@ -20,18 +21,49 @@ export function useGroupSearch({
   searchQuery,
   filterType,
   sortBy,
+  locale,
 }: UseGroupSearchOptions) {
-  // First filter by public/private
+  // Helper function to detect language of text
+  const detectLanguage = (text: string): 'ko' | 'en' | 'mixed' => {
+    if (!text) return 'en';
+
+    // 한글 감지: 자음(ㄱ-ㅎ), 모음(ㅏ-ㅣ), 완성된 한글(가-힣) 모두 포함
+    const hasKorean = /[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(text);
+    const hasEnglish = /[a-zA-Z]/.test(text);
+
+    // 한글만 있는 경우 (자음/모음만 있어도 한글로 판단)
+    if (hasKorean && !hasEnglish) return 'ko';
+    // 영어만 있는 경우
+    if (hasEnglish && !hasKorean) return 'en';
+    // 둘 다 있거나 기타 문자만 있는 경우
+    return 'mixed';
+  };
+
+  // First filter by public/private and language
   const filteredByType = useMemo(() => {
     return groups.filter(group => {
-      const matchesFilter = 
-        filterType === 'all' || 
-        (filterType === 'public' && group.isPublic) || 
+      const matchesFilter =
+        filterType === 'all' ||
+        (filterType === 'public' && group.isPublic) ||
         (filterType === 'private' && !group.isPublic);
-      
+
+      // Language filtering
+      if (locale && matchesFilter) {
+        const groupLang = detectLanguage(group.name);
+        const descLang = detectLanguage(group.description || '');
+
+        // For English users, filter out Korean-only content
+        if (locale === 'en') {
+          // Allow English or mixed content, filter out Korean-only
+          return (groupLang !== 'ko' || descLang !== 'ko');
+        }
+        // For Korean users, show all content
+        // Korean users can see both Korean and English content
+      }
+
       return matchesFilter;
     });
-  }, [groups, filterType]);
+  }, [groups, filterType, locale]);
 
   // Apply fuzzy search
   const searchedGroups = useFuzzySearch({

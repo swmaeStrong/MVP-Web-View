@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
 import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
@@ -12,6 +13,7 @@ interface WeeklyCategoriesListProps {
 
 export default function WeeklyCategoriesList({ selectedDate }: WeeklyCategoriesListProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
+  const { t } = useTranslation();
 
   // API 호출
   const { data: weeklyPomodoroData, isLoading, isError } = useWeeklyPomodoroDetails(selectedDate);
@@ -74,7 +76,7 @@ export default function WeeklyCategoriesList({ selectedDate }: WeeklyCategoriesL
             ) : isError || weeklyCategories.length === 0 ? (
               <div className="flex items-center justify-center h-full">
                 <p className={`text-sm ${getThemeTextColor('secondary')}`}>
-                  {isError ? 'Failed to load data' : 'No data available'}
+                  {isError ? t('common.failedToLoad') : t('common.noDataAvailable')}
                 </p>
               </div>
             ) : (
@@ -90,7 +92,7 @@ export default function WeeklyCategoriesList({ selectedDate }: WeeklyCategoriesL
                       </span>
                       <div className="flex-1 mx-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 lg:h-3 overflow-hidden min-w-[30px]">
                         <div
-                          className={`h-full bg-[#3F72AF] transition-all duration-500 ease-out rounded-full`}
+                          className={`h-full bg-[var(--main-color)] transition-all duration-500 ease-out rounded-full`}
                           style={{ width: `${Math.min(category.percentage, 100)}%` }}
                         />
                       </div>

@@ -12,7 +12,7 @@ export const themeColors = {
     text: {
       primary: 'rgb(220, 220, 220)', // 밝은 텍스트 220,220,220
       secondary: 'rgb(153, 153, 153)', // 약간 어두운 153,153,153
-      accent: '#3F72AF',   // 블루 액센트 텍스트
+      accent: 'var(--main-color)',   // 메인 컬러 액센트 텍스트
     },
     // Tailwind 클래스명
     classes: {
@@ -23,7 +23,7 @@ export const themeColors = {
       borderLight: 'border-[rgb(120,120,120)]',
       textPrimary: 'text-[rgb(220,220,220)]',
       textSecondary: 'text-[rgb(153,153,153)]',
-      textAccent: 'text-[#3F72AF]',
+      textAccent: 'text-[var(--main-color)]',
     }
   },
   light: {
@@ -38,18 +38,18 @@ export const themeColors = {
     text: {
       primary: 'rgb(30, 41, 59)',    // 진한 슬레이트 색상 (slate-800)
       secondary: 'rgb(100, 116, 139)', // 중간 슬레이트 색상 (slate-500)
-      accent: '#3F72AF',    // 네이비 액센트 텍스트
+      accent: 'var(--main-color)',    // 메인 컬러 액센트 텍스트
     },
     // Tailwind 클래스명
     classes: {
-      background: 'bg-[#f5fafc]',
+      background: 'bg-[var(--bg-color)]',
       component: 'bg-white',
       componentSecondary: 'bg-[#fbfcfd]',
       border: 'border-slate-200',
       borderLight: 'border-slate-300',
       textPrimary: 'text-slate-800',
       textSecondary: 'text-slate-500',
-      textAccent: 'text-[#3F72AF]',
+      textAccent: 'text-[var(--main-color)]',
     }
   },
   // 공통 색상
@@ -78,14 +78,14 @@ export const brandColors = {
     text: 'pink-700',
   },
   accent: {
-    solid: '#3F72AF',
-    bg: 'bg-[#3F72AF]',
-    text: 'text-[#3F72AF]',
-    border: 'border-[#3F72AF]',
-    ring: 'ring-[#3F72AF]',
-    hover: 'hover:bg-[#3F72AF]',
-    light: 'bg-[#3F72AF]/10',
-    lightBorder: 'border-[#3F72AF]/30',
+    solid: 'var(--main-color)',
+    bg: 'bg-[var(--main-color)]',
+    text: 'text-[var(--main-color)]',
+    border: 'border-[var(--main-color)]',
+    ring: 'ring-[var(--main-color)]',
+    hover: 'hover:bg-[var(--main-color)]',
+    light: 'bg-[var(--main-color)]/10',
+    lightBorder: 'border-[var(--main-color)]/30',
   },
 };
 
@@ -93,15 +93,15 @@ export const brandColors = {
 export const categoryColors = {
   // 특별 카테고리
   all: {
-    bg: 'bg-slate-400',
-    hover: 'hover:bg-slate-500',
-    dot: 'bg-slate-400',
-    gradient: 'from-slate-600 via-purple-600 to-indigo-600',
-    buttonGradient: 'from-slate-600 to-purple-600',
-    badgeClass: 'bg-slate-100 text-slate-700 border-slate-200',
-    borderGradient: 'from-slate-400 to-purple-400',
-    bgOpacity: 'from-slate-600/5 to-purple-600/5',
-    solid: '#94a3b8', // slate-400
+    bg: 'bg-[var(--main-color)]',
+    hover: 'hover:bg-[var(--main-color)]/90',
+    dot: 'bg-[var(--main-color)]',
+    gradient: 'from-[var(--main-color)] via-blue-600 to-indigo-600',
+    buttonGradient: 'from-[var(--main-color)] to-blue-600',
+    badgeClass: 'bg-[var(--main-color)]/10 text-[var(--main-color)] border-[var(--main-color)]/30',
+    borderGradient: 'from-[var(--main-color)] to-blue-400',
+    bgOpacity: 'from-[var(--main-color)]/5 to-blue-600/5',
+    solid: 'var(--main-color)',
   },
   
   // Work / Productivity 계열 (블루 톤)

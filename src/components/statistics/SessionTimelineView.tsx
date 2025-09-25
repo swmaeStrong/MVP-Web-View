@@ -3,6 +3,7 @@
 import { useSessionDetail, useSessions } from '@/hooks/data/useSession';
 import { useSessionChart } from '@/hooks/ui/useSessionChart';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import type { SessionData } from '@/types/domains/usage/session';
 import { getKSTDateString } from '@/utils/timezone';
@@ -29,7 +30,7 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
                 <div key={index} className="flex-1 flex flex-col items-center gap-1">
                   <div 
                     className={`w-full animate-pulse rounded ${getThemeClass('componentSecondary')}`} 
-                    style={{ height: `${Math.random() * 100 + 30}px` }}
+                    style={{ height: `200px` }}
                   ></div>
                   <div className={`h-2 w-6 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
                 </div>
@@ -55,6 +56,7 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
 
 export default function SessionTimelineView({ selectedDate = getKSTDateString() }: SessionTimelineViewProps) {
   const { getThemeClass } = useTheme();
+  const { t } = useTranslation();
   const [selectedSession, setSelectedSession] = useState<SessionData | null>(null);
 
   // Fetch data
@@ -125,8 +127,8 @@ export default function SessionTimelineView({ selectedDate = getKSTDateString() 
         <CardContent className="h-full p-3 flex items-center justify-center">
           <StateDisplay
             type="empty"
-            title="No sessions recorded"
-            message="No work sessions were recorded for this date."
+            title={t('statistics.noSessionsRecorded')}
+            message={t('statistics.noWorkSessions')}
             icon={Activity}
             showBorder={false}
             size="small"

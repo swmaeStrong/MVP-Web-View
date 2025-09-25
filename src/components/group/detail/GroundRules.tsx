@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Separator } from '@/shadcn/ui/separator';
@@ -18,6 +19,7 @@ interface GroundRulesProps {
 
 export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate }: GroundRulesProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
@@ -126,7 +128,7 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
     <Card className={`${getCommonCardClass()} col-span-2 row-span-2`}>
       <CardHeader className="text-center relative">
         <div className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
-          Ground Rules
+          {t('group.groundRules')}
         </div>
         {isOwner && onGroundRuleUpdate && !isEditing && (
           <Button
@@ -157,10 +159,10 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
                       value={rule}
                       onChange={(e) => handleRuleChange(index, e.target.value)}
                       onKeyDown={(e) => handleKeyDown(e, index)}
-                      className={`flex-1 min-h-[60px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border} dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900 resize-none ${
+                      className={`flex-1 min-h-[60px] bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-gray-300 focus:border-gray-300 dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900 resize-none ${
                         rule.length > 30 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : ''
                       }`}
-                      placeholder="Enter a ground rule... (Press Enter to add next rule)"
+                      placeholder={t('group.groundRules')}
                       rows={2}
                     />
                     {editedRules.length > 1 && (
@@ -197,7 +199,7 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
                     className="gap-1"
                   >
                     <Plus className="h-3 w-3" />
-                    Add Rule
+                    {t('group.groundRules')}
                   </Button>
                 )}
                 
@@ -207,10 +209,10 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
                     editedRules.length >= 8 ? 'text-yellow-600' : 
                     getThemeTextColor('secondary')
                   }`}>
-                    {editedRules.length}/10 rules
+                    {editedRules.length}/10 {t('group.groundRules')}
                   </span>
                   {editedRules.length >= 10 && (
-                    <span className="text-red-500">Maximum rules reached</span>
+                    <span className="text-red-500">{t('group.groundRules')}</span>
                   )}
                 </div>
               </div>
@@ -224,7 +226,7 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
                   className="gap-1"
                 >
                   <X className="h-3 w-3" />
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button
                   size="sm"
@@ -233,7 +235,7 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
                   className={`gap-1 ${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90`}
                 >
                   <Check className="h-3 w-3" />
-                  {isSaving ? 'Saving...' : 'Save'}
+                  {isSaving ? `${t('common.save')}...` : t('common.save')}
                 </Button>
               </div>
             </div>
@@ -254,7 +256,7 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
         ) : (
           <div className="text-center py-8">
             <p className={`text-sm ${getThemeTextColor('secondary')} italic`}>
-              No ground rules have been set yet.
+              {t('group.groundRules')}
             </p>
             {isOwner && onGroundRuleUpdate && (
               <Button
@@ -263,7 +265,7 @@ export default function GroundRules({ rules, isOwner = false, onGroundRuleUpdate
                 onClick={handleStartEdit}
                 className="mt-3"
               >
-                Add Ground Rules
+                {t('group.groundRules')}
               </Button>
             )}
           </div>

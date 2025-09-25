@@ -3,6 +3,7 @@
 import { useDailyPomodoroDetails } from '@/hooks/data/useDailyPomodoroDetails';
 import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/shadcn/ui/chart';
 import { getKSTDateString } from '@/utils/timezone';
@@ -16,12 +17,13 @@ interface WeeklyTimelineViewProps {
 const chartConfig = {
   workMinutes: {
     label: "Work Time",
-    color: "#3F72AF",
+    color: "var(--main-color)",
   },
 } satisfies ChartConfig;
 
 export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
+  const { t } = useTranslation();
   
   // 선택된 일별 날짜 상태 - 초기값으로 오늘 날짜 설정
   const [selectedDayDate, setSelectedDayDate] = React.useState<string | null>(null);
@@ -96,8 +98,8 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
           const workSeconds = dataMap.get(dayData.date) || 0;
           dayData.workSeconds = workSeconds;
           dayData.workMinutes = Math.round(workSeconds / 60);
-          // 최소 0.2시간(12분) 보장하여 바가 보이도록 함
-          dayData.workHours = workSeconds > 0 ? Math.max(workSeconds / 3600, 0.2) : 0;
+          // 실제 시간으로 설정 (최소값 보장 제거)
+          dayData.workHours = workSeconds / 3600;
         }
       });
     }
@@ -105,7 +107,19 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
     return weekDates;
   }, [weeklyPomodoroData, selectedDate]);
 
-  const maxWorkHours = 6; // 6시간을 최댓값으로 고정
+  // 동적 Y축 최댓값 계산
+  const maxWorkHours = React.useMemo(() => {
+    if (!weekData || weekData.length === 0) return 6;
+    
+    // 실제 데이터에서 최댓값 찾기
+    const maxActualHours = Math.max(...weekData.map(day => day.workSeconds / 3600));
+    
+    // 최소 6시간, 실제 최댓값보다 20% 여유를 둠
+    const dynamicMax = Math.max(6, Math.ceil(maxActualHours * 1.2));
+    
+    // 깔끔한 단위로 올림 (2시간 단위)
+    return Math.ceil(dynamicMax / 2) * 2;
+  }, [weekData]);
   
   // 바 클릭 핸들러
   const handleBarClick = React.useCallback((data: any) => {
@@ -189,7 +203,7 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
             <div className="h-full bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
           ) : isError ? (
             <div className="flex items-center justify-center h-full">
-              <p className={`text-sm ${getThemeTextColor('secondary')}`}>Failed to load data</p>
+              <p className={`text-sm ${getThemeTextColor('secondary')}`}>{t('common.failedToLoad')}</p>
             </div>
           ) : (
             <ChartContainer config={chartConfig} className="h-full w-full">
@@ -247,12 +261,21 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
                   onClick={handleBarClick}
                   style={{ cursor: 'pointer' }}
                 >
-                  {weekData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={selectedDayDate === entry.date ? "#3F72AF" : "rgba(63, 114, 175, 0.5)"}
-                    />
-                  ))}
+                  {weekData.map((entry, index) => {
+                    // CSS 변수에서 색상 값 가져오기
+                    const mainColor = getComputedStyle(document.documentElement)
+                      .getPropertyValue('--main-color').trim() || '#3f72af';
+
+                    // 선택되지 않은 바의 색상 (메인 컬러의 50% 투명도)
+                    const unselectedColor = mainColor + '80'; // 50% opacity in hex
+
+                    return (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={selectedDayDate === entry.date ? mainColor : unselectedColor}
+                      />
+                    );
+                  })}
                 </Bar>
               </BarChart>
             </ChartContainer>
@@ -497,7 +520,7 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
                 </div>
               ) : (
                 <div className="flex items-center justify-center h-32">
-                  <p className={`text-sm ${getThemeTextColor('secondary')}`}>No data available</p>
+                  <p className={`text-sm ${getThemeTextColor('secondary')}`}>{t('common.noDataAvailable')}</p>
                 </div>
               )}
             </>

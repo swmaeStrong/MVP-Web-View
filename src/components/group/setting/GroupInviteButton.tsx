@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Button } from '@/shadcn/ui/button';
 import { generateGroupInviteLink } from '@/shared/api/post';
 import { Link } from 'lucide-react';
@@ -16,6 +17,7 @@ interface GroupInviteButtonProps {
 
 export default function GroupInviteButton({ password, isPublic }: GroupInviteButtonProps) {
   const { getThemeClass } = useTheme();
+  const { t } = useTranslation();
   const params = useParams();
   const [isCopying, setIsCopying] = useState(false);
   
@@ -46,10 +48,10 @@ export default function GroupInviteButton({ password, isPublic }: GroupInviteBut
     setIsCopying(true);
     try {
       await navigator.clipboard.writeText(inviteLink);
-      toast.success('Invite link copied to clipboard!');
+      toast.success(t('group.inviteLinkCopied'));
     } catch (error) {
       console.error('Failed to copy invite link:', error);
-      toast.error('Failed to copy invite link. Please try again.');
+      toast.error(t('group.failedToCopyInviteLink'));
     } finally {
       setIsCopying(false);
     }
@@ -63,7 +65,7 @@ export default function GroupInviteButton({ password, isPublic }: GroupInviteBut
       className={`gap-2 ${getThemeClass('component')} ${getThemeClass('border')}`}
     >
       <Link className="h-4 w-4" />
-      {isLoading ? 'Loading...' : isCopying ? 'Copying...' : 'Copy Invite Link'}
+      {isLoading ? t('common.loading') : isCopying ? t('group.copying') : t('group.copyInviteLink')}
     </Button>
   );
 }

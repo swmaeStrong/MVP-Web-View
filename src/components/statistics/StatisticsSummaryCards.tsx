@@ -2,6 +2,7 @@
 
 import { useSessions } from '@/hooks/data/useSession';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 
 interface StatisticsSummaryCardsProps {
   totalWorkHours?: number;
@@ -15,7 +16,8 @@ export default function StatisticsSummaryCards({
   selectedDate,
 }: StatisticsSummaryCardsProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
-  
+  const { t } = useTranslation();
+
   // React Query로 세션 데이터 가져오기
   const { data: sessionData, isLoading } = useSessions(selectedDate);
 
@@ -86,7 +88,7 @@ export default function StatisticsSummaryCards({
 
   const cards = [
     {
-      title: 'Daily Total',
+      title: t('statistics.dailyTotal'),
       value: isLoading ? (
         <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       ) : (
@@ -97,11 +99,11 @@ export default function StatisticsSummaryCards({
       subtitle: isLoading ? (
         <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
       ) : (
-        'Total work time'
+        t('statistics.totalWorkTime')
       ),
     },
     {
-      title: 'Daily Distractions',
+      title: t('statistics.dailyDistractions'),
       value: isLoading ? (
         <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       ) : (
@@ -112,11 +114,11 @@ export default function StatisticsSummaryCards({
       subtitle: isLoading ? (
         <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
       ) : (
-        'Total distraction time'
+        t('statistics.totalDistractionTime')
       ),
     },
     {
-      title: 'Daily Sessions',
+      title: t('statistics.dailySessions'),
       value: isLoading ? (
         <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       ) : (
@@ -127,22 +129,22 @@ export default function StatisticsSummaryCards({
       subtitle: isLoading ? (
         <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
       ) : (
-        'Completed sessions'
+        t('statistics.completedSessions')
       ),
     },
     {
-      title: 'Average Focus Score',
+      title: t('statistics.averageFocusScore'),
       value: isLoading ? (
         <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       ) : (
         <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold">{calculateAverageFocusScore()} points</span>
+          <span className="text-2xl font-bold">{calculateAverageFocusScore()} {t('statistics.points')}</span>
         </div>
       ),
       subtitle: isLoading ? (
         <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
       ) : (
-        'Daily average score'
+        t('statistics.dailyAverageScore')
       ),
     },
   ];
@@ -163,16 +165,16 @@ export default function StatisticsSummaryCards({
               min-h-0
             `}
           >
-            <p className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
+            <div className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
               {card.title}
-            </p>
-            
+            </div>
+
             <div className={`min-h-[60px] flex flex-col justify-center ${getThemeTextColor('primary')}`}>
               {card.value}
               {card.subtitle && (
-                <p className={`text-xs ${getThemeTextColor('secondary')} mt-1`}>
+                <div className={`text-xs ${getThemeTextColor('secondary')} mt-1`}>
                   {card.subtitle}
-                </p>
+                </div>
               )}
             </div>
           </div>

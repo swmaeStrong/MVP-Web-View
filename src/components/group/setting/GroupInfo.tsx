@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 
 interface GroupInfoProps {
@@ -10,6 +11,7 @@ interface GroupInfoProps {
 
 export default function GroupInfo({ totalMembers, createdAt }: GroupInfoProps) {
   const { getThemeTextColor, getCommonCardClass } = useTheme();
+  const { t } = useTranslation();
 
   const getActiveDays = (createdAt: string) => {
     const createdDate = new Date(createdAt);
@@ -25,27 +27,27 @@ export default function GroupInfo({ totalMembers, createdAt }: GroupInfoProps) {
     <Card className={getCommonCardClass()}>
       <CardHeader>
         <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-          Group Information
+          {t('group.groupInformation')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <span className={`text-sm ${getThemeTextColor('secondary')}`}>Total Members</span>
+            <span className={`text-sm ${getThemeTextColor('secondary')}`}>{t('group.totalMembers')}</span>
             <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
               {totalMembers}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className={`text-sm ${getThemeTextColor('secondary')}`}>Created</span>
+            <span className={`text-sm ${getThemeTextColor('secondary')}`}>{t('group.created')}</span>
             <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
               {new Date(createdAt).toLocaleDateString('ko-KR')}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className={`text-sm ${getThemeTextColor('secondary')}`}>Active Days</span>
+            <span className={`text-sm ${getThemeTextColor('secondary')}`}>{t('group.activeDays')}</span>
             <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-              {getActiveDays(createdAt)} days
+              {getActiveDays(createdAt)} {t('group.days')}
             </span>
           </div>
         </div>

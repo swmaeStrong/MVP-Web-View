@@ -2,6 +2,7 @@
 
 import { useSessionTimeline } from '@/hooks/ui/useSessionTimeline';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { sessionTimelineColors } from '@/styles/colors';
 import type { SessionData } from '@/types/domains/usage/session';
 import { Target } from 'lucide-react';
@@ -193,6 +194,7 @@ const AppUsageToggle: React.FC<{
   getThemeClass: (type: string) => string;
   getThemeTextColor: (type: string) => string;
 }> = ({ activeTab, onTabChange, isDarkMode, getThemeClass, getThemeTextColor }) => {
+  const { t } = useTranslation();
   return (
     <div className={`flex rounded-lg p-1 mb-4 ${getThemeClass('componentSecondary')}`}>
       <button
@@ -203,7 +205,7 @@ const AppUsageToggle: React.FC<{
             : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-opacity-50 hover:shadow-md`
         }`}
       >
-        Work
+        {t('statistics.workApps')}
       </button>
       <button
         onClick={() => onTabChange('distractions')}
@@ -213,7 +215,7 @@ const AppUsageToggle: React.FC<{
             : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-opacity-50 hover:shadow-md`
         }`}
       >
-        Distractions
+        {t('statistics.distractionApps')}
       </button>
     </div>
   );
@@ -236,6 +238,7 @@ const AppUsageList: React.FC<{
   isDarkMode: boolean;
   getThemeTextColor: (type: string) => string;
 }> = ({ apps, type, isDarkMode, getThemeTextColor }) => {
+  const { t } = useTranslation();
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -259,11 +262,11 @@ const AppUsageList: React.FC<{
     return (
       <div className="space-y-2">
         <div className={`text-xs font-medium ${getThemeTextColor('primary')} flex items-center gap-2`}>
-          {isWork ? 'Work Apps' : 'Distractions'}
+          {isWork ? t('statistics.workApps') : t('statistics.distractionApps')}
         </div>
         <div className={`py-2 px-2 rounded-md border ${borderColor} text-center`}>
           <p className={`text-xs ${getThemeTextColor('secondary')}`}>
-            No {isWork ? 'work' : 'distraction'} apps used
+            {t('common.noData')}
           </p>
         </div>
       </div>
@@ -308,13 +311,14 @@ const EmptyState: React.FC<{
   </div>
 );
 
-export default function SessionDetail({ 
-  selectedSession, 
-  sessionData, 
-  sessionDetailData 
+export default function SessionDetail({
+  selectedSession,
+  sessionData,
+  sessionDetailData
 }: SessionDetailProps) {
   const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
   const { getTimelineBreakdown } = useSessionTimeline({ sessionData });
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'work' | 'distractions'>('distractions');
 
   if (!selectedSession) {

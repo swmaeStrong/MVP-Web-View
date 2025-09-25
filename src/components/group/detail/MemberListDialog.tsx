@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { UserAvatar } from '@/components/common';
@@ -13,14 +14,15 @@ interface MemberListDialogProps {
   groupMembers?: Group.GroupUserInfo[];
 }
 
-export default function MemberListDialog({ 
-  open, 
-  onOpenChange, 
-  goal, 
+export default function MemberListDialog({
+  open,
+  onOpenChange,
+  goal,
   type,
   groupMembers = []
 }: MemberListDialogProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
+  const { t } = useTranslation();
   const currentUser = useCurrentUserData();
 
   const formatTime = (seconds: number) => {
@@ -34,23 +36,21 @@ export default function MemberListDialog({
 
   const formatGoalValue = (category: string, value: number) => {
     if (category === 'sessionScore') {
-      return `${value} points`;
+      return `${value} ${t('statistics.points')}`;
     }
     if (category === 'sessionCount') {
-      return `${value} session${value > 1 ? 's' : ''}`;
+      return `${value} ${value > 1 ? t('statistics.sessions') : t('statistics.session')}`;
     }
     return formatTime(value);
   };
 
   const formatMemberProgress = (category: string, currentValue: number) => {
-    // For session-based goals, currentSeconds actually contains the session value
     if (category === 'sessionScore') {
-      return `${currentValue} points`;
+      return `${currentValue} ${t('statistics.points')}`;
     }
     if (category === 'sessionCount') {
-      return `${currentValue} session${currentValue > 1 ? 's' : ''}`;
+      return `${currentValue} ${currentValue > 1 ? t('statistics.sessions') : t('statistics.session')}`;
     }
-    // For time-based goals, currentSeconds contains actual seconds
     return formatTime(currentValue);
   };
 
@@ -77,7 +77,7 @@ export default function MemberListDialog({
       <DialogContent className={`max-w-md ${getCommonCardClass()}`}>
         <DialogHeader>
           <DialogTitle className={`text-lg font-bold ${getThemeTextColor('primary')}`}>
-            {type === 'achieved' ? 'Members who achieved' : 'Members who have not achieved'} the goal
+            {type === 'achieved' ? t('group.goalCompleted') : t('group.goalInProgress')} {t('group.members')}
           </DialogTitle>
         </DialogHeader>
         
@@ -85,11 +85,11 @@ export default function MemberListDialog({
           {/* 목표 제목 */}
           <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')}`}>
             <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-              {goal.category === 'sessionScore' 
-                ? `Earn ${goal.goalValue} Focus Points`
+              {goal.category === 'sessionScore'
+                ? `${goal.goalValue} ${t('statistics.points')}`
                 : goal.category === 'sessionCount'
-                ? `Complete ${goal.goalValue} Session${goal.goalValue > 1 ? 's' : ''}`
-                : `${goal.category === 'work' ? 'Work' : goal.category} for ${formatTime(goal.goalValue)}`
+                ? `${goal.goalValue} ${goal.goalValue > 1 ? t('statistics.sessions') : t('statistics.session')}`
+                : `${goal.category === 'work' ? t('leaderboard.other') : t(`leaderboard.${goal.category.toLowerCase()}`)} - ${formatTime(goal.goalValue)}`
               }
             </div>
           </div>
@@ -97,10 +97,10 @@ export default function MemberListDialog({
           {/* 멤버 수 정보 */}
           <div className="flex items-center justify-between">
             <span className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
-              {type === 'achieved' ? 'Achieved Members' : 'Pending Members'}
+              {type === 'achieved' ? t('group.goalCompleted') : t('group.goalInProgress')} {t('group.members')}
             </span>
             <span className={`text-xs ${getThemeTextColor('secondary')}`}>
-              {members.length} member{members.length !== 1 ? 's' : ''}
+              {members.length} {t('group.members')}
             </span>
           </div>
 
@@ -125,14 +125,14 @@ export default function MemberListDialog({
                 {type === 'achieved' && (
                   <div className="ml-auto">
                     <span className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full font-medium">
-                      ✓ Achieved
+                      ✓ {t('group.goalCompleted')}
                     </span>
                   </div>
                 )}
                 {type === 'notAchieved' && (
                   <div className="ml-auto">
                     <span className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-full font-medium">
-                      Not Achieved
+                      {t('group.goalInProgress')}
                     </span>
                   </div>
                 )}
@@ -145,10 +145,10 @@ export default function MemberListDialog({
           <div className={`p-3 rounded-lg ${getThemeClass('componentSecondary')} mt-4 border-t ${getThemeClass('border')}`}>
             <div className="flex justify-between text-xs">
               <span className={getThemeTextColor('secondary')}>
-                Total: {goal.members.length} members
+                {t('group.totalMembers')}: {goal.members.length}
               </span>
               <span className={getThemeTextColor('secondary')}>
-                Progress: {Math.round((goal.members.filter(m => m.currentSeconds >= goal.goalValue).length / goal.members.length) * 100)}%
+                {t('group.completionRate')}: {Math.round((goal.members.filter(m => m.currentSeconds >= goal.goalValue).length / goal.members.length) * 100)}%
               </span>
             </div>
           </div>

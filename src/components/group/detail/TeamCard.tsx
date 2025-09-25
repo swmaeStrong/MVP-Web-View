@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
@@ -24,6 +25,7 @@ interface TeamCardProps {
 
 export default function TeamCard({ teamName, description, leader, tags = [], isOwner = false, onDescriptionUpdate }: TeamCardProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
+  const { t } = useTranslation();
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [editedDescription, setEditedDescription] = useState(description);
   const [isSaving, setIsSaving] = useState(false);
@@ -133,7 +135,7 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
                 {leader.name}
               </p>
               <p className={`text-sm ${getThemeTextColor('secondary')}`}>
-                Team Leader
+                {t('group.owner')}
               </p>
             </div>
           </div>
@@ -144,8 +146,8 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
                 <Textarea
                   value={editedDescription}
                   onChange={(e) => setEditedDescription(e.target.value)}
-                  className={`h-20 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border} dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900`}
-                  placeholder="Enter group description..."
+                  className={`h-20 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-gray-300 focus:border-gray-300 dark:bg-gray-50 dark:border-gray-300 dark:text-gray-900`}
+                  placeholder={t('group.description')}
                 />
                 <div className="flex gap-2 justify-end">
                   <Button
@@ -156,7 +158,7 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
                     className="gap-1"
                   >
                     <X className="h-3 w-3" />
-                    Cancel
+                    {t('common.cancel')}
                   </Button>
                   <Button
                     size="sm"
@@ -165,7 +167,7 @@ export default function TeamCard({ teamName, description, leader, tags = [], isO
                     className={`gap-1 ${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90`}
                   >
                     <Check className="h-3 w-3" />
-                    {isSaving ? 'Saving...' : 'Save'}
+                    {isSaving ? `${t('common.save')}...` : t('common.save')}
                   </Button>
                 </div>
               </div>

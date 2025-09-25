@@ -4,6 +4,8 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import type { SessionData } from '@/types/domains/usage/session';
 import { sessionTimelineColors } from '@/styles/colors';
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { getLocalizedSessionTitle } from '@/utils/session';
+import { useTranslation } from '@/providers/LanguageProvider';
 
 interface ChartData {
   session: string;
@@ -21,12 +23,13 @@ interface UseSessionChartProps {
   onSessionSelect: (session: SessionData) => void;
 }
 
-export const useSessionChart = ({ 
-  sessionData, 
+export const useSessionChart = ({
+  sessionData,
   selectedSession,
-  onSessionSelect 
+  onSessionSelect
 }: UseSessionChartProps) => {
   const { isDarkMode } = useTheme();
+  const { locale } = useTranslation();
   const [hoveredSessionId, setHoveredSessionId] = useState<number | null>(null);
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const hasInitialScrolled = useRef(false);
@@ -70,7 +73,7 @@ export const useSessionChart = ({
     const sessions = sessionData
       .map((session): SessionData => ({
         id: session.session,
-        title: session.title || `Session ${session.session}`,
+        title: getLocalizedSessionTitle(session, locale),
         startTime: formatTimestamp(session.timestamp),
         duration: session.duration,
         score: session.score,
@@ -86,13 +89,13 @@ export const useSessionChart = ({
       sessionNumber: session.sessionNumber,
       score: session.score,
       duration: session.duration,
-      fill: isDarkMode ? '#374151' : '#9ca3af',
+      fill: 'var(--main-color)', // 메인 컬러 사용
       sessionData: session,
       id: session.id,
     }));
 
     return { processedSessions: sessions, allChartData: chartData };
-  }, [sessionData, isDarkMode]);
+  }, [sessionData, isDarkMode, locale]);
 
   // Calculate summary stats
   const summaryStats = useMemo(() => {
@@ -118,18 +121,26 @@ export const useSessionChart = ({
     const isSelected = selectedSession?.id === payload.sessionData.id;
     const isHovered = hoveredSessionId === payload.sessionData.id;
     const isHighlighted = isSelected || isHovered;
-    
+
     const minBarHeight = 8;
     const adjustedHeight = Math.max(height, minBarHeight);
     const adjustedY = height < minBarHeight ? y + height - minBarHeight : y;
-    
+
+    // CSS 변수에서 색상 값 가져오기
+    const mainColor = typeof window !== 'undefined'
+      ? getComputedStyle(document.documentElement).getPropertyValue('--main-color').trim() || '#3f72af'
+      : '#3f72af';
+
+    // 선택되지 않은 바의 색상 (메인 컬러의 40% 투명도)
+    const unselectedColor = mainColor + '66'; // 40% opacity in hex
+
     return {
       x,
       y: adjustedY,
       width,
       height: adjustedHeight,
-      fill: isSelected ? sessionTimelineColors.work.hex : payload.fill,
-      stroke: isSelected ? sessionTimelineColors.work.hex : 'transparent',
+      fill: isSelected ? mainColor : unselectedColor,
+      stroke: isSelected ? mainColor : 'transparent',
       strokeWidth: isSelected ? 2 : 0,
       rx: 4,
       ry: 4,

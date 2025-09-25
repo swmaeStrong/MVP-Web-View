@@ -185,6 +185,7 @@ export default function StatisticsPage() {
   return (
     <div className={`min-h-screen p-3 sm:p-4 lg:p-6 ${getThemeClass('background')}`}>
       <div className='mx-auto space-y-4 sm:space-y-6'>
+
         {/* 메인 콘텐츠 */}
         <TotalTimeCard
                 currentDate={selectedDate}

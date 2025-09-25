@@ -2,6 +2,7 @@
 
 // import { useDesignSystem } from '@/hooks/ui/useDesignSystem'; // 제거됨 - 사용되지 않음
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { cn } from '@/shadcn/lib/utils';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
@@ -22,6 +23,7 @@ interface ActivityListProps {
 
 export default function ActivityList({ activities, date }: ActivityListProps) {
   const { getThemeClass, getThemeTextColor, isDarkMode, getHoverableCardClass } = useTheme();
+  const { t } = useTranslation();
   // const { getCardStyle } = useDesignSystem(); // 제거됨 - 직접 클래스 사용
   
   const [usageData, setUsageData] = useState<UsageLog.RecentUsageLogItem[]>([]);
@@ -186,7 +188,7 @@ export default function ActivityList({ activities, date }: ActivityListProps) {
           </div>
           <div className="flex items-center gap-2">
             <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-              {loading ? 'Loading...' : `${filteredData.length} items`}
+              {loading ? t('common.loading') : `${filteredData.length} items`}
             </div>
             {!activities && (
               <Button

@@ -4,6 +4,7 @@ import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails'
 import { useWeeklySessionScore } from '@/hooks/data/useWeeklySessionScore';
 import { useWeeklyStreak } from '@/hooks/data/useWeeklyStreak';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import React from 'react';
 
 interface WeeklySummaryCardsProps {
@@ -14,6 +15,7 @@ export default function WeeklySummaryCards({
   selectedDate,
 }: WeeklySummaryCardsProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
+  const { t } = useTranslation();
 
   // API 호출들
   const { data: weeklyPomodoroData, isLoading: isPomodoroLoading } = useWeeklyPomodoroDetails(selectedDate);
@@ -94,7 +96,7 @@ export default function WeeklySummaryCards({
 
   const cards = [
     {
-      title: 'Weekly Total',
+      title: t('statistics.weeklyTotal'),
       value: isLoading ? (
         <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       ) : (
@@ -105,11 +107,11 @@ export default function WeeklySummaryCards({
       subtitle: isLoading ? (
         <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
       ) : (
-        `Avg ${formatHours(weeklyStats.totalWorkHours / 7 || 0)}/day`
+        `${t('statistics.avgPerDay')} ${formatHours(weeklyStats.totalWorkHours / 7 || 0)}/${t('statistics.day')}`
       ),
     },
     {
-      title: 'Weekly Distractions',
+      title: t('statistics.weeklyDistractions'),
       value: isLoading ? (
         <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       ) : (
@@ -120,11 +122,11 @@ export default function WeeklySummaryCards({
       subtitle: isLoading ? (
         <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
       ) : (
-        `Avg ${formatHours(weeklyStats.totalDistractionHours / 7 || 0)}/day`
+        `${t('statistics.avgPerDay')} ${formatHours(weeklyStats.totalDistractionHours / 7 || 0)}/${t('statistics.day')}`
       ),
     },
     {
-      title: 'Weekly Sessions',
+      title: t('statistics.weeklySessions'),
       value: isLoading ? (
         <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       ) : (
@@ -135,22 +137,22 @@ export default function WeeklySummaryCards({
       subtitle: isLoading ? (
         <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
       ) : (
-        `Avg ${Math.round(weeklyStats.totalSessions / 7 || 0)}/day`
+        `${t('statistics.avgPerDay')} ${Math.round(weeklyStats.totalSessions / 7 || 0)}/${t('statistics.day')}`
       ),
     },
     {
-      title: 'Average Focus Score',
+      title: t('statistics.averageFocusScore'),
       value: isLoading ? (
         <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
       ) : (
         <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold">{weeklyStats.averageFocusScore} points</span>
+          <span className="text-2xl font-bold">{weeklyStats.averageFocusScore} {t('statistics.points')}</span>
         </div>
       ),
       subtitle: isLoading ? (
         <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mt-1"></div>
       ) : (
-        'Weekly average score'
+        t('statistics.weeklyAverageScore')
       ),
     },
   ];
@@ -171,16 +173,16 @@ export default function WeeklySummaryCards({
               min-h-0
             `}
           >
-            <p className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
+            <div className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
               {card.title}
-            </p>
-            
+            </div>
+
             <div className={`min-h-[60px] flex flex-col justify-center ${getThemeTextColor('primary')}`}>
               {card.value}
               {card.subtitle && (
-                <p className={`text-xs ${getThemeTextColor('secondary')} mt-1`}>
+                <div className={`text-xs ${getThemeTextColor('secondary')} mt-1`}>
                   {card.subtitle}
-                </p>
+                </div>
               )}
             </div>
           </div>

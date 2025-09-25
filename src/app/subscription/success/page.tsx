@@ -1,11 +1,11 @@
 'use client';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useEffect } from 'react';
 
 // 이 페이지는 더 이상 사용되지 않습니다.
 // 모든 성공 메시지는 checkout 페이지에서 직접 처리됩니다.
 export default function SuccessPage() {
-  const router = useRouter();
+  const { router } = useNavigation();
 
   useEffect(() => {
     // 즉시 메인 페이지로 리다이렉트

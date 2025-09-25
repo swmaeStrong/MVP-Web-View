@@ -59,7 +59,7 @@ export function GroupNameInput<
               }
             }}
             placeholder={placeholder}
-            className={`bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border} ${
+            className={`bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-gray-300 focus:border-gray-300 ${
               fieldValue.length > 16 ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : ''
             }`}
             disabled={disabled}

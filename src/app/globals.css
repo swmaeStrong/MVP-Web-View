@@ -28,10 +28,21 @@
 
   /* 차트 색상 변수 */
   --chart-1: 220 14% 43%;
+
+  /* 커스텀 컬러 변수 */
+  --main-color: #3f72af;
+  --bg-color: #f5fafc;
+
+  /* 메인 컬러 기반 그라데이션 */
+  --gradient-main: linear-gradient(to right, var(--main-color), #2563eb);
   --chart-2: 260 52% 55%;
   --chart-3: 120 60% 45%;
   --chart-4: 30 80% 55%;
   --chart-5: 340 75% 55%;
+}
+
+body {
+  background-color: var(--bg-color);
 
   /* 폰트 변수 */
   --font-sans: var(--font-noto-sans-kr), var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -77,30 +88,33 @@
    Dark Mode Variables
    ================================ */
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --card: #0a0a0a;
-  --card-foreground: #ededed;
-  --popover: #0a0a0a;
-  --popover-foreground: #ededed;
-  --primary: #ededed;
-  --primary-foreground: #0a0a0a;
-  --secondary: #262626;
-  --secondary-foreground: #ededed;
-  --muted: #262626;
-  --muted-foreground: #a3a3a3;
-  --accent: #262626;
-  --accent-foreground: #ededed;
-  --border: #262626;
-  --input: #262626;
-  --ring: #a3a3a3;
+  /* 다크모드에서도 동일한 커스텀 컬러 변수 유지 */
+  --main-color: #3f72af;
+  --bg-color: #383838;
 
-  /* 차트 색상 변수 (다크 모드) */
-  --chart-1: 220 30% 65%;
-  --chart-2: 260 60% 70%;
-  --chart-3: 120 50% 60%;
-  --chart-4: 30 70% 65%;
-  --chart-5: 340 65% 70%;
+  /* 다크모드에서도 메인 컬러 기반 그라데이션 */
+  --gradient-main: linear-gradient(to right, var(--main-color), #2563eb);
+}
+
+/* ================================
+   Link Styles (Gray Color)
+   ================================ */
+a {
+  color: #6b7280; /* gray-500 */
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+  color: #4b5563; /* gray-600 */
+}
+
+.dark a {
+  color: #9ca3af; /* gray-400 */
+}
+
+.dark a:hover {
+  color: #d1d5db; /* gray-300 */
 }
 
 /* ================================
@@ -185,12 +199,12 @@ a,
 }
 
 ::selection {
-  background-color: #3F72AF;
+  background-color: var(--main-color);
   color: white;
 }
 
 ::-moz-selection {
-  background-color: #3F72AF;
+  background-color: var(--main-color);
   color: white;
 }
 

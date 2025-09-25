@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import { brandColors } from '@/styles/colors';
@@ -25,6 +26,7 @@ export default function GroupMemberList({
   tags
 }: GroupMemberListProps) {
   const { getThemeTextColor, getCommonCardClass, getThemeClass } = useTheme();
+  const { t } = useTranslation();
 
   // URL 패턴을 감지하는 정규식
   const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -76,14 +78,14 @@ export default function GroupMemberList({
       <Card className={getCommonCardClass()}>
         <CardHeader>
           <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-            Group Information
+            {t('group.groupInformation')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {description && (
             <div>
               <div className={`text-sm font-medium ${getThemeTextColor('secondary')} mb-1`}>
-                Description
+                {t('group.description')}
               </div>
               <p className={`text-sm ${getThemeTextColor('primary')} whitespace-pre-wrap break-words overflow-x-hidden`}>
                 {renderTextWithLinks(description)}
@@ -94,7 +96,7 @@ export default function GroupMemberList({
           {groundRule && (
             <div>
               <div className={`text-sm font-medium ${getThemeTextColor('secondary')} mb-2`}>
-                Ground Rules
+                {t('group.groundRules')}
               </div>
               <div className="space-y-1">
                 {groundRule.split('\n').filter(rule => rule.trim().length > 0).map((rule, index) => (
@@ -110,7 +112,7 @@ export default function GroupMemberList({
           {tags && tags.length > 0 && (
             <div>
               <div className={`text-sm font-medium ${getThemeTextColor('secondary')} mb-2`}>
-                Tags
+                {t('group.tags')}
               </div>
               <div className="flex flex-wrap gap-2">
                 {tags.map((tag) => (
@@ -131,7 +133,7 @@ export default function GroupMemberList({
       <Card className={`${getCommonCardClass()}`}>
         <CardHeader>
           <CardTitle className={`text-lg ${getThemeTextColor('primary')}`}>
-            Group Members ({members.length})
+            {t('group.members')} ({members.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -153,7 +155,7 @@ export default function GroupMemberList({
                     {owner.nickname}
                   </div>
                   <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                    Group Owner
+                    {t('group.owner')}
                   </div>
                 </div>
               </div>
@@ -185,7 +187,7 @@ export default function GroupMemberList({
                         {member.nickname}
                       </div>
                       <div className={`text-xs ${getThemeTextColor('secondary')}`}>
-                        Member
+                        {t('group.member')}
                       </div>
                     </div>
                   </div>

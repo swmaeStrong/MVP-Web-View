@@ -2,11 +2,12 @@
 
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useTheme } from '@/hooks/ui/useTheme';
+import CookieTestButtons from '@/components/test/CookieTestButtons';
 
 export default function HomePage() {
-  const router = useRouter();
+  const { navigateWithParams } = useNavigation();
   const { getThemeClass, getThemeTextColor } = useTheme();
 
   return (
@@ -17,7 +18,7 @@ export default function HomePage() {
           <h1 className={`text-4xl md:text-6xl font-bold mb-6 ${getThemeTextColor('primary')}`}>
             생산성을 추적하고
             <br />
-            <span className='bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent'>
+            <span className='text-[var(--main-color)]'>
               성장하세요
             </span>
           </h1>
@@ -29,8 +30,8 @@ export default function HomePage() {
           <div className='flex justify-center'>
             <Button
               size='lg'
-              onClick={() => router.push('/subscription')}
-              className='bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold px-8 py-3 text-lg rounded-lg'
+              onClick={() => navigateWithParams('/subscription')}
+              className='bg-[var(--main-color)] hover:bg-[var(--main-color)]/90 text-white font-semibold px-8 py-3 text-lg rounded-lg'
             >
               프리미엄 구독하기
             </Button>
@@ -86,8 +87,8 @@ export default function HomePage() {
           </p>
           <Button
             size='lg'
-            onClick={() => router.push('/subscription')}
-            className='bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold px-8 py-3 text-lg rounded-lg'
+            onClick={() => navigateWithParams('/subscription')}
+            className='bg-[var(--main-color)] hover:bg-[var(--main-color)]/90 text-white font-semibold px-8 py-3 text-lg rounded-lg'
           >
             구독 플랜 보기 →
           </Button>
@@ -112,6 +113,9 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* 쿠키 테스트 버튼 (개발용) */}
+      <CookieTestButtons />
     </div>
   );
 }

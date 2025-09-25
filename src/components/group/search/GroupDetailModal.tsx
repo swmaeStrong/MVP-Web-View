@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
@@ -30,6 +31,7 @@ export default function GroupDetailModal({
   joinError
 }: GroupDetailModalProps) {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
+  const { t } = useTranslation();
   const [password, setPassword] = useState('');
 
   const handleClose = () => {
@@ -49,7 +51,7 @@ export default function GroupDetailModal({
       <DialogContent className={`max-w-2xl ${getCommonCardClass()}`} onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader className="pb-4">
           <DialogTitle className={`text-2xl font-bold ${getThemeTextColor('primary')}`}>
-            Group Details
+            {t('group.title')} {t('group.description')}
           </DialogTitle>
         </DialogHeader>
         
@@ -70,7 +72,7 @@ export default function GroupDetailModal({
                 </div>
                 
                 <div className={`text-sm ${getThemeTextColor('secondary')}`}>
-                  Created by @{group.groupOwner.nickname}
+                  {t('group.createdBy')} @{group.groupOwner.nickname}
                 </div>
               </div>
 
@@ -86,7 +88,7 @@ export default function GroupDetailModal({
               {/* Group Owner */}
               <div className="mb-4">
                 <div className={`text-sm font-medium ${getThemeTextColor('primary')} mb-2`}>
-                  Group Owner
+                  {t('group.owner')}
                 </div>
                 <div className={`text-sm font-medium ${getThemeTextColor('primary')}`}>
                   @{group.groupOwner.nickname}
@@ -126,7 +128,7 @@ export default function GroupDetailModal({
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isJoining}
-                className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 ${brandColors.accent.ring} ${brandColors.accent.border}"
+                className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-gray-300 focus:border-gray-300"
                 onPaste={(e) => {
                   e.stopPropagation();
                 }}
