@@ -28,9 +28,9 @@ export const themeColors = {
   },
   light: {
     // 배경색
-    background: '#f5fafc',           // 연한 파란빛 회색 배경
+    background: 'bg-[var(--bg-color)]',           // 연한 파란빛 회색 배경
     component: 'rgb(255, 255, 255)', // 순백색 컴포넌트
-    componentSecondary: 'rgb(251, 252, 253)', // 매우 연한 파란빛 회색
+    componentSecondary: 'bg-[var(--bg-color)]', // 매우 연한 파란빛 회색
     // 테두리 색상
     border: 'rgb(226, 232, 240)',    // 파란빛 회색 테두리 (slate-200)
     borderLight: 'rgb(203, 213, 225)', // 연한 파란빛 회색 테두리 (slate-300)
@@ -606,12 +606,12 @@ export const categoryColors = {
 // 세션 타임라인 색상 시스템
 export const sessionTimelineColors = {
   work: {
-    hex: '#3F72AF',
+    hex: 'var(--main-color)',
     bg: 'bg-[#3F72AF]',
     text: 'text-[#3F72AF]',
   },
   distraction: {
-    hex: '#C2D1E5',
+    hex: 'var(--bg-color)',
     bg: 'bg-[#C2D1E5]',
     text: 'text-[#C2D1E5]',
   },
