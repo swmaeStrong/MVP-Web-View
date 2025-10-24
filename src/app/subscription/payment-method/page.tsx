@@ -1,19 +1,22 @@
 'use client';
-import { Badge } from '@/shadcn/ui/badge';
-import { Button } from '@/shadcn/ui/button';
-import { Card, CardContent } from '@/shadcn/ui/card';
-import { getKSTDate } from '@/utils/timezone';
-import { useSearchParams } from 'next/navigation';
-import { useNavigation } from '@/hooks/navigation/useNavigation';
-import { Suspense, useState, useEffect } from 'react';
 import * as PortOne from '@portone/browser-sdk/v2';
+import { useSearchParams } from 'next/navigation';
+import { Suspense, useState, useEffect } from 'react';
+
 import {
   APP_URL,
   KAKAO_PAY_CHANNEL_KEY,
   NICE_PAY_CHANNEL_KEY,
   PORTONE_STORE_ID,
 } from '@/config/api/url';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { Badge } from '@/shadcn/ui/badge';
+import { Button } from '@/shadcn/ui/button';
+import { Card, CardContent } from '@/shadcn/ui/card';
+import { getKSTDate } from '@/utils/timezone';
+
+
 
 // 타입 정의
 type PaymentProvider = 'KAKAOPAY' | 'NICEPAY';
@@ -206,7 +209,7 @@ function PaymentMethodContent() {
   };
 
   // 기존 결제 수단 선택
-  const handleExistingMethodSelect = (methodId: string) => {
+  const handleExistingMethodSelect = (_methodId: string) => {
     if (fromSubscription) {
       navigateWithParams('/subscription/checkout');
     }

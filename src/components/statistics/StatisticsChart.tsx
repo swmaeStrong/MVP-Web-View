@@ -1,14 +1,17 @@
 'use client';
 
-import { useTheme } from '@/hooks/ui/useTheme';
-import { Card, CardContent } from '@/shadcn/ui/card';
-// 이제 namespace 사용으로 인해 직접 import 불가능
 import {
   Activity
 } from 'lucide-react';
+
+import { useTheme } from '@/hooks/ui/useTheme';
+import { Card, CardContent } from '@/shadcn/ui/card';
+
+// 이제 namespace 사용으로 인해 직접 import 불가능
 import { useUsageStatistics } from '../../hooks/data/useStatistics';
 import { useCurrentUserData } from '../../hooks/user/useCurrentUser';
 import StateDisplay from '../common/StateDisplay';
+
 import StatisticsPieChart from './StatisticsPieChart';
 interface StatisticsChartProps {
   currentDate: string;
@@ -22,9 +25,6 @@ export default function StatisticsChart({
   const {
     data: dailyData,
     isLoading,
-    isError,
-    error,
-    refetch,
   } = useUsageStatistics(currentDate, currentUser?.id || '');
 
 

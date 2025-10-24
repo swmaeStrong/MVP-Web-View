@@ -1,8 +1,10 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+
 import { streakCalendarQueryKey, streakCountQueryKey } from '@/config/constants/query-keys';
 import { getStreakCalendar, getStreakCount } from '@/shared/api/get';
-import { useQuery } from '@tanstack/react-query';
+
 import { getKSTFirstDayOfMonth } from '../../utils/timezone';
 
 /**

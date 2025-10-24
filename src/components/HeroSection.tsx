@@ -1,8 +1,9 @@
 import React from 'react';
-import { Button } from '@/shadcn/ui/button';
+
 import { Badge } from '@/shadcn/ui/badge';
+import { Button } from '@/shadcn/ui/button';
 // import { useDesignSystem } from '@/hooks/ui/useDesignSystem'; // 제거됨 - 사용되지 않음
-import { cardSystem, buttonSystem, badgeSystem, componentStates, spacing, layouts } from '@/styles/design-system';
+import { cardSystem, badgeSystem, componentStates, spacing, layouts } from '@/styles/design-system';
 
 export default function HeroSection() {
   // 사용되지 않는 스타일 함수들 제거됨

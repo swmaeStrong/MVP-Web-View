@@ -1,6 +1,7 @@
 'use client';
 import * as PortOne from '@portone/browser-sdk/v2';
 import { useState } from 'react';
+
 import {
   APP_URL,
   KAKAO_PAY_CHANNEL_KEY,
@@ -18,7 +19,9 @@ interface ProviderInfo {
   recommended?: boolean;
 }
 
-interface BillingKeyRequest {
+// Currently unused, but kept for future type safety
+ 
+interface _BillingKeyRequest {
   storeId: string;
   channelKey: string;
   billingKeyMethod: string;

@@ -3,6 +3,7 @@
 import * as Sentry from '@sentry/nextjs';
 import { ErrorBoundary as SentryErrorBoundaryComponent } from '@sentry/nextjs';
 import React from 'react';
+
 import StateDisplay from '@/components/common/StateDisplay';
 
 interface SentryProviderProps {

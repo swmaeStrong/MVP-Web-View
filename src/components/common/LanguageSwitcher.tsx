@@ -1,5 +1,7 @@
 'use client';
 
+import { Languages } from 'lucide-react';
+
 import { LOCALE_NAMES, SUPPORTED_LOCALES, SupportedLocale } from '@/config/i18n';
 import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useTheme } from '@/hooks/ui/useTheme';
@@ -11,7 +13,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/shadcn/ui/dropdown-menu';
-import { Languages } from 'lucide-react';
 
 interface LanguageSwitcherProps {
   variant?: 'button' | 'compact';

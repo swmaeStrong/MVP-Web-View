@@ -1,12 +1,13 @@
 'use client';
 
+import { Crown, MoreVertical } from 'lucide-react';
+
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shadcn/ui/dropdown-menu';
-import { Crown, MoreVertical } from 'lucide-react';
 
 interface GroupMemberManagementProps {
   owner: Group.GroupUserInfo;

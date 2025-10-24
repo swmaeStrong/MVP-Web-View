@@ -1,12 +1,13 @@
 'use client';
 
 import { memo } from 'react';
+
+import StateDisplay from '@/components/common/StateDisplay';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { Card, CardContent } from '@/shadcn/ui/card';
 // namespace로 변경됨
-import { useTheme } from '@/hooks/ui/useTheme';
 // import { useDesignSystem } from '@/hooks/ui/useDesignSystem'; // 제거됨
-import { cardSystem, componentStates, spacing, layouts, buttonSystem } from '@/styles/design-system';
-import StateDisplay from '@/components/common/StateDisplay';
+import { cardSystem, componentStates, spacing, buttonSystem } from '@/styles/design-system';
 import { getCategoryColor } from '@/utils/categories';
 
 interface CategoryListProps {

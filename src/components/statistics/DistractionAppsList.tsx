@@ -1,12 +1,13 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
+
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
 import { getPomodoroDetails } from '@/shared/api/get';
-import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 
 // Types
 interface DistractionApp {
@@ -23,19 +24,19 @@ interface DistractionAppsListProps {
   selectedDate?: string;
 }
 
-// Mock data for development
-const mockDistractionApps: DistractionApp[] = [
-  { name: 'YouTube', duration: 4800, accessCount: 23, impact: 85, category: 'Entertainment', timeBlocks: 8 },
-  { name: 'Twitter', duration: 3600, accessCount: 67, impact: 78, category: 'Social Media', timeBlocks: 15 },
-  { name: 'Instagram', duration: 2700, accessCount: 34, impact: 72, category: 'Social Media', timeBlocks: 12 },
-  { name: 'Reddit', duration: 2400, accessCount: 18, impact: 68, category: 'Social Media', timeBlocks: 6 },
-  { name: 'Netflix', duration: 1800, accessCount: 5, impact: 90, category: 'Entertainment', timeBlocks: 3 },
-  { name: 'TikTok', duration: 1500, accessCount: 45, impact: 88, category: 'Social Media', timeBlocks: 18 },
-  { name: 'Discord', duration: 1200, accessCount: 12, impact: 65, category: 'Communication', timeBlocks: 4 },
-  { name: 'Twitch', duration: 900, accessCount: 8, impact: 82, category: 'Entertainment', timeBlocks: 4 },
-  { name: 'Facebook', duration: 600, accessCount: 15, impact: 70, category: 'Social Media', timeBlocks: 7 },
-  { name: 'Steam', duration: 450, accessCount: 3, impact: 95, category: 'Gaming', timeBlocks: 2 }
-];
+// Mock data for development (currently unused but kept for reference)
+// const mockDistractionApps: DistractionApp[] = [
+//   { name: 'YouTube', duration: 4800, accessCount: 23, impact: 85, category: 'Entertainment', timeBlocks: 8 },
+//   { name: 'Twitter', duration: 3600, accessCount: 67, impact: 78, category: 'Social Media', timeBlocks: 15 },
+//   { name: 'Instagram', duration: 2700, accessCount: 34, impact: 72, category: 'Social Media', timeBlocks: 12 },
+//   { name: 'Reddit', duration: 2400, accessCount: 18, impact: 68, category: 'Social Media', timeBlocks: 6 },
+//   { name: 'Netflix', duration: 1800, accessCount: 5, impact: 90, category: 'Entertainment', timeBlocks: 3 },
+//   { name: 'TikTok', duration: 1500, accessCount: 45, impact: 88, category: 'Social Media', timeBlocks: 18 },
+//   { name: 'Discord', duration: 1200, accessCount: 12, impact: 65, category: 'Communication', timeBlocks: 4 },
+//   { name: 'Twitch', duration: 900, accessCount: 8, impact: 82, category: 'Entertainment', timeBlocks: 4 },
+//   { name: 'Facebook', duration: 600, accessCount: 15, impact: 70, category: 'Social Media', timeBlocks: 7 },
+//   { name: 'Steam', duration: 450, accessCount: 3, impact: 95, category: 'Gaming', timeBlocks: 2 }
+// ];
 
 // Format time helper
 const formatTime = (seconds: number): string => {
@@ -52,27 +53,27 @@ const formatTime = (seconds: number): string => {
   }
 };
 
-// Get impact color
-const getImpactColor = (impact: number): string => {
-  if (impact >= 85) return 'text-red-500';
-  if (impact >= 70) return 'text-orange-500';
-  if (impact >= 55) return 'text-yellow-500';
-  return 'text-green-500';
-};
+// Impact color functions (currently unused but kept for reference)
+// const getImpactColor = (impact: number): string => {
+//   if (impact >= 85) return 'text-red-500';
+//   if (impact >= 70) return 'text-orange-500';
+//   if (impact >= 55) return 'text-yellow-500';
+//   return 'text-green-500';
+// };
 
-const getImpactBgColor = (impact: number): string => {
-  if (impact >= 85) return 'bg-red-500';
-  if (impact >= 70) return 'bg-orange-500';
-  if (impact >= 55) return 'bg-yellow-500';
-  return 'bg-green-500';
-};
+// const getImpactBgColor = (impact: number): string => {
+//   if (impact >= 85) return 'bg-red-500';
+//   if (impact >= 70) return 'bg-orange-500';
+//   if (impact >= 55) return 'bg-yellow-500';
+//   return 'bg-green-500';
+// };
 
-const getImpactLabel = (impact: number): string => {
-  if (impact >= 85) return 'High';
-  if (impact >= 70) return 'Medium';
-  if (impact >= 55) return 'Low';
-  return 'Minimal';
-};
+// const getImpactLabel = (impact: number): string => {
+//   if (impact >= 85) return 'High';
+//   if (impact >= 70) return 'Medium';
+//   if (impact >= 55) return 'Low';
+//   return 'Minimal';
+// };
 
 // Distraction app item component
 const DistractionAppItem: React.FC<{
@@ -80,8 +81,7 @@ const DistractionAppItem: React.FC<{
   rank: number;
   getThemeClass: (type: string) => string;
   getThemeTextColor: (type: string) => string;
-  isDarkMode: boolean;
-}> = ({ app, rank, getThemeClass, getThemeTextColor, isDarkMode }) => {
+}> = ({ app, rank, getThemeClass, getThemeTextColor }) => {
   return (
     <div className={`py-1.5 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} hover:${getThemeClass('componentHover')} transition-colors`}>
       <div className="flex items-center justify-between gap-2">
@@ -116,7 +116,7 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
 );
 
 export default function DistractionAppsList({ selectedDate }: DistractionAppsListProps) {
-  const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
+  const { getThemeClass, getThemeTextColor } = useTheme();
   const { t } = useTranslation();
   
   // API 데이터 가져오기
@@ -142,9 +142,6 @@ export default function DistractionAppsList({ selectedDate }: DistractionAppsLis
 
   // Sort by duration (most distracting first)
   const sortedApps = [...distractionApps].sort((a, b) => b.duration - a.duration);
-  
-  // Calculate total distraction time
-  const totalDistractionTime = sortedApps.reduce((total, app) => total + app.duration, 0);
 
   return (
     <Card className={`h-auto pt-0 lg:h-[280px] rounded-lg border transition-all duration-200 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
@@ -181,7 +178,6 @@ export default function DistractionAppsList({ selectedDate }: DistractionAppsLis
                       rank={index + 1}
                       getThemeClass={getThemeClass as (type: string) => string}
                       getThemeTextColor={getThemeTextColor as (type: string) => string}
-                      isDarkMode={isDarkMode}
                     />
                   ))}
                 </div>

@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
 import Fuse from 'fuse.js';
+import { useMemo } from 'react';
 
 interface UseFuzzySearchOptions<T> {
   data: T[];

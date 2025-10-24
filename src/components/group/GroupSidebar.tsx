@@ -1,13 +1,14 @@
 'use client';
 
+import { Plus, Search, Settings, TrendingUp } from 'lucide-react';
+import Link from 'next/link';
+import { useCallback, useMemo } from 'react';
+
 import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { brandColors } from '@/styles/colors';
-import { Plus, Search, Settings, TrendingUp } from 'lucide-react';
-import Link from 'next/link';
-import { useCallback, useMemo } from 'react';
 
 interface NavItem {
   name: string;
@@ -22,7 +23,7 @@ interface GroupSidebarProps {
 }
 
 
-export default function GroupSidebar({ groups, isLoading, error }: GroupSidebarProps) {
+export default function GroupSidebar({ groups, isLoading: _isLoading, error }: GroupSidebarProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
   const { t } = useTranslation();
   const { pathname, getQuery } = useNavigation();

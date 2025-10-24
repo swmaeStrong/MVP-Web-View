@@ -1,8 +1,9 @@
 'use client';
 
-import { setGroupGoal } from '@/shared/api/post';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+
+import { setGroupGoal } from '@/shared/api/post';
 
 export function useSetGroupGoal(groupId: number) {
   const queryClient = useQueryClient();

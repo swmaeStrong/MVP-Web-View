@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { Card, CardContent } from '@/shadcn/ui/card';
+
 import { Badge } from '@/shadcn/ui/badge';
+import { Card, CardContent } from '@/shadcn/ui/card';
 
 const stats = [
   { number: '1,247', label: '활성 개발자', icon: '👨‍💻' },

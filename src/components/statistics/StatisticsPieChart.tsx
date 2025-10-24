@@ -1,18 +1,18 @@
 'use client';
 
-import { useTheme } from '@/hooks/ui/useTheme';
-import { ChartConfig, ChartContainer, ChartTooltip } from '@/shadcn/ui/chart';
-import { categoryColors } from '@/styles/colors';
-// namespace로 변경됨
-import { getCategoryDisplayName } from '@/utils/leaderboard';
-import { formatTime } from '@/utils/statisticsUtils';
 import { Activity } from 'lucide-react';
 import {
   Cell,
   Pie,
   PieChart,
 } from 'recharts';
-// import { getThemeColor } from '../../utils/theme-detector'; // 제거됨 - useTheme 사용
+
+import { useTheme } from '@/hooks/ui/useTheme';
+import { ChartConfig, ChartContainer, ChartTooltip } from '@/shadcn/ui/chart';
+import { categoryColors } from '@/styles/colors';
+import { getCategoryDisplayName } from '@/utils/leaderboard';
+import { formatTime } from '@/utils/statisticsUtils';
+
 import StateDisplay from '../common/StateDisplay';
 
 interface StatisticsPieChartProps {
@@ -41,7 +41,7 @@ export default function StatisticsPieChart({
   );
 
   // Extract only top 3 categories and group the rest as "Others"
-  const top3Categories = validCategories.slice(0, 3).map((category, index) => ({
+  const top3Categories = validCategories.slice(0, 3).map((category) => ({
     ...category,
     color: getCategoryColor(category.name), // Use colors from colors.ts
   }));
@@ -100,7 +100,7 @@ export default function StatisticsPieChart({
   // Chart configuration with null checks
   const chartConfig = finalCategories
     .filter(category => category && category.name) // Filter out null categories
-    .reduce((config, category, index) => {
+    .reduce((config, category) => {
       config[category.name] = {
         label: category.name === 'Others' ? 'Others' : getCategoryDisplayName(category.name), // Use display name
         color: category.color, // Use assigned color
@@ -124,7 +124,6 @@ export default function StatisticsPieChart({
                     const data = payload[0];
                     const categoryDisplayName = data.payload.category;
                     const originalCategory = data.payload.originalCategory;
-                    const time = data.value;
                     const percentage = data.payload.percentage;
                     const categoryColor = getCategoryColor(originalCategory);
 

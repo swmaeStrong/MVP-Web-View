@@ -1,5 +1,11 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Globe, Hash, Lock, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+
 import GroupPreview from '@/components/group/create/GroupPreview';
 import TagInput from '@/components/group/create/TagInput';
 import { GroundRulesInput } from '@/components/group/form/GroundRulesInput';
@@ -15,11 +21,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { brandColors } from '@/styles/colors';
 import { CreateGroupFormData, createValidationSchema } from '@/utils/validation';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Globe, Hash, Lock, X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
+
 import { Textarea } from '../../../shadcn/ui/textarea';
 
 export default function CreateGroupPage() {
@@ -165,7 +167,6 @@ export default function CreateGroupPage() {
                         form={form}
                         name="groundRules"
                         label={t('group.groundRules')}
-                        maxRules={10}
                       />
                     </div>
                   </CardContent>

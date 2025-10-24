@@ -1,11 +1,12 @@
 'use client';
 
+import { Globe, Hash, Lock, Target, TrendingUp, Users } from 'lucide-react';
+
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Badge } from '@/shadcn/ui/badge';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { Globe, Hash, Lock, Target, TrendingUp, Users } from 'lucide-react';
 
 interface GroupPreviewProps {
   groupName: string;

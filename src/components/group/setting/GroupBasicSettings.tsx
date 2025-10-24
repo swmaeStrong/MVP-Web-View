@@ -1,19 +1,20 @@
 'use client';
 
+import { Globe, Lock, Hash, X, Plus, Save } from 'lucide-react';
+import * as React from 'react';
+import { UseFormReturn } from 'react-hook-form';
+
 import { GroupNameInput } from '@/components/group/form/GroupNameInput';
 import { useTheme } from '@/hooks/ui/useTheme';
-import { UpdateGroupFormData } from '@/utils/validation';
 import { useTranslation } from '@/providers/LanguageProvider';
+import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
 import { Input } from '@/shadcn/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
-import { Badge } from '@/shadcn/ui/badge';
 import { brandColors } from '@/styles/colors';
-import { Globe, Lock, Hash, X, Plus, Save } from 'lucide-react';
-import * as React from 'react';
-import { UseFormReturn } from 'react-hook-form';
+import { UpdateGroupFormData } from '@/utils/validation';
 
 interface GroupBasicSettingsProps {
   form: UseFormReturn<UpdateGroupFormData>;

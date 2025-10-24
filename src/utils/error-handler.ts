@@ -1,14 +1,15 @@
 import { AxiosError } from 'axios';
-import * as Sentry from '@sentry/nextjs';
-import { 
-  Environment, 
-  UnifiedError, 
-  ErrorLogEntry, 
-  ErrorHandlerConfig,
-  ApiErrorResponse 
-} from '@/types/common/error';
-import { captureError, addBreadcrumb, setSentryContext } from './sentry';
 import { v4 as uuidv4 } from 'uuid';
+
+import {
+  Environment,
+  UnifiedError,
+  ErrorLogEntry,
+  ErrorHandlerConfig,
+  ApiErrorResponse
+} from '@/types/common/error';
+
+import { captureError, addBreadcrumb, setSentryContext } from './sentry';
 
 // 환경 변수에서 현재 환경 가져오기
 const getCurrentEnvironment = (): Environment => {
@@ -132,7 +133,7 @@ class ErrorHandler {
   /**
    * 로컬 스토리지에 에러 저장
    */
-  private saveToLocalStorage(entry: ErrorLogEntry): void {
+  private saveToLocalStorage(_entry: ErrorLogEntry): void {
     if (!this.config.enableLocalStorage) return;
     
     try {
@@ -160,8 +161,8 @@ class ErrorHandler {
       const stored = localStorage.getItem(`${this.storageKey}_${this.config.environment}`);
       if (stored) {
         const errors: ErrorLogEntry[] = JSON.parse(stored);
-        errors.forEach(error => {
-          this.errorStorage.set(error.fingerprint, error);
+        errors.forEach(_error => {
+          this.errorStorage.set(_error.fingerprint, _error);
         });
       }
     } catch (e) {

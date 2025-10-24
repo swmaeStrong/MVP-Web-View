@@ -1,21 +1,25 @@
 'use client';
 
+import React, { memo, useEffect, useState } from 'react';
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { EffectCoverflow, FreeMode, Mousewheel, Navigation, Pagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+import { useSessions } from '@/hooks/data/useSession';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
-import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/shadcn/ui/chart';
 import { sessionTimelineColors } from '@/styles/colors';
-import { getKSTDateString } from '@/utils/timezone';
+import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
 import { getLocalizedSessionTitle } from '@/utils/session';
-import React, { memo, useEffect, useState } from 'react';
+import { getKSTDateString } from '@/utils/timezone';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { EffectCoverflow, FreeMode, Mousewheel, Navigation, Pagination } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/shadcn/ui/chart';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
-import { useSessions } from '@/hooks/data/useSession';
+
+
+
 
 interface SessionCarouselProps {
   selectedDate?: string;
@@ -34,13 +38,13 @@ const SessionCarousel = memo(function SessionCarousel({
   const swiperRef = React.useRef<any>(null);
 
   // 세션 데이터 조회
-  const { data: sessionData, isLoading, error } = useSessions(selectedDate);
+  const { data: sessionData, isLoading } = useSessions(selectedDate);
 
   // Session API 데이터를 CycleData 형태로 변환
   const cycles = React.useMemo(() => {
     if (!sessionData) return [];
     
-    return sessionData.map((session, index): CycleData => {
+    return sessionData.map((session): CycleData => {
       // details를 segments로 변환
       const segments: CycleSegment[] = session.details.map((detail, detailIndex) => {
         // category 값을 type으로 매핑
@@ -70,14 +74,13 @@ const SessionCarousel = memo(function SessionCarousel({
       });
 
       // 타입별 총계 계산
-      let totalWorkTime = 0;
       let totalDistractionTime = 0;
       let totalAfkTime = 0;
       
       session.details.forEach(detail => {
         switch (detail.category) {
           case 'work':
-            totalWorkTime += detail.duration;
+            // totalWorkTime calculation removed as unused
             break;
           case 'distraction':
             totalDistractionTime += detail.duration;
@@ -405,7 +408,7 @@ const SessionCarousel = memo(function SessionCarousel({
         >
           {memoizedCycles.map((cycle, index) => (
             <SwiperSlide key={cycle.id} className="slide-inner" style={{ height: '240px', maxHeight: '280px' }}>
-              {({ isActive, isPrev, isNext }) => (
+              {({ isActive }) => (
                 <div 
                   className={`will-change-transform transition-all duration-300 ease-out cursor-pointer transform-gpu mx-auto ${
                     isActive 

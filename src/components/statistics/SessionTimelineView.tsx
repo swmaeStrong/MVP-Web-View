@@ -1,5 +1,8 @@
 'use client';
 
+import { Activity } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+
 import { useSessionDetail, useSessions } from '@/hooks/data/useSession';
 import { useSessionChart } from '@/hooks/ui/useSessionChart';
 import { useTheme } from '@/hooks/ui/useTheme';
@@ -7,9 +10,9 @@ import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import type { SessionData } from '@/types/domains/usage/session';
 import { getKSTDateString } from '@/utils/timezone';
-import { Activity } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+
 import StateDisplay from '../common/StateDisplay';
+
 import SessionChart from './SessionChart';
 import SessionDetail from './SessionDetail';
 
@@ -26,10 +29,10 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
         <div className="flex flex-col space-y-2">
           <div className="flex-1 min-h-0">
             <div className="h-full flex items-end gap-2 px-4 pb-4">
-              {[...Array(10)].map((_, index) => (
-                <div key={index} className="flex-1 flex flex-col items-center gap-1">
-                  <div 
-                    className={`w-full animate-pulse rounded ${getThemeClass('componentSecondary')}`} 
+              {[...Array(10)].map((_, _cycleIndex) => (
+                <div key={_cycleIndex} className="flex-1 flex flex-col items-center gap-1">
+                  <div
+                    className={`w-full animate-pulse rounded ${getThemeClass('componentSecondary')}`}
                     style={{ height: `200px` }}
                   ></div>
                   <div className={`h-2 w-6 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
@@ -41,8 +44,8 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
         <div className="flex flex-col space-y-2">
           <div className={`h-4 w-24 animate-pulse rounded ${getThemeClass('componentSecondary')}`}></div>
           <div className="space-y-2">
-            {[...Array(3)].map((_, index) => (
-              <div key={index} className="flex items-center gap-2">
+            {[...Array(3)].map((_, _index) => (
+              <div key={_index} className="flex items-center gap-2">
                 <div className={`h-3 w-3 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
                 <div className={`h-3 flex-1 animate-pulse rounded ${getThemeClass('borderLight')}`}></div>
               </div>

@@ -1,10 +1,10 @@
 'use client';
 
+import { UserAvatar } from '@/components/common';
 import { useTheme } from '@/hooks/ui/useTheme';
+import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
-import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
-import { UserAvatar } from '@/components/common';
 
 interface MemberListDialogProps {
   open: boolean;
@@ -32,16 +32,6 @@ export default function MemberListDialog({
       return `${hours}h${minutes > 0 ? ` ${minutes}m` : ''}`;
     }
     return `${minutes}m`;
-  };
-
-  const formatGoalValue = (category: string, value: number) => {
-    if (category === 'sessionScore') {
-      return `${value} ${t('statistics.points')}`;
-    }
-    if (category === 'sessionCount') {
-      return `${value} ${value > 1 ? t('statistics.sessions') : t('statistics.session')}`;
-    }
-    return formatTime(value);
   };
 
   const formatMemberProgress = (category: string, currentValue: number) => {
@@ -106,7 +96,7 @@ export default function MemberListDialog({
 
           {/* 스크롤 가능한 멤버 리스트 */}
           <div className="max-h-[320px] overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800">
-            {sortedMembers.map((member, index) => {
+            {sortedMembers.map((member) => {
               const isCurrentUser = member.userId === currentUser?.id;
               return (
                 <div key={member.userId} className={`flex items-center gap-3 p-3 rounded-lg hover:${getThemeClass('componentSecondary')} border ${isCurrentUser ? 'border-gray-400 dark:border-gray-500' : getThemeClass('border')}`}>

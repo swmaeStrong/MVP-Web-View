@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { Card, CardContent } from '@/shadcn/ui/card';
+
 import { Badge } from '@/shadcn/ui/badge';
+import { Card, CardContent } from '@/shadcn/ui/card';
 
 export default function WorkspaceSection() {
   const leftRef = useRef<HTMLDivElement>(null);

@@ -1,8 +1,9 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { setThemeCookie, getColorsFromCookie, setColorsCookie } from '@/utils/cookies';
+
 import type { CustomColors } from '@/config/colors';
+import { setThemeCookie, setColorsCookie } from '@/utils/cookies';
 
 interface ThemeContextType {
   isDarkMode: boolean;

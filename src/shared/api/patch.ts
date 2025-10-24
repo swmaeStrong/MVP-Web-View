@@ -1,5 +1,5 @@
-import { parseApi } from '../../utils/api-utils';
 import { API } from '../../config/api';
+import { parseApi } from '../../utils/api-utils';
 
 // 그룹 정보 수정
 export const updateGroup = (groupId: number, request: Group.UpdateGroupApiRequest) =>

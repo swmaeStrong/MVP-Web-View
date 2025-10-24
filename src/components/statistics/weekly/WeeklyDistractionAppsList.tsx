@@ -1,11 +1,12 @@
 'use client';
 
+import React from 'react';
+
 import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
-import React from 'react';
 
 interface WeeklyDistractionAppsListProps {
   selectedDate: string;
@@ -64,8 +65,6 @@ export default function WeeklyDistractionAppsList({ selectedDate }: WeeklyDistra
     }
     return `${wholeHours}h ${minutes}m`;
   };
-
-  const totalHours = weeklyDistractionApps.reduce((sum, app) => sum + app.hours, 0);
 
   return (
     <Card className={`h-auto pt-0 lg:h-[280px] rounded-lg border transition-all duration-200 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>

@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useCallback } from 'react';
+
 import { SupportedLocale } from '@/config/i18n';
 import { createNavigationUrl, NavigationOptions } from '@/utils/navigation';
 

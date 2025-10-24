@@ -1,12 +1,13 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
+
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
 import { getPomodoroDetails } from '@/shared/api/get';
-import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 
 // Types
 interface WorkApp {
@@ -22,19 +23,19 @@ interface WorkAppsListProps {
   selectedDate?: string;
 }
 
-// Mock data for development
-const mockWorkApps: WorkApp[] = [
-  { name: 'Visual Studio Code', duration: 12600, accessCount: 45, productivity: 95, category: 'Development' },
-  { name: 'IntelliJ IDEA', duration: 8400, accessCount: 32, productivity: 92, category: 'Development' },
-  { name: 'Figma', duration: 5400, accessCount: 28, productivity: 88, category: 'Design' },
-  { name: 'Terminal', duration: 4200, accessCount: 67, productivity: 90, category: 'Development' },
-  { name: 'Notion', duration: 3600, accessCount: 24, productivity: 85, category: 'Documentation' },
-  { name: 'Slack', duration: 2700, accessCount: 89, productivity: 75, category: 'Communication' },
-  { name: 'Docker Desktop', duration: 2400, accessCount: 15, productivity: 87, category: 'Development' },
-  { name: 'Postman', duration: 1800, accessCount: 18, productivity: 82, category: 'Development' },
-  { name: 'TablePlus', duration: 1200, accessCount: 12, productivity: 89, category: 'Development' },
-  { name: 'Chrome DevTools', duration: 900, accessCount: 34, productivity: 91, category: 'Development' }
-];
+// Mock data for development (currently unused but kept for reference)
+// const mockWorkApps: WorkApp[] = [
+//   { name: 'Visual Studio Code', duration: 12600, accessCount: 45, productivity: 95, category: 'Development' },
+//   { name: 'IntelliJ IDEA', duration: 8400, accessCount: 32, productivity: 92, category: 'Development' },
+//   { name: 'Figma', duration: 5400, accessCount: 28, productivity: 88, category: 'Design' },
+//   { name: 'Terminal', duration: 4200, accessCount: 67, productivity: 90, category: 'Development' },
+//   { name: 'Notion', duration: 3600, accessCount: 24, productivity: 85, category: 'Documentation' },
+//   { name: 'Slack', duration: 2700, accessCount: 89, productivity: 75, category: 'Communication' },
+//   { name: 'Docker Desktop', duration: 2400, accessCount: 15, productivity: 87, category: 'Development' },
+//   { name: 'Postman', duration: 1800, accessCount: 18, productivity: 82, category: 'Development' },
+//   { name: 'TablePlus', duration: 1200, accessCount: 12, productivity: 89, category: 'Development' },
+//   { name: 'Chrome DevTools', duration: 900, accessCount: 34, productivity: 91, category: 'Development' }
+// ];
 
 // Format time helper
 const formatTime = (seconds: number): string => {
@@ -51,20 +52,20 @@ const formatTime = (seconds: number): string => {
   }
 };
 
-// Get productivity color
-const getProductivityColor = (productivity: number): string => {
-  if (productivity >= 90) return 'text-green-500';
-  if (productivity >= 80) return 'text-blue-500';
-  if (productivity >= 70) return 'text-yellow-500';
-  return 'text-red-500';
-};
+// Productivity color functions (currently unused but kept for reference)
+// const getProductivityColor = (productivity: number): string => {
+//   if (productivity >= 90) return 'text-green-500';
+//   if (productivity >= 80) return 'text-blue-500';
+//   if (productivity >= 70) return 'text-yellow-500';
+//   return 'text-red-500';
+// };
 
-const getProductivityBgColor = (productivity: number): string => {
-  if (productivity >= 90) return 'bg-green-500';
-  if (productivity >= 80) return 'bg-blue-500';
-  if (productivity >= 70) return 'bg-yellow-500';
-  return 'bg-red-500';
-};
+// const getProductivityBgColor = (productivity: number): string => {
+//   if (productivity >= 90) return 'bg-green-500';
+//   if (productivity >= 80) return 'bg-blue-500';
+//   if (productivity >= 70) return 'bg-yellow-500';
+//   return 'bg-red-500';
+// };
 
 // Work app item component
 const WorkAppItem: React.FC<{
@@ -72,8 +73,7 @@ const WorkAppItem: React.FC<{
   rank: number;
   getThemeClass: (type: string) => string;
   getThemeTextColor: (type: string) => string;
-  isDarkMode: boolean;
-}> = ({ app, rank, getThemeClass, getThemeTextColor, isDarkMode }) => {
+}> = ({ app, rank, getThemeClass, getThemeTextColor }) => {
   return (
     <div className={`py-1.5 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} hover:${getThemeClass('componentHover')} transition-colors`}>
       <div className="flex items-center justify-between gap-2">
@@ -108,7 +108,7 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
 );
 
 export default function WorkAppsList({ selectedDate }: WorkAppsListProps) {
-  const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
+  const { getThemeClass, getThemeTextColor } = useTheme();
   const { t } = useTranslation();
   
   // API 데이터 가져오기
@@ -167,7 +167,6 @@ export default function WorkAppsList({ selectedDate }: WorkAppsListProps) {
                       rank={index + 1}
                       getThemeClass={getThemeClass as (type: string) => string}
                       getThemeTextColor={getThemeTextColor as (type: string) => string}
-                      isDarkMode={isDarkMode}
                     />
                   ))}
                 </div>

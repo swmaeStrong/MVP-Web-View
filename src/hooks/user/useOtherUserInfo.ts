@@ -1,8 +1,9 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+
 import { otherUserInfoQueryKey } from '@/config/constants/query-keys';
 import { getOtherUserInfo } from '@/shared/api/get';
-import { useQuery } from '@tanstack/react-query';
 
 interface UseOtherUserInfoOptions {
   userId: string | null;

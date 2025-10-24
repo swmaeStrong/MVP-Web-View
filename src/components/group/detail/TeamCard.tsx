@@ -1,5 +1,8 @@
 'use client';
 
+import { Check, Edit3, X } from 'lucide-react';
+import { useState } from 'react';
+
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
@@ -8,8 +11,6 @@ import { Card, CardContent } from '@/shadcn/ui/card';
 import { Textarea } from '@/shadcn/ui/textarea';
 import { brandColors } from '@/styles/colors';
 import { spacing } from '@/styles/design-system';
-import { Check, Edit3, X } from 'lucide-react';
-import { useState } from 'react';
 
 interface TeamCardProps {
   teamName: string;

@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-import { Card, CardContent } from '@/shadcn/ui/card';
-import { Badge } from '@/shadcn/ui/badge';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
+import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
+import { Card, CardContent } from '@/shadcn/ui/card';
 
 const friendsStats = [
   {

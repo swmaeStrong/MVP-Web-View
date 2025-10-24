@@ -1,6 +1,9 @@
 'use client';
 
 // import { useDesignSystem } from '@/hooks/ui/useDesignSystem'; // 제거됨 - 사용되지 않음
+import { Activity, RotateCcw } from 'lucide-react';
+import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
+
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { cn } from '@/shadcn/lib/utils';
@@ -9,8 +12,7 @@ import { Card, CardContent } from '@/shadcn/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shadcn/ui/select';
 import { getRecentUsageLog } from '@/shared/api/get';
 import { cardSystem, componentStates, spacing } from '@/styles/design-system';
-import { Activity, RotateCcw } from 'lucide-react';
-import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
+
 import StateDisplay from '../common/StateDisplay';
 
 interface ActivityListProps {
@@ -22,7 +24,7 @@ interface ActivityListProps {
 
 
 export default function ActivityList({ activities, date }: ActivityListProps) {
-  const { getThemeClass, getThemeTextColor, isDarkMode, getHoverableCardClass } = useTheme();
+  const { getThemeClass, getThemeTextColor, getHoverableCardClass } = useTheme();
   const { t } = useTranslation();
   // const { getCardStyle } = useDesignSystem(); // 제거됨 - 직접 클래스 사용
   

@@ -1,10 +1,12 @@
 'use client';
 
-import { useTheme } from '@/hooks/ui/useTheme';
-import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
-import { sessionTimelineColors } from '@/styles/colors';
-import { ArrowLeft, Clock, Coffee, UserX } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import React from 'react';
+
+import { useTheme } from '@/hooks/ui/useTheme';
+import { sessionTimelineColors } from '@/styles/colors';
+import { CycleData, CycleSegment } from '@/types/domains/usage/cycle';
+// Icons currently unused but kept for reference: Clock, Coffee, UserX
 
 interface InlineTimelineProps {
   cycles: CycleData[];
@@ -15,7 +17,7 @@ interface InlineTimelineProps {
 }
 
 export default function InlineTimeline({ cycles, date, onBack, showHeader = true, onSessionClick }: InlineTimelineProps) {
-  const { getThemeClass, isDarkMode } = useTheme();
+  const { getThemeClass } = useTheme();
   const [hoveredSessionId, setHoveredSessionId] = React.useState<string | null>(null);
 
   // 24시간 타임라인 생성 (0시부터 24시까지)
@@ -74,18 +76,19 @@ export default function InlineTimeline({ cycles, date, onBack, showHeader = true
     }
   };
 
-  const getSegmentIcon = (type: string) => {
-    switch (type) {
-      case 'work':
-        return <Clock className="w-3 h-3" />;
-      case 'break':
-        return <Coffee className="w-3 h-3" />;
-      case 'afk':
-        return <UserX className="w-3 h-3" />;
-      default:
-        return null;
-    }
-  };
+  // Segment icon function (currently unused but kept for reference)
+  // const getSegmentIcon = (type: string) => {
+  //   switch (type) {
+  //     case 'work':
+  //       return <Clock className="w-3 h-3" />;
+  //     case 'break':
+  //       return <Coffee className="w-3 h-3" />;
+  //     case 'afk':
+  //       return <UserX className="w-3 h-3" />;
+  //     default:
+  //       return null;
+  //   }
+  // };
 
   const mergeConsecutiveSegments = (segments: (CycleSegment & { sessionId: string })[]): (CycleSegment & { sessionId: string })[] => {
     const merged: (CycleSegment & { sessionId: string })[] = [];
@@ -262,7 +265,7 @@ export default function InlineTimeline({ cycles, date, onBack, showHeader = true
           {/* Session info below timeline */}
           <div className="mt-3 relative" style={{ height: '40px' }}>
             {/* Horizontal lines for each session */}
-            {cycles.map((cycle, cycleIndex) => {
+            {cycles.map((cycle) => {
               // Calculate session's time span positions
               const sessionStart = new Date(cycle.startTime);
               const sessionEnd = new Date(cycle.endTime);

@@ -1,12 +1,13 @@
 'use client';
 
+import { Target } from 'lucide-react';
+import React from 'react';
+
 import { useSessionTimeline } from '@/hooks/ui/useSessionTimeline';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { sessionTimelineColors } from '@/styles/colors';
 import type { SessionData } from '@/types/domains/usage/session';
-import { Target } from 'lucide-react';
-import React, { useState } from 'react';
 
 
 interface SessionDetailProps {
@@ -187,39 +188,40 @@ const ProgressBar: React.FC<{
   );
 };
 
-const AppUsageToggle: React.FC<{
-  activeTab: 'work' | 'distractions';
-  onTabChange: (tab: 'work' | 'distractions') => void;
-  isDarkMode: boolean;
-  getThemeClass: (type: string) => string;
-  getThemeTextColor: (type: string) => string;
-}> = ({ activeTab, onTabChange, isDarkMode, getThemeClass, getThemeTextColor }) => {
-  const { t } = useTranslation();
-  return (
-    <div className={`flex rounded-lg p-1 mb-4 ${getThemeClass('componentSecondary')}`}>
-      <button
-        onClick={() => onTabChange('work')}
-        className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] ${
-          activeTab === 'work'
-            ? `${isDarkMode ? 'bg-green-800 text-green-100 shadow-lg' : 'bg-green-100 text-green-800 shadow-lg'}`
-            : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-opacity-50 hover:shadow-md`
-        }`}
-      >
-        {t('statistics.workApps')}
-      </button>
-      <button
-        onClick={() => onTabChange('distractions')}
-        className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] ${
-          activeTab === 'distractions'
-            ? `${isDarkMode ? 'bg-red-800 text-red-100 shadow-lg' : 'bg-red-100 text-red-800 shadow-lg'}`
-            : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-opacity-50 hover:shadow-md`
-        }`}
-      >
-        {t('statistics.distractionApps')}
-      </button>
-    </div>
-  );
-};
+// AppUsageToggle component (currently unused but kept for reference)
+// const AppUsageToggle: React.FC<{
+//   activeTab: 'work' | 'distractions';
+//   onTabChange: (tab: 'work' | 'distractions') => void;
+//   isDarkMode: boolean;
+//   getThemeClass: (type: string) => string;
+//   getThemeTextColor: (type: string) => string;
+// }> = ({ activeTab, onTabChange, isDarkMode, getThemeClass, getThemeTextColor }) => {
+//   const { t } = useTranslation();
+//   return (
+//     <div className={`flex rounded-lg p-1 mb-4 ${getThemeClass('componentSecondary')}`}>
+//       <button
+//         onClick={() => onTabChange('work')}
+//         className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] ${
+//           activeTab === 'work'
+//             ? `${isDarkMode ? 'bg-green-800 text-green-100 shadow-lg' : 'bg-green-100 text-green-800 shadow-lg'}`
+//             : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-opacity-50 hover:shadow-md`
+//         }`}
+//       >
+//         {t('statistics.workApps')}
+//       </button>
+//       <button
+//         onClick={() => onTabChange('distractions')}
+//         className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] ${
+//           activeTab === 'distractions'
+//             ? `${isDarkMode ? 'bg-red-800 text-red-100 shadow-lg' : 'bg-red-100 text-red-800 shadow-lg'}`
+//             : `${getThemeTextColor('secondary')} hover:${getThemeTextColor('primary')} hover:bg-opacity-50 hover:shadow-md`
+//         }`}
+//       >
+//         {t('statistics.distractionApps')}
+//       </button>
+//     </div>
+//   );
+// };
 
 interface AppUsageDetail {
   app: string;
@@ -227,10 +229,11 @@ interface AppUsageDetail {
   count: number;
 }
 
-interface SessionDetailApiResponse {
-  distractedAppUsage: AppUsageDetail[];
-  workAppUsage: AppUsageDetail[];
-}
+// SessionDetailApiResponse interface (currently unused but kept for reference)
+// interface SessionDetailApiResponse {
+//   distractedAppUsage: AppUsageDetail[];
+//   workAppUsage: AppUsageDetail[];
+// }
 
 const AppUsageList: React.FC<{
   apps: AppUsageDetail[];
@@ -300,9 +303,8 @@ const AppUsageList: React.FC<{
 };
 
 const EmptyState: React.FC<{
-  getThemeClass: (type: string) => string;
   getThemeTextColor: (type: string) => string;
-}> = ({ getThemeClass, getThemeTextColor }) => (
+}> = ({ getThemeTextColor }) => (
   <div className="h-full flex flex-col items-center justify-center text-center">
     <Target className="h-8 w-8 mx-auto text-gray-400 dark:text-gray-500 mb-2" />
     <p className={`text-sm ${getThemeTextColor('secondary')}`}>
@@ -316,15 +318,12 @@ export default function SessionDetail({
   sessionData,
   sessionDetailData
 }: SessionDetailProps) {
-  const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
+  const { isDarkMode, getThemeTextColor } = useTheme();
   const { getTimelineBreakdown } = useSessionTimeline({ sessionData });
-  const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'work' | 'distractions'>('distractions');
 
   if (!selectedSession) {
     return (
-      <EmptyState 
-        getThemeClass={getThemeClass as (type: string) => string}
+      <EmptyState
         getThemeTextColor={getThemeTextColor as (type: string) => string}
       />
     );

@@ -1,13 +1,12 @@
-import { 
-  componentSizes, 
-  componentStates, 
-  spacing, 
-  effects, 
+import {
+  componentSizes,
+  componentStates,
+  spacing,
+  effects,
   priority,
   getComponentStyle,
   getRankPriority,
   getPriorityStyle,
-  createStyleClass,
   type ComponentSize,
   type ComponentState,
   type PriorityLevel
@@ -46,7 +45,7 @@ export function useDesignSystem() {
     const sizeStyle = componentSizes[size];
     const stateStyle = componentStates[state];
     const rankStyle = rank ? getPriorityStyle(rank) : null;
-    
+
     return {
       base: { ...sizeStyle, ...stateStyle },
       rank: rankStyle,

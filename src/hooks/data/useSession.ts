@@ -1,8 +1,9 @@
 'use client';
 
-import { getSession, getSessionDetail } from '@/shared/api/get';
 import { useQuery } from '@tanstack/react-query';
+
 import { sessionsQueryKey, sessionDetailQueryKey } from '@/config/constants/query-keys';
+import { getSession, getSessionDetail } from '@/shared/api/get';
 
 /**
  * 세션 목록을 조회하는 훅

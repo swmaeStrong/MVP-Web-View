@@ -7,16 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 
 interface GroupActionsProps {
   isOwner: boolean;
-  groupName?: string;
   onDeleteGroup?: () => void;
   onLeaveGroup?: () => void;
 }
 
-export default function GroupActions({ 
-  isOwner, 
-  groupName, 
-  onDeleteGroup, 
-  onLeaveGroup 
+export default function GroupActions({
+  isOwner,
+  onDeleteGroup,
+  onLeaveGroup
 }: GroupActionsProps) {
   const { getThemeTextColor, getCommonCardClass } = useTheme();
   const { t } = useTranslation();

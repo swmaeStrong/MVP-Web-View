@@ -34,10 +34,10 @@ export default function MonthlyStreak({
   }, [initialMonth]);
 
   // API 데이터 조회 - 현재 날짜로 요청
-  const { data: streakData, isLoading: isCalendarLoading, error: calendarError } = useStreakCalendar(currentMonth.getFullYear(), currentMonth.getMonth());
+  const { data: streakData } = useStreakCalendar(currentMonth.getFullYear(), currentMonth.getMonth());
 
   // 스트릭 카운트 조회
-  const { data: streakCountData, isLoading: isCountLoading, error: countError } = useStreakCount();
+  const { data: streakCountData, isLoading: isCountLoading } = useStreakCount();
 
   // 월별 날짜 계산 공통 로직
   const monthlyCalcData = useMemo(() => {
@@ -103,8 +103,8 @@ export default function MonthlyStreak({
   const getStreakClasses = () => {
     const streakClasses: { [key: string]: string[] } = {};
     const { rows } = gridData;
-    
-    rows.forEach((row, rowIndex) => {
+
+    rows.forEach((row) => {
       row.forEach((date, colIndex) => {
         if (!date) return;
         
@@ -357,7 +357,7 @@ export default function MonthlyStreak({
               {/* 전경 날짜 레이어 */}
               <div className="relative grid grid-cols-7 gap-2">
                 {(() => {
-                  const { startWeek, days, today } = monthlyCalcData;
+                  const { startWeek, days } = monthlyCalcData;
                   
                   // 빈 셀 추가
                   const emptyCells = [];

@@ -1,14 +1,16 @@
 import axios from 'axios';
 
 import { handleApiError } from '@/utils/error-handler';
+
 import { requestTokenFromSwift } from '../../utils/token-bridge';
 import { noAccessTokenCode } from '../errorCode';
+
 import { getOsEnv } from './osConfig';
 import { removeRscAccess, setRscToken } from './ssrConfig';
 import { BASEURL } from './url';
 
 // 토큰 갱신 상태 관리
-let tokenRefreshState = {
+const tokenRefreshState = {
   isRefreshing: false,
   promise: null as Promise<string | null> | null,
 };

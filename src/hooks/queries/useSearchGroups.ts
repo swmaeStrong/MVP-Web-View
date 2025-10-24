@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { searchGroups } from '@/shared/api/get';
+
 import { groupSearchQueryKey } from '@/config/constants/query-keys';
+import { searchGroups } from '@/shared/api/get';
 
 export const useSearchGroups = () => {
   return useQuery({

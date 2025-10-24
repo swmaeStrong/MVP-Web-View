@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+
 import { getThemeFromServerCookies, getLocaleFromServerCookies } from '@/utils/cookies';
 
 export function middleware(request: NextRequest) {

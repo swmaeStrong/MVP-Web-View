@@ -1,11 +1,12 @@
+import type { Metadata } from 'next';
+import { Inter, Noto_Sans_KR, Poppins } from 'next/font/google';
+
 import { LanguageProvider } from '@/providers/LanguageProvider';
 import { QueryProvider } from '@/providers/QueryProvider';
 import { SentryProvider } from '@/providers/SentryProvider';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { ToastProvider } from '@/providers/ToastProvider';
 import { getServerSettings } from '@/utils/server-cookies';
-import type { Metadata } from 'next';
-import { Inter, Noto_Sans_KR, Poppins } from 'next/font/google';
 import './globals.css';
 
 const inter = Inter({

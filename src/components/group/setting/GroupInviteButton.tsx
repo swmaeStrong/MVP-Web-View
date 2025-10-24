@@ -1,21 +1,22 @@
 'use client';
 
-import { useTheme } from '@/hooks/ui/useTheme';
-import { useTranslation } from '@/providers/LanguageProvider';
-import { Button } from '@/shadcn/ui/button';
-import { generateGroupInviteLink } from '@/shared/api/post';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { useQuery } from '@tanstack/react-query';
+
+import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
+import { Button } from '@/shadcn/ui/button';
+import { generateGroupInviteLink } from '@/shared/api/post';
 
 interface GroupInviteButtonProps {
   password?: string | null;
   isPublic: boolean;
 }
 
-export default function GroupInviteButton({ password, isPublic }: GroupInviteButtonProps) {
+export default function GroupInviteButton({ password: _password, isPublic: _isPublic }: GroupInviteButtonProps) {
   const { getThemeClass } = useTheme();
   const { t } = useTranslation();
   const params = useParams();
@@ -24,7 +25,7 @@ export default function GroupInviteButton({ password, isPublic }: GroupInviteBut
   const groupId = Array.isArray(params.id) ? parseInt(params.id[0], 10) : parseInt(params.id as string, 10);
 
   // 페이지 로드 시 초대 링크를 미리 가져옴
-  const { data: inviteLink, isLoading, error, refetch } = useQuery({
+  const { data: inviteLink, isLoading, refetch } = useQuery({
     queryKey: ['groupInviteLink', groupId],
     queryFn: async () => {
       const request: Group.GenerateInviteLinkApiRequest = { emails: [""] };
@@ -49,8 +50,7 @@ export default function GroupInviteButton({ password, isPublic }: GroupInviteBut
     try {
       await navigator.clipboard.writeText(inviteLink);
       toast.success(t('group.inviteLinkCopied'));
-    } catch (error) {
-      console.error('Failed to copy invite link:', error);
+    } catch {
       toast.error(t('group.failedToCopyInviteLink'));
     } finally {
       setIsCopying(false);

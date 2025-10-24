@@ -1,9 +1,11 @@
 'use client';
+import { useEffect, useState } from 'react';
+
+import { useNavigation } from '@/hooks/navigation/useNavigation';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
-import { useNavigation } from '@/hooks/navigation/useNavigation';
-import { useEffect, useState } from 'react';
-import { useTheme } from '@/hooks/ui/useTheme';
+
 
 // 결제 수단 상태를 시뮬레이션하는 더미 데이터
 const checkPaymentMethods = () => {
@@ -18,7 +20,7 @@ const checkPaymentMethods = () => {
 const SubscriptionPage = () => {
   const { navigateWithParams } = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
-  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [, setPaymentMethods] = useState([]);
   const { getThemeClass, getThemeTextColor } = useTheme();
 
   useEffect(() => {

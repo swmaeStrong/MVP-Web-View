@@ -1,11 +1,11 @@
 'use client';
 
-import { useTheme } from '@/hooks/ui/useTheme';
-import type { SessionData } from '@/types/domains/usage/session';
-import { sessionTimelineColors } from '@/styles/colors';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { getLocalizedSessionTitle } from '@/utils/session';
+
+import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
+import type { SessionData } from '@/types/domains/usage/session';
+import { getLocalizedSessionTitle } from '@/utils/session';
 
 interface ChartData {
   session: string;

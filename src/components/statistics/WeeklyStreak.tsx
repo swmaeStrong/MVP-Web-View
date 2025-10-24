@@ -9,7 +9,7 @@ import { useTheme } from '@/hooks/ui/useTheme';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
-import { getKSTDate, getKSTDateString, getKSTDateStringFromDate } from '@/utils/timezone';
+import { getKSTDate, getKSTDateString } from '@/utils/timezone';
 
 interface WeeklyStreakProps {
   initialMonth?: Date;
@@ -48,12 +48,12 @@ export default function WeeklyStreak({
   }, [currentWeek]);
 
   // API 데이터 조회 - 주가 걸친 모든 월의 데이터 조회
-  const { data: streakDataMonth1, isLoading: isLoadingMonth1 } = useStreakCalendar(
-    monthsToFetch[0].year, 
+  const { data: streakDataMonth1 } = useStreakCalendar(
+    monthsToFetch[0].year,
     monthsToFetch[0].month
   );
-  
-  const { data: streakDataMonth2, isLoading: isLoadingMonth2 } = useStreakCalendar(
+
+  const { data: streakDataMonth2 } = useStreakCalendar(
     monthsToFetch[1]?.year || monthsToFetch[0].year, 
     monthsToFetch[1]?.month || monthsToFetch[0].month
   );
@@ -72,7 +72,6 @@ export default function WeeklyStreak({
     return data1;
   }, [streakDataMonth1, streakDataMonth2, monthsToFetch]);
   
-  const isCalendarLoading = isLoadingMonth1 || isLoadingMonth2;
 
   // 스트릭 카운트 조회
   const { data: streakCountData, isLoading: isCountLoading } = useStreakCount();
@@ -87,14 +86,14 @@ export default function WeeklyStreak({
     return { start, end, days, today };
   }, [currentWeek]);
 
-  // API 데이터를 활동일 배열로 변환
-  const activeDates = useMemo(() => {
-    if (!streakData) return [];
-    
-    return streakData
-      .filter(item => item.activityCount > 0)
-      .map(item => new Date(item.date));
-  }, [streakData]);
+  // API 데이터를 활동일 배열로 변환 (주석: 현재 사용되지 않지만 향후 필요할 수 있음)
+  // const activeDates = useMemo(() => {
+  //   if (!streakData) return [];
+  //
+  //   return streakData
+  //     .filter(item => item.activityCount > 0)
+  //     .map(item => new Date(item.date));
+  // }, [streakData]);
 
   // 주간 데이터 생성
   const weekData = useMemo(() => {

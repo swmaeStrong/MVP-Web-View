@@ -1,10 +1,8 @@
 import { useCallback } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { currentUserQueryKey } from '@/config/constants/query-keys';
+
 import { useCurrentUser } from '@/hooks/user/useCurrentUser';
 
 export const useInitUser = () => {
-  const queryClient = useQueryClient();
   const { refetch } = useCurrentUser();
 
   const initializeUser = useCallback(async () => {

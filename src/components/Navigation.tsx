@@ -1,6 +1,7 @@
 import React from 'react';
-import { Button } from '@/shadcn/ui/button';
+
 import { useNavigation } from '@/hooks/navigation/useNavigation';
+import { Button } from '@/shadcn/ui/button';
 
 export default function Navigation() {
   // 스타일 시스템 단순화됨 - 직접 Tailwind 클래스 사용

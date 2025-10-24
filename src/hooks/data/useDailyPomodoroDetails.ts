@@ -1,7 +1,8 @@
 'use client';
 
-import { getPomodoroUsageLog } from '@/shared/api/get';
 import { useQuery } from '@tanstack/react-query';
+
+import { getPomodoroUsageLog } from '@/shared/api/get';
 
 export const useDailyPomodoroDetails = (selectedDate: string) => {
   return useQuery({

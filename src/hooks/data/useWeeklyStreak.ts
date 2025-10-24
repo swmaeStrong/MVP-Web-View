@@ -1,7 +1,8 @@
 'use client';
 
-import { getWeeklyStreak } from '@/shared/api/get';
 import { useQuery } from '@tanstack/react-query';
+
+import { getWeeklyStreak } from '@/shared/api/get';
 
 export const useWeeklyStreak = (selectedDate: string) => {
   return useQuery({

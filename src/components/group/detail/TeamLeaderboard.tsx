@@ -1,5 +1,7 @@
 'use client';
 
+import { Clock, Info, RadioIcon } from 'lucide-react';
+
 import { UserAvatar } from '@/components/common';
 import UserProfileTooltip from '@/components/common/UserProfileTooltip';
 import { useTheme } from '@/hooks/ui/useTheme';
@@ -10,7 +12,6 @@ import { Separator } from '@/shadcn/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shadcn/ui/tooltip';
 import { brandColors } from '@/styles/colors';
 import { spacing } from '@/styles/design-system';
-import { Clock, Info, RadioIcon } from 'lucide-react';
 
 interface TeamLeaderboardProps {
   membersLeaderboard: Group.GroupLeaderboardMember[];

@@ -1,9 +1,10 @@
 'use client';
 
+import { useState } from 'react';
+
 import { useLanguage } from '@/providers/LanguageProvider';
 import { useThemeContext } from '@/providers/ThemeProvider';
 import { Button } from '@/shadcn/ui/button';
-import { useState } from 'react';
 
 export default function CookieTestButtons() {
   const { theme, toggleTheme, colors, updateColors } = useThemeContext();

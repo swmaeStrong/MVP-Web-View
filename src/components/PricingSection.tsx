@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { Card, CardContent, CardTitle } from '@/shadcn/ui/card';
 
 export default function PricingSection() {
   const sectionRef = useRef<HTMLDivElement>(null);

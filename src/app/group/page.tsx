@@ -1,9 +1,11 @@
 'use client';
 
-import { getLastGroupTab } from '@/hooks/group/useLastGroupTab';
-import { useTranslation } from '@/providers/LanguageProvider';
-import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useEffect, useRef, useState } from 'react';
+
+import { getLastGroupTab } from '@/hooks/group/useLastGroupTab';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
+import { useTranslation } from '@/providers/LanguageProvider';
+
 import PageLoader from '../../components/common/PageLoader';
 
 export default function GroupPage() {
