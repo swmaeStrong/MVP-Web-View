@@ -11,10 +11,9 @@ import { Card, CardContent } from '@/shadcn/ui/card';
 import type { SessionData } from '@/types/domains/usage/session';
 import { getKSTDateString } from '@/utils/timezone';
 
-import StateDisplay from '../common/StateDisplay';
-
-import SessionChart from './SessionChart';
-import SessionDetail from './SessionDetail';
+import StateDisplay from '@/components/common/StateDisplay';
+import SessionChart from '../common/SessionChart';
+import SessionDetail from '../common/SessionDetail';
 
 // Types
 interface SessionTimelineViewProps {

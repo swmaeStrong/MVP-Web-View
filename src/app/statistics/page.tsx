@@ -3,17 +3,22 @@
 // namespace로 변경됨
 import React, { useCallback, useMemo, useState } from 'react';
 
-// 컴포넌트 임포트
-import CategoriesList from '@/components/statistics/CategoriesList';
-import DistractionAppsList from '@/components/statistics/DistractionAppsList';
-import SessionTimelineView from '@/components/statistics/SessionTimelineView';
+// Daily 컴포넌트 임포트
+import DailyCategoriesList from '@/components/statistics/daily/DailyCategoriesList';
+import DailyDistractionAppsList from '@/components/statistics/daily/DailyDistractionAppsList';
+import DailySummaryCards from '@/components/statistics/daily/DailySummaryCards';
+import DailyTimelineView from '@/components/statistics/daily/DailyTimelineView';
+import DailyWorkAppsList from '@/components/statistics/daily/DailyWorkAppsList';
+
 // Weekly 컴포넌트 임포트
 import WeeklyCategoriesList from '@/components/statistics/weekly/WeeklyCategoriesList';
 import WeeklyDistractionAppsList from '@/components/statistics/weekly/WeeklyDistractionAppsList';
 import WeeklySummaryCards from '@/components/statistics/weekly/WeeklySummaryCards';
 import WeeklyTimelineView from '@/components/statistics/weekly/WeeklyTimelineView';
 import WeeklyWorkAppsList from '@/components/statistics/weekly/WeeklyWorkAppsList';
-import WorkAppsList from '@/components/statistics/WorkAppsList';
+
+// Common 컴포넌트 임포트
+import DateNavigationCard from '@/components/statistics/common/DateNavigationCard';
 import { canNavigateToNext, canNavigateToPrevious, getNextDate, getPreviousDate, useUsageStatistics } from '@/hooks/data/useStatistics';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
@@ -21,8 +26,6 @@ import { getKSTDateString } from '@/utils/timezone';
 
 // generateMockCycles import 제거 - API 사용으로 대체됨
 import StateDisplay from '../../components/common/StateDisplay';
-import TotalTimeCard from '../../components/statistics/DateNavigationCard';
-import StatisticsSummaryCards from '../../components/statistics/StatisticsSummaryCards';
 
 export default function StatisticsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState<'day' | 'week'>('day');
@@ -182,7 +185,7 @@ export default function StatisticsPage() {
       <div className='mx-auto space-y-4 sm:space-y-6'>
 
         {/* 메인 콘텐츠 */}
-        <TotalTimeCard
+        <DateNavigationCard
                 currentDate={selectedDate}
                 onPrevious={handlePreviousDate}
                 onNext={handleNextDate}
@@ -191,10 +194,10 @@ export default function StatisticsPage() {
                 selectedPeriod={selectedPeriod}
                 setSelectedPeriod={setSelectedPeriod}
               />
-        
+
         {/* 통계 요약 카드들 - period에 따라 다른 컴포넌트 */}
         {selectedPeriod === 'day' ? (
-          <StatisticsSummaryCards
+          <DailySummaryCards
             totalWorkHours={(dailyData?.totalTime || 0) / 3600}
             topCategories={
               dailyData?.categories?.slice(0, 3).map(cat => ({
@@ -207,15 +210,15 @@ export default function StatisticsPage() {
         ) : (
           <WeeklySummaryCards selectedDate={selectedDate} />
         )}
-        
+
         {selectedPeriod === 'day' ? (
           <>
             {/* Daily 컴포넌트들 */}
-            <SessionTimelineView selectedDate={selectedDate} />
+            <DailyTimelineView selectedDate={selectedDate} />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-              <CategoriesList selectedDate={selectedDate} />
-              <WorkAppsList selectedDate={selectedDate} />
-              <DistractionAppsList selectedDate={selectedDate} />
+              <DailyCategoriesList selectedDate={selectedDate} />
+              <DailyWorkAppsList selectedDate={selectedDate} />
+              <DailyDistractionAppsList selectedDate={selectedDate} />
             </div>
           </>
         ) : (
