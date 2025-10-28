@@ -1,9 +1,11 @@
 'use client';
 
+import { Globe, Lock } from 'lucide-react';
+
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { Badge } from '@/shadcn/ui/badge';
-import { Globe, Lock } from 'lucide-react';
+
 import GroupInviteButton from './GroupInviteButton';
 
 interface GroupHeaderProps {

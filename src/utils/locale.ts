@@ -26,7 +26,7 @@ export const getFontFamily = (locale: SupportedLocale): string => {
 /**
  * Get reading direction for locale
  */
-export const getTextDirection = (locale: SupportedLocale): 'ltr' | 'rtl' => {
+export const getTextDirection = (_locale: SupportedLocale): 'ltr' | 'rtl' => {
   // All supported locales use left-to-right text direction
   return 'ltr';
 };

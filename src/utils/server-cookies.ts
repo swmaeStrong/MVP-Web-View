@@ -1,7 +1,8 @@
 import { cookies } from 'next/headers';
-import type { SupportedLocale } from '@/config/i18n';
+
 import type { CustomColors } from '@/config/colors';
 import { defaultColors } from '@/config/colors';
+import type { SupportedLocale } from '@/config/i18n';
 
 /**
  * 서버 컴포넌트에서 테마 읽기

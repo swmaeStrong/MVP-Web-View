@@ -1,11 +1,12 @@
 'use client';
 
+import React from 'react';
+
+import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
-import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
-import React from 'react';
 
 interface WeeklyCategoriesListProps {
   selectedDate: string;

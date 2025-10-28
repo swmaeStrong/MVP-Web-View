@@ -1,8 +1,9 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+
 import { groupDetailQueryKey } from '@/config/constants/query-keys';
 import { getGroupDetail } from '@/shared/api/get';
-import { useQuery } from '@tanstack/react-query';
 
 interface UseGroupDetailParams {
   groupId: number;

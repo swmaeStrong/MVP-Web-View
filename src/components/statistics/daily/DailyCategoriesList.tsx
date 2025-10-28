@@ -1,12 +1,14 @@
 'use client';
 
-import { useTheme } from '@/hooks/ui/useTheme';
+import React from 'react';
+
 import { useUsageStatistics } from '@/hooks/data/useStatistics';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
-import React from 'react';
+
 
 // Types
 interface CategoryItem {
@@ -43,10 +45,8 @@ const getMainColor = () => {
 // Category item component - using Top Categories format
 const CategoryItem: React.FC<{
   category: CategoryItem;
-  getThemeClass: (type: string) => string;
   getThemeTextColor: (type: string) => string;
-  isDarkMode: boolean;
-}> = ({ category, getThemeClass, getThemeTextColor, isDarkMode }) => {
+}> = ({ category, getThemeTextColor }) => {
   return (
     <div className="flex items-center gap-1">
       <span 
@@ -82,7 +82,7 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
 );
 
 export default function CategoriesList({ selectedDate }: CategoriesListProps) {
-  const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
+  const { getThemeClass, getThemeTextColor } = useTheme();
   const { t } = useTranslation();
   const currentUser = useCurrentUserData();
   
@@ -129,9 +129,7 @@ export default function CategoriesList({ selectedDate }: CategoriesListProps) {
                     <CategoryItem
                       key={`${category.name}-${index}`}
                       category={category}
-                      getThemeClass={getThemeClass as (type: string) => string}
                       getThemeTextColor={getThemeTextColor as (type: string) => string}
-                      isDarkMode={isDarkMode}
                     />
                   ))}
                 </div>

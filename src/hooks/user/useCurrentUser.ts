@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+
 import { currentUserQueryKey } from '@/config/constants/query-keys';
 import { getUserInfo } from '@/shared/api/get';
 

@@ -1,15 +1,16 @@
 'use client';
 
+import { Check, Edit3, Plus, Trash2, X } from 'lucide-react';
+import { useCallback, useRef, useState } from 'react';
+
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent, CardHeader } from '@/shadcn/ui/card';
 import { Separator } from '@/shadcn/ui/separator';
 import { Textarea } from '@/shadcn/ui/textarea';
-import { spacing } from '@/styles/design-system';
 import { brandColors } from '@/styles/colors';
-import { Check, Edit3, Plus, Trash2, X } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { spacing } from '@/styles/design-system';
 
 interface GroundRulesProps {
   rules: string;

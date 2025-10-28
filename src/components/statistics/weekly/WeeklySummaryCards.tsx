@@ -1,11 +1,12 @@
 'use client';
 
+import React from 'react';
+
 import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
 import { useWeeklySessionScore } from '@/hooks/data/useWeeklySessionScore';
 import { useWeeklyStreak } from '@/hooks/data/useWeeklyStreak';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
-import React from 'react';
 
 interface WeeklySummaryCardsProps {
   selectedDate: string;

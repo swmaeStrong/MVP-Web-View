@@ -1,10 +1,9 @@
 'use client';
 
-import { useTheme } from '@/hooks/ui/useTheme';
-import { spacing } from '@/styles/design-system';
 import GroupSidebar from '@/components/group/GroupSidebar';
 import { useMyGroups } from '@/hooks/queries/useMyGroups';
-import { useCurrentUser } from '@/hooks/user/useCurrentUser';
+import { useTheme } from '@/hooks/ui/useTheme';
+import { spacing } from '@/styles/design-system';
 
 interface GroupLayoutProps {
   children: React.ReactNode;
@@ -13,7 +12,6 @@ interface GroupLayoutProps {
 export default function GroupLayout({ children }: GroupLayoutProps) {
   const { getThemeClass } = useTheme();
   const { data: groups, isLoading, error } = useMyGroups();
-  const { data: currentUser, isLoading: userLoading } = useCurrentUser();
 
   return (
     <div className={`min-h-screen ${getThemeClass('background')}`}>

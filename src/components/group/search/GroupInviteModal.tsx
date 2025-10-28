@@ -1,14 +1,13 @@
 'use client';
 
+import { Globe, Hash, Lock } from 'lucide-react';
+
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
-import { Skeleton } from '@/shadcn/ui/skeleton';
-import { brandColors } from '@/styles/colors';
-import { Globe, Hash, Lock, Users } from 'lucide-react';
-import { useNavigation } from '@/hooks/navigation/useNavigation';
 
 interface GroupInviteModalProps {
   isOpen: boolean;
@@ -189,7 +188,7 @@ export default function GroupInviteModal({
                 </Button>
                 {!isGroupMember(inviteGroup.groupId) ? (
                   <Button
-                    className={`flex-1 ${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90 transition-colors`}
+                    className="flex-1 bg-purple-600 text-white hover:bg-purple-700 transition-colors"
                     onClick={handleJoin}
                     disabled={isJoining}
                   >
@@ -197,7 +196,7 @@ export default function GroupInviteModal({
                   </Button>
                 ) : (
                   <Button
-                    className={`flex-1 bg-green-600 text-white hover:bg-green-700 transition-colors`}
+                    className="flex-1 bg-green-600 text-white hover:bg-green-700 transition-colors"
                     onClick={handleGoToGroup}
                     disabled={isJoining}
                   >

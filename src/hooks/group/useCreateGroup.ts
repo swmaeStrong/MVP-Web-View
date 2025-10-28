@@ -1,13 +1,15 @@
 'use client';
 
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+
 import { groupNameCheckQueryKey, groupSearchQueryKey, myGroupsQueryKey } from '@/config/constants';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
 import { useDebounce } from '@/hooks/ui/useDebounce';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { validateGroupName } from '@/shared/api/get';
 import { createGroup } from '@/shared/api/post';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useNavigation } from '@/hooks/navigation/useNavigation';
-import toast from 'react-hot-toast';
+
 
 export function useGroupNameValidation(groupName: string) {
   const debouncedGroupName = useDebounce(groupName, 500);
@@ -25,7 +27,7 @@ export function useCreateGroup() {
 
   return useMutation({
     mutationFn: createGroup,
-    onSuccess: (data) => {
+    onSuccess: (_data) => {
       // refetchQueries는 캐시에 없어도 강제로 새 데이터를 가져옴 (첫 그룹 생성에 적합)
       queryClient.refetchQueries({
         queryKey: myGroupsQueryKey(),

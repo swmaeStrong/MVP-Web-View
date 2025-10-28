@@ -1,7 +1,8 @@
 'use client';
 
-import { getWeeklyPomodoroDetails } from '@/shared/api/get';
 import { useQuery } from '@tanstack/react-query';
+
+import { getWeeklyPomodoroDetails } from '@/shared/api/get';
 
 export const useWeeklyPomodoroDetails = (selectedDate: string) => {
   return useQuery({

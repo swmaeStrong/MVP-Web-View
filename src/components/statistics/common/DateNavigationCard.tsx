@@ -1,7 +1,8 @@
 'use client';
 
-import DateNavigation from '@/components/common/DateNavigation';
 import { useState } from 'react';
+
+import DateNavigation from '@/components/common/DateNavigation';
 
 interface TotalTimeCardProps {
   currentDate: string;

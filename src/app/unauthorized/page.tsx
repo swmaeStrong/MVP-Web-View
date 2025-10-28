@@ -1,7 +1,8 @@
 'use client';
 
-import StateDisplay from '@/components/common/StateDisplay';
 import { Lock } from 'lucide-react';
+
+import StateDisplay from '@/components/common/StateDisplay';
 
 export default function UnauthorizedPage() {
   return (

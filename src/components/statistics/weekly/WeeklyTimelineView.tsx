@@ -1,5 +1,8 @@
 'use client';
 
+import React from 'react';
+import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+
 import { useDailyPomodoroDetails } from '@/hooks/data/useDailyPomodoroDetails';
 import { useWeeklyPomodoroDetails } from '@/hooks/data/useWeeklyPomodoroDetails';
 import { useTheme } from '@/hooks/ui/useTheme';
@@ -7,8 +10,6 @@ import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/shadcn/ui/chart';
 import { getKSTDateString } from '@/utils/timezone';
-import React from 'react';
-import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 interface WeeklyTimelineViewProps {
   selectedDate: string;
@@ -22,7 +23,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewProps) {
-  const { getThemeClass, getThemeTextColor, isDarkMode } = useTheme();
+  const { getThemeClass, getThemeTextColor } = useTheme();
   const { t } = useTranslation();
   
   // 선택된 일별 날짜 상태 - 초기값으로 오늘 날짜 설정
@@ -219,7 +220,7 @@ export default function WeeklyTimelineView({ selectedDate }: WeeklyTimelineViewP
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
-                      formatter={(value, name) => {
+                      formatter={(value) => {
                         const hours = Math.floor(value as number);
                         const minutes = Math.round((value as number - hours) * 60);
                         const timeString = hours > 0 

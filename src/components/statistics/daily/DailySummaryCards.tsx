@@ -12,7 +12,6 @@ interface StatisticsSummaryCardsProps {
 
 export default function StatisticsSummaryCards({
   totalWorkHours = 0,
-  topCategories = [],
   selectedDate,
 }: StatisticsSummaryCardsProps) {
   const { getThemeClass, getThemeTextColor } = useTheme();
@@ -46,10 +45,6 @@ export default function StatisticsSummaryCards({
     return `${safeHours}h ${safeMinutes}m`;
   };
 
-  // 메인 컬러 사용
-  const getMainColor = () => {
-    return 'bg-[#007AFF]'; // SwiftUI blue
-  };
 
   // 세션 스코어 평균 계산
   const calculateAverageFocusScore = (): number => {

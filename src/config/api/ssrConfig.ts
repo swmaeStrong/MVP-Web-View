@@ -1,7 +1,8 @@
 'use server';
 
-import { STORAGE_ACCESS_KEY } from '@/config/constants/storage';
 import { cookies } from 'next/headers';
+
+import { STORAGE_ACCESS_KEY } from '@/config/constants/storage';
 
 /**
  * 쿠키 저장 (Access)

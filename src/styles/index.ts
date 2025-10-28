@@ -1,16 +1,16 @@
 // 모든 스타일 시스템을 통합하여 export
 // export * from './animations'; // 제거됨 - 사용되지 않음
 export * from './colors';
-export * from './common';
 export * from './design-system';
-export * from './font-sizes';
+// export * from './common'; // 제거됨 - 사용되지 않음
+// export * from './font-sizes'; // 제거됨 - 사용되지 않음
 
-// 편의를 위한 통합 객체들
-import {
-  brandColors,
-  categoryColors,
-  themeColors,
-} from './colors';
+// 편의를 위한 통합 객체들 - 모두 사용되지 않아 주석처리
+// import {
+//   brandColors,
+//   categoryColors,
+//   themeColors,
+// } from './colors';
 
 // import {
 //   animations,
@@ -19,126 +19,51 @@ import {
 //   interactions,
 // } from './animations'; // 제거됨 - 사용되지 않음
 
-import {
-  badges,
-  borders,
-  buttons,
-  cards,
-  inputs,
-  layout,
-  overlays,
-  shadows,
-  typography,
-} from './common';
+// import {
+//   badges,
+//   borders,
+//   buttons,
+//   cards,
+//   inputs,
+//   layout,
+//   overlays,
+//   shadows,
+//   typography,
+// } from './common'; // 제거됨 - common.ts 파일 삭제됨
 
-import {
-  badgeSystem,
-  buttonSystem,
-  cardSystem,
-  componentSizes,
-  componentStates,
-} from './design-system';
+// import {
+//   badgeSystem,
+//   buttonSystem,
+//   cardSystem,
+//   componentSizes,
+//   componentStates,
+// } from './design-system'; // 사용되지 않음
 
-// 통합 스타일 객체 (새로운 구조)
-export const styles = {
-  // 색상 시스템
-  colors: {
-    brand: brandColors,
-    category: categoryColors,
-    theme: themeColors,
-  },
+// 통합 스타일 객체 (새로운 구조) - 제거됨: common.ts 파일 삭제로 인해 사용 불가
+// export const styles = {
+//   // 색상 시스템
+//   colors: {
+//     brand: brandColors,
+//     category: categoryColors,
+//     theme: themeColors,
+//   },
 
-  // 통합된 컴포넌트 시스템 (우선 사용 권장)
-  components: {
-    button: buttonSystem,
-    card: cardSystem,
-    badge: badgeSystem,
-    // 레거시 지원
-    buttons,
-    cards,
-    badges,
-    inputs,
-    overlays,
-  },
+//   // 통합된 컴포넌트 시스템 (우선 사용 권장)
+//   components: {
+//     button: buttonSystem,
+//     card: cardSystem,
+//     badge: badgeSystem,
+//   },
 
-  // 디자인 시스템
-  design: {
-    sizes: componentSizes,
-    states: componentStates,
-  },
+//   // 디자인 시스템
+//   design: {
+//     sizes: componentSizes,
+//     states: componentStates,
+//   },
+// };
 
-  // 애니메이션 시스템 (제거됨 - 사용되지 않음)
-  // animations: {
-  //   ...animations,
-  //   custom: customAnimations,
-  //   interactions,
-  //   enterExit,
-  // },
-
-  // 레이아웃 시스템
-  layout,
-
-  // 타이포그래피
-  typography,
-
-  // 시각적 효과
-  effects: {
-    shadows,
-    borders,
-  },
-};
-
-// 자주 사용하는 조합들을 미리 정의
-export const commonCombinations = {
-  // 카드 스타일 조합
-  cardCombos: {
-    default: `${cards.variant.default} ${cards.padding.md} ${cards.hover.lift}`,
-    elevated: `${cards.variant.elevated} ${cards.padding.lg} ${cards.hover.glow}`,
-    glass: `${cards.variant.glass} ${cards.padding.md} transition-all duration-200`,
-    interactive: `${cards.variant.default} ${cards.padding.md} ${cards.hover.scale} transition-all duration-200`,
-  },
-
-  // 버튼 스타일 조합
-  buttonCombos: {
-    primary: `${buttons.base} ${buttons.variant.primary} ${buttons.size.md} hover:scale-105 transition-transform`,
-    primaryLg: `${buttons.base} ${buttons.variant.primary} ${buttons.size.lg} hover:scale-105 transition-transform`,
-    secondary: `${buttons.base} ${buttons.variant.secondary} ${buttons.size.md} hover:scale-105 transition-transform`,
-    outline: `${buttons.base} ${buttons.variant.outline} ${buttons.size.md} hover:scale-105 transition-transform`,
-    ghost: `${buttons.base} ${buttons.variant.ghost} ${buttons.size.md} hover:scale-105 transition-transform`,
-  },
-
-  // 입력 필드 조합
-  inputCombos: {
-    default: `${inputs.base} ${inputs.size.md} ${inputs.state.default}`,
-    large: `${inputs.base} ${inputs.size.lg} ${inputs.state.default}`,
-    error: `${inputs.base} ${inputs.size.md} ${inputs.state.error}`,
-    success: `${inputs.base} ${inputs.size.md} ${inputs.state.success}`,
-  },
-
-  // 제목 스타일 조합
-  headingCombos: {
-    hero: `${typography.heading.hero} ${brandColors.primary.text}`,
-    pageTitle: `${typography.heading.h1} ${brandColors.primary.text}`,
-    sectionTitle: `${typography.heading.h2} text-gray-900`,
-    cardTitle: `${typography.heading.h3} text-gray-800`,
-  },
-
-  // 그리드 레이아웃 조합
-  gridCombos: {
-    responsive: `${layout.grid.responsive} ${layout.spacing.card}`,
-    leaderboard: `${layout.grid.leaderboard} ${layout.spacing.card}`,
-    categories: `${layout.grid.categories} ${layout.spacing.tight}`,
-    cards: `${layout.grid.cards} ${layout.spacing.section}`,
-  },
-
-  // 실시간 표시기 조합 (제거됨 - 사용되지 않음)
-  // liveCombos: {
-  //   dot: 'animate-pulse',
-  //   ping: 'animate-ping',
-  //   container: 'relative',
-  //   full: 'relative',
-  // },
-};
+// 자주 사용하는 조합들을 미리 정의 - 제거됨: common.ts 파일 삭제로 인해 사용 불가
+// export const commonCombinations = { ... };
 
 // 테마별 색상 조합 (다크모드 대비)
 export const themes = {

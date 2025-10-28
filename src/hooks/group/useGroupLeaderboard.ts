@@ -1,7 +1,8 @@
 'use client';
 
-import { getGroupLeaderboard } from '@/shared/api/get';
 import { useQuery } from '@tanstack/react-query';
+
+import { getGroupLeaderboard } from '@/shared/api/get';
 
 interface UseGroupLeaderboardOptions {
   groupId: number;

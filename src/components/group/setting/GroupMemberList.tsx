@@ -1,12 +1,13 @@
 'use client';
 
+import { Crown, Users } from 'lucide-react';
+import { useMemo } from 'react';
+
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { Avatar, AvatarFallback } from '@/shadcn/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn/ui/card';
 import { brandColors } from '@/styles/colors';
-import { Crown, Users } from 'lucide-react';
-import { useMemo } from 'react';
 
 interface GroupMemberListProps {
   owner: Group.GroupUserInfo;

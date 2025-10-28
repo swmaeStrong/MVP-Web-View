@@ -1,5 +1,9 @@
 'use client';
 
+import { Globe, Hash, Lock, Search, Users } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
 import GroupDetailModal from '@/components/group/search/GroupDetailModal';
 import GroupInviteModal from '@/components/group/search/GroupInviteModal';
 import { useJoinGroup } from '@/hooks/group/useJoinGroup';
@@ -10,7 +14,6 @@ import { useMyGroups } from '@/hooks/queries/useMyGroups';
 import { useSearchGroups } from '@/hooks/queries/useSearchGroups';
 import { useGroupSearch } from '@/hooks/ui/useGroupSearch';
 import { useTheme } from '@/hooks/ui/useTheme';
-import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { Badge } from '@/shadcn/ui/badge';
 import { Button } from '@/shadcn/ui/button';
@@ -20,22 +23,18 @@ import { Skeleton } from '@/shadcn/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/shadcn/ui/toggle-group';
 import { getGroupByInviteCode } from '@/shared/api/get';
 import { brandColors } from '@/styles/colors';
-import { Globe, Hash, Lock, Search, Users } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 export default function FindTeamPage() {
   const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const { t, locale } = useTranslation();
   const { navigateWithParams } = useNavigation();
   const searchParams = useSearchParams();
-  const currentUser = useCurrentUserData();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'public' | 'private'>('all');
-  
+
   // Save current tab as last visited
   useLastGroupTab();
-  const [sortBy, setSortBy] = useState<'created' | 'name'>('name');
+  const [sortBy] = useState<'created' | 'name'>('name');
 
   // Read inviteCode query parameter and fetch group information
   useEffect(() => {

@@ -1,12 +1,13 @@
 'use client';
 
-import { Button } from '@/shadcn/ui/button';
-import { Input } from '@/shadcn/ui/input';
-import { brandColors } from '@/styles/colors';
-import { useTheme } from '@/hooks/ui/useTheme';
-import { useTranslation } from '@/providers/LanguageProvider';
 import { Plus } from 'lucide-react';
 import * as React from 'react';
+
+import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
+import { Button } from '@/shadcn/ui/button';
+import { Input } from '@/shadcn/ui/input';
+
 
 interface TagInputProps {
   onAddTag: (tag: string) => void;
@@ -56,7 +57,7 @@ export default function TagInput({ onAddTag, disabled }: TagInputProps) {
           type="button"
           onClick={handleAddTag}
           disabled={!newTag.trim() || disabled || newTag.length > 12}
-          className={`${brandColors.accent.bg} text-white ${brandColors.accent.hover}/90`}
+          className="bg-purple-600 text-white hover:bg-purple-700"
         >
           <Plus className="h-4 w-4" />
         </Button>

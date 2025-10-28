@@ -1,8 +1,9 @@
 'use client';
 
-import { deleteGroupGoal } from '@/shared/api/delete';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+
+import { deleteGroupGoal } from '@/shared/api/delete';
 
 export function useDeleteGroupGoal(groupId: number) {
   const queryClient = useQueryClient();

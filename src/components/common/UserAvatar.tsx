@@ -1,7 +1,7 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 import { cn } from '@/shadcn/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@/shadcn/ui/avatar';
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg';
 
@@ -40,7 +40,7 @@ export default function UserAvatar({
   imageUrl,
   size = 'sm',
   isCurrentUser = false,
-  isAchieved,
+  isAchieved: _isAchieved,
   showBorder = false,
   className,
 }: UserAvatarProps) {

@@ -1,11 +1,12 @@
 'use client';
 
+import React from 'react';
+import { Bar, BarChart, XAxis, YAxis } from 'recharts';
+
 import { useSessionChart } from '@/hooks/ui/useSessionChart';
 import { useTheme } from '@/hooks/ui/useTheme';
 import { ChartConfig, ChartContainer } from '@/shadcn/ui/chart';
 import type { SessionData } from '@/types/domains/usage/session';
-import React from 'react';
-import { Bar, BarChart, XAxis, YAxis } from 'recharts';
 
 interface SessionChartProps {
   sessionData: Session.SessionApiResponse[] | undefined;
@@ -59,8 +60,6 @@ export default function SessionChart({
     getCustomBarProps,
     chartContainerRef,
     scrollToMostRecent,
-    hoveredSessionId,
-    setHoveredSessionId,
   } = useSessionChart({
     sessionData,
     selectedSession,

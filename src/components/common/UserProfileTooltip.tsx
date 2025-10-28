@@ -1,10 +1,11 @@
 'use client';
 
+import { Flame, Timer } from 'lucide-react';
+import React, { useState } from 'react';
+
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useOtherUserInfo } from '@/hooks/user/useOtherUserInfo';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shadcn/ui/tooltip';
-import { Flame, Timer } from 'lucide-react';
-import React, { useState } from 'react';
 
 interface UserStats {
   nickname: string;

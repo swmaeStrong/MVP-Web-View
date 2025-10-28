@@ -1,5 +1,8 @@
 'use client';
 
+import { Globe, Hash, Lock } from 'lucide-react';
+import { useState } from 'react';
+
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { Badge } from '@/shadcn/ui/badge';
@@ -8,8 +11,6 @@ import { Card, CardContent } from '@/shadcn/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shadcn/ui/dialog';
 import { Input } from '@/shadcn/ui/input';
 import { brandColors } from '@/styles/colors';
-import { Globe, Hash, Lock } from 'lucide-react';
-import { useState } from 'react';
 
 interface GroupDetailModalProps {
   isOpen: boolean;

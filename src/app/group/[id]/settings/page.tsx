@@ -1,5 +1,12 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Crown, Trash2, UserMinus } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import PageLoader from '@/components/common/PageLoader';
 import StateDisplay from '@/components/common/StateDisplay';
@@ -12,22 +19,13 @@ import GroupMemberManagement from '@/components/group/setting/GroupMemberManagem
 import { useBanMember, useDeleteGroup, useLeaveGroup, useTransferOwnership, useUpdateGroup } from '@/hooks/group/useGroupSettings';
 import { useLastGroupTab } from '@/hooks/group/useLastGroupTab';
 import { useGroupDetail } from '@/hooks/queries/useGroupDetail';
-import { useTheme } from '@/hooks/ui/useTheme';
 import { useCurrentUserData } from '@/hooks/user/useCurrentUser';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { UpdateGroupFormData, createValidationSchema } from '@/utils/validation';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Crown, Trash2, UserMinus } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import * as React from 'react';
-import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
 
 
 export default function GroupSettingsPage() {
-  const { getThemeClass, getThemeTextColor, getCommonCardClass } = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();
   const params = useParams();
   const currentUser = useCurrentUserData();
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
@@ -49,13 +47,6 @@ export default function GroupSettingsPage() {
 
   // 권한 확인 - 그룹장만 접근 가능
   const isGroupOwner = groupDetail && currentUser && groupDetail.owner.userId === currentUser.id;
-
-  // 초대 코드 복사 함수
-  const copyInviteCode = () => {
-    const textToCopy = groupDetail?.password || t('group.noPasswordRequired');
-    navigator.clipboard.writeText(textToCopy);
-    toast.success(t('group.copyInviteCode'));
-  };
 
   // Group mutations
   const updateGroupMutation = useUpdateGroup(groupId);
@@ -141,7 +132,7 @@ export default function GroupSettingsPage() {
     try {
       await updateGroupMutation.mutateAsync(request);
       // 성공 시 토스트는 mutation의 onSuccess에서 처리됨
-    } catch (error) {
+    } catch {
       // 에러는 mutation에서 이미 toast로 표시됨
     }
   };
@@ -151,7 +142,7 @@ export default function GroupSettingsPage() {
     try {
       await deleteGroupMutation.mutateAsync();
       setShowDeleteDialog(false);
-    } catch (error) {
+    } catch {
       // 에러는 mutation에서 이미 toast로 표시됨
     }
   };
@@ -168,7 +159,7 @@ export default function GroupSettingsPage() {
       setShowBanDialog(false);
       setSelectedMember(null);
       setBanReason('');
-    } catch (error) {
+    } catch {
       // 에러는 mutation에서 이미 toast로 표시됨
     }
   };
@@ -178,7 +169,7 @@ export default function GroupSettingsPage() {
     try {
       await leaveGroupMutation.mutateAsync();
       setShowDeleteDialog(false);
-    } catch (error) {
+    } catch {
       // 에러는 mutation에서 이미 toast로 표시됨
     }
   };
@@ -186,12 +177,12 @@ export default function GroupSettingsPage() {
   // 소유권 이전 핸들러
   const handleTransferOwnership = async () => {
     if (!selectedMember) return;
-    
+
     try {
       await transferOwnershipMutation.mutateAsync(selectedMember.userId);
       setShowTransferDialog(false);
       setSelectedMember(null);
-    } catch (error) {
+    } catch {
       // 에러는 mutation에서 이미 toast로 표시됨
     }
   };
@@ -248,9 +239,8 @@ export default function GroupSettingsPage() {
               createdAt={groupDetail.createdAt}
             />
 
-            <GroupActions 
+            <GroupActions
               isOwner={false}
-              groupName={groupDetail.name}
               onLeaveGroup={() => setShowDeleteDialog(true)}
             />
           </div>
@@ -329,9 +319,8 @@ export default function GroupSettingsPage() {
             createdAt={groupDetail.createdAt}
           />
 
-          <GroupActions 
+          <GroupActions
             isOwner={true}
-            groupName={groupDetail.name}
             onDeleteGroup={() => setShowDeleteDialog(true)}
           />
         </div>

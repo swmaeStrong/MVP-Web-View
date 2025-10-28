@@ -72,7 +72,7 @@ export const requestTokenFromSwift = (): Promise<string | null> => {
       } else {
         resolve(null);
       }
-    } catch (error) {
+    } catch {
       resolve(null);
     }
   });
@@ -107,7 +107,7 @@ if (typeof window !== 'undefined') {
 
       // 테마 초기화 및 리스너 설정
       initializeTheme();
-    } catch (error) {}
+    } catch {}
   };
 
   // 페이지 로드 시 테마 초기화 (토큰과 별개로 실행)

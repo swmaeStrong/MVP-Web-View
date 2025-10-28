@@ -1,5 +1,9 @@
 'use client';
 
+import { LucideIcon } from 'lucide-react';
+import * as React from 'react';
+
+import { useTheme } from '@/hooks/ui/useTheme';
 import { Button } from '@/shadcn/ui/button';
 import {
   Dialog,
@@ -10,10 +14,8 @@ import {
   DialogTitle,
 } from '@/shadcn/ui/dialog';
 import { Textarea } from '@/shadcn/ui/textarea';
-import { useTheme } from '@/hooks/ui/useTheme';
 import { brandColors } from '@/styles/colors';
-import { LucideIcon } from 'lucide-react';
-import * as React from 'react';
+
 
 interface ConfirmDialogProps {
   open: boolean;

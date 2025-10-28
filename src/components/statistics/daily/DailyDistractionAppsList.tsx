@@ -1,40 +1,42 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
+
 import { useTheme } from '@/hooks/ui/useTheme';
 import { useTranslation } from '@/providers/LanguageProvider';
 import { Card, CardContent } from '@/shadcn/ui/card';
 import { ScrollArea } from '@/shadcn/ui/scroll-area';
 import { getPomodoroDetails } from '@/shared/api/get';
-import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 
 // Types
-interface WorkApp {
+interface DistractionApp {
   name: string;
   duration: number;
   accessCount: number;
-  productivity: number; // 0-100
+  impact: number; // 0-100 (higher = more distracting)
   category: string;
+  timeBlocks: number; // Number of separate usage sessions
 }
 
-interface WorkAppsListProps {
-  workApps?: WorkApp[];
+interface DistractionAppsListProps {
+  distractionApps?: DistractionApp[];
   selectedDate?: string;
 }
 
-// Mock data for development
-const mockWorkApps: WorkApp[] = [
-  { name: 'Visual Studio Code', duration: 12600, accessCount: 45, productivity: 95, category: 'Development' },
-  { name: 'IntelliJ IDEA', duration: 8400, accessCount: 32, productivity: 92, category: 'Development' },
-  { name: 'Figma', duration: 5400, accessCount: 28, productivity: 88, category: 'Design' },
-  { name: 'Terminal', duration: 4200, accessCount: 67, productivity: 90, category: 'Development' },
-  { name: 'Notion', duration: 3600, accessCount: 24, productivity: 85, category: 'Documentation' },
-  { name: 'Slack', duration: 2700, accessCount: 89, productivity: 75, category: 'Communication' },
-  { name: 'Docker Desktop', duration: 2400, accessCount: 15, productivity: 87, category: 'Development' },
-  { name: 'Postman', duration: 1800, accessCount: 18, productivity: 82, category: 'Development' },
-  { name: 'TablePlus', duration: 1200, accessCount: 12, productivity: 89, category: 'Development' },
-  { name: 'Chrome DevTools', duration: 900, accessCount: 34, productivity: 91, category: 'Development' }
-];
+// Mock data for development (currently unused but kept for reference)
+// const mockDistractionApps: DistractionApp[] = [
+//   { name: 'YouTube', duration: 4800, accessCount: 23, impact: 85, category: 'Entertainment', timeBlocks: 8 },
+//   { name: 'Twitter', duration: 3600, accessCount: 67, impact: 78, category: 'Social Media', timeBlocks: 15 },
+//   { name: 'Instagram', duration: 2700, accessCount: 34, impact: 72, category: 'Social Media', timeBlocks: 12 },
+//   { name: 'Reddit', duration: 2400, accessCount: 18, impact: 68, category: 'Social Media', timeBlocks: 6 },
+//   { name: 'Netflix', duration: 1800, accessCount: 5, impact: 90, category: 'Entertainment', timeBlocks: 3 },
+//   { name: 'TikTok', duration: 1500, accessCount: 45, impact: 88, category: 'Social Media', timeBlocks: 18 },
+//   { name: 'Discord', duration: 1200, accessCount: 12, impact: 65, category: 'Communication', timeBlocks: 4 },
+//   { name: 'Twitch', duration: 900, accessCount: 8, impact: 82, category: 'Entertainment', timeBlocks: 4 },
+//   { name: 'Facebook', duration: 600, accessCount: 15, impact: 70, category: 'Social Media', timeBlocks: 7 },
+//   { name: 'Steam', duration: 450, accessCount: 3, impact: 95, category: 'Gaming', timeBlocks: 2 }
+// ];
 
 // Format time helper
 const formatTime = (seconds: number): string => {
@@ -51,29 +53,35 @@ const formatTime = (seconds: number): string => {
   }
 };
 
-// Get productivity color
-const getProductivityColor = (productivity: number): string => {
-  if (productivity >= 90) return 'text-green-500';
-  if (productivity >= 80) return 'text-blue-500';
-  if (productivity >= 70) return 'text-yellow-500';
-  return 'text-red-500';
-};
+// Impact color functions (currently unused but kept for reference)
+// const getImpactColor = (impact: number): string => {
+//   if (impact >= 85) return 'text-red-500';
+//   if (impact >= 70) return 'text-orange-500';
+//   if (impact >= 55) return 'text-yellow-500';
+//   return 'text-green-500';
+// };
 
-const getProductivityBgColor = (productivity: number): string => {
-  if (productivity >= 90) return 'bg-green-500';
-  if (productivity >= 80) return 'bg-blue-500';
-  if (productivity >= 70) return 'bg-yellow-500';
-  return 'bg-red-500';
-};
+// const getImpactBgColor = (impact: number): string => {
+//   if (impact >= 85) return 'bg-red-500';
+//   if (impact >= 70) return 'bg-orange-500';
+//   if (impact >= 55) return 'bg-yellow-500';
+//   return 'bg-green-500';
+// };
 
-// Work app item component
-const WorkAppItem: React.FC<{
-  app: WorkApp;
+// const getImpactLabel = (impact: number): string => {
+//   if (impact >= 85) return 'High';
+//   if (impact >= 70) return 'Medium';
+//   if (impact >= 55) return 'Low';
+//   return 'Minimal';
+// };
+
+// Distraction app item component
+const DistractionAppItem: React.FC<{
+  app: DistractionApp;
   rank: number;
   getThemeClass: (type: string) => string;
   getThemeTextColor: (type: string) => string;
-  isDarkMode: boolean;
-}> = ({ app, rank, getThemeClass, getThemeTextColor, isDarkMode }) => {
+}> = ({ app, rank, getThemeClass, getThemeTextColor }) => {
   return (
     <div className={`py-1.5 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')} hover:${getThemeClass('componentHover')} transition-colors`}>
       <div className="flex items-center justify-between gap-2">
@@ -99,7 +107,7 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
     {[...Array(8)].map((_, index) => (
       <div key={index} className={`py-1 px-2 rounded-md border ${getThemeClass('border')} ${getThemeClass('componentSecondary')}`}>
         <div className="flex items-center justify-between">
-          <div className={`h-3 w-24 rounded animate-pulse ${getThemeClass('borderLight')}`}></div>
+          <div className={`h-3 w-20 rounded animate-pulse ${getThemeClass('borderLight')}`}></div>
           <div className={`h-3 w-16 rounded animate-pulse ${getThemeClass('borderLight')}`}></div>
         </div>
       </div>
@@ -107,8 +115,8 @@ const LoadingSkeleton: React.FC<{ getThemeClass: (type: string) => string }> = (
   </div>
 );
 
-export default function WorkAppsList({ selectedDate }: WorkAppsListProps) {
-  const { isDarkMode, getThemeClass, getThemeTextColor } = useTheme();
+export default function DistractionAppsList({ selectedDate }: DistractionAppsListProps) {
+  const { getThemeClass, getThemeTextColor } = useTheme();
   const { t } = useTranslation();
   
   // API 데이터 가져오기
@@ -118,21 +126,22 @@ export default function WorkAppsList({ selectedDate }: WorkAppsListProps) {
     enabled: Boolean(selectedDate),
   });
 
-  // API 데이터를 WorkApp 형태로 변환
-  const workApps: WorkApp[] = React.useMemo(() => {
-    if (!data?.workAppUsage) return [];
+  // API 데이터를 DistractionApp 형태로 변환
+  const distractionApps: DistractionApp[] = React.useMemo(() => {
+    if (!data?.distractedAppUsage) return [];
     
-    return data.workAppUsage.map((app: Session.AppUsageDetail) => ({
+    return data.distractedAppUsage.map((app: Session.AppUsageDetail) => ({
       name: app.app,
       duration: app.duration,
       accessCount: app.count,
-      productivity: 90, // API에서 제공하지 않으므로 기본값
-      category: 'Work', // API에서 제공하지 않으므로 기본값
+      impact: 75, // API에서 제공하지 않으므로 기본값
+      category: 'Distraction', // API에서 제공하지 않으므로 기본값
+      timeBlocks: Math.ceil(app.count / 3), // 대략적인 계산
     }));
   }, [data]);
 
-  // Sort by duration (most used first)
-  const sortedApps = [...workApps].sort((a, b) => b.duration - a.duration);
+  // Sort by duration (most distracting first)
+  const sortedApps = [...distractionApps].sort((a, b) => b.duration - a.duration);
 
   return (
     <Card className={`h-auto pt-0 lg:h-[280px] rounded-lg border transition-all duration-200 hover:shadow-md ${getThemeClass('border')} ${getThemeClass('component')}`}>
@@ -141,8 +150,10 @@ export default function WorkAppsList({ selectedDate }: WorkAppsListProps) {
           {/* Header */}
           <div className="mb-4">
             <p className={`text-xs font-semibold ${getThemeTextColor('secondary')} mb-2 uppercase tracking-wider`}>
-              {t('statistics.workApps')}
+              {t('statistics.distractionApps')}
             </p>
+            <div className="flex items-center justify-between">
+            </div>
           </div>
 
           {/* Content */}
@@ -161,13 +172,12 @@ export default function WorkAppsList({ selectedDate }: WorkAppsListProps) {
               <ScrollArea className="h-full">
                 <div className="space-y-1">
                   {sortedApps.slice(0, 8).map((app, index) => (
-                    <WorkAppItem
+                    <DistractionAppItem
                       key={index}
                       app={app}
                       rank={index + 1}
                       getThemeClass={getThemeClass as (type: string) => string}
                       getThemeTextColor={getThemeTextColor as (type: string) => string}
-                      isDarkMode={isDarkMode}
                     />
                   ))}
                 </div>

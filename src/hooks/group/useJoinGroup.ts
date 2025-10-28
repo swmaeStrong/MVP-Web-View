@@ -1,8 +1,10 @@
-import { myGroupsQueryKey } from '@/config/constants/query-keys';
-import { joinGroup } from '@/shared/api/post';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigation } from '@/hooks/navigation/useNavigation';
 import toast from 'react-hot-toast';
+
+import { myGroupsQueryKey } from '@/config/constants/query-keys';
+import { useNavigation } from '@/hooks/navigation/useNavigation';
+import { joinGroup } from '@/shared/api/post';
+
 
 interface UseJoinGroupOptions {
   onSuccess?: (group: Group.GroupApiResponse) => void;

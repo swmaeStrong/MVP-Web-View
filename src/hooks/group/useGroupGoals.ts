@@ -1,7 +1,8 @@
 'use client';
 
-import { getGroupGoals } from '@/shared/api/get';
 import { useQuery } from '@tanstack/react-query';
+
+import { getGroupGoals } from '@/shared/api/get';
 
 interface UseGroupGoalsOptions {
   groupId: number;

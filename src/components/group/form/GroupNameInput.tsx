@@ -1,11 +1,12 @@
 'use client';
 
+import { FieldPath, FieldValues, UseFormReturn } from 'react-hook-form';
+
+import { useGroupNameValidation } from '@/hooks/group/useCreateGroup';
+import { useTheme } from '@/hooks/ui/useTheme';
 import { FormControl, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
 import { Input } from '@/shadcn/ui/input';
-import { useTheme } from '@/hooks/ui/useTheme';
-import { useGroupNameValidation } from '@/hooks/group/useCreateGroup';
-import { brandColors } from '@/styles/colors';
-import { FieldPath, FieldValues, UseFormReturn } from 'react-hook-form';
+
 
 interface GroupNameInputProps<
   TFieldValues extends FieldValues = FieldValues,

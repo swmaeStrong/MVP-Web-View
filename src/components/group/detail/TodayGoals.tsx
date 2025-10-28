@@ -1,5 +1,9 @@
 'use client';
 
+import { Check, Clock, Edit3, Plus, Target, Trash2, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { z } from 'zod';
+
 import { UserAvatar } from '@/components/common';
 import { useDeleteGroupGoal } from '@/hooks/group/useDeleteGroupGoal';
 import { useGroupGoals } from '@/hooks/group/useGroupGoals';
@@ -16,9 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/shadcn/ui/separator';
 import { spacing } from '@/styles/design-system';
 import { getKSTDateString } from '@/utils/timezone';
-import { Check, Clock, Edit3, Plus, Target, Trash2, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { z } from 'zod';
+
 import MemberListDialog from './MemberListDialog';
 
 // Zod 스키마 정의
@@ -114,7 +116,8 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
     setValidationError(''); // Clear validation error when period changes
   }, [selectedPeriod]);
 
-  const getAvatarInitials = (name: string) => {
+  // Reserved for future use
+  const _getAvatarInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('');
   };
 
@@ -123,30 +126,30 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
     return member?.nickname || userId;
   };
 
-  const renderAvatarGroup = (userIds: string[], isAchieved: boolean, goal: Group.GroupGoalsApiResponse) => {
+  const renderAvatarGroup = (userIds: string[], isAchieved: boolean, _goal: Group.GroupGoalsApiResponse) => {
     const maxVisible = 3;
     const totalAvatars = userIds.length;
-    
+
     // 현재 사용자가 리스트에 있으면 맨 앞으로 이동
-    let sortedUserIds = [...userIds];
+    const sortedUserIds = [...userIds];
     const currentUserIndex = sortedUserIds.findIndex(id => id === currentUser?.id);
     if (currentUserIndex > -1) {
       const [currentUserId] = sortedUserIds.splice(currentUserIndex, 1);
       sortedUserIds.unshift(currentUserId);
     }
-    
+
     const displayedUserIds = sortedUserIds.slice(0, maxVisible);
     const remainingCount = Math.max(totalAvatars - maxVisible, 0);
 
     return (
       <div className="flex items-center pointer-events-none">
-        {displayedUserIds.map((userId, index) => {
+        {displayedUserIds.map((userId, _index) => {
           const isCurrentUser = userId === currentUser?.id;
           return (
-            <div 
-              key={index} 
-              className={`-ml-2 relative first:ml-0 group`} 
-              style={{ zIndex: displayedUserIds.length - index }}
+            <div
+              key={userId}
+              className={`-ml-2 relative first:ml-0 group`}
+              style={{ zIndex: displayedUserIds.length - _index }}
             >
               <UserAvatar
                 nickname={getUserNickname(userId)}
@@ -187,9 +190,9 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
       
       
       return true;
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const firstError = error.issues[0];
+    } catch (_error) {
+      if (_error instanceof z.ZodError) {
+        const firstError = _error.issues[0];
         if (firstError.message === "Goal time exceeds maximum limit") {
           const maxHours = newGoalPeriod === 'DAILY' ? 24 : 168;
           setValidationError(`Goal time cannot exceed ${maxHours} hours for ${newGoalPeriod.toLowerCase()} goals`);
@@ -246,7 +249,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
       
       // Refetch goals
       refetch();
-    } catch (error) {
+    } catch {
       // Error is handled by the mutation hook
     }
   };
@@ -263,7 +266,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
         category: goal.category,
         period: goal.periodType
       });
-    } catch (error) {
+    } catch {
       // Error is handled by the mutation hook
     }
   };
@@ -314,10 +317,6 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
       return `${hours}h${minutes > 0 ? ` ${minutes}m` : ''}`;
     }
     return `${minutes}m`;
-  };
-  
-  const getProgressPercentage = (currentSeconds: number, goalValue: number) => {
-    return Math.min((currentSeconds / goalValue) * 100, 100);
   };
   
   if (isLoading) {
@@ -395,7 +394,7 @@ export default function TodayGoals({ groupId, isGroupOwner, groupMembers = [], s
             </div>
           ) : (
             <div className="space-y-4 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
-              {groupGoals.map((goal, index) => {
+              {groupGoals.map((goal) => {
                 const totalMembers = goal.members.length;
                 const achievedMembers = goal.members.filter(m => m.currentSeconds >= goal.goalValue);
                 const notAchievedMembers = goal.members.filter(m => m.currentSeconds < goal.goalValue);

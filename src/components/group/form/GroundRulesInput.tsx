@@ -1,14 +1,15 @@
 'use client';
 
+import { Plus, Trash2 } from 'lucide-react';
+import { useRef, useCallback } from 'react';
+import { FieldPath, FieldValues, UseFormReturn } from 'react-hook-form';
+
+import { useTheme } from '@/hooks/ui/useTheme';
+import { useTranslation } from '@/providers/LanguageProvider';
 import { Button } from '@/shadcn/ui/button';
 import { FormControl, FormItem, FormLabel, FormMessage } from '@/shadcn/ui/form';
 import { Textarea } from '@/shadcn/ui/textarea';
-import { useTheme } from '@/hooks/ui/useTheme';
-import { useTranslation } from '@/providers/LanguageProvider';
-import { brandColors } from '@/styles/colors';
-import { Plus, Trash2 } from 'lucide-react';
-import { FieldPath, FieldValues, UseFormReturn } from 'react-hook-form';
-import { useRef, useCallback } from 'react';
+
 
 interface GroundRulesInputProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -17,7 +18,6 @@ interface GroundRulesInputProps<
   form: UseFormReturn<TFieldValues>;
   name: TName;
   label?: string;
-  maxRules?: number;
   disabled?: boolean;
 }
 
@@ -28,7 +28,6 @@ export function GroundRulesInput<
   form,
   name,
   label = "Ground Rules",
-  maxRules = 10,
   disabled = false,
 }: GroundRulesInputProps<TFieldValues, TName>) {
   const { getThemeClass, getThemeTextColor } = useTheme();
